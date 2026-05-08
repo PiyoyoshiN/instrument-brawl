@@ -1,0 +1,13 @@
+{
+  "name": "instrument-brawl",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build && node scripts/dev-server.mjs",
+    "build": "tsc && node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
