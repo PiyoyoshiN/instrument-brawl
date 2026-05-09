@@ -5,6 +5,8 @@ const gameHeight = 600;
 const fighterWidth = 72;
 const fighterSpeed = 260;
 const startingHp = 100;
+const player1StartX = 240;
+const player2StartX = 560;
 const attackWidth = 96;
 const attackHeight = 72;
 const attackDurationMs = 180;
@@ -36,9 +38,13 @@ class BattleScene extends Phaser.Scene {
   private player2!: Fighter;
   private player1Hp!: PlayerHp;
   private player2Hp!: PlayerHp;
+  private resultText!: Phaser.GameObjects.Text;
+  private restartHintText!: Phaser.GameObjects.Text;
+  private matchOver = false;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
+    restart: Phaser.Input.Keyboard.Key;
   };
 
   constructor() {
@@ -72,20 +78,44 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 150, 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack', {
+      .text(400, 150, 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack    R restart', {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
       .setOrigin(0.5);
 
-    this.player1 = this.createFighter(240, 0xf97316, 0xffedd5, 'P1\nElectric Guitar', '#fed7aa');
-    this.player2 = this.createFighter(560, 0x38bdf8, 0xe0f2fe, 'P2\nBass', '#bae6fd');
+    this.resultText = this.add
+      .text(400, 250, '', {
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '48px',
+      })
+      .setOrigin(0.5)
+      .setVisible(false);
+
+    this.restartHintText = this.add
+      .text(400, 306, 'Press R to restart', {
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      })
+      .setOrigin(0.5)
+      .setVisible(false);
+
+    this.player1 = this.createFighter(player1StartX, 0xf97316, 0xffedd5, 'P1\nElectric Guitar', '#fed7aa');
+    this.player2 = this.createFighter(player2StartX, 0x38bdf8, 0xe0f2fe, 'P2\nBass', '#bae6fd');
+    this.player2.facing = -1;
     this.controls = this.createControls();
   }
 
   update(time: number, delta: number) {
     if (!this.controls) {
+      return;
+    }
+
+    if (this.matchOver) {
+      this.tryRestart();
       return;
     }
 
@@ -143,6 +173,7 @@ class BattleScene extends Phaser.Scene {
       player2Right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
       player2Attack: Phaser.Input.Keyboard.KeyCodes.UP,
       player2AltAttack: Phaser.Input.Keyboard.KeyCodes.ENTER,
+      restart: Phaser.Input.Keyboard.KeyCodes.R,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
     return {
@@ -156,6 +187,7 @@ class BattleScene extends Phaser.Scene {
         right: keys.player2Right,
         attacks: [keys.player2Attack, keys.player2AltAttack],
       },
+      restart: keys.restart,
     };
   }
 
@@ -185,6 +217,10 @@ class BattleScene extends Phaser.Scene {
   }
 
   private tryAttack(fighter: Fighter, keys: PlayerControls, time: number) {
+    if (this.matchOver) {
+      return;
+    }
+
     const wantsAttack = keys.attacks.some((key) => Phaser.Input.Keyboard.JustDown(key));
 
     if (!wantsAttack || time < fighter.nextAttackAt) {
@@ -210,6 +246,7 @@ class BattleScene extends Phaser.Scene {
       hasHit = true;
       this.applyDamage(opponentHp, attackDamage);
       this.knockbackFighter(opponent, fighter.facing);
+      this.checkMatchResult();
     }
 
     this.time.delayedCall(attackDurationMs, () => {
@@ -219,6 +256,10 @@ class BattleScene extends Phaser.Scene {
 
   private applyDamage(playerHp: PlayerHp, damage: number) {
     playerHp.current = Math.max(0, playerHp.current - damage);
+    this.updateHpText(playerHp);
+  }
+
+  private updateHpText(playerHp: PlayerHp) {
     playerHp.text.setText(`${playerHp.name} HP: ${playerHp.current}`);
   }
 
@@ -231,6 +272,51 @@ class BattleScene extends Phaser.Scene {
 
     fighter.body.setX(nextX);
     fighter.label.setX(nextX);
+  }
+
+  private checkMatchResult() {
+    const player1Defeated = this.player1Hp.current <= 0;
+    const player2Defeated = this.player2Hp.current <= 0;
+
+    if (!player1Defeated && !player2Defeated) {
+      return;
+    }
+
+    const result = player1Defeated && player2Defeated ? 'Draw' : player1Defeated ? 'P2 Wins' : 'P1 Wins';
+    this.endMatch(result);
+  }
+
+  private endMatch(result: string) {
+    this.matchOver = true;
+    this.resultText.setText(result).setVisible(true);
+    this.restartHintText.setVisible(true);
+  }
+
+  private tryRestart() {
+    if (this.controls && Phaser.Input.Keyboard.JustDown(this.controls.restart)) {
+      this.restartMatch();
+    }
+  }
+
+  private restartMatch() {
+    this.matchOver = false;
+    this.resultText.setVisible(false);
+    this.restartHintText.setVisible(false);
+
+    this.player1Hp.current = startingHp;
+    this.player2Hp.current = startingHp;
+    this.updateHpText(this.player1Hp);
+    this.updateHpText(this.player2Hp);
+
+    this.resetFighter(this.player1, player1StartX, 1);
+    this.resetFighter(this.player2, player2StartX, -1);
+  }
+
+  private resetFighter(fighter: Fighter, x: number, facing: -1 | 1) {
+    fighter.body.setX(x);
+    fighter.label.setX(x);
+    fighter.facing = facing;
+    fighter.nextAttackAt = 0;
   }
 }
 
