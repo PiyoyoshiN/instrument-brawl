@@ -4,10 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npm run build && node scripts/dev-server.mjs",
-    "build": "tsc && node scripts/build.mjs"
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "dependencies": {
+    "phaser": "^3.90.0"
   },
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   }
 }
