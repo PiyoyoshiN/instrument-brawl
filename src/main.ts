@@ -4,6 +4,7 @@ const gameWidth = 800;
 const gameHeight = 600;
 const fighterWidth = 72;
 const fighterSpeed = 260;
+const startingHp = 100;
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
@@ -15,9 +16,16 @@ type MovementKeys = {
   right: Phaser.Input.Keyboard.Key;
 };
 
+type PlayerHp = {
+  current: number;
+  text: Phaser.GameObjects.Text;
+};
+
 class BattleScene extends Phaser.Scene {
   private player1!: Fighter;
   private player2!: Fighter;
+  private player1Hp!: PlayerHp;
+  private player2Hp!: PlayerHp;
   private controls?: {
     player1: MovementKeys;
     player2: MovementKeys;
@@ -31,6 +39,11 @@ class BattleScene extends Phaser.Scene {
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 500, 680, 40, 0x334155);
+
+    this.player1Hp = this.createHpText(32, 24, 'P1', '#fed7aa');
+    this.player2Hp = this.createHpText(768, 24, 'P2', '#bae6fd');
+    this.player1Hp.text.setOrigin(0, 0);
+    this.player2Hp.text.setOrigin(1, 0);
 
     this.add
       .text(400, 64, 'Instrument Brawl', {
@@ -70,6 +83,21 @@ class BattleScene extends Phaser.Scene {
 
     this.moveFighter(this.player1, this.controls.player1, distance);
     this.moveFighter(this.player2, this.controls.player2, distance);
+  }
+
+  private createHpText(x: number, y: number, playerName: string, color: string): PlayerHp {
+    const hp = {
+      current: startingHp,
+      text: this.add.text(x, y, '', {
+        color,
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+      }),
+    };
+
+    hp.text.setText(`${playerName} HP: ${hp.current}`);
+
+    return hp;
   }
 
   private createFighter(x: number, fillColor: number, strokeColor: number, label: string, labelColor: string): Fighter {
