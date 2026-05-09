@@ -2,8 +2,27 @@ import Phaser from 'phaser';
 
 const gameWidth = 800;
 const gameHeight = 600;
+const fighterWidth = 72;
+const fighterSpeed = 260;
+
+type Fighter = {
+  body: Phaser.GameObjects.Rectangle;
+  label: Phaser.GameObjects.Text;
+};
+
+type MovementKeys = {
+  left: Phaser.Input.Keyboard.Key;
+  right: Phaser.Input.Keyboard.Key;
+};
 
 class BattleScene extends Phaser.Scene {
+  private player1!: Fighter;
+  private player2!: Fighter;
+  private controls?: {
+    player1: MovementKeys;
+    player2: MovementKeys;
+  };
+
   constructor() {
     super('BattleScene');
   }
@@ -29,25 +48,85 @@ class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add.rectangle(240, 440, 72, 120, 0xf97316).setStrokeStyle(3, 0xffedd5);
     this.add
-      .text(240, 520, 'P1\nElectric Guitar', {
+      .text(400, 150, 'P1: A / D    P2: ← / →', {
+        color: '#94a3b8',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5);
+
+    this.player1 = this.createFighter(240, 0xf97316, 0xffedd5, 'P1\nElectric Guitar', '#fed7aa');
+    this.player2 = this.createFighter(560, 0x38bdf8, 0xe0f2fe, 'P2\nBass', '#bae6fd');
+    this.controls = this.createControls();
+  }
+
+  update(_time: number, delta: number) {
+    if (!this.controls) {
+      return;
+    }
+
+    const distance = fighterSpeed * (delta / 1000);
+
+    this.moveFighter(this.player1, this.controls.player1, distance);
+    this.moveFighter(this.player2, this.controls.player2, distance);
+  }
+
+  private createFighter(x: number, fillColor: number, strokeColor: number, label: string, labelColor: string): Fighter {
+    const body = this.add.rectangle(x, 440, fighterWidth, 120, fillColor).setStrokeStyle(3, strokeColor);
+    const labelText = this.add
+      .text(x, 520, label, {
         align: 'center',
-        color: '#fed7aa',
+        color: labelColor,
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
       .setOrigin(0.5, 0);
 
-    this.add.rectangle(560, 440, 72, 120, 0x38bdf8).setStrokeStyle(3, 0xe0f2fe);
-    this.add
-      .text(560, 520, 'P2\nBass', {
-        align: 'center',
-        color: '#bae6fd',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '18px',
-      })
-      .setOrigin(0.5, 0);
+    return { body, label: labelText };
+  }
+
+  private createControls() {
+    const keyboard = this.input.keyboard;
+
+    if (!keyboard) {
+      return undefined;
+    }
+
+    const keys = keyboard.addKeys({
+      player1Left: Phaser.Input.Keyboard.KeyCodes.A,
+      player1Right: Phaser.Input.Keyboard.KeyCodes.D,
+      player2Left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+      player2Right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+    }) as Record<string, Phaser.Input.Keyboard.Key>;
+
+    return {
+      player1: {
+        left: keys.player1Left,
+        right: keys.player1Right,
+      },
+      player2: {
+        left: keys.player2Left,
+        right: keys.player2Right,
+      },
+    };
+  }
+
+  private moveFighter(fighter: Fighter, keys: MovementKeys, distance: number) {
+    let nextX = fighter.body.x;
+
+    if (keys.left.isDown) {
+      nextX -= distance;
+    }
+
+    if (keys.right.isDown) {
+      nextX += distance;
+    }
+
+    nextX = Phaser.Math.Clamp(nextX, fighterWidth / 2, gameWidth - fighterWidth / 2);
+
+    fighter.body.setX(nextX);
+    fighter.label.setX(nextX);
   }
 }
 
