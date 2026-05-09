@@ -9,6 +9,7 @@ const attackWidth = 96;
 const attackHeight = 72;
 const attackDurationMs = 180;
 const attackCooldownMs = 240;
+const attackDamage = 10;
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
@@ -24,6 +25,7 @@ type PlayerControls = {
 };
 
 type PlayerHp = {
+  name: string;
   current: number;
   text: Phaser.GameObjects.Text;
 };
@@ -96,6 +98,7 @@ class BattleScene extends Phaser.Scene {
 
   private createHpText(x: number, y: number, playerName: string, color: string): PlayerHp {
     const hp = {
+      name: playerName,
       current: startingHp,
       text: this.add.text(x, y, '', {
         color,
@@ -188,19 +191,33 @@ class BattleScene extends Phaser.Scene {
     }
 
     fighter.nextAttackAt = time + attackCooldownMs;
-    this.showAttackHitbox(fighter);
+    const opponent = fighter === this.player1 ? this.player2 : this.player1;
+    const opponentHp = fighter === this.player1 ? this.player2Hp : this.player1Hp;
+
+    this.showAttackHitbox(fighter, opponent, opponentHp);
   }
 
-  private showAttackHitbox(fighter: Fighter) {
+  private showAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp) {
+    let hasHit = false;
     const hitboxX = fighter.body.x + fighter.facing * (fighterWidth / 2 + attackWidth / 2);
     const hitbox = this.add
       .rectangle(hitboxX, fighter.body.y, attackWidth, attackHeight, 0xfacc15, 0.35)
       .setStrokeStyle(2, 0xfef08a)
       .setDepth(1);
 
+    if (!hasHit && Phaser.Geom.Intersects.RectangleToRectangle(hitbox.getBounds(), opponent.body.getBounds())) {
+      hasHit = true;
+      this.applyDamage(opponentHp, attackDamage);
+    }
+
     this.time.delayedCall(attackDurationMs, () => {
       hitbox.destroy();
     });
+  }
+
+  private applyDamage(playerHp: PlayerHp, damage: number) {
+    playerHp.current = Math.max(0, playerHp.current - damage);
+    playerHp.text.setText(`${playerHp.name} HP: ${playerHp.current}`);
   }
 }
 
