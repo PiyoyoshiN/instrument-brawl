@@ -5,15 +5,22 @@ const gameHeight = 600;
 const fighterWidth = 72;
 const fighterSpeed = 260;
 const startingHp = 100;
+const attackWidth = 96;
+const attackHeight = 72;
+const attackDurationMs = 180;
+const attackCooldownMs = 240;
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
   label: Phaser.GameObjects.Text;
+  facing: -1 | 1;
+  nextAttackAt: number;
 };
 
-type MovementKeys = {
+type PlayerControls = {
   left: Phaser.Input.Keyboard.Key;
   right: Phaser.Input.Keyboard.Key;
+  attacks: Phaser.Input.Keyboard.Key[];
 };
 
 type PlayerHp = {
@@ -27,8 +34,8 @@ class BattleScene extends Phaser.Scene {
   private player1Hp!: PlayerHp;
   private player2Hp!: PlayerHp;
   private controls?: {
-    player1: MovementKeys;
-    player2: MovementKeys;
+    player1: PlayerControls;
+    player2: PlayerControls;
   };
 
   constructor() {
@@ -62,7 +69,7 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 150, 'P1: A / D    P2: ← / →', {
+      .text(400, 150, 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack', {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -74,7 +81,7 @@ class BattleScene extends Phaser.Scene {
     this.controls = this.createControls();
   }
 
-  update(_time: number, delta: number) {
+  update(time: number, delta: number) {
     if (!this.controls) {
       return;
     }
@@ -83,6 +90,8 @@ class BattleScene extends Phaser.Scene {
 
     this.moveFighter(this.player1, this.controls.player1, distance);
     this.moveFighter(this.player2, this.controls.player2, distance);
+    this.tryAttack(this.player1, this.controls.player1, time);
+    this.tryAttack(this.player2, this.controls.player2, time);
   }
 
   private createHpText(x: number, y: number, playerName: string, color: string): PlayerHp {
@@ -111,7 +120,7 @@ class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5, 0);
 
-    return { body, label: labelText };
+    return { body, label: labelText, facing: 1, nextAttackAt: 0 };
   }
 
   private createControls() {
@@ -124,37 +133,74 @@ class BattleScene extends Phaser.Scene {
     const keys = keyboard.addKeys({
       player1Left: Phaser.Input.Keyboard.KeyCodes.A,
       player1Right: Phaser.Input.Keyboard.KeyCodes.D,
+      player1Attack: Phaser.Input.Keyboard.KeyCodes.W,
+      player1AltAttack: Phaser.Input.Keyboard.KeyCodes.SPACE,
       player2Left: Phaser.Input.Keyboard.KeyCodes.LEFT,
       player2Right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      player2Attack: Phaser.Input.Keyboard.KeyCodes.UP,
+      player2AltAttack: Phaser.Input.Keyboard.KeyCodes.ENTER,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
     return {
       player1: {
         left: keys.player1Left,
         right: keys.player1Right,
+        attacks: [keys.player1Attack, keys.player1AltAttack],
       },
       player2: {
         left: keys.player2Left,
         right: keys.player2Right,
+        attacks: [keys.player2Attack, keys.player2AltAttack],
       },
     };
   }
 
-  private moveFighter(fighter: Fighter, keys: MovementKeys, distance: number) {
-    let nextX = fighter.body.x;
+  private moveFighter(fighter: Fighter, keys: PlayerControls, distance: number) {
+    let horizontalInput = 0;
 
     if (keys.left.isDown) {
-      nextX -= distance;
+      horizontalInput -= 1;
     }
 
     if (keys.right.isDown) {
-      nextX += distance;
+      horizontalInput += 1;
     }
 
-    nextX = Phaser.Math.Clamp(nextX, fighterWidth / 2, gameWidth - fighterWidth / 2);
+    if (horizontalInput !== 0) {
+      fighter.facing = horizontalInput < 0 ? -1 : 1;
+    }
+
+    const nextX = Phaser.Math.Clamp(
+      fighter.body.x + horizontalInput * distance,
+      fighterWidth / 2,
+      gameWidth - fighterWidth / 2,
+    );
 
     fighter.body.setX(nextX);
     fighter.label.setX(nextX);
+  }
+
+  private tryAttack(fighter: Fighter, keys: PlayerControls, time: number) {
+    const wantsAttack = keys.attacks.some((key) => Phaser.Input.Keyboard.JustDown(key));
+
+    if (!wantsAttack || time < fighter.nextAttackAt) {
+      return;
+    }
+
+    fighter.nextAttackAt = time + attackCooldownMs;
+    this.showAttackHitbox(fighter);
+  }
+
+  private showAttackHitbox(fighter: Fighter) {
+    const hitboxX = fighter.body.x + fighter.facing * (fighterWidth / 2 + attackWidth / 2);
+    const hitbox = this.add
+      .rectangle(hitboxX, fighter.body.y, attackWidth, attackHeight, 0xfacc15, 0.35)
+      .setStrokeStyle(2, 0xfef08a)
+      .setDepth(1);
+
+    this.time.delayedCall(attackDurationMs, () => {
+      hitbox.destroy();
+    });
   }
 }
 
