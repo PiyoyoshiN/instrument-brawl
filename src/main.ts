@@ -10,6 +10,7 @@ const attackHeight = 72;
 const attackDurationMs = 180;
 const attackCooldownMs = 240;
 const attackDamage = 10;
+const knockbackDistance = 48;
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
@@ -208,6 +209,7 @@ class BattleScene extends Phaser.Scene {
     if (!hasHit && Phaser.Geom.Intersects.RectangleToRectangle(hitbox.getBounds(), opponent.body.getBounds())) {
       hasHit = true;
       this.applyDamage(opponentHp, attackDamage);
+      this.knockbackFighter(opponent, fighter.facing);
     }
 
     this.time.delayedCall(attackDurationMs, () => {
@@ -218,6 +220,17 @@ class BattleScene extends Phaser.Scene {
   private applyDamage(playerHp: PlayerHp, damage: number) {
     playerHp.current = Math.max(0, playerHp.current - damage);
     playerHp.text.setText(`${playerHp.name} HP: ${playerHp.current}`);
+  }
+
+  private knockbackFighter(fighter: Fighter, direction: -1 | 1) {
+    const nextX = Phaser.Math.Clamp(
+      fighter.body.x + direction * knockbackDistance,
+      fighterWidth / 2,
+      gameWidth - fighterWidth / 2,
+    );
+
+    fighter.body.setX(nextX);
+    fighter.label.setX(nextX);
   }
 }
 
