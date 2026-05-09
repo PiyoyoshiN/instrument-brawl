@@ -4,3 +4,17 @@
 
 ソーセージレジェンズに近い、ネタ寄りの物理バトルを目指します。
 最初はギターとベースだけで、移動・攻撃・HP・勝敗判定のあるMVPを作ります。
+
+## Development
+
+```sh
+npm run dev
+```
+
+Open http://localhost:5173 after the dev server starts.
+
+## Build
+
+```sh
+npm run build
+```
