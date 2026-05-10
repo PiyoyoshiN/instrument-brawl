@@ -33,6 +33,9 @@ const knockbackDecay = 2800;
 const knockbackStopSpeed = 8;
 const hitFlashColor = 0xffffff;
 const hitFlashDurationMs = 120;
+const hpBarWidth = 220;
+const hpBarHeight = 18;
+const hpBarInset = 3;
 
 type FighterStats = {
   maxHp: number;
@@ -68,6 +71,9 @@ type PlayerHp = {
   current: number;
   max: number;
   text: Phaser.GameObjects.Text;
+  barBackground: Phaser.GameObjects.Rectangle;
+  barFill: Phaser.GameObjects.Rectangle;
+  barMaxWidth: number;
 };
 
 type ActiveAttack = {
@@ -103,10 +109,8 @@ class BattleScene extends Phaser.Scene {
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 500, 680, 40, 0x334155);
 
-    this.player1Hp = this.createHpText(32, 24, 'P1', guitarStats.maxHp, '#fed7aa');
-    this.player2Hp = this.createHpText(768, 24, 'P2', bassStats.maxHp, '#bae6fd');
-    this.player1Hp.text.setOrigin(0, 0);
-    this.player2Hp.text.setOrigin(1, 0);
+    this.player1Hp = this.createHpUi(32, 24, 'P1', guitarStats.maxHp, '#fed7aa', 0x22c55e, 0);
+    this.player2Hp = this.createHpUi(768, 24, 'P2', bassStats.maxHp, '#bae6fd', 0x38bdf8, 1);
 
     this.add
       .text(400, 64, 'Instrument Brawl', {
@@ -175,19 +179,41 @@ class BattleScene extends Phaser.Scene {
     this.updateKnockback(this.player2, delta);
   }
 
-  private createHpText(x: number, y: number, playerName: string, maxHp: number, color: string): PlayerHp {
+  private createHpUi(
+    x: number,
+    y: number,
+    playerName: string,
+    maxHp: number,
+    textColor: string,
+    barColor: number,
+    alignX: 0 | 1,
+  ): PlayerHp {
+    const text = this.add
+      .text(x, y, '', {
+        color: textColor,
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+      })
+      .setOrigin(alignX, 0);
+    const barBackground = this.add
+      .rectangle(x, y + 30, hpBarWidth, hpBarHeight, 0x020617)
+      .setOrigin(alignX, 0)
+      .setStrokeStyle(2, 0x475569);
+    const barFillX = alignX === 0 ? x + hpBarInset : x - hpBarInset;
+    const barFill = this.add
+      .rectangle(barFillX, y + 30 + hpBarInset, hpBarWidth - hpBarInset * 2, hpBarHeight - hpBarInset * 2, barColor)
+      .setOrigin(alignX, 0);
     const hp = {
       name: playerName,
       current: maxHp,
       max: maxHp,
-      text: this.add.text(x, y, '', {
-        color,
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
-      }),
+      text,
+      barBackground,
+      barFill,
+      barMaxWidth: hpBarWidth - hpBarInset * 2,
     };
 
-    hp.text.setText(`${playerName} HP: ${hp.current}`);
+    this.updateHpUi(hp);
 
     return hp;
   }
@@ -339,11 +365,14 @@ class BattleScene extends Phaser.Scene {
 
   private applyDamage(playerHp: PlayerHp, damage: number) {
     playerHp.current = Math.max(0, playerHp.current - damage);
-    this.updateHpText(playerHp);
+    this.updateHpUi(playerHp);
   }
 
-  private updateHpText(playerHp: PlayerHp) {
-    playerHp.text.setText(`${playerHp.name} HP: ${playerHp.current}`);
+  private updateHpUi(playerHp: PlayerHp) {
+    const hpRatio = Phaser.Math.Clamp(playerHp.current / playerHp.max, 0, 1);
+
+    playerHp.text.setText(`${playerHp.name} HP: ${playerHp.current}/${playerHp.max}`);
+    playerHp.barFill.setSize(playerHp.barMaxWidth * hpRatio, hpBarHeight - hpBarInset * 2);
   }
 
   private flashFighter(fighter: Fighter) {
@@ -441,8 +470,8 @@ class BattleScene extends Phaser.Scene {
 
     this.player1Hp.current = this.player1Hp.max;
     this.player2Hp.current = this.player2Hp.max;
-    this.updateHpText(this.player1Hp);
-    this.updateHpText(this.player2Hp);
+    this.updateHpUi(this.player1Hp);
+    this.updateHpUi(this.player2Hp);
 
     this.clearActiveAttacks();
     this.resetFighterColor(this.player1);
