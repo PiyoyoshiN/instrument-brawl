@@ -15,6 +15,8 @@ const attackDamage = 10;
 const knockbackSpeed = 520;
 const knockbackDecay = 2800;
 const knockbackStopSpeed = 8;
+const hitFlashColor = 0xffffff;
+const hitFlashDurationMs = 120;
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
@@ -22,6 +24,8 @@ type Fighter = {
   facing: -1 | 1;
   nextAttackAt: number;
   knockbackVelocity: number;
+  normalColor: number;
+  hitFlashEvent?: Phaser.Time.TimerEvent;
 };
 
 type PlayerControls = {
@@ -170,7 +174,7 @@ class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5, 0);
 
-    return { body, label: labelText, facing: 1, nextAttackAt: 0, knockbackVelocity: 0 };
+    return { body, label: labelText, facing: 1, nextAttackAt: 0, knockbackVelocity: 0, normalColor: fillColor };
   }
 
   private createControls() {
@@ -285,6 +289,7 @@ class BattleScene extends Phaser.Scene {
         attack.hasHit = true;
         this.applyDamage(attack.defenderHp, attackDamage);
         this.applyKnockback(attack.defender, attack.attacker.facing);
+        this.flashFighter(attack.defender);
         this.checkMatchResult();
 
         if (this.matchOver) {
@@ -301,6 +306,24 @@ class BattleScene extends Phaser.Scene {
 
   private updateHpText(playerHp: PlayerHp) {
     playerHp.text.setText(`${playerHp.name} HP: ${playerHp.current}`);
+  }
+
+  private flashFighter(fighter: Fighter) {
+    if (this.matchOver) {
+      return;
+    }
+
+    fighter.hitFlashEvent?.remove(false);
+    fighter.body.setFillStyle(hitFlashColor);
+    fighter.hitFlashEvent = this.time.delayedCall(hitFlashDurationMs, () => {
+      this.resetFighterColor(fighter);
+    });
+  }
+
+  private resetFighterColor(fighter: Fighter) {
+    fighter.hitFlashEvent?.remove(false);
+    fighter.hitFlashEvent = undefined;
+    fighter.body.setFillStyle(fighter.normalColor);
   }
 
   private applyKnockback(fighter: Fighter, direction: -1 | 1) {
@@ -361,6 +384,8 @@ class BattleScene extends Phaser.Scene {
   private endMatch(result: string) {
     this.matchOver = true;
     this.clearActiveAttacks();
+    this.resetFighterColor(this.player1);
+    this.resetFighterColor(this.player2);
     this.resultText.setText(result).setVisible(true);
     this.restartHintText.setVisible(true);
   }
@@ -382,6 +407,8 @@ class BattleScene extends Phaser.Scene {
     this.updateHpText(this.player2Hp);
 
     this.clearActiveAttacks();
+    this.resetFighterColor(this.player1);
+    this.resetFighterColor(this.player2);
     this.resetFighter(this.player1, player1StartX, 1);
     this.resetFighter(this.player2, player2StartX, -1);
   }
@@ -400,6 +427,7 @@ class BattleScene extends Phaser.Scene {
     fighter.facing = facing;
     fighter.nextAttackAt = 0;
     fighter.knockbackVelocity = 0;
+    this.resetFighterColor(fighter);
   }
 }
 
