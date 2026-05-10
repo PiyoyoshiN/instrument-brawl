@@ -8,17 +8,25 @@ const guitarStats = {
   moveSpeed: 260,
   attackDamage: 10,
   knockbackSpeed: 520,
+  attackWidth: 104,
+  attackHeight: 52,
+  attackYOffset: -8,
+  attackColor: 0xfacc15,
+  attackStrokeColor: 0xfef08a,
 };
 const bassStats = {
   maxHp: 110,
   moveSpeed: 230,
   attackDamage: 10,
   knockbackSpeed: 600,
+  attackWidth: 88,
+  attackHeight: 86,
+  attackYOffset: 4,
+  attackColor: 0xf59e0b,
+  attackStrokeColor: 0xfef3c7,
 };
 const player1StartX = 240;
 const player2StartX = 560;
-const attackWidth = 96;
-const attackHeight = 72;
 const attackDurationMs = 180;
 const attackCooldownMs = 240;
 const knockbackDecay = 2800;
@@ -31,6 +39,11 @@ type FighterStats = {
   moveSpeed: number;
   attackDamage: number;
   knockbackSpeed: number;
+  attackWidth: number;
+  attackHeight: number;
+  attackYOffset: number;
+  attackColor: number;
+  attackStrokeColor: number;
 };
 
 type Fighter = {
@@ -279,10 +292,11 @@ class BattleScene extends Phaser.Scene {
   }
 
   private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
-    const hitboxX = fighter.body.x + fighter.facing * (fighterWidth / 2 + attackWidth / 2);
+    const hitboxX = fighter.body.x + fighter.facing * (fighterWidth / 2 + fighter.stats.attackWidth / 2);
+    const hitboxY = fighter.body.y + fighter.stats.attackYOffset;
     const hitbox = this.add
-      .rectangle(hitboxX, fighter.body.y, attackWidth, attackHeight, 0xfacc15, 0.35)
-      .setStrokeStyle(2, 0xfef08a)
+      .rectangle(hitboxX, hitboxY, fighter.stats.attackWidth, fighter.stats.attackHeight, fighter.stats.attackColor, 0.35)
+      .setStrokeStyle(2, fighter.stats.attackStrokeColor)
       .setDepth(1);
 
     this.activeAttacks.push({
