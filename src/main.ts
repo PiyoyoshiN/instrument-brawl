@@ -12,13 +12,16 @@ const attackHeight = 72;
 const attackDurationMs = 180;
 const attackCooldownMs = 240;
 const attackDamage = 10;
-const knockbackDistance = 48;
+const knockbackSpeed = 520;
+const knockbackDecay = 2800;
+const knockbackStopSpeed = 8;
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
   label: Phaser.GameObjects.Text;
   facing: -1 | 1;
   nextAttackAt: number;
+  knockbackVelocity: number;
 };
 
 type PlayerControls = {
@@ -136,6 +139,8 @@ class BattleScene extends Phaser.Scene {
     this.tryAttack(this.player1, this.controls.player1, time);
     this.tryAttack(this.player2, this.controls.player2, time);
     this.updateActiveAttacks(time);
+    this.updateKnockback(this.player1, delta);
+    this.updateKnockback(this.player2, delta);
   }
 
   private createHpText(x: number, y: number, playerName: string, color: string): PlayerHp {
@@ -165,7 +170,7 @@ class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5, 0);
 
-    return { body, label: labelText, facing: 1, nextAttackAt: 0 };
+    return { body, label: labelText, facing: 1, nextAttackAt: 0, knockbackVelocity: 0 };
   }
 
   private createControls() {
@@ -279,7 +284,7 @@ class BattleScene extends Phaser.Scene {
       if (Phaser.Geom.Intersects.RectangleToRectangle(attack.hitbox.getBounds(), attack.defender.body.getBounds())) {
         attack.hasHit = true;
         this.applyDamage(attack.defenderHp, attackDamage);
-        this.knockbackFighter(attack.defender, attack.attacker.facing);
+        this.applyKnockback(attack.defender, attack.attacker.facing);
         this.checkMatchResult();
 
         if (this.matchOver) {
@@ -298,15 +303,47 @@ class BattleScene extends Phaser.Scene {
     playerHp.text.setText(`${playerHp.name} HP: ${playerHp.current}`);
   }
 
-  private knockbackFighter(fighter: Fighter, direction: -1 | 1) {
+  private applyKnockback(fighter: Fighter, direction: -1 | 1) {
+    if (this.matchOver) {
+      return;
+    }
+
+    fighter.knockbackVelocity = direction * knockbackSpeed;
+  }
+
+  private updateKnockback(fighter: Fighter, delta: number) {
+    if (this.matchOver) {
+      fighter.knockbackVelocity = 0;
+      return;
+    }
+
+    if (fighter.knockbackVelocity === 0) {
+      return;
+    }
+
+    const deltaSeconds = delta / 1000;
     const nextX = Phaser.Math.Clamp(
-      fighter.body.x + direction * knockbackDistance,
+      fighter.body.x + fighter.knockbackVelocity * deltaSeconds,
       fighterWidth / 2,
       gameWidth - fighterWidth / 2,
     );
 
     fighter.body.setX(nextX);
     fighter.label.setX(nextX);
+
+    if (nextX === fighterWidth / 2 || nextX === gameWidth - fighterWidth / 2) {
+      fighter.knockbackVelocity = 0;
+      return;
+    }
+
+    const decayAmount = knockbackDecay * deltaSeconds;
+
+    if (Math.abs(fighter.knockbackVelocity) <= decayAmount + knockbackStopSpeed) {
+      fighter.knockbackVelocity = 0;
+      return;
+    }
+
+    fighter.knockbackVelocity -= Math.sign(fighter.knockbackVelocity) * decayAmount;
   }
 
   private checkMatchResult() {
@@ -362,6 +399,7 @@ class BattleScene extends Phaser.Scene {
     fighter.label.setX(x);
     fighter.facing = facing;
     fighter.nextAttackAt = 0;
+    fighter.knockbackVelocity = 0;
   }
 }
 
