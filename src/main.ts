@@ -3,20 +3,35 @@ import Phaser from 'phaser';
 const gameWidth = 800;
 const gameHeight = 600;
 const fighterWidth = 72;
-const fighterSpeed = 260;
-const startingHp = 100;
+const guitarStats = {
+  maxHp: 100,
+  moveSpeed: 260,
+  attackDamage: 10,
+  knockbackSpeed: 520,
+};
+const bassStats = {
+  maxHp: 110,
+  moveSpeed: 230,
+  attackDamage: 10,
+  knockbackSpeed: 600,
+};
 const player1StartX = 240;
 const player2StartX = 560;
 const attackWidth = 96;
 const attackHeight = 72;
 const attackDurationMs = 180;
 const attackCooldownMs = 240;
-const attackDamage = 10;
-const knockbackSpeed = 520;
 const knockbackDecay = 2800;
 const knockbackStopSpeed = 8;
 const hitFlashColor = 0xffffff;
 const hitFlashDurationMs = 120;
+
+type FighterStats = {
+  maxHp: number;
+  moveSpeed: number;
+  attackDamage: number;
+  knockbackSpeed: number;
+};
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
@@ -25,6 +40,7 @@ type Fighter = {
   nextAttackAt: number;
   knockbackVelocity: number;
   normalColor: number;
+  stats: FighterStats;
   hitFlashEvent?: Phaser.Time.TimerEvent;
 };
 
@@ -37,6 +53,7 @@ type PlayerControls = {
 type PlayerHp = {
   name: string;
   current: number;
+  max: number;
   text: Phaser.GameObjects.Text;
 };
 
@@ -73,8 +90,8 @@ class BattleScene extends Phaser.Scene {
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 500, 680, 40, 0x334155);
 
-    this.player1Hp = this.createHpText(32, 24, 'P1', '#fed7aa');
-    this.player2Hp = this.createHpText(768, 24, 'P2', '#bae6fd');
+    this.player1Hp = this.createHpText(32, 24, 'P1', guitarStats.maxHp, '#fed7aa');
+    this.player2Hp = this.createHpText(768, 24, 'P2', bassStats.maxHp, '#bae6fd');
     this.player1Hp.text.setOrigin(0, 0);
     this.player2Hp.text.setOrigin(1, 0);
 
@@ -120,8 +137,8 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setVisible(false);
 
-    this.player1 = this.createFighter(player1StartX, 0xf97316, 0xffedd5, 'P1\nElectric Guitar', '#fed7aa');
-    this.player2 = this.createFighter(player2StartX, 0x38bdf8, 0xe0f2fe, 'P2\nBass', '#bae6fd');
+    this.player1 = this.createFighter(player1StartX, 0xf97316, 0xffedd5, 'P1\nElectric Guitar', '#fed7aa', guitarStats);
+    this.player2 = this.createFighter(player2StartX, 0x38bdf8, 0xe0f2fe, 'P2\nBass', '#bae6fd', bassStats);
     this.player2.facing = -1;
     this.controls = this.createControls();
   }
@@ -136,10 +153,8 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
-    const distance = fighterSpeed * (delta / 1000);
-
-    this.moveFighter(this.player1, this.controls.player1, distance);
-    this.moveFighter(this.player2, this.controls.player2, distance);
+    this.moveFighter(this.player1, this.controls.player1, delta);
+    this.moveFighter(this.player2, this.controls.player2, delta);
     this.tryAttack(this.player1, this.controls.player1, time);
     this.tryAttack(this.player2, this.controls.player2, time);
     this.updateActiveAttacks(time);
@@ -147,10 +162,11 @@ class BattleScene extends Phaser.Scene {
     this.updateKnockback(this.player2, delta);
   }
 
-  private createHpText(x: number, y: number, playerName: string, color: string): PlayerHp {
+  private createHpText(x: number, y: number, playerName: string, maxHp: number, color: string): PlayerHp {
     const hp = {
       name: playerName,
-      current: startingHp,
+      current: maxHp,
+      max: maxHp,
       text: this.add.text(x, y, '', {
         color,
         fontFamily: 'system-ui, sans-serif',
@@ -163,7 +179,14 @@ class BattleScene extends Phaser.Scene {
     return hp;
   }
 
-  private createFighter(x: number, fillColor: number, strokeColor: number, label: string, labelColor: string): Fighter {
+  private createFighter(
+    x: number,
+    fillColor: number,
+    strokeColor: number,
+    label: string,
+    labelColor: string,
+    stats: FighterStats,
+  ): Fighter {
     const body = this.add.rectangle(x, 440, fighterWidth, 120, fillColor).setStrokeStyle(3, strokeColor);
     const labelText = this.add
       .text(x, 520, label, {
@@ -174,7 +197,7 @@ class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5, 0);
 
-    return { body, label: labelText, facing: 1, nextAttackAt: 0, knockbackVelocity: 0, normalColor: fillColor };
+    return { body, label: labelText, facing: 1, nextAttackAt: 0, knockbackVelocity: 0, normalColor: fillColor, stats };
   }
 
   private createControls() {
@@ -211,7 +234,8 @@ class BattleScene extends Phaser.Scene {
     };
   }
 
-  private moveFighter(fighter: Fighter, keys: PlayerControls, distance: number) {
+  private moveFighter(fighter: Fighter, keys: PlayerControls, delta: number) {
+    const distance = fighter.stats.moveSpeed * (delta / 1000);
     let horizontalInput = 0;
 
     if (keys.left.isDown) {
@@ -287,8 +311,8 @@ class BattleScene extends Phaser.Scene {
 
       if (Phaser.Geom.Intersects.RectangleToRectangle(attack.hitbox.getBounds(), attack.defender.body.getBounds())) {
         attack.hasHit = true;
-        this.applyDamage(attack.defenderHp, attackDamage);
-        this.applyKnockback(attack.defender, attack.attacker.facing);
+        this.applyDamage(attack.defenderHp, attack.attacker.stats.attackDamage);
+        this.applyKnockback(attack.defender, attack.attacker.facing, attack.attacker.stats.knockbackSpeed);
         this.flashFighter(attack.defender);
         this.checkMatchResult();
 
@@ -326,12 +350,12 @@ class BattleScene extends Phaser.Scene {
     fighter.body.setFillStyle(fighter.normalColor);
   }
 
-  private applyKnockback(fighter: Fighter, direction: -1 | 1) {
+  private applyKnockback(fighter: Fighter, direction: -1 | 1, speed: number) {
     if (this.matchOver) {
       return;
     }
 
-    fighter.knockbackVelocity = direction * knockbackSpeed;
+    fighter.knockbackVelocity = direction * speed;
   }
 
   private updateKnockback(fighter: Fighter, delta: number) {
@@ -401,8 +425,8 @@ class BattleScene extends Phaser.Scene {
     this.resultText.setVisible(false);
     this.restartHintText.setVisible(false);
 
-    this.player1Hp.current = startingHp;
-    this.player2Hp.current = startingHp;
+    this.player1Hp.current = this.player1Hp.max;
+    this.player2Hp.current = this.player2Hp.max;
     this.updateHpText(this.player1Hp);
     this.updateHpText(this.player2Hp);
 
