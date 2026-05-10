@@ -33,6 +33,15 @@ type PlayerHp = {
   text: Phaser.GameObjects.Text;
 };
 
+type ActiveAttack = {
+  attacker: Fighter;
+  defender: Fighter;
+  defenderHp: PlayerHp;
+  hitbox: Phaser.GameObjects.Rectangle;
+  hasHit: boolean;
+  expiresAt: number;
+};
+
 class BattleScene extends Phaser.Scene {
   private player1!: Fighter;
   private player2!: Fighter;
@@ -40,6 +49,7 @@ class BattleScene extends Phaser.Scene {
   private player2Hp!: PlayerHp;
   private resultText!: Phaser.GameObjects.Text;
   private restartHintText!: Phaser.GameObjects.Text;
+  private activeAttacks: ActiveAttack[] = [];
   private matchOver = false;
   private controls?: {
     player1: PlayerControls;
@@ -125,6 +135,7 @@ class BattleScene extends Phaser.Scene {
     this.moveFighter(this.player2, this.controls.player2, distance);
     this.tryAttack(this.player1, this.controls.player1, time);
     this.tryAttack(this.player2, this.controls.player2, time);
+    this.updateActiveAttacks(time);
   }
 
   private createHpText(x: number, y: number, playerName: string, color: string): PlayerHp {
@@ -231,27 +242,51 @@ class BattleScene extends Phaser.Scene {
     const opponent = fighter === this.player1 ? this.player2 : this.player1;
     const opponentHp = fighter === this.player1 ? this.player2Hp : this.player1Hp;
 
-    this.showAttackHitbox(fighter, opponent, opponentHp);
+    this.createAttackHitbox(fighter, opponent, opponentHp, time);
   }
 
-  private showAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp) {
-    let hasHit = false;
+  private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
     const hitboxX = fighter.body.x + fighter.facing * (fighterWidth / 2 + attackWidth / 2);
     const hitbox = this.add
       .rectangle(hitboxX, fighter.body.y, attackWidth, attackHeight, 0xfacc15, 0.35)
       .setStrokeStyle(2, 0xfef08a)
       .setDepth(1);
 
-    if (!hasHit && Phaser.Geom.Intersects.RectangleToRectangle(hitbox.getBounds(), opponent.body.getBounds())) {
-      hasHit = true;
-      this.applyDamage(opponentHp, attackDamage);
-      this.knockbackFighter(opponent, fighter.facing);
-      this.checkMatchResult();
-    }
-
-    this.time.delayedCall(attackDurationMs, () => {
-      hitbox.destroy();
+    this.activeAttacks.push({
+      attacker: fighter,
+      defender: opponent,
+      defenderHp: opponentHp,
+      hitbox,
+      hasHit: false,
+      expiresAt: time + attackDurationMs,
     });
+  }
+
+  private updateActiveAttacks(time: number) {
+    for (let i = this.activeAttacks.length - 1; i >= 0; i -= 1) {
+      const attack = this.activeAttacks[i];
+
+      if (time >= attack.expiresAt) {
+        attack.hitbox.destroy();
+        this.activeAttacks.splice(i, 1);
+        continue;
+      }
+
+      if (this.matchOver || attack.hasHit) {
+        continue;
+      }
+
+      if (Phaser.Geom.Intersects.RectangleToRectangle(attack.hitbox.getBounds(), attack.defender.body.getBounds())) {
+        attack.hasHit = true;
+        this.applyDamage(attack.defenderHp, attackDamage);
+        this.knockbackFighter(attack.defender, attack.attacker.facing);
+        this.checkMatchResult();
+
+        if (this.matchOver) {
+          return;
+        }
+      }
+    }
   }
 
   private applyDamage(playerHp: PlayerHp, damage: number) {
@@ -288,6 +323,7 @@ class BattleScene extends Phaser.Scene {
 
   private endMatch(result: string) {
     this.matchOver = true;
+    this.clearActiveAttacks();
     this.resultText.setText(result).setVisible(true);
     this.restartHintText.setVisible(true);
   }
@@ -308,8 +344,17 @@ class BattleScene extends Phaser.Scene {
     this.updateHpText(this.player1Hp);
     this.updateHpText(this.player2Hp);
 
+    this.clearActiveAttacks();
     this.resetFighter(this.player1, player1StartX, 1);
     this.resetFighter(this.player2, player2StartX, -1);
+  }
+
+  private clearActiveAttacks() {
+    for (const attack of this.activeAttacks) {
+      attack.hitbox.destroy();
+    }
+
+    this.activeAttacks = [];
   }
 
   private resetFighter(fighter: Fighter, x: number, facing: -1 | 1) {
