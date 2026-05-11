@@ -96,10 +96,10 @@ function getFighterDefinition(id: string) {
   return definition;
 }
 
-const player1FighterId = 'electric-guitar';
-const player2FighterId = 'bass';
-const player1FighterDefinition = getFighterDefinition(player1FighterId);
-const player2FighterDefinition = getFighterDefinition(player2FighterId);
+const defaultPlayer1FighterId = 'electric-guitar';
+const defaultPlayer2FighterId = 'bass';
+const defaultPlayer1FighterDefinition = getFighterDefinition(defaultPlayer1FighterId);
+const defaultPlayer2FighterDefinition = getFighterDefinition(defaultPlayer2FighterId);
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
@@ -137,7 +137,12 @@ type ActiveAttack = {
   hasHit: boolean;
   expiresAt: number;
 };
-type ResultSceneData = {
+type BattleSceneData = {
+  player1FighterId?: string;
+  player2FighterId?: string;
+};
+
+type ResultSceneData = BattleSceneData & {
   result?: 'p1' | 'p2' | 'draw';
   displayTitle?: string;
 };
@@ -180,8 +185,8 @@ class HomeScene extends Phaser.Scene {
       .text(
         400,
         260,
-        `P1 ${player1FighterDefinition.displayName}: A / D move, W / Space attack
-P2 ${player2FighterDefinition.displayName}: ← / → move, ↑ / Enter attack`,
+        `P1 ${defaultPlayer1FighterDefinition.displayName}: A / D move, W / Space attack
+P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter attack`,
         {
           align: 'center',
           color: '#e2e8f0',
@@ -220,7 +225,10 @@ P2 ${player2FighterDefinition.displayName}: ← / → move, ↑ / Enter attack`,
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
       this.transitionStarted = true;
-      this.scene.start('BattleScene');
+      this.scene.start('BattleScene', {
+        player1FighterId: defaultPlayer1FighterId,
+        player2FighterId: defaultPlayer2FighterId,
+      });
     }
   }
 }
@@ -231,6 +239,10 @@ class BattleScene extends Phaser.Scene {
   private player1Hp!: PlayerHp;
   private player2Hp!: PlayerHp;
   private activeAttacks: ActiveAttack[] = [];
+  private player1FighterId = defaultPlayer1FighterId;
+  private player2FighterId = defaultPlayer2FighterId;
+  private player1Definition = defaultPlayer1FighterDefinition;
+  private player2Definition = defaultPlayer2FighterDefinition;
   private matchOver = false;
   private matchStarted = false;
   private startPrompt?: Phaser.GameObjects.Text;
@@ -244,6 +256,13 @@ class BattleScene extends Phaser.Scene {
 
   constructor() {
     super('BattleScene');
+  }
+
+  init(data: BattleSceneData = {}) {
+    this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
+    this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
+    this.player1Definition = getFighterDefinition(this.player1FighterId);
+    this.player2Definition = getFighterDefinition(this.player2FighterId);
   }
 
   create() {
@@ -266,8 +285,8 @@ class BattleScene extends Phaser.Scene {
       32,
       24,
       'P1',
-      player1FighterDefinition.stats.maxHp,
-      player1FighterDefinition.labelColor,
+      this.player1Definition.stats.maxHp,
+      this.player1Definition.labelColor,
       0x22c55e,
       0,
     );
@@ -275,8 +294,8 @@ class BattleScene extends Phaser.Scene {
       768,
       24,
       'P2',
-      player2FighterDefinition.stats.maxHp,
-      player2FighterDefinition.labelColor,
+      this.player2Definition.stats.maxHp,
+      this.player2Definition.labelColor,
       0x38bdf8,
       1,
     );
@@ -290,7 +309,7 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 112, `${player1FighterDefinition.displayName} vs ${player2FighterDefinition.displayName}`, {
+      .text(400, 112, `${this.player1Definition.displayName} vs ${this.player2Definition.displayName}`, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -305,8 +324,8 @@ class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.player1 = this.createFighter(player1StartX, 'P1', player1FighterDefinition);
-    this.player2 = this.createFighter(player2StartX, 'P2', player2FighterDefinition);
+    this.player1 = this.createFighter(player1StartX, 'P1', this.player1Definition);
+    this.player2 = this.createFighter(player2StartX, 'P2', this.player2Definition);
     this.player2.facing = -1;
     this.controls = this.createControls();
     this.showMatchStartPrompt();
@@ -641,7 +660,11 @@ class BattleScene extends Phaser.Scene {
     this.player2.knockbackVelocity = 0;
     this.resultTransitionEvent = this.time.delayedCall(matchEndDelayMs, () => {
       this.resultTransitionEvent = undefined;
-      this.scene.start('ResultScene', resultData);
+      this.scene.start('ResultScene', {
+        ...resultData,
+        player1FighterId: this.player1FighterId,
+        player2FighterId: this.player2FighterId,
+      });
     });
   }
 
@@ -678,6 +701,10 @@ class BattleScene extends Phaser.Scene {
 
 class ResultScene extends Phaser.Scene {
   private result = 'Match Over';
+  private player1FighterId = defaultPlayer1FighterId;
+  private player2FighterId = defaultPlayer2FighterId;
+  private player1Definition = defaultPlayer1FighterDefinition;
+  private player2Definition = defaultPlayer2FighterDefinition;
   private restartKey?: Phaser.Input.Keyboard.Key;
   private enterKey?: Phaser.Input.Keyboard.Key;
   private spaceKey?: Phaser.Input.Keyboard.Key;
@@ -689,6 +716,10 @@ class ResultScene extends Phaser.Scene {
   }
 
   init(data: ResultSceneData = {}) {
+    this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
+    this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
+    this.player1Definition = getFighterDefinition(this.player1FighterId);
+    this.player2Definition = getFighterDefinition(this.player2FighterId);
     this.result = data.displayTitle ?? this.getDisplayTitle(data.result);
   }
 
@@ -750,7 +781,10 @@ class ResultScene extends Phaser.Scene {
 
     if (this.restartKey && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
       this.transitionStarted = true;
-      this.scene.start('BattleScene');
+      this.scene.start('BattleScene', {
+        player1FighterId: this.player1FighterId,
+        player2FighterId: this.player2FighterId,
+      });
       return;
     }
 
@@ -766,9 +800,9 @@ class ResultScene extends Phaser.Scene {
   private getDisplayTitle(result?: ResultSceneData['result']) {
     switch (result) {
       case 'p1':
-        return player1FighterDefinition.resultWinText;
+        return this.player1Definition.resultWinText;
       case 'p2':
-        return player2FighterDefinition.resultWinText;
+        return this.player2Definition.resultWinText;
       case 'draw':
         return 'Draw';
       default:
