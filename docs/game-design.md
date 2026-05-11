@@ -6,9 +6,23 @@ Instrument Brawl is a browser-based 1v1 physics fighting game where musical inst
 
 The tone should be funny, loose, and chaotic. The goal is to feel closer to Sausage Legend than a serious competitive fighting game: simple inputs, floppy physics, exaggerated hits, and quick rematches.
 
+## Current playable state
+
+The game is currently a simple local 1v1 prototype built with Phaser, Vite, and TypeScript.
+
+- Matchup: P1 Electric Guitar vs P2 Bass.
+- P1 controls: A / D move, W / Space attack.
+- P2 controls: Left / Right move, Up / Enter attack.
+- R restarts after match end.
+- HP bars and clearer HP text are implemented.
+- Hit flash is implemented.
+- Velocity-based knockback is implemented.
+- Visible-duration attack hit detection is implemented.
+- One attack causes only one hit.
+
 ## Initial MVP
 
-The first MVP should focus on a single playable match with:
+The first MVP focused on a single playable match with:
 
 - Two fighters on one arena.
 - Local 1v1 play on the same keyboard.
@@ -19,21 +33,21 @@ The first MVP should focus on a single playable match with:
 - A clear win/loss result when one fighter reaches 0 HP.
 - Fast restart after a match ends.
 
+This MVP is complete.
+
 ## Basic controls
 
 Keep controls simple so the game is easy to test and tune.
 
 ### Player 1
 
-- Move left.
-- Move right.
-- Attack.
+- A / D: move.
+- W / Space: attack.
 
 ### Player 2
 
-- Move left.
-- Move right.
-- Attack.
+- Left / Right: move.
+- Up / Enter: attack.
 
 Movement should be intentionally a little awkward and physics-based. Attacks should be easy to trigger, but the results can be silly and unpredictable.
 
@@ -42,7 +56,9 @@ Movement should be intentionally a little awkward and physics-based. Attacks sho
 - Each match is 1v1.
 - Both players start with full HP.
 - An attack deals damage when the striking part of the instrument hits the opponent.
-- Hits should apply knockback.
+- One attack can hit only once.
+- Hits should apply velocity-based knockback.
+- Hits briefly flash the damaged fighter.
 - The first player to reduce the opponent's HP to 0 wins.
 - If both fighters reach 0 HP at nearly the same time, show a draw.
 - Matches should be short and restart quickly.
@@ -52,16 +68,30 @@ Movement should be intentionally a little awkward and physics-based. Attacks sho
 ### Electric Guitar
 
 - The first Player 1 character.
-- Uses the guitar body and neck as a floppy striking shape.
+- Faster standard fighter.
+- HP: 100.
+- Move speed: 260.
+- Damage: 10.
+- Knockback speed: 520.
+- Uses a sharper horizontal attack hitbox.
 - Should feel sharp, loud, and slightly wild.
-- Basic attack: swing the guitar forward.
 
 ### Bass
 
 - The first Player 2 character.
-- Heavier and slightly slower than the Electric Guitar.
+- Slower heavier fighter.
+- HP: 110.
+- Move speed: 230.
+- Damage: 10.
+- Knockback speed: 600.
+- Uses a taller/heavier attack hitbox.
 - Should feel weighty and funny when it swings around.
-- Basic attack: swing the bass forward with more force but less speed.
+
+## Next design direction
+
+The next major direction is preparing clearer scene flow, such as HomeScene / BattleScene / ResultScene. This has not been implemented yet.
+
+Keep this step focused on match flow and readability. Do not add character select until the flow is stable.
 
 ## Things not to implement yet
 
