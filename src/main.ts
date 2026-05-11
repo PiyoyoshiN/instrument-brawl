@@ -198,7 +198,7 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       .setOrigin(0.5);
 
     this.add
-      .text(400, 396, 'Press Enter or Space to start', {
+      .text(400, 396, 'Press Enter or Space to select fighters', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '26px',
@@ -225,11 +225,201 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
       this.transitionStarted = true;
+      this.scene.start('CharacterSelectScene');
+    }
+  }
+}
+
+class CharacterSelectScene extends Phaser.Scene {
+  private player1Index = 0;
+  private player2Index = 0;
+  private player1NameText?: Phaser.GameObjects.Text;
+  private player1RoleText?: Phaser.GameObjects.Text;
+  private player2NameText?: Phaser.GameObjects.Text;
+  private player2RoleText?: Phaser.GameObjects.Text;
+  private player1LeftKey?: Phaser.Input.Keyboard.Key;
+  private player1RightKey?: Phaser.Input.Keyboard.Key;
+  private player2LeftKey?: Phaser.Input.Keyboard.Key;
+  private player2RightKey?: Phaser.Input.Keyboard.Key;
+  private enterKey?: Phaser.Input.Keyboard.Key;
+  private spaceKey?: Phaser.Input.Keyboard.Key;
+  private escapeKey?: Phaser.Input.Keyboard.Key;
+  private inputEnabledAt = 0;
+  private transitionStarted = false;
+
+  constructor() {
+    super('CharacterSelectScene');
+  }
+
+  create() {
+    this.inputEnabledAt = this.time.now + 150;
+    this.transitionStarted = false;
+    this.player1Index = this.getFighterIndex(defaultPlayer1FighterId);
+    this.player2Index = this.getFighterIndex(defaultPlayer2FighterId);
+
+    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    this.add.rectangle(400, 300, 700, 430, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    this.add
+      .text(400, 92, 'Character Select', {
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '44px',
+      })
+      .setOrigin(0.5);
+
+    this.add.rectangle(230, 270, 260, 220, 0x0f172a).setStrokeStyle(3, 0xf97316);
+    this.add.rectangle(570, 270, 260, 220, 0x0f172a).setStrokeStyle(3, 0x38bdf8);
+
+    this.add
+      .text(230, 190, 'P1', {
+        color: '#fed7aa',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '28px',
+      })
+      .setOrigin(0.5);
+    this.add
+      .text(570, 190, 'P2', {
+        color: '#bae6fd',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '28px',
+      })
+      .setOrigin(0.5);
+
+    this.player1NameText = this.add
+      .text(230, 250, '', {
+        align: 'center',
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '26px',
+      })
+      .setOrigin(0.5);
+    this.player1RoleText = this.add
+      .text(230, 322, '', {
+        align: 'center',
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '17px',
+        wordWrap: { width: 220 },
+      })
+      .setOrigin(0.5);
+    this.player2NameText = this.add
+      .text(570, 250, '', {
+        align: 'center',
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '26px',
+      })
+      .setOrigin(0.5);
+    this.player2RoleText = this.add
+      .text(570, 322, '', {
+        align: 'center',
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '17px',
+        wordWrap: { width: 220 },
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 430, 'P1: A / D choose    P2: ← / → choose', {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+      })
+      .setOrigin(0.5);
+    this.add
+      .text(400, 478, 'Enter or Space: start battle    Esc: return Home', {
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      })
+      .setOrigin(0.5);
+
+    this.updateSelectionText();
+
+    const keyboard = this.input.keyboard;
+
+    if (!keyboard) {
+      return;
+    }
+
+    this.player1LeftKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.player1RightKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.player2LeftKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    this.player2RightKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.escapeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+  }
+
+  update(time: number) {
+    if (this.transitionStarted || time < this.inputEnabledAt) {
+      return;
+    }
+
+    let selectionChanged = false;
+
+    if (this.player1LeftKey && Phaser.Input.Keyboard.JustDown(this.player1LeftKey)) {
+      this.player1Index = this.getNextFighterIndex(this.player1Index, -1);
+      selectionChanged = true;
+    }
+
+    if (this.player1RightKey && Phaser.Input.Keyboard.JustDown(this.player1RightKey)) {
+      this.player1Index = this.getNextFighterIndex(this.player1Index, 1);
+      selectionChanged = true;
+    }
+
+    if (this.player2LeftKey && Phaser.Input.Keyboard.JustDown(this.player2LeftKey)) {
+      this.player2Index = this.getNextFighterIndex(this.player2Index, -1);
+      selectionChanged = true;
+    }
+
+    if (this.player2RightKey && Phaser.Input.Keyboard.JustDown(this.player2RightKey)) {
+      this.player2Index = this.getNextFighterIndex(this.player2Index, 1);
+      selectionChanged = true;
+    }
+
+    if (selectionChanged) {
+      this.updateSelectionText();
+    }
+
+    if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      this.transitionStarted = true;
+      this.scene.start('HomeScene');
+      return;
+    }
+
+    if (
+      (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
+      (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
+    ) {
+      this.transitionStarted = true;
       this.scene.start('BattleScene', {
-        player1FighterId: defaultPlayer1FighterId,
-        player2FighterId: defaultPlayer2FighterId,
+        player1FighterId: fighterDefinitions[this.player1Index].id,
+        player2FighterId: fighterDefinitions[this.player2Index].id,
       });
     }
+  }
+
+  private getFighterIndex(fighterId: string) {
+    const fighterIndex = fighterDefinitions.findIndex((definition) => definition.id === fighterId);
+
+    return fighterIndex >= 0 ? fighterIndex : 0;
+  }
+
+  private getNextFighterIndex(currentIndex: number, direction: -1 | 1) {
+    return (currentIndex + direction + fighterDefinitions.length) % fighterDefinitions.length;
+  }
+
+  private updateSelectionText() {
+    const player1Definition = fighterDefinitions[this.player1Index];
+    const player2Definition = fighterDefinitions[this.player2Index];
+
+    this.player1NameText?.setText(player1Definition.displayName);
+    this.player1RoleText?.setText(player1Definition.role);
+    this.player2NameText?.setText(player2Definition.displayName);
+    this.player2RoleText?.setText(player2Definition.role);
   }
 }
 
@@ -817,5 +1007,5 @@ new Phaser.Game({
   width: gameWidth,
   height: gameHeight,
   backgroundColor: '#111827',
-  scene: [HomeScene, BattleScene, ResultScene],
+  scene: [HomeScene, CharacterSelectScene, BattleScene, ResultScene],
 });

@@ -8,7 +8,7 @@ Instrument Brawl is currently a simple browser-playable local 1v1 prototype buil
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
 - R starts a rematch from the result screen.
-- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> Battle -> Result scene flow, clearer result screen, scene cleanup safeguards, final Phase 2 balance tuning, organized fighter definitions, a short match-start prompt, a simple fighter registry, and scene-data fighter ID handoff are implemented.
+- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> Battle -> Result scene flow, clearer result screen, scene cleanup safeguards, final Phase 2 balance tuning, organized fighter definitions, a short match-start prompt, a simple fighter registry, scene-data fighter ID handoff, and a minimal character select scene are implemented.
 
 ## Completed
 
@@ -59,6 +59,7 @@ Completed steps:
 - Phase 2.5-2a: BattleScene shows a short Ready/Fight prompt before movement and attacks begin.
 - Phase 2.5-2b: Simple fighter registry is implemented for future expansion.
 - Phase 2.5-3: BattleScene can receive P1/P2 fighter IDs through scene data, preparing for future character select while keeping the current fixed matchup.
+- Phase 2.5-4: A minimal CharacterSelectScene is implemented using the fighter registry; only Electric Guitar and Bass are available for now.
 
 Potential next steps:
 
