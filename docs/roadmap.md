@@ -8,7 +8,7 @@ Instrument Brawl is currently a simple browser-playable local 1v1 prototype buil
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
 - R starts a rematch from the result screen.
-- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> Battle -> Result scene flow, and a clearer result screen are implemented.
+- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> Battle -> Result scene flow, clearer result screen, and scene cleanup safeguards are implemented.
 
 ## Completed
 
@@ -39,6 +39,7 @@ Completed steps:
 - Phase 2-6: Simple HP bars and clearer HP text are implemented.
 - Phase 2-7: Basic HomeScene -> BattleScene -> ResultScene flow is implemented.
 - Phase 2-8: Result screen and match-end readability polish is implemented.
+- Phase 2-9: Scene state reset and cleanup safeguards are implemented.
 
 Current fighter tuning:
 
@@ -49,7 +50,7 @@ Current fighter tuning:
 
 ## Next up: Phase 2.5 / Phase 3 preparation
 
-The basic HomeScene / BattleScene / ResultScene flow and result screen polish are now implemented.
+The basic HomeScene / BattleScene / ResultScene flow, result screen polish, and scene cleanup safeguards are now implemented.
 
 Potential next steps:
 

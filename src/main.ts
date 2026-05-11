@@ -95,6 +95,7 @@ class HomeScene extends Phaser.Scene {
   private enterKey?: Phaser.Input.Keyboard.Key;
   private spaceKey?: Phaser.Input.Keyboard.Key;
   private inputEnabledAt = 0;
+  private transitionStarted = false;
 
   constructor() {
     super('HomeScene');
@@ -102,6 +103,7 @@ class HomeScene extends Phaser.Scene {
 
   create() {
     this.inputEnabledAt = this.time.now + 150;
+    this.transitionStarted = false;
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
@@ -151,7 +153,7 @@ class HomeScene extends Phaser.Scene {
   }
 
   update(time: number) {
-    if (time < this.inputEnabledAt) {
+    if (this.transitionStarted || time < this.inputEnabledAt) {
       return;
     }
 
@@ -159,6 +161,7 @@ class HomeScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      this.transitionStarted = true;
       this.scene.start('BattleScene');
     }
   }
@@ -186,6 +189,7 @@ class BattleScene extends Phaser.Scene {
     this.activeAttacks = [];
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanupBattleScene, this);
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
@@ -524,8 +528,25 @@ class BattleScene extends Phaser.Scene {
     this.player1.knockbackVelocity = 0;
     this.player2.knockbackVelocity = 0;
     this.resultTransitionEvent = this.time.delayedCall(matchEndDelayMs, () => {
+      this.resultTransitionEvent = undefined;
       this.scene.start('ResultScene', resultData);
     });
+  }
+
+  private cleanupBattleScene() {
+    this.clearActiveAttacks();
+    this.resultTransitionEvent?.remove(false);
+    this.resultTransitionEvent = undefined;
+
+    if (this.player1) {
+      this.player1.knockbackVelocity = 0;
+      this.resetFighterColor(this.player1);
+    }
+
+    if (this.player2) {
+      this.player2.knockbackVelocity = 0;
+      this.resetFighterColor(this.player2);
+    }
   }
 
   private clearActiveAttacks() {
@@ -543,17 +564,19 @@ class ResultScene extends Phaser.Scene {
   private enterKey?: Phaser.Input.Keyboard.Key;
   private spaceKey?: Phaser.Input.Keyboard.Key;
   private inputEnabledAt = 0;
+  private transitionStarted = false;
 
   constructor() {
     super('ResultScene');
   }
 
   init(data: ResultSceneData = {}) {
-    this.result = data.displayTitle ?? 'Match Over';
+    this.result = data.displayTitle ?? this.getDisplayTitle(data.result);
   }
 
   create() {
     this.inputEnabledAt = this.time.now + 150;
+    this.transitionStarted = false;
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 300, 620, 360, 0x1e293b).setStrokeStyle(4, 0x475569);
@@ -603,11 +626,12 @@ class ResultScene extends Phaser.Scene {
   }
 
   update(time: number) {
-    if (time < this.inputEnabledAt) {
+    if (this.transitionStarted || time < this.inputEnabledAt) {
       return;
     }
 
     if (this.restartKey && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+      this.transitionStarted = true;
       this.scene.start('BattleScene');
       return;
     }
@@ -616,7 +640,21 @@ class ResultScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      this.transitionStarted = true;
       this.scene.start('HomeScene');
+    }
+  }
+
+  private getDisplayTitle(result?: ResultSceneData['result']) {
+    switch (result) {
+      case 'p1':
+        return 'P1 Electric Guitar Wins';
+      case 'p2':
+        return 'P2 Bass Wins';
+      case 'draw':
+        return 'Draw';
+      default:
+        return 'Match Over';
     }
   }
 }
