@@ -23,3 +23,10 @@ This is a browser-based 1v1 physics fighting game where musical instruments figh
 - Do not add character select yet.
 - Do not add complex combo systems yet.
 - Run npm run build after changes.
+
+## PR titles
+
+- PR titles must include the phase number and concrete task name.
+- After Phase 1, do not use generic scaffold/prototype wording.
+- Good example: `Phase 2-7: Prepare basic scene flow`.
+- Bad examples: `Initial scaffold`, `Initial playable prototype`, `Add Phaser prototype`, `Build tooling and docs`.
