@@ -142,6 +142,8 @@ type BattleSceneData = {
   player2FighterId?: string;
 };
 
+type CharacterSelectSceneData = BattleSceneData;
+
 type ResultSceneData = BattleSceneData & {
   result?: 'p1' | 'p2' | 'draw';
   displayTitle?: string;
@@ -231,6 +233,8 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
 }
 
 class CharacterSelectScene extends Phaser.Scene {
+  private player1FighterId = defaultPlayer1FighterId;
+  private player2FighterId = defaultPlayer2FighterId;
   private player1Index = 0;
   private player2Index = 0;
   private player1NameText?: Phaser.GameObjects.Text;
@@ -251,11 +255,16 @@ class CharacterSelectScene extends Phaser.Scene {
     super('CharacterSelectScene');
   }
 
+  init(data: CharacterSelectSceneData = {}) {
+    this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
+    this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
+  }
+
   create() {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
-    this.player1Index = this.getFighterIndex(defaultPlayer1FighterId);
-    this.player2Index = this.getFighterIndex(defaultPlayer2FighterId);
+    this.player1Index = this.getFighterIndex(this.player1FighterId, defaultPlayer1FighterId);
+    this.player2Index = this.getFighterIndex(this.player2FighterId, defaultPlayer2FighterId);
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 300, 700, 430, 0x1e293b).setStrokeStyle(4, 0x475569);
@@ -402,10 +411,16 @@ class CharacterSelectScene extends Phaser.Scene {
     }
   }
 
-  private getFighterIndex(fighterId: string) {
+  private getFighterIndex(fighterId: string, fallbackFighterId: string) {
     const fighterIndex = fighterDefinitions.findIndex((definition) => definition.id === fighterId);
 
-    return fighterIndex >= 0 ? fighterIndex : 0;
+    if (fighterIndex >= 0) {
+      return fighterIndex;
+    }
+
+    const fallbackIndex = fighterDefinitions.findIndex((definition) => definition.id === fallbackFighterId);
+
+    return fallbackIndex >= 0 ? fallbackIndex : 0;
   }
 
   private getNextFighterIndex(currentIndex: number, direction: -1 | 1) {
@@ -896,6 +911,7 @@ class ResultScene extends Phaser.Scene {
   private player1Definition = defaultPlayer1FighterDefinition;
   private player2Definition = defaultPlayer2FighterDefinition;
   private restartKey?: Phaser.Input.Keyboard.Key;
+  private characterSelectKey?: Phaser.Input.Keyboard.Key;
   private enterKey?: Phaser.Input.Keyboard.Key;
   private spaceKey?: Phaser.Input.Keyboard.Key;
   private inputEnabledAt = 0;
@@ -938,7 +954,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 310, 'Press R to rematch', {
+      .text(400, 296, 'Press R to rematch', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '26px',
@@ -946,7 +962,15 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 360, 'Press Enter or Space to return to Home', {
+      .text(400, 344, 'Press C to change fighters', {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '24px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 392, 'Press Enter or Space to return to Home', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -960,6 +984,7 @@ class ResultScene extends Phaser.Scene {
     }
 
     this.restartKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    this.characterSelectKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
     this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
   }
@@ -972,6 +997,15 @@ class ResultScene extends Phaser.Scene {
     if (this.restartKey && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
       this.transitionStarted = true;
       this.scene.start('BattleScene', {
+        player1FighterId: this.player1FighterId,
+        player2FighterId: this.player2FighterId,
+      });
+      return;
+    }
+
+    if (this.characterSelectKey && Phaser.Input.Keyboard.JustDown(this.characterSelectKey)) {
+      this.transitionStarted = true;
+      this.scene.start('CharacterSelectScene', {
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
       });
