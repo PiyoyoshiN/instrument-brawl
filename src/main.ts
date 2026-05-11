@@ -83,8 +83,23 @@ const bassDefinition: FighterDefinition = {
   resultWinText: 'P2 Bass Wins',
 };
 
-const player1FighterDefinition = electricGuitarDefinition;
-const player2FighterDefinition = bassDefinition;
+const fighterDefinitions = [electricGuitarDefinition, bassDefinition];
+const fighterDefinitionById = new Map(fighterDefinitions.map((definition) => [definition.id, definition]));
+
+function getFighterDefinition(id: string) {
+  const definition = fighterDefinitionById.get(id);
+
+  if (!definition) {
+    throw new Error(`Unknown fighter definition: ${id}`);
+  }
+
+  return definition;
+}
+
+const player1FighterId = 'electric-guitar';
+const player2FighterId = 'bass';
+const player1FighterDefinition = getFighterDefinition(player1FighterId);
+const player2FighterDefinition = getFighterDefinition(player2FighterId);
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
