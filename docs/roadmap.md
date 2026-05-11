@@ -8,7 +8,7 @@ Instrument Brawl is currently a simple browser-playable local 1v1 prototype buil
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
 - R starts a rematch from the result screen.
-- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> Battle -> Result scene flow, clearer result screen, scene cleanup safeguards, and final Phase 2 balance tuning are implemented.
+- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> Battle -> Result scene flow, clearer result screen, scene cleanup safeguards, final Phase 2 balance tuning, and organized fighter definitions are implemented.
 
 ## Completed
 
@@ -25,7 +25,7 @@ Goal: make the smallest fun version of the game.
 - Add a quick restart flow.
 - Add GitHub Pages deployment setup.
 
-### Phase 2: better game feel — in progress
+### Phase 2: better game feel — complete
 
 Goal: make the prototype funnier and more satisfying without making it complex.
 
@@ -49,9 +49,13 @@ Current fighter tuning:
 | P1 Electric Guitar | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
 | P2 Bass | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
 
-## Next up: Phase 2.5 / Phase 3 preparation
+## Phase 2.5: future expansion preparation — in progress
 
-The basic HomeScene / BattleScene / ResultScene flow, result screen polish, scene cleanup safeguards, and final Phase 2 balance tuning are now implemented.
+Goal: prepare the project for future expansion without adding new gameplay content yet.
+
+Completed steps:
+
+- Phase 2.5-1: Fighter definitions are organized for safer future character expansion.
 
 Potential next steps:
 

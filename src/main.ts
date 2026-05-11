@@ -3,28 +3,6 @@ import Phaser from 'phaser';
 const gameWidth = 800;
 const gameHeight = 600;
 const fighterWidth = 72;
-const guitarStats = {
-  maxHp: 100,
-  moveSpeed: 260,
-  attackDamage: 10,
-  knockbackSpeed: 520,
-  attackWidth: 104,
-  attackHeight: 52,
-  attackYOffset: -8,
-  attackColor: 0xfacc15,
-  attackStrokeColor: 0xfef08a,
-};
-const bassStats = {
-  maxHp: 105,
-  moveSpeed: 230,
-  attackDamage: 10,
-  knockbackSpeed: 580,
-  attackWidth: 88,
-  attackHeight: 86,
-  attackYOffset: 4,
-  attackColor: 0xf59e0b,
-  attackStrokeColor: 0xfef3c7,
-};
 const player1StartX = 240;
 const player2StartX = 560;
 const attackDurationMs = 180;
@@ -50,6 +28,62 @@ type FighterStats = {
   attackStrokeColor: number;
 };
 
+type FighterDefinition = {
+  id: string;
+  displayName: string;
+  role: string;
+  stats: FighterStats;
+  bodyColor: number;
+  bodyStrokeColor: number;
+  labelColor: string;
+  resultWinText: string;
+};
+
+const electricGuitarDefinition: FighterDefinition = {
+  id: 'electric-guitar',
+  displayName: 'Electric Guitar',
+  role: 'Faster standard fighter with a sharper horizontal attack hitbox',
+  stats: {
+    maxHp: 100,
+    moveSpeed: 260,
+    attackDamage: 10,
+    knockbackSpeed: 520,
+    attackWidth: 104,
+    attackHeight: 52,
+    attackYOffset: -8,
+    attackColor: 0xfacc15,
+    attackStrokeColor: 0xfef08a,
+  },
+  bodyColor: 0xf97316,
+  bodyStrokeColor: 0xffedd5,
+  labelColor: '#fed7aa',
+  resultWinText: 'P1 Electric Guitar Wins',
+};
+
+const bassDefinition: FighterDefinition = {
+  id: 'bass',
+  displayName: 'Bass',
+  role: 'Slower heavier fighter with a taller/heavier attack hitbox',
+  stats: {
+    maxHp: 105,
+    moveSpeed: 230,
+    attackDamage: 10,
+    knockbackSpeed: 580,
+    attackWidth: 88,
+    attackHeight: 86,
+    attackYOffset: 4,
+    attackColor: 0xf59e0b,
+    attackStrokeColor: 0xfef3c7,
+  },
+  bodyColor: 0x38bdf8,
+  bodyStrokeColor: 0xe0f2fe,
+  labelColor: '#bae6fd',
+  resultWinText: 'P2 Bass Wins',
+};
+
+const player1FighterDefinition = electricGuitarDefinition;
+const player2FighterDefinition = bassDefinition;
+
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
   label: Phaser.GameObjects.Text;
@@ -58,6 +92,7 @@ type Fighter = {
   knockbackVelocity: number;
   normalColor: number;
   stats: FighterStats;
+  definition: FighterDefinition;
   hitFlashEvent?: Phaser.Time.TimerEvent;
 };
 
@@ -125,13 +160,19 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 260, 'P1 Electric Guitar: A / D move, W / Space attack\nP2 Bass: ← / → move, ↑ / Enter attack', {
-        align: 'center',
-        color: '#e2e8f0',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
-        lineSpacing: 10,
-      })
+      .text(
+        400,
+        260,
+        `P1 ${player1FighterDefinition.displayName}: A / D move, W / Space attack
+P2 ${player2FighterDefinition.displayName}: ← / → move, ↑ / Enter attack`,
+        {
+          align: 'center',
+          color: '#e2e8f0',
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: '20px',
+          lineSpacing: 10,
+        },
+      )
       .setOrigin(0.5);
 
     this.add
@@ -195,8 +236,24 @@ class BattleScene extends Phaser.Scene {
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 500, 680, 40, 0x334155);
 
-    this.player1Hp = this.createHpUi(32, 24, 'P1', guitarStats.maxHp, '#fed7aa', 0x22c55e, 0);
-    this.player2Hp = this.createHpUi(768, 24, 'P2', bassStats.maxHp, '#bae6fd', 0x38bdf8, 1);
+    this.player1Hp = this.createHpUi(
+      32,
+      24,
+      'P1',
+      player1FighterDefinition.stats.maxHp,
+      player1FighterDefinition.labelColor,
+      0x22c55e,
+      0,
+    );
+    this.player2Hp = this.createHpUi(
+      768,
+      24,
+      'P2',
+      player2FighterDefinition.stats.maxHp,
+      player2FighterDefinition.labelColor,
+      0x38bdf8,
+      1,
+    );
 
     this.add
       .text(400, 64, 'Instrument Brawl', {
@@ -207,7 +264,7 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 112, 'Electric Guitar vs Bass', {
+      .text(400, 112, `${player1FighterDefinition.displayName} vs ${player2FighterDefinition.displayName}`, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -222,8 +279,8 @@ class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.player1 = this.createFighter(player1StartX, 0xf97316, 0xffedd5, 'P1\nElectric Guitar', '#fed7aa', guitarStats);
-    this.player2 = this.createFighter(player2StartX, 0x38bdf8, 0xe0f2fe, 'P2\nBass', '#bae6fd', bassStats);
+    this.player1 = this.createFighter(player1StartX, 'P1', player1FighterDefinition);
+    this.player2 = this.createFighter(player2StartX, 'P2', player2FighterDefinition);
     this.player2.facing = -1;
     this.controls = this.createControls();
   }
@@ -285,25 +342,29 @@ class BattleScene extends Phaser.Scene {
     return hp;
   }
 
-  private createFighter(
-    x: number,
-    fillColor: number,
-    strokeColor: number,
-    label: string,
-    labelColor: string,
-    stats: FighterStats,
-  ): Fighter {
-    const body = this.add.rectangle(x, 440, fighterWidth, 120, fillColor).setStrokeStyle(3, strokeColor);
+  private createFighter(x: number, playerLabel: string, definition: FighterDefinition): Fighter {
+    const body = this.add
+      .rectangle(x, 440, fighterWidth, 120, definition.bodyColor)
+      .setStrokeStyle(3, definition.bodyStrokeColor);
     const labelText = this.add
-      .text(x, 520, label, {
+      .text(x, 520, `${playerLabel}\n${definition.displayName}`, {
         align: 'center',
-        color: labelColor,
+        color: definition.labelColor,
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
       .setOrigin(0.5, 0);
 
-    return { body, label: labelText, facing: 1, nextAttackAt: 0, knockbackVelocity: 0, normalColor: fillColor, stats };
+    return {
+      body,
+      label: labelText,
+      facing: 1,
+      nextAttackAt: 0,
+      knockbackVelocity: 0,
+      normalColor: definition.bodyColor,
+      stats: definition.stats,
+      definition,
+    };
   }
 
   private createControls() {
@@ -512,8 +573,8 @@ class BattleScene extends Phaser.Scene {
     const resultData = player1Defeated && player2Defeated
       ? { result: 'draw' as const, displayTitle: 'Draw' }
       : player1Defeated
-        ? { result: 'p2' as const, displayTitle: 'P2 Bass Wins' }
-        : { result: 'p1' as const, displayTitle: 'P1 Electric Guitar Wins' };
+        ? { result: 'p2' as const, displayTitle: this.player2.definition.resultWinText }
+        : { result: 'p1' as const, displayTitle: this.player1.definition.resultWinText };
 
     this.endMatch(resultData);
   }
@@ -648,9 +709,9 @@ class ResultScene extends Phaser.Scene {
   private getDisplayTitle(result?: ResultSceneData['result']) {
     switch (result) {
       case 'p1':
-        return 'P1 Electric Guitar Wins';
+        return player1FighterDefinition.resultWinText;
       case 'p2':
-        return 'P2 Bass Wins';
+        return player2FighterDefinition.resultWinText;
       case 'draw':
         return 'Draw';
       default:
