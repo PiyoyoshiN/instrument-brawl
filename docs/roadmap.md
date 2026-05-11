@@ -7,8 +7,8 @@ Instrument Brawl is currently a simple browser-playable local 1v1 prototype buil
 - Matchup: P1 Electric Guitar vs P2 Bass.
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
-- R restarts after match end.
-- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, and restart flow are implemented.
+- R starts a rematch from the result screen.
+- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, and Home -> Battle -> Result scene flow are implemented.
 
 ## Completed
 
@@ -37,6 +37,7 @@ Completed steps:
 - Phase 2-4: Electric Guitar and Bass have light stat differences.
 - Phase 2-5: Guitar and Bass have different attack hitbox sizes/shapes.
 - Phase 2-6: Simple HP bars and clearer HP text are implemented.
+- Phase 2-7: Basic HomeScene -> BattleScene -> ResultScene flow is implemented.
 
 Current fighter tuning:
 
@@ -47,14 +48,11 @@ Current fighter tuning:
 
 ## Next up: Phase 2.5 / Phase 3 preparation
 
-The next major direction is preparing clearer scene and match flow. This has not been implemented yet.
+The basic HomeScene / BattleScene / ResultScene flow is now implemented.
 
 Potential next steps:
 
-- Add a simple HomeScene.
-- Keep or refine BattleScene separation as needed.
-- Add a simple ResultScene.
-- Improve match start, match end, and rematch flow.
+- Refine match start, match end, and rematch flow.
 - Possibly add simple BGM/SE later.
 - Still do not add character select until the flow is stable.
 

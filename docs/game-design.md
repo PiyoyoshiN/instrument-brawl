@@ -13,12 +13,13 @@ The game is currently a simple local 1v1 prototype built with Phaser, Vite, and 
 - Matchup: P1 Electric Guitar vs P2 Bass.
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
-- R restarts after match end.
+- R starts a rematch from the result screen.
 - HP bars and clearer HP text are implemented.
 - Hit flash is implemented.
 - Velocity-based knockback is implemented.
 - Visible-duration attack hit detection is implemented.
 - One attack causes only one hit.
+- HomeScene, BattleScene, and ResultScene provide a simple match flow.
 
 ## Initial MVP
 
@@ -89,9 +90,7 @@ Movement should be intentionally a little awkward and physics-based. Attacks sho
 
 ## Next design direction
 
-The next major direction is preparing clearer scene flow, such as HomeScene / BattleScene / ResultScene. This has not been implemented yet.
-
-Keep this step focused on match flow and readability. Do not add character select until the flow is stable.
+The basic HomeScene / BattleScene / ResultScene flow is in place. The next design direction is refining match flow and readability without adding character select yet.
 
 ## Things not to implement yet
 

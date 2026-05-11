@@ -84,20 +84,94 @@ type ActiveAttack = {
   hasHit: boolean;
   expiresAt: number;
 };
+type ResultSceneData = {
+  result?: string;
+};
+
+
+class HomeScene extends Phaser.Scene {
+  private enterKey?: Phaser.Input.Keyboard.Key;
+  private spaceKey?: Phaser.Input.Keyboard.Key;
+  private inputEnabledAt = 0;
+
+  constructor() {
+    super('HomeScene');
+  }
+
+  create() {
+    this.inputEnabledAt = this.time.now + 150;
+
+    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    this.add
+      .text(400, 120, 'Instrument Brawl', {
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '48px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 178, 'A silly local 1v1 instrument fighting prototype', {
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 260, 'P1 Electric Guitar: A / D move, W / Space attack\nP2 Bass: ← / → move, ↑ / Enter attack', {
+        align: 'center',
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+        lineSpacing: 10,
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 396, 'Press Enter or Space to start', {
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '26px',
+      })
+      .setOrigin(0.5);
+
+    const keyboard = this.input.keyboard;
+
+    if (!keyboard) {
+      return;
+    }
+
+    this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+  }
+
+  update(time: number) {
+    if (time < this.inputEnabledAt) {
+      return;
+    }
+
+    if (
+      (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
+      (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
+    ) {
+      this.scene.start('BattleScene');
+    }
+  }
+}
 
 class BattleScene extends Phaser.Scene {
   private player1!: Fighter;
   private player2!: Fighter;
   private player1Hp!: PlayerHp;
   private player2Hp!: PlayerHp;
-  private resultText!: Phaser.GameObjects.Text;
-  private restartHintText!: Phaser.GameObjects.Text;
   private activeAttacks: ActiveAttack[] = [];
   private matchOver = false;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
-    restart: Phaser.Input.Keyboard.Key;
   };
 
   constructor() {
@@ -105,6 +179,9 @@ class BattleScene extends Phaser.Scene {
   }
 
   create() {
+    this.matchOver = false;
+    this.activeAttacks = [];
+
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 500, 680, 40, 0x334155);
@@ -129,30 +206,12 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 150, 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack    R restart', {
+      .text(400, 150, 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack', {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
       .setOrigin(0.5);
-
-    this.resultText = this.add
-      .text(400, 250, '', {
-        color: '#ffffff',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '48px',
-      })
-      .setOrigin(0.5)
-      .setVisible(false);
-
-    this.restartHintText = this.add
-      .text(400, 306, 'Press R to restart', {
-        color: '#cbd5e1',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '22px',
-      })
-      .setOrigin(0.5)
-      .setVisible(false);
 
     this.player1 = this.createFighter(player1StartX, 0xf97316, 0xffedd5, 'P1\nElectric Guitar', '#fed7aa', guitarStats);
     this.player2 = this.createFighter(player2StartX, 0x38bdf8, 0xe0f2fe, 'P2\nBass', '#bae6fd', bassStats);
@@ -166,7 +225,6 @@ class BattleScene extends Phaser.Scene {
     }
 
     if (this.matchOver) {
-      this.tryRestart();
       return;
     }
 
@@ -255,7 +313,6 @@ class BattleScene extends Phaser.Scene {
       player2Right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
       player2Attack: Phaser.Input.Keyboard.KeyCodes.UP,
       player2AltAttack: Phaser.Input.Keyboard.KeyCodes.ENTER,
-      restart: Phaser.Input.Keyboard.KeyCodes.R,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
     return {
@@ -269,7 +326,6 @@ class BattleScene extends Phaser.Scene {
         right: keys.player2Right,
         attacks: [keys.player2Attack, keys.player2AltAttack],
       },
-      restart: keys.restart,
     };
   }
 
@@ -453,31 +509,7 @@ class BattleScene extends Phaser.Scene {
     this.clearActiveAttacks();
     this.resetFighterColor(this.player1);
     this.resetFighterColor(this.player2);
-    this.resultText.setText(result).setVisible(true);
-    this.restartHintText.setVisible(true);
-  }
-
-  private tryRestart() {
-    if (this.controls && Phaser.Input.Keyboard.JustDown(this.controls.restart)) {
-      this.restartMatch();
-    }
-  }
-
-  private restartMatch() {
-    this.matchOver = false;
-    this.resultText.setVisible(false);
-    this.restartHintText.setVisible(false);
-
-    this.player1Hp.current = this.player1Hp.max;
-    this.player2Hp.current = this.player2Hp.max;
-    this.updateHpUi(this.player1Hp);
-    this.updateHpUi(this.player2Hp);
-
-    this.clearActiveAttacks();
-    this.resetFighterColor(this.player1);
-    this.resetFighterColor(this.player2);
-    this.resetFighter(this.player1, player1StartX, 1);
-    this.resetFighter(this.player2, player2StartX, -1);
+    this.scene.start('ResultScene', { result });
   }
 
   private clearActiveAttacks() {
@@ -498,11 +530,86 @@ class BattleScene extends Phaser.Scene {
   }
 }
 
+class ResultScene extends Phaser.Scene {
+  private result = 'Match Over';
+  private restartKey?: Phaser.Input.Keyboard.Key;
+  private enterKey?: Phaser.Input.Keyboard.Key;
+  private spaceKey?: Phaser.Input.Keyboard.Key;
+  private inputEnabledAt = 0;
+
+  constructor() {
+    super('ResultScene');
+  }
+
+  init(data: ResultSceneData = {}) {
+    this.result = data.result ?? 'Match Over';
+  }
+
+  create() {
+    this.inputEnabledAt = this.time.now + 150;
+
+    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    this.add.rectangle(400, 300, 620, 360, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    this.add
+      .text(400, 182, this.result, {
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '56px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 288, 'Press R to rematch', {
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '26px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 338, 'Press Enter or Space to return to Home', {
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      })
+      .setOrigin(0.5);
+
+    const keyboard = this.input.keyboard;
+
+    if (!keyboard) {
+      return;
+    }
+
+    this.restartKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+  }
+
+  update(time: number) {
+    if (time < this.inputEnabledAt) {
+      return;
+    }
+
+    if (this.restartKey && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+      this.scene.start('BattleScene');
+      return;
+    }
+
+    if (
+      (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
+      (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
+    ) {
+      this.scene.start('HomeScene');
+    }
+  }
+}
+
 new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
   width: gameWidth,
   height: gameHeight,
   backgroundColor: '#111827',
-  scene: BattleScene,
+  scene: [HomeScene, BattleScene, ResultScene],
 });

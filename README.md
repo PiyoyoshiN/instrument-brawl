@@ -9,7 +9,7 @@
 
 - Browser-playable Phaser + Vite + TypeScript game.
 - Local 1v1 battle: P1 Electric Guitar vs P2 Bass.
-- Movement, attacks, HP, damage, velocity-based knockback, hit flash, win/draw detection, and R restart are implemented.
+- Movement, attacks, HP, damage, velocity-based knockback, hit flash, win/draw detection, and a simple Home -> Battle -> Result scene flow are implemented.
 - Attack hit detection stays active during the visible attack duration, but one attack can hit only once.
 - Simple HP bars and clearer HP text are implemented.
 
@@ -27,7 +27,7 @@
 
 ### Match
 
-- R: restart after match end
+- R: rematch from the result screen
 
 ## Current fighters
 
@@ -38,7 +38,7 @@
 
 ## Next up
 
-The next major direction is preparing clearer match flow with scene structure such as HomeScene / BattleScene / ResultScene. This has not been implemented yet, and character select should wait until the flow is stable.
+The next major direction is refining the basic scene flow and match-end presentation. Character select should wait until the flow is stable.
 
 ## Play online
 
