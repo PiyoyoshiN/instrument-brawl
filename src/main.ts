@@ -33,6 +33,7 @@ const knockbackDecay = 2800;
 const knockbackStopSpeed = 8;
 const hitFlashColor = 0xffffff;
 const hitFlashDurationMs = 120;
+const matchEndDelayMs = 450;
 const hpBarWidth = 220;
 const hpBarHeight = 18;
 const hpBarInset = 3;
@@ -85,7 +86,8 @@ type ActiveAttack = {
   expiresAt: number;
 };
 type ResultSceneData = {
-  result?: string;
+  result?: 'p1' | 'p2' | 'draw';
+  displayTitle?: string;
 };
 
 
@@ -169,6 +171,7 @@ class BattleScene extends Phaser.Scene {
   private player2Hp!: PlayerHp;
   private activeAttacks: ActiveAttack[] = [];
   private matchOver = false;
+  private resultTransitionEvent?: Phaser.Time.TimerEvent;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
@@ -181,6 +184,8 @@ class BattleScene extends Phaser.Scene {
   create() {
     this.matchOver = false;
     this.activeAttacks = [];
+    this.resultTransitionEvent?.remove(false);
+    this.resultTransitionEvent = undefined;
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
@@ -500,16 +505,27 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
-    const result = player1Defeated && player2Defeated ? 'Draw' : player1Defeated ? 'P2 Wins' : 'P1 Wins';
-    this.endMatch(result);
+    const resultData = player1Defeated && player2Defeated
+      ? { result: 'draw' as const, displayTitle: 'Draw' }
+      : player1Defeated
+        ? { result: 'p2' as const, displayTitle: 'P2 Bass Wins' }
+        : { result: 'p1' as const, displayTitle: 'P1 Electric Guitar Wins' };
+
+    this.endMatch(resultData);
   }
 
-  private endMatch(result: string) {
+  private endMatch(resultData: ResultSceneData) {
+    if (this.matchOver) {
+      return;
+    }
+
     this.matchOver = true;
     this.clearActiveAttacks();
-    this.resetFighterColor(this.player1);
-    this.resetFighterColor(this.player2);
-    this.scene.start('ResultScene', { result });
+    this.player1.knockbackVelocity = 0;
+    this.player2.knockbackVelocity = 0;
+    this.resultTransitionEvent = this.time.delayedCall(matchEndDelayMs, () => {
+      this.scene.start('ResultScene', resultData);
+    });
   }
 
   private clearActiveAttacks() {
@@ -518,15 +534,6 @@ class BattleScene extends Phaser.Scene {
     }
 
     this.activeAttacks = [];
-  }
-
-  private resetFighter(fighter: Fighter, x: number, facing: -1 | 1) {
-    fighter.body.setX(x);
-    fighter.label.setX(x);
-    fighter.facing = facing;
-    fighter.nextAttackAt = 0;
-    fighter.knockbackVelocity = 0;
-    this.resetFighterColor(fighter);
   }
 }
 
@@ -542,7 +549,7 @@ class ResultScene extends Phaser.Scene {
   }
 
   init(data: ResultSceneData = {}) {
-    this.result = data.result ?? 'Match Over';
+    this.result = data.displayTitle ?? 'Match Over';
   }
 
   create() {
@@ -552,15 +559,24 @@ class ResultScene extends Phaser.Scene {
     this.add.rectangle(400, 300, 620, 360, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(400, 182, this.result, {
-        color: '#ffffff',
+      .text(400, 132, 'Match Result', {
+        color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '56px',
+        fontSize: '24px',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(400, 288, 'Press R to rematch', {
+      .text(400, 210, this.result, {
+        align: 'center',
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '48px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 310, 'Press R to rematch', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '26px',
@@ -568,7 +584,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 338, 'Press Enter or Space to return to Home', {
+      .text(400, 360, 'Press Enter or Space to return to Home', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
