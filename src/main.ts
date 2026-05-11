@@ -12,6 +12,8 @@ const knockbackStopSpeed = 8;
 const hitFlashColor = 0xffffff;
 const hitFlashDurationMs = 120;
 const matchEndDelayMs = 450;
+const matchStartDelayMs = 900;
+const matchStartFightTextDurationMs = 450;
 const hpBarWidth = 220;
 const hpBarHeight = 18;
 const hpBarInset = 3;
@@ -215,6 +217,10 @@ class BattleScene extends Phaser.Scene {
   private player2Hp!: PlayerHp;
   private activeAttacks: ActiveAttack[] = [];
   private matchOver = false;
+  private matchStarted = false;
+  private startPrompt?: Phaser.GameObjects.Text;
+  private startCountdownEvent?: Phaser.Time.TimerEvent;
+  private startPromptClearEvent?: Phaser.Time.TimerEvent;
   private resultTransitionEvent?: Phaser.Time.TimerEvent;
   private controls?: {
     player1: PlayerControls;
@@ -227,7 +233,12 @@ class BattleScene extends Phaser.Scene {
 
   create() {
     this.matchOver = false;
+    this.matchStarted = false;
     this.activeAttacks = [];
+    this.startCountdownEvent?.remove(false);
+    this.startCountdownEvent = undefined;
+    this.startPromptClearEvent?.remove(false);
+    this.startPromptClearEvent = undefined;
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanupBattleScene, this);
@@ -283,6 +294,7 @@ class BattleScene extends Phaser.Scene {
     this.player2 = this.createFighter(player2StartX, 'P2', player2FighterDefinition);
     this.player2.facing = -1;
     this.controls = this.createControls();
+    this.showMatchStartPrompt();
   }
 
   update(time: number, delta: number) {
@@ -290,7 +302,7 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
-    if (this.matchOver) {
+    if (this.matchOver || !this.matchStarted) {
       return;
     }
 
@@ -301,6 +313,30 @@ class BattleScene extends Phaser.Scene {
     this.updateActiveAttacks(time);
     this.updateKnockback(this.player1, delta);
     this.updateKnockback(this.player2, delta);
+  }
+
+  private showMatchStartPrompt() {
+    this.startPrompt?.destroy();
+    this.startPrompt = this.add
+      .text(400, 292, 'Ready?', {
+        align: 'center',
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '56px',
+      })
+      .setOrigin(0.5)
+      .setDepth(5);
+
+    this.startCountdownEvent = this.time.delayedCall(matchStartDelayMs, () => {
+      this.matchStarted = true;
+      this.startCountdownEvent = undefined;
+      this.startPrompt?.setText('Fight!');
+      this.startPromptClearEvent = this.time.delayedCall(matchStartFightTextDurationMs, () => {
+        this.startPrompt?.destroy();
+        this.startPrompt = undefined;
+        this.startPromptClearEvent = undefined;
+      });
+    });
   }
 
   private createHpUi(
@@ -596,6 +632,12 @@ class BattleScene extends Phaser.Scene {
 
   private cleanupBattleScene() {
     this.clearActiveAttacks();
+    this.startCountdownEvent?.remove(false);
+    this.startCountdownEvent = undefined;
+    this.startPromptClearEvent?.remove(false);
+    this.startPromptClearEvent = undefined;
+    this.startPrompt?.destroy();
+    this.startPrompt = undefined;
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
 

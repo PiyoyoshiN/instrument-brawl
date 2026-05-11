@@ -20,6 +20,7 @@ The game is currently a simple local 1v1 prototype built with Phaser, Vite, and 
 - Visible-duration attack hit detection is implemented.
 - One attack causes only one hit.
 - HomeScene, BattleScene, and ResultScene provide a simple match flow.
+- BattleScene shows a short Ready/Fight prompt before fighters can move or attack.
 
 ## Initial MVP
 
@@ -63,6 +64,7 @@ Movement should be intentionally a little awkward and physics-based. Attacks sho
 - The first player to reduce the opponent's HP to 0 wins.
 - If both fighters reach 0 HP at nearly the same time, show a draw.
 - Matches should be short and restart quickly.
+- Starting a match should briefly pause on a clear Ready/Fight prompt so both players know when control begins.
 
 ## First playable characters
 
