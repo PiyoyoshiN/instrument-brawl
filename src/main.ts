@@ -15,10 +15,10 @@ const guitarStats = {
   attackStrokeColor: 0xfef08a,
 };
 const bassStats = {
-  maxHp: 110,
+  maxHp: 105,
   moveSpeed: 230,
   attackDamage: 10,
-  knockbackSpeed: 600,
+  knockbackSpeed: 580,
   attackWidth: 88,
   attackHeight: 86,
   attackYOffset: 4,

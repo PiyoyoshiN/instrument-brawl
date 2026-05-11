@@ -8,7 +8,7 @@ Instrument Brawl is currently a simple browser-playable local 1v1 prototype buil
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
 - R starts a rematch from the result screen.
-- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> Battle -> Result scene flow, clearer result screen, and scene cleanup safeguards are implemented.
+- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> Battle -> Result scene flow, clearer result screen, scene cleanup safeguards, and final Phase 2 balance tuning are implemented.
 
 ## Completed
 
@@ -40,17 +40,18 @@ Completed steps:
 - Phase 2-7: Basic HomeScene -> BattleScene -> ResultScene flow is implemented.
 - Phase 2-8: Result screen and match-end readability polish is implemented.
 - Phase 2-9: Scene state reset and cleanup safeguards are implemented.
+- Phase 2-10: Final Guitar and Bass balance tuning is implemented.
 
 Current fighter tuning:
 
 | Fighter | HP | Move speed | Damage | Knockback speed | Attack style |
 | --- | ---: | ---: | ---: | ---: | --- |
 | P1 Electric Guitar | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
-| P2 Bass | 110 | 230 | 10 | 600 | Slower heavier fighter with a taller/heavier attack hitbox |
+| P2 Bass | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
 
 ## Next up: Phase 2.5 / Phase 3 preparation
 
-The basic HomeScene / BattleScene / ResultScene flow, result screen polish, and scene cleanup safeguards are now implemented.
+The basic HomeScene / BattleScene / ResultScene flow, result screen polish, scene cleanup safeguards, and final Phase 2 balance tuning are now implemented.
 
 Potential next steps:
 

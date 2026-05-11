@@ -81,10 +81,10 @@ Movement should be intentionally a little awkward and physics-based. Attacks sho
 
 - The first Player 2 character.
 - Slower heavier fighter.
-- HP: 110.
+- HP: 105.
 - Move speed: 230.
 - Damage: 10.
-- Knockback speed: 600.
+- Knockback speed: 580.
 - Uses a taller/heavier attack hitbox.
 - Should feel weighty and funny when it swings around.
 

@@ -34,7 +34,7 @@
 | Fighter | HP | Move speed | Damage | Knockback speed | Attack style |
 | --- | ---: | ---: | ---: | ---: | --- |
 | P1 Electric Guitar | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
-| P2 Bass | 110 | 230 | 10 | 600 | Slower heavier fighter with a taller/heavier attack hitbox |
+| P2 Bass | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
 
 ## Next up
 
