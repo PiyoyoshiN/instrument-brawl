@@ -203,7 +203,7 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       .text(400, 396, 'Press Enter or Space to select fighters', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '26px',
+        fontSize: '24px',
       })
       .setOrigin(0.5);
 
@@ -239,8 +239,10 @@ class CharacterSelectScene extends Phaser.Scene {
   private player2Index = 0;
   private player1NameText?: Phaser.GameObjects.Text;
   private player1RoleText?: Phaser.GameObjects.Text;
+  private player1StatsText?: Phaser.GameObjects.Text;
   private player2NameText?: Phaser.GameObjects.Text;
   private player2RoleText?: Phaser.GameObjects.Text;
+  private player2StatsText?: Phaser.GameObjects.Text;
   private player1LeftKey?: Phaser.Input.Keyboard.Key;
   private player1RightKey?: Phaser.Input.Keyboard.Key;
   private player2LeftKey?: Phaser.Input.Keyboard.Key;
@@ -267,7 +269,7 @@ class CharacterSelectScene extends Phaser.Scene {
     this.player2Index = this.getFighterIndex(this.player2FighterId, defaultPlayer2FighterId);
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
-    this.add.rectangle(400, 300, 700, 430, 0x1e293b).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(400, 300, 700, 460, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
       .text(400, 92, 'Character Select', {
@@ -277,68 +279,101 @@ class CharacterSelectScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add.rectangle(230, 270, 260, 220, 0x0f172a).setStrokeStyle(3, 0xf97316);
-    this.add.rectangle(570, 270, 260, 220, 0x0f172a).setStrokeStyle(3, 0x38bdf8);
+    this.add.rectangle(230, 292, 270, 290, 0x0f172a).setStrokeStyle(4, 0xf97316);
+    this.add.rectangle(570, 292, 270, 290, 0x0f172a).setStrokeStyle(4, 0x38bdf8);
 
     this.add
-      .text(230, 190, 'P1', {
+      .text(230, 168, 'P1', {
         color: '#fed7aa',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '28px',
       })
       .setOrigin(0.5);
     this.add
-      .text(570, 190, 'P2', {
+      .text(570, 168, 'P2', {
         color: '#bae6fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '28px',
       })
       .setOrigin(0.5);
 
+    this.add
+      .text(230, 206, 'Selected', {
+        color: '#fed7aa',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '16px',
+      })
+      .setOrigin(0.5);
+    this.add
+      .text(570, 206, 'Selected', {
+        color: '#bae6fd',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '16px',
+      })
+      .setOrigin(0.5);
+
     this.player1NameText = this.add
-      .text(230, 250, '', {
+      .text(230, 242, '', {
         align: 'center',
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '26px',
+        fontSize: '24px',
       })
       .setOrigin(0.5);
     this.player1RoleText = this.add
-      .text(230, 322, '', {
+      .text(230, 306, '', {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '17px',
-        wordWrap: { width: 220 },
+        fontSize: '15px',
+        wordWrap: { width: 230 },
+      })
+      .setOrigin(0.5);
+    this.player1StatsText = this.add
+      .text(230, 382, '', {
+        align: 'left',
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '16px',
+        lineSpacing: 4,
       })
       .setOrigin(0.5);
     this.player2NameText = this.add
-      .text(570, 250, '', {
+      .text(570, 242, '', {
         align: 'center',
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '26px',
+        fontSize: '24px',
       })
       .setOrigin(0.5);
     this.player2RoleText = this.add
-      .text(570, 322, '', {
+      .text(570, 306, '', {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '17px',
-        wordWrap: { width: 220 },
+        fontSize: '15px',
+        wordWrap: { width: 230 },
+      })
+      .setOrigin(0.5);
+    this.player2StatsText = this.add
+      .text(570, 382, '', {
+        align: 'left',
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '16px',
+        lineSpacing: 4,
       })
       .setOrigin(0.5);
 
     this.add
-      .text(400, 430, 'P1: A / D choose    P2: ← / → choose', {
+      .text(400, 474, 'P1: A / D choose    P2: ← / → choose', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
       })
       .setOrigin(0.5);
     this.add
-      .text(400, 478, 'Enter or Space: start battle    Esc: return Home', {
+      .text(400, 520, 'Enter or Space: start battle    Esc: return Home', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -431,10 +466,19 @@ class CharacterSelectScene extends Phaser.Scene {
     const player1Definition = fighterDefinitions[this.player1Index];
     const player2Definition = fighterDefinitions[this.player2Index];
 
-    this.player1NameText?.setText(player1Definition.displayName);
+    this.player1NameText?.setText(`< ${player1Definition.displayName} >`);
     this.player1RoleText?.setText(player1Definition.role);
-    this.player2NameText?.setText(player2Definition.displayName);
+    this.player1StatsText?.setText(this.getStatsText(player1Definition));
+    this.player2NameText?.setText(`< ${player2Definition.displayName} >`);
     this.player2RoleText?.setText(player2Definition.role);
+    this.player2StatsText?.setText(this.getStatsText(player2Definition));
+  }
+
+  private getStatsText(definition: FighterDefinition) {
+    return `HP: ${definition.stats.maxHp}
+Speed: ${definition.stats.moveSpeed}
+Damage: ${definition.stats.attackDamage}
+Knockback: ${definition.stats.knockbackSpeed}`;
   }
 }
 
