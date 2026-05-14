@@ -37,6 +37,12 @@ Phase 3 is the core band 4 fighters phase.
 - Do minimal body-shape preparation first if needed.
 - Keep it simple: no special systems, no projectiles, and no complex combos for the first implementation.
 
+## Phase 3-3 select polish notes
+
+- CharacterSelectScene shows all three implemented fighters through the existing registry.
+- P1 and P2 can cycle independently through Electric Guitar, Bass, and Drum Sticks.
+- Same-character selection remains allowed.
+
 ## Balance philosophy
 
 Instrument Brawl should not over-normalize fighters. The goal is funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.

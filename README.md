@@ -3,7 +3,7 @@
 楽器同士が殴り合う1vs1物理格闘ゲームです。
 
 ソーセージレジェンズに近い、ネタ寄りの物理バトルを目指します。
-現在は Electric Guitar と Bass から選べる、シンプルなローカル1v1プロトタイプです。
+現在は Electric Guitar、Bass、Drum Sticks から選べる、シンプルなローカル1v1プロトタイプです。
 
 ## Current status
 

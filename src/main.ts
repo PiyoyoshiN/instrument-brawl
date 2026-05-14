@@ -259,9 +259,11 @@ class CharacterSelectScene extends Phaser.Scene {
   private player1Index = 0;
   private player2Index = 0;
   private player1NameText?: Phaser.GameObjects.Text;
+  private player1IndexText?: Phaser.GameObjects.Text;
   private player1RoleText?: Phaser.GameObjects.Text;
   private player1StatsText?: Phaser.GameObjects.Text;
   private player2NameText?: Phaser.GameObjects.Text;
+  private player2IndexText?: Phaser.GameObjects.Text;
   private player2RoleText?: Phaser.GameObjects.Text;
   private player2StatsText?: Phaser.GameObjects.Text;
   private player1LeftKey?: Phaser.Input.Keyboard.Key;
@@ -297,6 +299,14 @@ class CharacterSelectScene extends Phaser.Scene {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '44px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 128, `${fighterDefinitions.length} fighters available`, {
+        color: '#94a3b8',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
       })
       .setOrigin(0.5);
 
@@ -341,8 +351,16 @@ class CharacterSelectScene extends Phaser.Scene {
         fontSize: '24px',
       })
       .setOrigin(0.5);
+    this.player1IndexText = this.add
+      .text(230, 272, '', {
+        align: 'center',
+        color: '#fed7aa',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '14px',
+      })
+      .setOrigin(0.5);
     this.player1RoleText = this.add
-      .text(230, 306, '', {
+      .text(230, 318, '', {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
@@ -367,8 +385,16 @@ class CharacterSelectScene extends Phaser.Scene {
         fontSize: '24px',
       })
       .setOrigin(0.5);
+    this.player2IndexText = this.add
+      .text(570, 272, '', {
+        align: 'center',
+        color: '#bae6fd',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '14px',
+      })
+      .setOrigin(0.5);
     this.player2RoleText = this.add
-      .text(570, 306, '', {
+      .text(570, 318, '', {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
@@ -488,9 +514,11 @@ class CharacterSelectScene extends Phaser.Scene {
     const player2Definition = fighterDefinitions[this.player2Index];
 
     this.player1NameText?.setText(`< ${player1Definition.displayName} >`);
+    this.player1IndexText?.setText(`Fighter ${this.player1Index + 1} / ${fighterDefinitions.length}`);
     this.player1RoleText?.setText(player1Definition.role);
     this.player1StatsText?.setText(this.getStatsText(player1Definition));
     this.player2NameText?.setText(`< ${player2Definition.displayName} >`);
+    this.player2IndexText?.setText(`Fighter ${this.player2Index + 1} / ${fighterDefinitions.length}`);
     this.player2RoleText?.setText(player2Definition.role);
     this.player2StatsText?.setText(this.getStatsText(player2Definition));
   }
