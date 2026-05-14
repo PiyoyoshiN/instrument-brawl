@@ -83,7 +83,28 @@ const bassDefinition: FighterDefinition = {
   resultWinText: 'P2 Bass Wins',
 };
 
-const fighterDefinitions = [electricGuitarDefinition, bassDefinition];
+const drumSticksDefinition: FighterDefinition = {
+  id: 'drum-sticks',
+  displayName: 'Drum Sticks',
+  role: 'Lightweight / Fast / Short reach',
+  stats: {
+    maxHp: 80,
+    moveSpeed: 310,
+    attackDamage: 8,
+    knockbackSpeed: 420,
+    attackWidth: 64,
+    attackHeight: 44,
+    attackYOffset: -4,
+    attackColor: 0xfde047,
+    attackStrokeColor: 0xfef9c3,
+  },
+  bodyColor: 0xd97706,
+  bodyStrokeColor: 0xfef3c7,
+  labelColor: '#fde68a',
+  resultWinText: 'Drum Sticks Wins',
+};
+
+const fighterDefinitions = [electricGuitarDefinition, bassDefinition, drumSticksDefinition];
 const fighterDefinitionById = new Map(fighterDefinitions.map((definition) => [definition.id, definition]));
 
 function getFighterDefinition(id: string) {

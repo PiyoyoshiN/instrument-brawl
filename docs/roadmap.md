@@ -4,7 +4,7 @@
 
 Instrument Brawl is currently a simple browser-playable local 1v1 prototype built with Phaser, Vite, and TypeScript.
 
-- Current selectable fighters: Electric Guitar and Bass.
+- Current selectable fighters: Electric Guitar, Bass, and Drum Sticks.
 - CharacterSelectScene lets both players choose from the fighter registry.
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
@@ -50,6 +50,7 @@ Current implemented fighter tuning:
 | --- | ---: | ---: | ---: | ---: | --- |
 | Electric Guitar | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
 | Bass | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
+| Drum Sticks | 80 | 310 | 8 | 420 | Lightweight fast fighter with short reach |
 
 ### Phase 2.5: future expansion preparation — complete
 
@@ -61,7 +62,7 @@ Completed steps:
 - Phase 2.5-2a: BattleScene shows a short Ready/Fight prompt before movement and attacks begin.
 - Phase 2.5-2b: Simple fighter registry is implemented for future expansion.
 - Phase 2.5-3: BattleScene can receive P1/P2 fighter IDs through scene data.
-- Phase 2.5-4: A minimal CharacterSelectScene is implemented using the fighter registry; only Electric Guitar and Bass are available for now.
+- Phase 2.5-4: A minimal CharacterSelectScene is implemented using the fighter registry and initially exposed Electric Guitar and Bass.
 - Phase 2.5-5: ResultScene can return to CharacterSelectScene with selected fighter IDs preserved.
 - Phase 2.5-6: CharacterSelectScene readability is improved with clearer selected fighter labels and lightweight HP, Speed, Damage, and Knockback stat display.
 
@@ -73,8 +74,12 @@ Core band fighters:
 
 1. Electric Guitar — already implemented.
 2. Bass — already implemented.
-3. Drum Sticks — first new Phase 3 fighter.
+3. Drum Sticks — implemented in Phase 3-2.
 4. Keyboard — add after Drum Sticks and any minimal body-shape preparation if needed.
+
+Completed steps:
+
+- Phase 3-2: Drum Sticks is implemented as a lightweight fast fighter with short reach, low HP, lower damage, and lower knockback.
 
 Phase 3 rules:
 

@@ -11,7 +11,7 @@ The tone should be funny, loose, and chaotic. The goal is to feel closer to Saus
 The game is currently a simple local 1v1 prototype built with Phaser, Vite, and TypeScript.
 
 - CharacterSelectScene lets players choose from the current fighter registry.
-- Current selectable fighters: Electric Guitar and Bass.
+- Current selectable fighters: Electric Guitar, Bass, and Drum Sticks.
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
 - R starts a rematch from the result screen.
@@ -109,10 +109,14 @@ Phase 3 is the core band 4 fighters phase.
 
 ### Drum Sticks
 
-- First new Phase 3 fighter.
-- Should be added before Keyboard.
-- Should feel quick, pokey, and percussive.
-- Must not introduce multi-hit yet; one attack must still hit only once.
+- Implemented in Phase 3-2.
+- Lightweight, fast, short-reach fighter.
+- HP: 80.
+- Move speed: 310.
+- Damage: 8.
+- Knockback speed: 420.
+- Should feel quick, pokey, and fragile.
+- Does not introduce multi-hit; one attack still hits only once.
 
 ### Keyboard
 

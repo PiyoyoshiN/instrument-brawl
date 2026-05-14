@@ -9,7 +9,7 @@
 
 - Browser-playable Phaser + Vite + TypeScript game.
 - Local 1v1 battle with Home -> Character Select -> Battle -> Result scene flow.
-- CharacterSelectScene uses the fighter registry and currently offers Electric Guitar and Bass.
+- CharacterSelectScene uses the fighter registry and currently offers Electric Guitar, Bass, and Drum Sticks.
 - Movement, attacks, HP, damage, velocity-based knockback, hit flash, win/draw detection, Ready/Fight start prompt, rematch, and return-to-character-select flow are implemented.
 - Attack hit detection stays active during the visible attack duration, but one attack can hit only once.
 - Phase 2.5 preparation is complete; Phase 3 is the core band fighter expansion.
@@ -42,7 +42,7 @@
 | --- | --- | ---: | ---: | ---: | ---: | --- |
 | Electric Guitar | Implemented | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
 | Bass | Implemented | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
-| Drum Sticks | Phase 3 next | TBD | TBD | TBD | TBD | First new core band fighter; must keep one-hit-per-attack behavior |
+| Drum Sticks | Implemented | 80 | 310 | 8 | 420 | Lightweight fast fighter with short reach |
 | Keyboard | Phase 3 later | TBD | TBD | TBD | TBD | Add after Drum Sticks and any minimal body-shape preparation if needed |
 
 ## Phase 3 direction
@@ -51,8 +51,8 @@ Phase 3 is the core band 4 fighters phase:
 
 1. Electric Guitar — already implemented.
 2. Bass — already implemented.
-3. Drum Sticks — first new Phase 3 fighter.
-4. Keyboard — add after Drum Sticks and any minimal body-shape preparation if needed.
+3. Drum Sticks — implemented in Phase 3-2.
+4. Keyboard — next core band fighter after any minimal body-shape preparation if needed.
 
 Instrument Brawl should not over-normalize fighters. The goal is funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.
 

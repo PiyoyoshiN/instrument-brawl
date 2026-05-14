@@ -2,12 +2,13 @@
 
 ## Current roster status
 
-The game currently has two implemented fighters in the fighter registry:
+The game currently has three implemented fighters in the fighter registry:
 
 | Fighter | Status | Notes |
 | --- | --- | --- |
 | Electric Guitar | Implemented | Faster standard fighter with a sharper horizontal attack hitbox. |
 | Bass | Implemented | Slower heavier fighter with a taller/heavier attack hitbox. |
+| Drum Sticks | Implemented | Lightweight fast fighter with short reach. |
 
 ## Phase 3 core band target
 
@@ -15,18 +16,20 @@ Phase 3 is the core band 4 fighters phase.
 
 1. Electric Guitar — already implemented.
 2. Bass — already implemented.
-3. Drum Sticks — first new Phase 3 fighter.
+3. Drum Sticks — implemented in Phase 3-2.
 4. Keyboard — add after Drum Sticks and any minimal body-shape preparation if needed.
 
 ## Phase 3 fighter notes
 
 ### Drum Sticks
 
-- First new Phase 3 fighter.
-- Should feel quick, pokey, and percussive.
-- Must not introduce multi-hit yet.
+- Implemented in Phase 3-2.
+- Starting stats: HP 80, move speed 310, damage 8, knockback speed 420.
+- Attack shape: width 64, height 44, Y offset -4.
+- Feels lightweight, fast, pokey, and fragile.
+- Does not introduce multi-hit.
 - One attack must still hit only once.
-- Keep implementation small and compatible with the existing fighter registry and CharacterSelectScene.
+- Uses the existing fighter registry and CharacterSelectScene.
 
 ### Keyboard
 
