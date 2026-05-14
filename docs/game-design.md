@@ -10,16 +10,18 @@ The tone should be funny, loose, and chaotic. The goal is to feel closer to Saus
 
 The game is currently a simple local 1v1 prototype built with Phaser, Vite, and TypeScript.
 
-- Matchup: P1 Electric Guitar vs P2 Bass.
+- CharacterSelectScene lets players choose from the current fighter registry.
+- Current selectable fighters: Electric Guitar and Bass.
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
 - R starts a rematch from the result screen.
+- C returns from ResultScene to CharacterSelectScene with selected fighter IDs preserved.
 - HP bars and clearer HP text are implemented.
 - Hit flash is implemented.
 - Velocity-based knockback is implemented.
 - Visible-duration attack hit detection is implemented.
 - One attack causes only one hit.
-- HomeScene, BattleScene, and ResultScene provide a simple match flow.
+- HomeScene, CharacterSelectScene, BattleScene, and ResultScene provide the current match flow.
 - BattleScene shows a short Ready/Fight prompt before fighters can move or attack.
 
 ## Initial MVP
@@ -41,12 +43,19 @@ This MVP is complete.
 
 Keep controls simple so the game is easy to test and tune.
 
-### Player 1
+### Character select
+
+- P1 A / D: choose fighter.
+- P2 Left / Right: choose fighter.
+- Enter / Space: start battle.
+- Escape: return Home.
+
+### Player 1 battle controls
 
 - A / D: move.
 - W / Space: attack.
 
-### Player 2
+### Player 2 battle controls
 
 - Left / Right: move.
 - Up / Enter: attack.
@@ -66,11 +75,19 @@ Movement should be intentionally a little awkward and physics-based. Attacks sho
 - Matches should be short and restart quickly.
 - Starting a match should briefly pause on a clear Ready/Fight prompt so both players know when control begins.
 
-## First playable characters
+## Balance philosophy
+
+Instrument Brawl should not over-normalize fighters. The goal is funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.
+
+Balance changes should keep the game easy to understand and quick to rematch. A fighter can be weird, awkward, or lopsided if that personality is readable and funny.
+
+## Core band fighters
+
+Phase 3 is the core band 4 fighters phase.
 
 ### Electric Guitar
 
-- The first Player 1 character.
+- Already implemented.
 - Faster standard fighter.
 - HP: 100.
 - Move speed: 260.
@@ -81,7 +98,7 @@ Movement should be intentionally a little awkward and physics-based. Attacks sho
 
 ### Bass
 
-- The first Player 2 character.
+- Already implemented.
 - Slower heavier fighter.
 - HP: 105.
 - Move speed: 230.
@@ -90,18 +107,44 @@ Movement should be intentionally a little awkward and physics-based. Attacks sho
 - Uses a taller/heavier attack hitbox.
 - Should feel weighty and funny when it swings around.
 
-## Next design direction
+### Drum Sticks
 
-The basic HomeScene / BattleScene / ResultScene flow is in place. The next design direction is refining match flow and readability without adding character select yet.
+- First new Phase 3 fighter.
+- Should be added before Keyboard.
+- Should feel quick, pokey, and percussive.
+- Must not introduce multi-hit yet; one attack must still hit only once.
 
-## Things not to implement yet
+### Keyboard
 
+- Add after Drum Sticks.
+- If needed, do minimal body-shape preparation before adding Keyboard.
+- Should eventually broaden the core band without adding complex systems.
+
+## Later candidate ideas
+
+These are later ideas only, not near-term Phase 3 fighters:
+
+- Microphone.
+- Piano.
+- Bongo.
+- Tambourine.
+
+## Not Phase 3 tasks
+
+- CPU opponent.
+- BGM/SE.
+- Story.
+- Encyclopedia.
+- Progression.
+- Specials.
+- Items.
+- Timer.
+- Rounds.
+- Retire button.
 - Online multiplayer.
-- Character select.
-- More than the initial Electric Guitar vs Bass matchup.
 - Complex combo systems.
 - Ranked or competitive systems.
 - Advanced AI opponents.
 - Large story mode.
-- Progression, unlocks, or inventory.
+- Unlocks or inventory.
 - Final art, animation, or sound polish.

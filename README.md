@@ -3,42 +3,60 @@
 楽器同士が殴り合う1vs1物理格闘ゲームです。
 
 ソーセージレジェンズに近い、ネタ寄りの物理バトルを目指します。
-現在はギターとベースだけで戦う、シンプルなローカル1v1プロトタイプです。
+現在は Electric Guitar と Bass から選べる、シンプルなローカル1v1プロトタイプです。
 
 ## Current status
 
 - Browser-playable Phaser + Vite + TypeScript game.
-- Local 1v1 battle: P1 Electric Guitar vs P2 Bass.
-- Movement, attacks, HP, damage, velocity-based knockback, hit flash, win/draw detection, and a simple Home -> Battle -> Result scene flow are implemented.
+- Local 1v1 battle with Home -> Character Select -> Battle -> Result scene flow.
+- CharacterSelectScene uses the fighter registry and currently offers Electric Guitar and Bass.
+- Movement, attacks, HP, damage, velocity-based knockback, hit flash, win/draw detection, Ready/Fight start prompt, rematch, and return-to-character-select flow are implemented.
 - Attack hit detection stays active during the visible attack duration, but one attack can hit only once.
-- Simple HP bars and clearer HP text are implemented.
+- Phase 2.5 preparation is complete; Phase 3 is the core band fighter expansion.
 
 ## Controls
 
-### Player 1: Electric Guitar
+### Character select
 
-- A / D: move
-- W / Space: attack
+- P1 A / D: choose fighter
+- P2 Left / Right: choose fighter
+- Enter / Space: start battle
+- Escape: return Home
 
-### Player 2: Bass
+### Battle
 
-- Left / Right: move
-- Up / Enter: attack
+- P1 A / D: move
+- P1 W / Space: attack
+- P2 Left / Right: move
+- P2 Up / Enter: attack
 
-### Match
+### Result
 
-- R: rematch from the result screen
+- R: rematch with the same fighters
+- C: return to character select with the same fighters selected
+- Enter / Space: return Home
 
 ## Current fighters
 
-| Fighter | HP | Move speed | Damage | Knockback speed | Attack style |
-| --- | ---: | ---: | ---: | ---: | --- |
-| P1 Electric Guitar | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
-| P2 Bass | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
+| Fighter | Status | HP | Move speed | Damage | Knockback speed | Attack style |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| Electric Guitar | Implemented | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
+| Bass | Implemented | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
+| Drum Sticks | Phase 3 next | TBD | TBD | TBD | TBD | First new core band fighter; must keep one-hit-per-attack behavior |
+| Keyboard | Phase 3 later | TBD | TBD | TBD | TBD | Add after Drum Sticks and any minimal body-shape preparation if needed |
 
-## Next up
+## Phase 3 direction
 
-The next major direction is refining the basic scene flow and match-end presentation. Character select should wait until the flow is stable.
+Phase 3 is the core band 4 fighters phase:
+
+1. Electric Guitar — already implemented.
+2. Bass — already implemented.
+3. Drum Sticks — first new Phase 3 fighter.
+4. Keyboard — add after Drum Sticks and any minimal body-shape preparation if needed.
+
+Instrument Brawl should not over-normalize fighters. The goal is funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.
+
+Later candidate ideas, not near-term Phase 3 tasks: Microphone, Piano, Bongo, and Tambourine.
 
 ## Play online
 

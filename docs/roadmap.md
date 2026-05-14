@@ -4,11 +4,13 @@
 
 Instrument Brawl is currently a simple browser-playable local 1v1 prototype built with Phaser, Vite, and TypeScript.
 
-- Matchup: P1 Electric Guitar vs P2 Bass.
+- Current selectable fighters: Electric Guitar and Bass.
+- CharacterSelectScene lets both players choose from the fighter registry.
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
 - R starts a rematch from the result screen.
-- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> Battle -> Result scene flow, clearer result screen, scene cleanup safeguards, final Phase 2 balance tuning, organized fighter definitions, a short match-start prompt, a simple fighter registry, scene-data fighter ID handoff, a minimal character select scene, a result-screen route back to character select, and character select readability/stat display polish are implemented.
+- C returns from ResultScene to CharacterSelectScene with selected fighter IDs preserved.
+- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> CharacterSelect -> Battle -> Result scene flow, clearer result screen, scene cleanup safeguards, final Phase 2 balance tuning, fighter registry, scene-data fighter ID handoff, minimal character select, and character select readability/stat display polish are implemented.
 
 ## Completed
 
@@ -18,7 +20,7 @@ Goal: make the smallest fun version of the game.
 
 - Create a browser-playable local 1v1 match.
 - Add one arena.
-- Add Electric Guitar and Bass as fixed fighters.
+- Add Electric Guitar and Bass as fixed starter fighters.
 - Add simple movement for both players.
 - Add one attack for each fighter.
 - Add HP, damage, knockback, and win/loss detection.
@@ -42,14 +44,14 @@ Completed steps:
 - Phase 2-9: Scene state reset and cleanup safeguards are implemented.
 - Phase 2-10: Final Guitar and Bass balance tuning is implemented.
 
-Current fighter tuning:
+Current implemented fighter tuning:
 
 | Fighter | HP | Move speed | Damage | Knockback speed | Attack style |
 | --- | ---: | ---: | ---: | ---: | --- |
-| P1 Electric Guitar | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
-| P2 Bass | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
+| Electric Guitar | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
+| Bass | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
 
-## Phase 2.5: future expansion preparation — in progress
+### Phase 2.5: future expansion preparation — complete
 
 Goal: prepare the project for future expansion without adding new gameplay content yet.
 
@@ -58,31 +60,41 @@ Completed steps:
 - Phase 2.5-1: Fighter definitions are organized for safer future character expansion.
 - Phase 2.5-2a: BattleScene shows a short Ready/Fight prompt before movement and attacks begin.
 - Phase 2.5-2b: Simple fighter registry is implemented for future expansion.
-- Phase 2.5-3: BattleScene can receive P1/P2 fighter IDs through scene data, preparing for future character select while keeping the current fixed matchup.
+- Phase 2.5-3: BattleScene can receive P1/P2 fighter IDs through scene data.
 - Phase 2.5-4: A minimal CharacterSelectScene is implemented using the fighter registry; only Electric Guitar and Bass are available for now.
 - Phase 2.5-5: ResultScene can return to CharacterSelectScene with selected fighter IDs preserved.
 - Phase 2.5-6: CharacterSelectScene readability is improved with clearer selected fighter labels and lightweight HP, Speed, Damage, and Knockback stat display.
 
-Potential next steps:
+## Phase 3: core band 4 fighters
 
-- Refine match end and rematch flow.
-- Possibly add simple BGM/SE later.
-- Keep character select minimal until the flow is stable.
+Goal: expand the selectable roster to the core band set while keeping each fighter simple, funny, and readable.
 
-## Phase 3: character expansion
+Core band fighters:
 
-Goal: add variety after the core match is fun and the basic flow is stable.
+1. Electric Guitar — already implemented.
+2. Bass — already implemented.
+3. Drum Sticks — first new Phase 3 fighter.
+4. Keyboard — add after Drum Sticks and any minimal body-shape preparation if needed.
 
-- Add more instrument fighters one at a time.
-- Give each new instrument a simple physical personality.
-- Keep each character easy to understand.
-- Revisit balance only enough to keep matches funny and playable.
+Phase 3 rules:
+
+- Drum Sticks must not introduce multi-hit yet; one attack must still hit only once.
+- Do not over-normalize fighters. Aim for funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.
+- Add fighters one at a time and keep the CharacterSelectScene usable with the existing registry.
+- CPU, BGM/SE, story, encyclopedia, progression, specials, items, timer, rounds, and retire button are not Phase 3 tasks.
+
+Later candidate ideas only, not near-term Phase 3 fighters:
+
+- Microphone.
+- Piano.
+- Bongo.
+- Tambourine.
 
 ## Phase 4: presentation and polish
 
 Goal: make the game feel complete once the core loop works.
 
-- Add improved menus.
+- Add improved menus only after the Phase 3 core band direction is stable.
 - Add better arena visuals.
 - Add music and stronger sound design.
 - Add simple effects for hits, wins, and restarts.
@@ -91,11 +103,17 @@ Goal: make the game feel complete once the core loop works.
 ## Features to avoid for now
 
 - Online multiplayer.
-- Character select.
 - Complex combos.
 - Competitive ranking.
 - Large move lists.
 - Campaign or story mode.
 - Unlock systems.
 - Deep customization.
-- Too many characters before the first matchup is fun.
+- CPU opponent.
+- BGM/SE.
+- Story or encyclopedia features.
+- Progression systems.
+- Specials or items.
+- Timer or rounds.
+- Retire button.
+- Too many characters before the core band fighters are readable and funny.
