@@ -34,7 +34,7 @@ Phase 3 is the core band 4 fighters phase.
 ### Keyboard
 
 - Add after Drum Sticks.
-- Do minimal body-shape preparation first if needed.
+- Optional per-fighter body dimensions are prepared in Phase 3-5 so Keyboard can eventually feel wider and more awkward.
 - Keep it simple: no special systems, no projectiles, and no complex combos for the first implementation.
 
 ## Phase 3-3 select polish notes
@@ -48,6 +48,12 @@ Phase 3 is the core band 4 fighters phase.
 - Drum Sticks keeps its initial Phase 3-2 stats after the light balance sanity pass.
 - No clear stat change is justified yet without more playtest feedback.
 - Keep the current identity: fast, fragile, short reach, lower damage, lower knockback, and one hit per attack.
+
+## Phase 3-5 body dimension preparation
+
+- Fighter definitions now support optional body width and body height values.
+- Existing fighters use the default 72 x 120 body size, so their visuals and collisions remain unchanged.
+- Movement bounds and attack hitbox placement now use the fighter's actual body width.
 
 ## Balance philosophy
 

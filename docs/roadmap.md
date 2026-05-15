@@ -75,13 +75,14 @@ Core band fighters:
 1. Electric Guitar — already implemented.
 2. Bass — already implemented.
 3. Drum Sticks — implemented in Phase 3-2.
-4. Keyboard — add after Drum Sticks and any minimal body-shape preparation if needed.
+4. Keyboard — add after Drum Sticks; optional body dimensions are prepared for its future wider body.
 
 Completed steps:
 
 - Phase 3-2: Drum Sticks is implemented as a lightweight fast fighter with short reach, low HP, lower damage, and lower knockback.
 - Phase 3-3: CharacterSelectScene is polished for the current three-fighter roster with clearer fighter count and selected index display.
 - Phase 3-4: Drum Sticks receives a light balance sanity pass; stats remain unchanged pending more playtest feedback.
+- Phase 3-5: Optional per-fighter body dimensions are prepared for future fighters like Keyboard while existing fighters keep the default 72 x 120 body.
 
 Phase 3 rules:
 

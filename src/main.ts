@@ -2,7 +2,8 @@ import Phaser from 'phaser';
 
 const gameWidth = 800;
 const gameHeight = 600;
-const fighterWidth = 72;
+const defaultFighterBodyWidth = 72;
+const defaultFighterBodyHeight = 120;
 const player1StartX = 240;
 const player2StartX = 560;
 const attackDurationMs = 180;
@@ -35,6 +36,8 @@ type FighterDefinition = {
   displayName: string;
   role: string;
   stats: FighterStats;
+  bodyWidth?: number;
+  bodyHeight?: number;
   bodyColor: number;
   bodyStrokeColor: number;
   labelColor: string;
@@ -711,11 +714,13 @@ class BattleScene extends Phaser.Scene {
   }
 
   private createFighter(x: number, playerLabel: string, definition: FighterDefinition): Fighter {
+    const bodyWidth = definition.bodyWidth ?? defaultFighterBodyWidth;
+    const bodyHeight = definition.bodyHeight ?? defaultFighterBodyHeight;
     const body = this.add
-      .rectangle(x, 440, fighterWidth, 120, definition.bodyColor)
+      .rectangle(x, 440, bodyWidth, bodyHeight, definition.bodyColor)
       .setStrokeStyle(3, definition.bodyStrokeColor);
     const labelText = this.add
-      .text(x, 520, `${playerLabel}\n${definition.displayName}`, {
+      .text(x, body.y + bodyHeight / 2 + 20, `${playerLabel}\n${definition.displayName}`, {
         align: 'center',
         color: definition.labelColor,
         fontFamily: 'system-ui, sans-serif',
@@ -733,6 +738,10 @@ class BattleScene extends Phaser.Scene {
       stats: definition.stats,
       definition,
     };
+  }
+
+  private getFighterBodyHalfWidth(fighter: Fighter) {
+    return fighter.body.width / 2;
   }
 
   private createControls() {
@@ -783,10 +792,11 @@ class BattleScene extends Phaser.Scene {
       fighter.facing = horizontalInput < 0 ? -1 : 1;
     }
 
+    const bodyHalfWidth = this.getFighterBodyHalfWidth(fighter);
     const nextX = Phaser.Math.Clamp(
       fighter.body.x + horizontalInput * distance,
-      fighterWidth / 2,
-      gameWidth - fighterWidth / 2,
+      bodyHalfWidth,
+      gameWidth - bodyHalfWidth,
     );
 
     fighter.body.setX(nextX);
@@ -812,7 +822,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
-    const hitboxX = fighter.body.x + fighter.facing * (fighterWidth / 2 + fighter.stats.attackWidth / 2);
+    const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + fighter.stats.attackWidth / 2);
     const hitboxY = fighter.body.y + fighter.stats.attackYOffset;
     const hitbox = this.add
       .rectangle(hitboxX, hitboxY, fighter.stats.attackWidth, fighter.stats.attackHeight, fighter.stats.attackColor, 0.35)
@@ -906,16 +916,19 @@ class BattleScene extends Phaser.Scene {
     }
 
     const deltaSeconds = delta / 1000;
+    const bodyHalfWidth = this.getFighterBodyHalfWidth(fighter);
+    const leftBound = bodyHalfWidth;
+    const rightBound = gameWidth - bodyHalfWidth;
     const nextX = Phaser.Math.Clamp(
       fighter.body.x + fighter.knockbackVelocity * deltaSeconds,
-      fighterWidth / 2,
-      gameWidth - fighterWidth / 2,
+      leftBound,
+      rightBound,
     );
 
     fighter.body.setX(nextX);
     fighter.label.setX(nextX);
 
-    if (nextX === fighterWidth / 2 || nextX === gameWidth - fighterWidth / 2) {
+    if (nextX === leftBound || nextX === rightBound) {
       fighter.knockbackVelocity = 0;
       return;
     }
