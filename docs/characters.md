@@ -43,6 +43,12 @@ Phase 3 is the core band 4 fighters phase.
 - P1 and P2 can cycle independently through Electric Guitar, Bass, and Drum Sticks.
 - Same-character selection remains allowed.
 
+## Phase 3-4 Drum Sticks sanity pass
+
+- Drum Sticks keeps its initial Phase 3-2 stats after the light balance sanity pass.
+- No clear stat change is justified yet without more playtest feedback.
+- Keep the current identity: fast, fragile, short reach, lower damage, lower knockback, and one hit per attack.
+
 ## Balance philosophy
 
 Instrument Brawl should not over-normalize fighters. The goal is funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.

@@ -81,6 +81,7 @@ Completed steps:
 
 - Phase 3-2: Drum Sticks is implemented as a lightweight fast fighter with short reach, low HP, lower damage, and lower knockback.
 - Phase 3-3: CharacterSelectScene is polished for the current three-fighter roster with clearer fighter count and selected index display.
+- Phase 3-4: Drum Sticks receives a light balance sanity pass; stats remain unchanged pending more playtest feedback.
 
 Phase 3 rules:
 
