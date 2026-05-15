@@ -107,7 +107,30 @@ const drumSticksDefinition: FighterDefinition = {
   resultWinText: 'Drum Sticks Wins',
 };
 
-const fighterDefinitions = [electricGuitarDefinition, bassDefinition, drumSticksDefinition];
+const keyboardDefinition: FighterDefinition = {
+  id: 'keyboard',
+  displayName: 'Keyboard',
+  role: 'Wide / Awkward / Area control',
+  stats: {
+    maxHp: 95,
+    moveSpeed: 215,
+    attackDamage: 9,
+    knockbackSpeed: 500,
+    attackWidth: 118,
+    attackHeight: 46,
+    attackYOffset: 0,
+    attackColor: 0xa78bfa,
+    attackStrokeColor: 0xede9fe,
+  },
+  bodyWidth: 112,
+  bodyHeight: 70,
+  bodyColor: 0x4c1d95,
+  bodyStrokeColor: 0xddd6fe,
+  labelColor: '#ddd6fe',
+  resultWinText: 'Keyboard Wins',
+};
+
+const fighterDefinitions = [electricGuitarDefinition, bassDefinition, drumSticksDefinition, keyboardDefinition];
 const fighterDefinitionById = new Map(fighterDefinitions.map((definition) => [definition.id, definition]));
 
 function getFighterDefinition(id: string) {

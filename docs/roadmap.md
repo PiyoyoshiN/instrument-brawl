@@ -4,7 +4,7 @@
 
 Instrument Brawl is currently a simple browser-playable local 1v1 prototype built with Phaser, Vite, and TypeScript.
 
-- Current selectable fighters: Electric Guitar, Bass, and Drum Sticks.
+- Current selectable fighters: Electric Guitar, Bass, Drum Sticks, and Keyboard.
 - CharacterSelectScene lets both players choose from the fighter registry.
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
@@ -51,6 +51,7 @@ Current implemented fighter tuning:
 | Electric Guitar | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
 | Bass | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
 | Drum Sticks | 80 | 310 | 8 | 420 | Lightweight fast fighter with short reach |
+| Keyboard | 95 | 215 | 9 | 500 | Wide awkward area-control fighter with a broad body and long reach |
 
 ### Phase 2.5: future expansion preparation — complete
 
@@ -75,7 +76,7 @@ Core band fighters:
 1. Electric Guitar — already implemented.
 2. Bass — already implemented.
 3. Drum Sticks — implemented in Phase 3-2.
-4. Keyboard — add after Drum Sticks; optional body dimensions are prepared for its future wider body.
+4. Keyboard — implemented in Phase 3-6 with a wider 112 x 70 body and area-control reach.
 
 Completed steps:
 
@@ -83,6 +84,7 @@ Completed steps:
 - Phase 3-3: CharacterSelectScene is polished for the current three-fighter roster with clearer fighter count and selected index display.
 - Phase 3-4: Drum Sticks receives a light balance sanity pass; stats remain unchanged pending more playtest feedback.
 - Phase 3-5: Optional per-fighter body dimensions are prepared for future fighters like Keyboard while existing fighters keep the default 72 x 120 body.
+- Phase 3-6: Keyboard is implemented as the fourth core band fighter with wide body dimensions, awkward slower movement, and a broad one-hit attack.
 
 Phase 3 rules:
 

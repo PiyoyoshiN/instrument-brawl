@@ -11,7 +11,7 @@ The tone should be funny, loose, and chaotic. The goal is to feel closer to Saus
 The game is currently a simple local 1v1 prototype built with Phaser, Vite, and TypeScript.
 
 - CharacterSelectScene lets players choose from the current fighter registry.
-- Current selectable fighters: Electric Guitar, Bass, and Drum Sticks.
+- Current selectable fighters: Electric Guitar, Bass, Drum Sticks, and Keyboard.
 - P1 controls: A / D move, W / Space attack.
 - P2 controls: Left / Right move, Up / Enter attack.
 - R starts a rematch from the result screen.
@@ -120,9 +120,15 @@ Phase 3 is the core band 4 fighters phase.
 
 ### Keyboard
 
-- Add after Drum Sticks.
-- If needed, do minimal body-shape preparation before adding Keyboard.
-- Should eventually broaden the core band without adding complex systems.
+- Implemented in Phase 3-6.
+- Wide, awkward, area-control fighter.
+- HP: 95.
+- Move speed: 215.
+- Damage: 9.
+- Knockback speed: 500.
+- Body dimensions: 112 x 70.
+- Attack shape: width 118, height 46, Y offset 0.
+- Should feel physically annoying and reach-heavy without adding special systems.
 
 ## Later candidate ideas
 
