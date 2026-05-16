@@ -83,7 +83,7 @@ Balance changes should keep the game easy to understand and quick to rematch. A 
 
 ## Core band fighters
 
-Phase 3 is the core band 4 fighters phase.
+Phase 3 core band fighter expansion is complete. The implemented roster is Electric Guitar, Bass, Drum Sticks, and Keyboard.
 
 ### Electric Guitar
 
@@ -130,9 +130,15 @@ Phase 3 is the core band 4 fighters phase.
 - Attack shape: width 118, height 46, Y offset 0.
 - Should feel physically annoying and reach-heavy without adding special systems.
 
+## Phase 3 completion notes
+
+Phase 3 stayed intentionally small: local 1v1 only, simple rectangle prototype visuals, one attack per fighter, one attack hitting only once, and same-character selection allowed. It avoided CPU, BGM/SE, story, encyclopedia, progression, specials, items, timer, rounds, retire button, and new non-core fighters.
+
+The next planned direction is Phase 4 presentation and polish, not more Phase 3 roster expansion.
+
 ## Later candidate ideas
 
-These are later ideas only, not near-term Phase 3 fighters:
+These are later ideas only, not Phase 3 fighters:
 
 - Microphone.
 - Piano.

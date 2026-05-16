@@ -22,8 +22,9 @@ This is a browser-based 1v1 physics fighting game where musical instruments figh
 - Do not implement online multiplayer yet.
 - Character select exists; keep it minimal and do not overbuild it yet.
 - Do not add complex combo systems yet.
-- During Phase 3, expand only the core band fighters and keep one attack hitting only once.
-- Run npm run build after changes.
+- Phase 3 is complete; future PRs should move to Phase 4 unless explicitly instructed otherwise.
+- Keep one attack hitting only once unless explicitly instructed otherwise.
+- Run npm run build after code changes.
 
 ## PR titles
 

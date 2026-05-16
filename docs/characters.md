@@ -13,7 +13,7 @@ The game currently has four implemented fighters in the fighter registry:
 
 ## Phase 3 core band target
 
-Phase 3 is the core band 4 fighters phase.
+Phase 3 is complete. The core band 4 fighters are implemented:
 
 1. Electric Guitar — already implemented.
 2. Bass — already implemented.
@@ -67,6 +67,12 @@ Phase 3 is the core band 4 fighters phase.
 - No clear code-visible issue justified changing stats yet.
 - The roster remains intentionally distinct: Electric Guitar is the baseline, Bass is heavier, Drum Sticks is fast and fragile, and Keyboard is wide and awkward.
 
+## Phase 3 completion note
+
+Phase 3 completed the core roster while keeping the game simple: local 1v1 only, simple rectangle prototype visuals, one attack per fighter, one attack hitting only once, and same-character selection allowed. It intentionally avoided CPU, BGM/SE, story, encyclopedia, progression, specials, items, timer, rounds, retire button, and new non-core fighters.
+
+Future roster ideas should wait until explicitly requested; the next broad direction is Phase 4 presentation and polish.
+
 ## Balance philosophy
 
 Instrument Brawl should not over-normalize fighters. The goal is funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.
@@ -75,14 +81,14 @@ A fighter can be odd or lopsided if players can quickly understand what makes th
 
 ## Later candidate ideas
 
-These are later candidate ideas only and should not be treated as near-term Phase 3 fighters:
+These are later candidate ideas only and are not Phase 3 fighters:
 
 - Microphone.
 - Piano.
 - Bongo.
 - Tambourine.
 
-## Not Phase 3 tasks
+## Avoided during Phase 3
 
 - CPU opponent.
 - BGM/SE.

@@ -67,9 +67,9 @@ Completed steps:
 - Phase 2.5-5: ResultScene can return to CharacterSelectScene with selected fighter IDs preserved.
 - Phase 2.5-6: CharacterSelectScene readability is improved with clearer selected fighter labels and lightweight HP, Speed, Damage, and Knockback stat display.
 
-## Phase 3: core band 4 fighters
+## Phase 3: core band 4 fighters — complete
 
-Goal: expand the selectable roster to the core band set while keeping each fighter simple, funny, and readable.
+Goal: expand the selectable roster to the core band set while keeping each fighter simple, funny, and readable. This goal is complete.
 
 Core band fighters:
 
@@ -86,15 +86,15 @@ Completed steps:
 - Phase 3-5: Optional per-fighter body dimensions are prepared for future fighters like Keyboard while existing fighters keep the default 72 x 120 body.
 - Phase 3-6: Keyboard is implemented as the fourth core band fighter with wide body dimensions, awkward slower movement, and a broad one-hit attack.
 - Phase 3-7: The four-fighter roster receives a light sanity pass; current values are kept because the fighters remain readable, distinct, and playable.
+- Phase 3-8: Phase 3 completion is documented and future work is directed toward Phase 4 presentation/polish.
 
-Phase 3 rules:
+Phase 3 completion summary:
 
-- Drum Sticks must not introduce multi-hit yet; one attack must still hit only once.
-- Do not over-normalize fighters. Aim for funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.
-- Add fighters one at a time and keep the CharacterSelectScene usable with the existing registry.
-- CPU, BGM/SE, story, encyclopedia, progression, specials, items, timer, rounds, and retire button are not Phase 3 tasks.
+- Fighter registry, CharacterSelectScene, BattleScene scene-data handoff, ResultScene rematch, and ResultScene return-to-character-select support all four core fighters.
+- Phase 3 kept one attack per fighter, one attack hitting only once, simple rectangle prototype visuals, local 1v1 only, and same-character selection allowed.
+- Phase 3 intentionally avoided CPU, BGM/SE, story, encyclopedia, progression, specials, items, timer, rounds, retire button, and new non-core fighters.
 
-Later candidate ideas only, not near-term Phase 3 fighters:
+Later candidate ideas only, not Phase 3 fighters:
 
 - Microphone.
 - Piano.
@@ -105,7 +105,7 @@ Later candidate ideas only, not near-term Phase 3 fighters:
 
 Goal: make the game feel complete once the core loop works.
 
-- Add improved menus only after the Phase 3 core band direction is stable.
+- Add improved menus now that the Phase 3 core band direction is complete.
 - Add better arena visuals.
 - Add music and stronger sound design.
 - Add simple effects for hits, wins, and restarts.
@@ -127,4 +127,4 @@ Goal: make the game feel complete once the core loop works.
 - Specials or items.
 - Timer or rounds.
 - Retire button.
-- Too many characters before the core band fighters are readable and funny.
+- More fighters before Phase 4 presentation/polish has improved the completed core band roster.

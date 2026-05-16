@@ -12,7 +12,7 @@
 - CharacterSelectScene uses the fighter registry and currently offers Electric Guitar, Bass, Drum Sticks, and Keyboard.
 - Movement, attacks, HP, damage, velocity-based knockback, hit flash, win/draw detection, Ready/Fight start prompt, rematch, and return-to-character-select flow are implemented.
 - Attack hit detection stays active during the visible attack duration, but one attack can hit only once.
-- Phase 2.5 preparation is complete; Phase 3 is the core band fighter expansion.
+- Phase 2.5 and Phase 3 are complete; the core band 4 fighters are implemented.
 
 ## Controls
 
@@ -45,18 +45,20 @@
 | Drum Sticks | Implemented | 80 | 310 | 8 | 420 | Lightweight fast fighter with short reach |
 | Keyboard | Implemented | 95 | 215 | 9 | 500 | Wide, awkward area-control fighter with a broad body and long reach |
 
-## Phase 3 direction
+## Phase 3 completion
 
-Phase 3 is the core band 4 fighters phase:
+Phase 3 completed the core band 4 fighters:
 
 1. Electric Guitar — already implemented.
 2. Bass — already implemented.
 3. Drum Sticks — implemented in Phase 3-2.
 4. Keyboard — implemented in Phase 3-6 as a wide, awkward area-control fighter.
 
+Phase 3 kept the game simple: local 1v1 only, simple rectangle prototype visuals, one attack per fighter, one attack hitting only once, and same-character selection allowed. Next work should move to Phase 4 presentation and polish unless a task explicitly says otherwise.
+
 Instrument Brawl should not over-normalize fighters. The goal is funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.
 
-Later candidate ideas, not near-term Phase 3 tasks: Microphone, Piano, Bongo, and Tambourine.
+Later candidate ideas, not Phase 3 tasks: Microphone, Piano, Bongo, and Tambourine.
 
 ## Play online
 
