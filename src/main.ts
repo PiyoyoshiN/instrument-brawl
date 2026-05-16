@@ -650,7 +650,14 @@ class BattleScene extends Phaser.Scene {
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
-    this.add.rectangle(400, 500, 680, 40, 0x334155);
+    this.add.rectangle(400, 286, 660, 4, 0x334155, 0.7);
+    this.add.rectangle(400, 392, 660, 4, 0x334155, 0.45);
+    this.add.rectangle(400, 468, 660, 3, 0x475569, 0.55);
+    this.add.rectangle(400, 500, 680, 44, 0x334155);
+    this.add.rectangle(400, 480, 680, 5, 0x94a3b8, 0.45);
+    this.add.rectangle(400, 506, 18, 32, 0x475569, 0.55);
+    this.add.rectangle(player1StartX, 516, 132, 10, 0x0f172a, 0.42);
+    this.add.rectangle(player2StartX, 516, 132, 10, 0x0f172a, 0.42);
 
     this.player1Hp = this.createHpUi(
       32,
