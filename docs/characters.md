@@ -83,7 +83,7 @@ A fighter can be odd or lopsided if players can quickly understand what makes th
 
 The current Phase 4 starting roster remains Electric Guitar, Bass, Drum Sticks, and Keyboard. Keep same-character selection allowed, one attack hitting only once, and the existing fighter differences intact. Do not add new fighters as a first Phase 4 task.
 
-A minimal P2 CPU may be introduced early in Phase 4, but it should use the existing fighter stats and attack rules rather than CPU-only stat changes.
+A minimal P2 CPU may be introduced early in Phase 4, but it should use the existing fighter stats and attack rules rather than CPU-only stat changes. CPU mode should be a P2 mode choice, so any current fighter can be selected for a human-controlled or CPU-controlled P2.
 
 ## Later candidate ideas
 

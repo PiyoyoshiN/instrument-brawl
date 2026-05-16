@@ -140,12 +140,29 @@ The next planned direction is Phase 4 solo play preparation, presentation/polish
 
 Phase 4 is not only visual polish. It should prepare solo play, improve presentation, and plan an audio-ready structure without committing audio assets yet.
 
-### Solo play preparation
+### Minimal P1 vs CPU mode design
 
-- Introduce a minimal P2 CPU early in Phase 4.
-- The first CPU should be simple: approach P1, attack when close enough, and optionally back away sometimes.
-- CPU must use existing fighter stats and existing attack rules.
-- Do not add difficulty settings, learning AI, strong prediction, or CPU-only stat changes yet.
+CharacterSelectScene should keep local 2-player mode as the default. Add a small P2 mode choice there with two options: Human and CPU. P1 and P2 fighter selection should continue to use the existing fighter registry, and same-character selection should remain allowed for both Human and CPU modes.
+
+Scene data should carry the P2 mode alongside the existing fighter IDs:
+
+- `player1FighterId`.
+- `player2FighterId`.
+- `player2Mode`, using a simple value such as `human` or `cpu`.
+
+CharacterSelectScene should pass `player2Mode` to BattleScene when starting a match. BattleScene should pass the same value to ResultScene when the match ends. ResultScene rematch should preserve the selected fighters and `player2Mode`; returning to CharacterSelectScene with C should also preserve the selected fighters and `player2Mode`.
+
+### Minimal CPU behavior
+
+- CPU controls P2 only.
+- CPU should not act before the Ready/Fight start prompt enables the match.
+- CPU should not act after `matchOver`.
+- Move toward P1 when far away.
+- Attack when close enough.
+- Optionally back away sometimes so it feels less robotic.
+- CPU must use existing fighter stats.
+- CPU must use the existing attack cooldown, attack duration, one-hit-per-attack rule, HP, hit flash, knockback, win/draw detection, and ResultScene flow.
+- Do not add difficulty settings, learning AI, strong prediction, perfect avoidance, or CPU-only stat changes yet.
 
 ### Audio-ready planning
 
