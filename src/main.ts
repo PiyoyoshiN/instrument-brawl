@@ -232,7 +232,7 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 178, 'A silly local 1v1 instrument fighting prototype', {
+      .text(400, 178, 'Local 2P or P1 vs CPU instrument battles', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -240,9 +240,17 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
+      .text(400, 220, '4 fighters • Local 2P default • Optional P2 CPU', {
+        color: '#94a3b8',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+      })
+      .setOrigin(0.5);
+
+    this.add
       .text(
         400,
-        260,
+        292,
         `P1 ${defaultPlayer1FighterDefinition.displayName}: A / D move, W / Space attack
 P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter attack`,
         {
@@ -256,7 +264,7 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       .setOrigin(0.5);
 
     this.add
-      .text(400, 396, 'Press Enter or Space to select fighters', {
+      .text(400, 414, 'Press Enter or Space to select fighters', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',
@@ -342,7 +350,7 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 128, `${fighterDefinitions.length} fighters available`, {
+      .text(400, 128, `${fighterDefinitions.length} fighters available • same fighter OK`, {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -460,14 +468,14 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 474, 'P1: A / D choose    P2: ← / → choose    P2 ↓: Human / CPU', {
+      .text(400, 474, 'P1: A / D choose    P2: ← / → choose    P2 ↓ toggles Human / CPU', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
       })
       .setOrigin(0.5);
     this.add
-      .text(400, 520, 'Enter or Space: start battle    Esc: return Home', {
+      .text(400, 520, 'Enter / Space: start battle    Esc: return Home', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -573,7 +581,7 @@ class CharacterSelectScene extends Phaser.Scene {
     this.player1StatsText?.setText(this.getStatsText(player1Definition));
     this.player2NameText?.setText(`< ${player2Definition.displayName} >`);
     this.player2IndexText?.setText(`Fighter ${this.player2Index + 1} / ${fighterDefinitions.length}`);
-    this.player2ModeText?.setText(`Mode: ${this.getPlayer2ModeLabel()}`);
+    this.player2ModeText?.setText(`P2 Mode: ${this.getPlayer2ModeLabel()} (↓)`);
     this.player2RoleText?.setText(player2Definition.role);
     this.player2StatsText?.setText(this.getStatsText(player2Definition));
   }
@@ -1184,7 +1192,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 262, `P2 Mode: ${this.player2Mode === 'cpu' ? 'CPU' : 'Human'}`, {
+      .text(400, 262, `${this.player1Definition.displayName} vs ${this.player2Definition.displayName} • P2 ${this.player2Mode === 'cpu' ? 'CPU' : 'Human'}`, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -1200,7 +1208,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 352, 'Press C to change fighters', {
+      .text(400, 352, 'Press C to change fighters (keeps picks)', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',

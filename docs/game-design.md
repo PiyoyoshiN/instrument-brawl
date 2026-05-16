@@ -179,6 +179,7 @@ CharacterSelectScene passes `player2Mode` to BattleScene when starting a match. 
 ### Early Phase 4 guardrails
 
 - Keep the current implemented state consistent: four selectable fighters, local 1v1, simple rectangle prototype visuals, one attack hitting only once, and same-character selection allowed.
+- Phase 4-7 lightly improves menu labels, helper text, and result readability while keeping scene flow and controls unchanged.
 - New fighters, specials, items, progression, story, encyclopedia, timer, rounds, and retire button are not first Phase 4 tasks.
 - Keep PRs focused: 1 PR = 1 feature.
 - Keep the balance philosophy: do not over-normalize fighter differences.
