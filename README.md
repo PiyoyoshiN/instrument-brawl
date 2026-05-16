@@ -62,15 +62,24 @@ Instrument Brawl should not over-normalize fighters. The goal is funny, readable
 
 Later candidate ideas, not Phase 3 tasks: Microphone, Piano, Bongo, and Tambourine.
 
-## Phase 4 direction
+## Phase 4 checkpoint
 
-Phase 4 is solo play preparation + presentation/polish + audio-ready structure without audio assets. It is not only visual polish.
+Phase 4 currently covers solo play preparation, presentation/polish, and audio-ready planning without audio assets.
 
-Phase 4-3 adds the minimal P2 CPU for solo play. The first CPU simply approaches P1, attacks when close enough, and can sometimes back away. CPU uses existing fighter stats and existing attack rules; no difficulty settings, learning AI, strong prediction, or CPU-only stat changes are added.
+Implemented Phase 4 checkpoint items:
 
-BGM/SE audio files should not be added yet. Later Phase 4 work may prepare an audio-ready structure and audio policy; see `docs/audio-policy.md`. Future audio sources must be safe for a public GitHub repository, such as self-made, CC0, or properly credited licensed assets. Do not commit commercial songs, existing game BGM, YouTube audio, unclear-license files, or ear-copy recreations of copyrighted tracks.
+- Four selectable fighters remain available: Electric Guitar, Bass, Drum Sticks, and Keyboard.
+- Local 2P remains the default, with optional P2 CPU mode from Character Select.
+- P2 Human/CPU mode is preserved through BattleScene, ResultScene, R rematch, and C return-to-character-select.
+- Minimal CPU behavior is implemented and received a sanity pass so short-reach CPU fighters keep approaching.
+- Audio policy is documented without BGM/SE audio files or playback; see `docs/audio-policy.md`.
+- Light menu, arena, and hit/result feedback polish are implemented with rectangle/text visuals only.
 
-New fighters, specials, items, progression, story, encyclopedia, timer, rounds, and retire button are not the first Phase 4 tasks. Keep PRs focused: 1 PR = 1 feature.
+The current game still intentionally avoids new fighters, specials, items, progression, story, encyclopedia, timer, rounds, retire button, BGM/SE audio files, settings screen, and online play.
+
+Known minor follow-up: ResultScene subtitle wording may be adjusted later if needed.
+
+Next recommended direction: either prepare audio-ready structure without assets, or move into controlled Phase 5 planning. Do not add new gameplay yet unless a focused task explicitly asks for it.
 
 ## Play online
 

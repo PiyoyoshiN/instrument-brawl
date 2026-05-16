@@ -140,6 +140,32 @@ Early Phase 4 non-goals:
 - Over-normalizing fighter differences.
 - Large mixed-scope PRs; keep 1 PR = 1 feature.
 
+## Phase 4-10 checkpoint
+
+Phase 4 checkpoint status is documented after the solo-play and light-presentation pass.
+
+Implemented at this checkpoint:
+
+- Four selectable fighters: Electric Guitar, Bass, Drum Sticks, and Keyboard.
+- Local 2P remains the default.
+- Optional P2 CPU mode is available from CharacterSelectScene.
+- P2 Human/CPU mode is preserved through BattleScene, ResultScene, R rematch, and C return-to-character-select.
+- Minimal CPU behavior and the CPU sanity pass are implemented.
+- Audio policy is documented without audio assets.
+- Light menu polish, arena polish, and hit/result feedback polish are implemented.
+
+Still intentionally avoided:
+
+- New fighters.
+- Specials, items, progression, story, encyclopedia, timer, rounds, or retire button.
+- BGM/SE audio files.
+- Settings screen.
+- Online play.
+
+Known minor follow-up: ResultScene subtitle wording may be adjusted later if needed.
+
+Next recommended direction: prepare audio-ready structure without assets, or start controlled Phase 5 planning. Do not add new gameplay yet.
+
 ## Features to avoid for now
 
 - Online multiplayer.

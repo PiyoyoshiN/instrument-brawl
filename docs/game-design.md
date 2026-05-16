@@ -186,6 +186,16 @@ CharacterSelectScene passes `player2Mode` to BattleScene when starting a match. 
 - Keep PRs focused: 1 PR = 1 feature.
 - Keep the balance philosophy: do not over-normalize fighter differences.
 
+## Phase 4 checkpoint notes
+
+Phase 4 currently has local 2P as the default, optional P2 CPU mode, four selectable fighters, preserved P2 mode through BattleScene and ResultScene flows, minimal CPU behavior with a sanity pass, audio policy without assets, and light menu/arena/hit/result polish.
+
+The game still intentionally avoids new fighters, specials, items, progression, story, encyclopedia, timer, rounds, retire button, BGM/SE audio files, settings screen, and online play.
+
+Known minor follow-up: ResultScene subtitle wording may be adjusted later if needed.
+
+Next recommended direction is either audio-ready structure without assets or controlled Phase 5 planning. Do not add new gameplay yet unless a focused task explicitly asks for it.
+
 ## Later candidate ideas
 
 These are later ideas only, not Phase 3 fighters:

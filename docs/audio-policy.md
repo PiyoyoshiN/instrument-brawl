@@ -1,6 +1,6 @@
 # Audio Policy
 
-Phase 4 may prepare an audio-ready structure, but this PR must not add BGM/SE audio files or playback.
+Phase 4 checkpoint status: audio policy is documented, but no BGM/SE audio files or playback are added yet. Future work may prepare audio-ready structure without assets.
 
 ## Allowed future audio sources
 

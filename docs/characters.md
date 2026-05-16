@@ -79,11 +79,13 @@ Instrument Brawl should not over-normalize fighters. The goal is funny, readable
 
 A fighter can be odd or lopsided if players can quickly understand what makes that fighter strong, weak, and funny.
 
-## Phase 4 roster guardrails
+## Phase 4 roster checkpoint
 
-The current Phase 4 starting roster remains Electric Guitar, Bass, Drum Sticks, and Keyboard. Keep same-character selection allowed, one attack hitting only once, and the existing fighter differences intact. Do not add new fighters as a first Phase 4 task.
+The Phase 4 checkpoint roster remains Electric Guitar, Bass, Drum Sticks, and Keyboard. Keep same-character selection allowed, one attack hitting only once, and the existing fighter differences intact.
 
-A minimal P2 CPU may be introduced early in Phase 4, but it should use the existing fighter stats and attack rules rather than CPU-only stat changes. CPU mode should be a P2 mode choice, so any current fighter can be selected for a human-controlled or CPU-controlled P2.
+P2 can be Human or CPU, and any current fighter can be selected for either P2 mode. The minimal CPU uses existing fighter stats and attack rules rather than CPU-only stat changes.
+
+Do not add new fighters until a controlled future phase explicitly asks for them.
 
 ## Later candidate ideas
 
