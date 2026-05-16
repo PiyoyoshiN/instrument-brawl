@@ -181,6 +181,7 @@ CharacterSelectScene passes `player2Mode` to BattleScene when starting a match. 
 - Keep the current implemented state consistent: four selectable fighters, local 1v1, simple rectangle prototype visuals, one attack hitting only once, and same-character selection allowed.
 - Phase 4-7 lightly improves menu labels, helper text, and result readability while keeping scene flow and controls unchanged.
 - Phase 4-8 lightly improves BattleScene arena readability with clearer floor/platform separation, subtle background guide lines, and simple rectangle grounding details.
+- Phase 4-9 lightly improves hit and match-end readability with small text/rectangle feedback while preserving damage, HP, knockback, one-hit attacks, and ResultScene flow.
 - New fighters, specials, items, progression, story, encyclopedia, timer, rounds, and retire button are not first Phase 4 tasks.
 - Keep PRs focused: 1 PR = 1 feature.
 - Keep the balance philosophy: do not over-normalize fighter differences.

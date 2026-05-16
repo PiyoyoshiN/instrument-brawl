@@ -115,6 +115,7 @@ Early Phase 4 priorities:
 - Phase 4-4: CPU sanity pass keeps local 2-player unchanged and lightly tunes CPU comfort distance so short-reach CPU fighters do not stop just outside attack range.
 - Phase 4-7: Light menu visual polish improves Home, Character Select, and Result readability without changing controls or scene flow.
 - Phase 4-8: Light arena visual polish improves BattleScene floor separation, background lines, and fighter grounding while keeping rectangle visuals.
+- Phase 4-9: Light hit and result effects polish adds small text/rectangle feedback while preserving damage, one-hit attacks, and ResultScene flow.
 - CharacterSelectScene defaults to P2 Human mode and allows choosing P2 Human or CPU.
 - Match scene data preserves `player2Mode` (`human` or `cpu`) from CharacterSelectScene to BattleScene to ResultScene.
 - ResultScene R rematch and C return-to-character-select preserve selected fighters and P2 Human/CPU mode.

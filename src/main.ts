@@ -15,6 +15,7 @@ const hitFlashDurationMs = 120;
 const matchEndDelayMs = 450;
 const matchStartDelayMs = 900;
 const matchStartFightTextDurationMs = 450;
+const hitMarkerDurationMs = 360;
 const hpBarWidth = 220;
 const hpBarHeight = 18;
 const hpBarInset = 3;
@@ -615,6 +616,8 @@ class BattleScene extends Phaser.Scene {
   private startCountdownEvent?: Phaser.Time.TimerEvent;
   private startPromptClearEvent?: Phaser.Time.TimerEvent;
   private resultTransitionEvent?: Phaser.Time.TimerEvent;
+  private hitMarker?: Phaser.GameObjects.Text;
+  private hitMarkerEvent?: Phaser.Time.TimerEvent;
   private nextCpuDecisionAt = 0;
   private cpuRetreatUntil = 0;
   private controls?: {
@@ -994,6 +997,7 @@ class BattleScene extends Phaser.Scene {
         this.applyDamage(attack.defenderHp, attack.attacker.stats.attackDamage);
         this.applyKnockback(attack.defender, attack.attacker.facing, attack.attacker.stats.knockbackSpeed);
         this.flashFighter(attack.defender);
+        this.showHitMarker(attack.defender, attack.attacker.stats.attackDamage);
         this.checkMatchResult();
 
         if (this.matchOver) {
@@ -1001,6 +1005,29 @@ class BattleScene extends Phaser.Scene {
         }
       }
     }
+  }
+
+  private showHitMarker(fighter: Fighter, damage: number) {
+    if (this.matchOver) {
+      return;
+    }
+
+    this.hitMarker?.destroy();
+    this.hitMarkerEvent?.remove(false);
+    this.hitMarker = this.add
+      .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 28, `HIT -${damage}`, {
+        align: 'center',
+        color: '#fef08a',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      })
+      .setOrigin(0.5)
+      .setDepth(6);
+    this.hitMarkerEvent = this.time.delayedCall(hitMarkerDurationMs, () => {
+      this.hitMarker?.destroy();
+      this.hitMarker = undefined;
+      this.hitMarkerEvent = undefined;
+    });
   }
 
   private applyDamage(playerHp: PlayerHp, damage: number) {
@@ -1102,6 +1129,13 @@ class BattleScene extends Phaser.Scene {
     }
 
     this.matchOver = true;
+    this.add.rectangle(400, 292, 360, 86, 0x020617, 0.62).setStrokeStyle(3, 0xfacc15).setDepth(7);
+    this.add.text(400, 292, resultData.displayTitle ?? 'Match Over', {
+      align: 'center',
+      color: '#facc15',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '30px',
+    }).setOrigin(0.5).setDepth(8);
     this.clearActiveAttacks();
     this.player1.knockbackVelocity = 0;
     this.player2.knockbackVelocity = 0;
@@ -1124,6 +1158,10 @@ class BattleScene extends Phaser.Scene {
     this.startPromptClearEvent = undefined;
     this.startPrompt?.destroy();
     this.startPrompt = undefined;
+    this.hitMarkerEvent?.remove(false);
+    this.hitMarkerEvent = undefined;
+    this.hitMarker?.destroy();
+    this.hitMarker = undefined;
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
 
@@ -1190,7 +1228,15 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 210, this.result, {
+      .text(400, 174, 'Final hit landed', {
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 216, this.result, {
         align: 'center',
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
