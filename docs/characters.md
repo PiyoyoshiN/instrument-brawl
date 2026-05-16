@@ -61,6 +61,12 @@ Phase 3 is the core band 4 fighters phase.
 - Keyboard uses its Phase 3-6 custom 112 x 70 body size.
 - Movement bounds and attack hitbox placement now use the fighter's actual body width.
 
+## Phase 3-7 four-fighter sanity pass
+
+- Electric Guitar, Bass, Drum Sticks, and Keyboard keep their current values after the sanity pass.
+- No clear code-visible issue justified changing stats yet.
+- The roster remains intentionally distinct: Electric Guitar is the baseline, Bass is heavier, Drum Sticks is fast and fragile, and Keyboard is wide and awkward.
+
 ## Balance philosophy
 
 Instrument Brawl should not over-normalize fighters. The goal is funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.

@@ -85,6 +85,7 @@ Completed steps:
 - Phase 3-4: Drum Sticks receives a light balance sanity pass; stats remain unchanged pending more playtest feedback.
 - Phase 3-5: Optional per-fighter body dimensions are prepared for future fighters like Keyboard while existing fighters keep the default 72 x 120 body.
 - Phase 3-6: Keyboard is implemented as the fourth core band fighter with wide body dimensions, awkward slower movement, and a broad one-hit attack.
+- Phase 3-7: The four-fighter roster receives a light sanity pass; current values are kept because the fighters remain readable, distinct, and playable.
 
 Phase 3 rules:
 
