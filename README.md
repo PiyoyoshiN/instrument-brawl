@@ -68,7 +68,7 @@ Phase 4 is solo play preparation + presentation/polish + audio-ready structure w
 
 Phase 4-3 adds the minimal P2 CPU for solo play. The first CPU simply approaches P1, attacks when close enough, and can sometimes back away. CPU uses existing fighter stats and existing attack rules; no difficulty settings, learning AI, strong prediction, or CPU-only stat changes are added.
 
-BGM/SE audio files should not be added yet. Later Phase 4 work may prepare an audio-ready structure and audio policy. Future audio sources must be safe for a public GitHub repository, such as self-made, CC0, or properly credited licensed assets. Do not commit commercial songs, existing game BGM, YouTube audio, unclear-license files, or ear-copy recreations of copyrighted tracks.
+BGM/SE audio files should not be added yet. Later Phase 4 work may prepare an audio-ready structure and audio policy; see `docs/audio-policy.md`. Future audio sources must be safe for a public GitHub repository, such as self-made, CC0, or properly credited licensed assets. Do not commit commercial songs, existing game BGM, YouTube audio, unclear-license files, or ear-copy recreations of copyrighted tracks.
 
 New fighters, specials, items, progression, story, encyclopedia, timer, rounds, and retire button are not the first Phase 4 tasks. Keep PRs focused: 1 PR = 1 feature.
 

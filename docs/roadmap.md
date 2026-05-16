@@ -123,10 +123,12 @@ Early Phase 4 priorities:
 
 Audio guardrails:
 
+- Phase 4-6: Document audio policy without adding audio assets.
 - Do not add BGM/SE audio files yet.
-- Later Phase 4 work may prepare an audio-ready structure and audio policy.
-- Future audio sources must be safe for a public GitHub repository, such as self-made, CC0, or properly credited licensed assets.
+- Later Phase 4 work may prepare an audio-ready structure such as `public/assets/audio/bgm` and `public/assets/audio/sfx`.
+- Future audio sources must be safe for a public GitHub repository, such as self-made audio, CC0 assets, or properly credited licensed assets such as CC-BY when credits are handled.
 - Do not commit commercial songs, existing game BGM, YouTube audio, unclear-license files, or ear-copy recreations of copyrighted tracks.
+- Future lightweight audio settings may include `soundEnabled` and `masterVolume`, but do not build a full settings screen yet.
 
 Early Phase 4 non-goals:
 

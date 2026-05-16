@@ -168,10 +168,13 @@ CharacterSelectScene passes `player2Mode` to BattleScene when starting a match. 
 
 ### Audio-ready planning
 
+- Phase 4-6 defines the audio policy without adding audio assets.
 - Do not add BGM/SE audio files yet.
-- Later Phase 4 work may prepare audio structure and a clear audio policy.
-- Future audio sources must be safe for a public GitHub repository: self-made, CC0, or properly credited licensed assets.
+- Later Phase 4 work may prepare audio structure such as `public/assets/audio/bgm` and `public/assets/audio/sfx`.
+- Future audio sources must be safe for a public GitHub repository: self-made, CC0, or properly credited licensed assets such as CC-BY when credits are handled.
 - Do not commit commercial songs, existing game BGM, YouTube audio, unclear-license files, or ear-copy recreations of copyrighted tracks.
+- Lightweight audio settings such as `soundEnabled` and `masterVolume` may be planned later, but do not build a full settings screen yet.
+- See `docs/audio-policy.md` for the repository audio policy.
 
 ### Early Phase 4 guardrails
 
