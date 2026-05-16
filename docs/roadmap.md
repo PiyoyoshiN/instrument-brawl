@@ -112,6 +112,7 @@ Early Phase 4 priorities:
 - Phase 4-1: Define Phase 4 scope and guardrails.
 - Phase 4-2: Design minimal P1 vs CPU mode before implementation.
 - Phase 4-3: Implement minimal P2 CPU mode for solo play while preserving local 2-player as the default.
+- Phase 4-4: CPU sanity pass keeps local 2-player unchanged and lightly tunes CPU comfort distance so short-reach CPU fighters do not stop just outside attack range.
 - CharacterSelectScene defaults to P2 Human mode and allows choosing P2 Human or CPU.
 - Match scene data preserves `player2Mode` (`human` or `cpu`) from CharacterSelectScene to BattleScene to ResultScene.
 - ResultScene R rematch and C return-to-character-select preserve selected fighters and P2 Human/CPU mode.

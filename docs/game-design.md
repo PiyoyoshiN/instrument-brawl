@@ -164,6 +164,7 @@ CharacterSelectScene passes `player2Mode` to BattleScene when starting a match. 
 - CPU uses existing fighter stats.
 - CPU uses the existing attack cooldown, attack duration, one-hit-per-attack rule, HP, hit flash, knockback, win/draw detection, and ResultScene flow.
 - No difficulty settings, learning AI, strong prediction, perfect avoidance, or CPU-only stat changes are added yet.
+- Phase 4-4 sanity pass keeps the CPU minimal and lightly reduces its comfort distance so short-reach fighters keep approaching until they can actually attack.
 
 ### Audio-ready planning
 
