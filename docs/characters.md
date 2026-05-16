@@ -71,13 +71,19 @@ Phase 3 is complete. The core band 4 fighters are implemented:
 
 Phase 3 completed the core roster while keeping the game simple: local 1v1 only, simple rectangle prototype visuals, one attack per fighter, one attack hitting only once, and same-character selection allowed. It intentionally avoided CPU, BGM/SE, story, encyclopedia, progression, specials, items, timer, rounds, retire button, and new non-core fighters.
 
-Future roster ideas should wait until explicitly requested; the next broad direction is Phase 4 presentation and polish.
+Future roster ideas should wait until explicitly requested; the next broad direction is Phase 4 solo play preparation, presentation/polish, and audio-ready structure without audio assets.
 
 ## Balance philosophy
 
 Instrument Brawl should not over-normalize fighters. The goal is funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.
 
 A fighter can be odd or lopsided if players can quickly understand what makes that fighter strong, weak, and funny.
+
+## Phase 4 roster guardrails
+
+The current Phase 4 starting roster remains Electric Guitar, Bass, Drum Sticks, and Keyboard. Keep same-character selection allowed, one attack hitting only once, and the existing fighter differences intact. Do not add new fighters as a first Phase 4 task.
+
+A minimal P2 CPU may be introduced early in Phase 4, but it should use the existing fighter stats and attack rules rather than CPU-only stat changes.
 
 ## Later candidate ideas
 

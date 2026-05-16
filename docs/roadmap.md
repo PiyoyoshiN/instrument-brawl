@@ -101,15 +101,33 @@ Later candidate ideas only, not Phase 3 fighters:
 - Bongo.
 - Tambourine.
 
-## Phase 4: presentation and polish
+## Phase 4: solo play preparation, presentation, and audio-ready planning
 
-Goal: make the game feel complete once the core loop works.
+Goal: make the completed core loop easier to play alone, clearer to read, and ready for later presentation/audio work without adding audio assets yet.
 
-- Add improved menus now that the Phase 3 core band direction is complete.
-- Add better arena visuals.
-- Add music and stronger sound design.
-- Add simple effects for hits, wins, and restarts.
-- Add small comedic details that support the instrument battle theme.
+Phase 4 is not only visual polish. It includes solo play preparation, presentation/polish, and audio-ready structure planning.
+
+Early Phase 4 priorities:
+
+- Add a minimal P2 CPU for solo play.
+- Keep the first CPU simple: approach P1, attack when close enough, and optionally back away sometimes.
+- CPU must use existing fighter stats and existing attack rules.
+- Do not add difficulty settings, learning AI, strong prediction, or CPU-only stat changes yet.
+- Improve menus, arena readability, hit/win/restart feedback, and comedic presentation details in small focused PRs.
+
+Audio guardrails:
+
+- Do not add BGM/SE audio files yet.
+- Later Phase 4 work may prepare an audio-ready structure and audio policy.
+- Future audio sources must be safe for a public GitHub repository, such as self-made, CC0, or properly credited licensed assets.
+- Do not commit commercial songs, existing game BGM, YouTube audio, unclear-license files, or ear-copy recreations of copyrighted tracks.
+
+Early Phase 4 non-goals:
+
+- New fighters.
+- Specials, items, progression, story, encyclopedia, timer, rounds, or retire button.
+- Over-normalizing fighter differences.
+- Large mixed-scope PRs; keep 1 PR = 1 feature.
 
 ## Features to avoid for now
 
@@ -120,11 +138,11 @@ Goal: make the game feel complete once the core loop works.
 - Campaign or story mode.
 - Unlock systems.
 - Deep customization.
-- CPU opponent.
-- BGM/SE.
+- CPU behavior beyond the minimal early Phase 4 P2 CPU.
+- BGM/SE audio files.
 - Story or encyclopedia features.
 - Progression systems.
 - Specials or items.
 - Timer or rounds.
 - Retire button.
-- More fighters before Phase 4 presentation/polish has improved the completed core band roster.
+- More fighters before Phase 4 solo play preparation and presentation/polish improve the completed core band roster.

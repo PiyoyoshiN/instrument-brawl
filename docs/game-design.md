@@ -134,7 +134,32 @@ Phase 3 core band fighter expansion is complete. The implemented roster is Elect
 
 Phase 3 stayed intentionally small: local 1v1 only, simple rectangle prototype visuals, one attack per fighter, one attack hitting only once, and same-character selection allowed. It avoided CPU, BGM/SE, story, encyclopedia, progression, specials, items, timer, rounds, retire button, and new non-core fighters.
 
-The next planned direction is Phase 4 presentation and polish, not more Phase 3 roster expansion.
+The next planned direction is Phase 4 solo play preparation, presentation/polish, and audio-ready structure without audio assets, not more Phase 3 roster expansion.
+
+## Phase 4 design direction
+
+Phase 4 is not only visual polish. It should prepare solo play, improve presentation, and plan an audio-ready structure without committing audio assets yet.
+
+### Solo play preparation
+
+- Introduce a minimal P2 CPU early in Phase 4.
+- The first CPU should be simple: approach P1, attack when close enough, and optionally back away sometimes.
+- CPU must use existing fighter stats and existing attack rules.
+- Do not add difficulty settings, learning AI, strong prediction, or CPU-only stat changes yet.
+
+### Audio-ready planning
+
+- Do not add BGM/SE audio files yet.
+- Later Phase 4 work may prepare audio structure and a clear audio policy.
+- Future audio sources must be safe for a public GitHub repository: self-made, CC0, or properly credited licensed assets.
+- Do not commit commercial songs, existing game BGM, YouTube audio, unclear-license files, or ear-copy recreations of copyrighted tracks.
+
+### Early Phase 4 guardrails
+
+- Keep the current implemented state consistent: four selectable fighters, local 1v1, simple rectangle prototype visuals, one attack hitting only once, and same-character selection allowed.
+- New fighters, specials, items, progression, story, encyclopedia, timer, rounds, and retire button are not first Phase 4 tasks.
+- Keep PRs focused: 1 PR = 1 feature.
+- Keep the balance philosophy: do not over-normalize fighter differences.
 
 ## Later candidate ideas
 

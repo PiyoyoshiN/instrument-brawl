@@ -54,11 +54,21 @@ Phase 3 completed the core band 4 fighters:
 3. Drum Sticks — implemented in Phase 3-2.
 4. Keyboard — implemented in Phase 3-6 as a wide, awkward area-control fighter.
 
-Phase 3 kept the game simple: local 1v1 only, simple rectangle prototype visuals, one attack per fighter, one attack hitting only once, and same-character selection allowed. Next work should move to Phase 4 presentation and polish unless a task explicitly says otherwise.
+Phase 3 kept the game simple: local 1v1 only, simple rectangle prototype visuals, one attack per fighter, one attack hitting only once, and same-character selection allowed. Next work should move to Phase 4 unless a task explicitly says otherwise.
 
 Instrument Brawl should not over-normalize fighters. The goal is funny, readable, replayable imbalance with clear strengths and weaknesses, not tournament-level fairness.
 
 Later candidate ideas, not Phase 3 tasks: Microphone, Piano, Bongo, and Tambourine.
+
+## Phase 4 direction
+
+Phase 4 is solo play preparation + presentation/polish + audio-ready structure without audio assets. It is not only visual polish.
+
+Early Phase 4 should add a minimal P2 CPU for solo play. The first CPU should simply approach P1, attack when close enough, and optionally back away sometimes. CPU must use existing fighter stats and existing attack rules; do not add difficulty settings, learning AI, strong prediction, or CPU-only stat changes yet.
+
+BGM/SE audio files should not be added yet. Later Phase 4 work may prepare an audio-ready structure and audio policy. Future audio sources must be safe for a public GitHub repository, such as self-made, CC0, or properly credited licensed assets. Do not commit commercial songs, existing game BGM, YouTube audio, unclear-license files, or ear-copy recreations of copyrighted tracks.
+
+New fighters, specials, items, progression, story, encyclopedia, timer, rounds, and retire button are not the first Phase 4 tasks. Keep PRs focused: 1 PR = 1 feature.
 
 ## Play online
 

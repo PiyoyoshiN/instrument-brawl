@@ -23,7 +23,9 @@ This is a browser-based 1v1 physics fighting game where musical instruments figh
 - Character select exists; keep it minimal and do not overbuild it yet.
 - Do not add complex combo systems yet.
 - Phase 3 is complete; future PRs should move to Phase 4 unless explicitly instructed otherwise.
+- Phase 4 means solo play preparation, presentation/polish, and audio-ready structure without committing audio assets yet.
 - Keep one attack hitting only once unless explicitly instructed otherwise.
+- Keep PRs focused: 1 PR = 1 feature.
 - Run npm run build after code changes.
 
 ## PR titles
