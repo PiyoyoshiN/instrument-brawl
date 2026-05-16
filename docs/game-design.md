@@ -142,27 +142,28 @@ Phase 4 is not only visual polish. It should prepare solo play, improve presenta
 
 ### Minimal P1 vs CPU mode design
 
-CharacterSelectScene should keep local 2-player mode as the default. Add a small P2 mode choice there with two options: Human and CPU. P1 and P2 fighter selection should continue to use the existing fighter registry, and same-character selection should remain allowed for both Human and CPU modes.
+CharacterSelectScene keeps local 2-player mode as the default and includes a small P2 mode choice with two options: Human and CPU. P1 and P2 fighter selection continue to use the existing fighter registry, and same-character selection remains allowed for both Human and CPU modes.
 
-Scene data should carry the P2 mode alongside the existing fighter IDs:
+Scene data carries the P2 mode alongside the existing fighter IDs:
 
 - `player1FighterId`.
 - `player2FighterId`.
 - `player2Mode`, using a simple value such as `human` or `cpu`.
 
-CharacterSelectScene should pass `player2Mode` to BattleScene when starting a match. BattleScene should pass the same value to ResultScene when the match ends. ResultScene rematch should preserve the selected fighters and `player2Mode`; returning to CharacterSelectScene with C should also preserve the selected fighters and `player2Mode`.
+CharacterSelectScene passes `player2Mode` to BattleScene when starting a match. BattleScene passes the same value to ResultScene when the match ends. ResultScene rematch preserves the selected fighters and `player2Mode`; returning to CharacterSelectScene with C also preserves the selected fighters and `player2Mode`.
 
 ### Minimal CPU behavior
 
+- Implemented in Phase 4-3.
 - CPU controls P2 only.
-- CPU should not act before the Ready/Fight start prompt enables the match.
-- CPU should not act after `matchOver`.
-- Move toward P1 when far away.
-- Attack when close enough.
-- Optionally back away sometimes so it feels less robotic.
-- CPU must use existing fighter stats.
-- CPU must use the existing attack cooldown, attack duration, one-hit-per-attack rule, HP, hit flash, knockback, win/draw detection, and ResultScene flow.
-- Do not add difficulty settings, learning AI, strong prediction, perfect avoidance, or CPU-only stat changes yet.
+- CPU does not act before the Ready/Fight start prompt enables the match.
+- CPU does not act after `matchOver`.
+- CPU moves toward P1 when far away.
+- CPU attacks when close enough.
+- CPU can optionally back away sometimes so it feels less robotic.
+- CPU uses existing fighter stats.
+- CPU uses the existing attack cooldown, attack duration, one-hit-per-attack rule, HP, hit flash, knockback, win/draw detection, and ResultScene flow.
+- No difficulty settings, learning AI, strong prediction, perfect avoidance, or CPU-only stat changes are added yet.
 
 ### Audio-ready planning
 

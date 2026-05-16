@@ -111,12 +111,12 @@ Early Phase 4 priorities:
 
 - Phase 4-1: Define Phase 4 scope and guardrails.
 - Phase 4-2: Design minimal P1 vs CPU mode before implementation.
-- Add a minimal P2 CPU for solo play after the design is documented.
-- CharacterSelectScene should default to P2 Human mode and allow choosing P2 Human or CPU.
-- Match scene data should preserve `player2Mode` (`human` or `cpu`) from CharacterSelectScene to BattleScene to ResultScene.
-- ResultScene R rematch and C return-to-character-select should preserve selected fighters and P2 Human/CPU mode.
-- Keep the first CPU simple: control P2 only, wait for Ready/Fight, stop after matchOver, approach P1 when far away, attack when close enough, and optionally back away sometimes.
-- CPU must use existing fighter stats and existing attack cooldown, attack duration, one-hit-per-attack rule, HP, hit flash, knockback, win/draw detection, and ResultScene flow.
+- Phase 4-3: Implement minimal P2 CPU mode for solo play while preserving local 2-player as the default.
+- CharacterSelectScene defaults to P2 Human mode and allows choosing P2 Human or CPU.
+- Match scene data preserves `player2Mode` (`human` or `cpu`) from CharacterSelectScene to BattleScene to ResultScene.
+- ResultScene R rematch and C return-to-character-select preserve selected fighters and P2 Human/CPU mode.
+- The first CPU stays simple: control P2 only, wait for Ready/Fight, stop after matchOver, approach P1 when far away, attack when close enough, and optionally back away sometimes.
+- CPU uses existing fighter stats and existing attack cooldown, attack duration, one-hit-per-attack rule, HP, hit flash, knockback, win/draw detection, and ResultScene flow.
 - Do not add difficulty settings, learning AI, strong prediction, perfect avoidance, or CPU-only stat changes yet.
 - Improve menus, arena readability, hit/win/restart feedback, and comedic presentation details in small focused PRs.
 

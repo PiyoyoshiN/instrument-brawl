@@ -18,6 +18,13 @@ const matchStartFightTextDurationMs = 450;
 const hpBarWidth = 220;
 const hpBarHeight = 18;
 const hpBarInset = 3;
+const cpuAttackDistancePadding = 18;
+const cpuComfortDistance = 172;
+const cpuDecisionIntervalMs = 850;
+const cpuRetreatDurationMs = 420;
+const cpuRetreatChance = 0.22;
+
+type Player2Mode = 'human' | 'cpu';
 
 type FighterStats = {
   maxHp: number;
@@ -147,6 +154,7 @@ const defaultPlayer1FighterId = 'electric-guitar';
 const defaultPlayer2FighterId = 'bass';
 const defaultPlayer1FighterDefinition = getFighterDefinition(defaultPlayer1FighterId);
 const defaultPlayer2FighterDefinition = getFighterDefinition(defaultPlayer2FighterId);
+const defaultPlayer2Mode: Player2Mode = 'human';
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
@@ -187,6 +195,7 @@ type ActiveAttack = {
 type BattleSceneData = {
   player1FighterId?: string;
   player2FighterId?: string;
+  player2Mode?: Player2Mode;
 };
 
 type CharacterSelectSceneData = BattleSceneData;
@@ -282,6 +291,7 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
 class CharacterSelectScene extends Phaser.Scene {
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
+  private player2Mode = defaultPlayer2Mode;
   private player1Index = 0;
   private player2Index = 0;
   private player1NameText?: Phaser.GameObjects.Text;
@@ -292,10 +302,12 @@ class CharacterSelectScene extends Phaser.Scene {
   private player2IndexText?: Phaser.GameObjects.Text;
   private player2RoleText?: Phaser.GameObjects.Text;
   private player2StatsText?: Phaser.GameObjects.Text;
+  private player2ModeText?: Phaser.GameObjects.Text;
   private player1LeftKey?: Phaser.Input.Keyboard.Key;
   private player1RightKey?: Phaser.Input.Keyboard.Key;
   private player2LeftKey?: Phaser.Input.Keyboard.Key;
   private player2RightKey?: Phaser.Input.Keyboard.Key;
+  private player2ModeKey?: Phaser.Input.Keyboard.Key;
   private enterKey?: Phaser.Input.Keyboard.Key;
   private spaceKey?: Phaser.Input.Keyboard.Key;
   private escapeKey?: Phaser.Input.Keyboard.Key;
@@ -309,6 +321,7 @@ class CharacterSelectScene extends Phaser.Scene {
   init(data: CharacterSelectSceneData = {}) {
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
+    this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
   }
 
   create() {
@@ -419,6 +432,14 @@ class CharacterSelectScene extends Phaser.Scene {
         fontSize: '14px',
       })
       .setOrigin(0.5);
+    this.player2ModeText = this.add
+      .text(570, 292, '', {
+        align: 'center',
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '14px',
+      })
+      .setOrigin(0.5);
     this.player2RoleText = this.add
       .text(570, 318, '', {
         align: 'center',
@@ -439,7 +460,7 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 474, 'P1: A / D choose    P2: ← / → choose', {
+      .text(400, 474, 'P1: A / D choose    P2: ← / → choose    P2 ↓: Human / CPU', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -465,6 +486,7 @@ class CharacterSelectScene extends Phaser.Scene {
     this.player1RightKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.player2LeftKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
     this.player2RightKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    this.player2ModeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
     this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.escapeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
@@ -497,6 +519,11 @@ class CharacterSelectScene extends Phaser.Scene {
       selectionChanged = true;
     }
 
+    if (this.player2ModeKey && Phaser.Input.Keyboard.JustDown(this.player2ModeKey)) {
+      this.player2Mode = this.player2Mode === 'human' ? 'cpu' : 'human';
+      selectionChanged = true;
+    }
+
     if (selectionChanged) {
       this.updateSelectionText();
     }
@@ -515,6 +542,7 @@ class CharacterSelectScene extends Phaser.Scene {
       this.scene.start('BattleScene', {
         player1FighterId: fighterDefinitions[this.player1Index].id,
         player2FighterId: fighterDefinitions[this.player2Index].id,
+        player2Mode: this.player2Mode,
       });
     }
   }
@@ -545,8 +573,13 @@ class CharacterSelectScene extends Phaser.Scene {
     this.player1StatsText?.setText(this.getStatsText(player1Definition));
     this.player2NameText?.setText(`< ${player2Definition.displayName} >`);
     this.player2IndexText?.setText(`Fighter ${this.player2Index + 1} / ${fighterDefinitions.length}`);
+    this.player2ModeText?.setText(`Mode: ${this.getPlayer2ModeLabel()}`);
     this.player2RoleText?.setText(player2Definition.role);
     this.player2StatsText?.setText(this.getStatsText(player2Definition));
+  }
+
+  private getPlayer2ModeLabel() {
+    return this.player2Mode === 'cpu' ? 'CPU' : 'Human';
   }
 
   private getStatsText(definition: FighterDefinition) {
@@ -565,6 +598,7 @@ class BattleScene extends Phaser.Scene {
   private activeAttacks: ActiveAttack[] = [];
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
+  private player2Mode = defaultPlayer2Mode;
   private player1Definition = defaultPlayer1FighterDefinition;
   private player2Definition = defaultPlayer2FighterDefinition;
   private matchOver = false;
@@ -573,6 +607,8 @@ class BattleScene extends Phaser.Scene {
   private startCountdownEvent?: Phaser.Time.TimerEvent;
   private startPromptClearEvent?: Phaser.Time.TimerEvent;
   private resultTransitionEvent?: Phaser.Time.TimerEvent;
+  private nextCpuDecisionAt = 0;
+  private cpuRetreatUntil = 0;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
@@ -585,6 +621,7 @@ class BattleScene extends Phaser.Scene {
   init(data: BattleSceneData = {}) {
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
+    this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
     this.player1Definition = getFighterDefinition(this.player1FighterId);
     this.player2Definition = getFighterDefinition(this.player2FighterId);
   }
@@ -593,6 +630,8 @@ class BattleScene extends Phaser.Scene {
     this.matchOver = false;
     this.matchStarted = false;
     this.activeAttacks = [];
+    this.nextCpuDecisionAt = 0;
+    this.cpuRetreatUntil = 0;
     this.startCountdownEvent?.remove(false);
     this.startCountdownEvent = undefined;
     this.startPromptClearEvent?.remove(false);
@@ -617,7 +656,7 @@ class BattleScene extends Phaser.Scene {
     this.player2Hp = this.createHpUi(
       768,
       24,
-      'P2',
+      this.player2Mode === 'cpu' ? 'P2 CPU' : 'P2',
       this.player2Definition.stats.maxHp,
       this.player2Definition.labelColor,
       0x38bdf8,
@@ -633,7 +672,7 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 112, `${this.player1Definition.displayName} vs ${this.player2Definition.displayName}`, {
+      .text(400, 112, `${this.player1Definition.displayName} vs ${this.player2Definition.displayName}${this.player2Mode === 'cpu' ? ' (CPU)' : ''}`, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -641,7 +680,7 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 150, 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack', {
+      .text(400, 150, this.player2Mode === 'cpu' ? 'P1: A / D move, W / Space attack    P2: CPU' : 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack', {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -665,9 +704,14 @@ class BattleScene extends Phaser.Scene {
     }
 
     this.moveFighter(this.player1, this.controls.player1, delta);
-    this.moveFighter(this.player2, this.controls.player2, delta);
     this.tryAttack(this.player1, this.controls.player1, time);
-    this.tryAttack(this.player2, this.controls.player2, time);
+
+    if (this.player2Mode === 'cpu') {
+      this.updateCpu(time, delta);
+    } else {
+      this.moveFighter(this.player2, this.controls.player2, delta);
+      this.tryAttack(this.player2, this.controls.player2, time);
+    }
     this.updateActiveAttacks(time);
     this.updateKnockback(this.player1, delta);
     this.updateKnockback(this.player2, delta);
@@ -800,7 +844,6 @@ class BattleScene extends Phaser.Scene {
   }
 
   private moveFighter(fighter: Fighter, keys: PlayerControls, delta: number) {
-    const distance = fighter.stats.moveSpeed * (delta / 1000);
     let horizontalInput = 0;
 
     if (keys.left.isDown) {
@@ -815,9 +858,20 @@ class BattleScene extends Phaser.Scene {
       fighter.facing = horizontalInput < 0 ? -1 : 1;
     }
 
+    this.moveFighterByDirection(fighter, horizontalInput, delta);
+  }
+
+  private moveFighterByDirection(fighter: Fighter, horizontalInput: number, delta: number) {
+    const direction = Phaser.Math.Clamp(horizontalInput, -1, 1);
+
+    if (direction !== 0) {
+      fighter.facing = direction < 0 ? -1 : 1;
+    }
+
+    const distance = fighter.stats.moveSpeed * (delta / 1000);
     const bodyHalfWidth = this.getFighterBodyHalfWidth(fighter);
     const nextX = Phaser.Math.Clamp(
-      fighter.body.x + horizontalInput * distance,
+      fighter.body.x + direction * distance,
       bodyHalfWidth,
       gameWidth - bodyHalfWidth,
     );
@@ -837,11 +891,55 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
+    this.startAttack(fighter, time);
+  }
+
+  private startAttack(fighter: Fighter, time: number) {
+    if (this.matchOver || time < fighter.nextAttackAt) {
+      return;
+    }
+
     fighter.nextAttackAt = time + attackCooldownMs;
     const opponent = fighter === this.player1 ? this.player2 : this.player1;
     const opponentHp = fighter === this.player1 ? this.player2Hp : this.player1Hp;
 
     this.createAttackHitbox(fighter, opponent, opponentHp, time);
+  }
+
+  private updateCpu(time: number, delta: number) {
+    if (this.matchOver || !this.matchStarted) {
+      return;
+    }
+
+    const distanceToPlayer1 = this.player1.body.x - this.player2.body.x;
+    const absDistance = Math.abs(distanceToPlayer1);
+    const directionToPlayer1 = distanceToPlayer1 < 0 ? -1 : 1;
+    const attackDistance = this.getFighterBodyHalfWidth(this.player1) +
+      this.getFighterBodyHalfWidth(this.player2) +
+      this.player2.stats.attackWidth +
+      cpuAttackDistancePadding;
+
+    if (time >= this.nextCpuDecisionAt) {
+      this.nextCpuDecisionAt = time + cpuDecisionIntervalMs;
+
+      if (absDistance < cpuComfortDistance && Math.random() < cpuRetreatChance) {
+        this.cpuRetreatUntil = time + cpuRetreatDurationMs;
+      }
+    }
+
+    if (absDistance <= attackDistance) {
+      this.player2.facing = directionToPlayer1;
+      this.startAttack(this.player2, time);
+    }
+
+    const shouldRetreat = time < this.cpuRetreatUntil;
+    const moveDirection = shouldRetreat
+      ? -directionToPlayer1
+      : absDistance > cpuComfortDistance
+        ? directionToPlayer1
+        : 0;
+
+    this.moveFighterByDirection(this.player2, moveDirection, delta);
   }
 
   private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
@@ -998,6 +1096,7 @@ class BattleScene extends Phaser.Scene {
         ...resultData,
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
+        player2Mode: this.player2Mode,
       });
     });
   }
@@ -1037,6 +1136,7 @@ class ResultScene extends Phaser.Scene {
   private result = 'Match Over';
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
+  private player2Mode = defaultPlayer2Mode;
   private player1Definition = defaultPlayer1FighterDefinition;
   private player2Definition = defaultPlayer2FighterDefinition;
   private restartKey?: Phaser.Input.Keyboard.Key;
@@ -1053,6 +1153,7 @@ class ResultScene extends Phaser.Scene {
   init(data: ResultSceneData = {}) {
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
+    this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
     this.player1Definition = getFighterDefinition(this.player1FighterId);
     this.player2Definition = getFighterDefinition(this.player2FighterId);
     this.result = data.displayTitle ?? this.getDisplayTitle(data.result);
@@ -1083,7 +1184,15 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 296, 'Press R to rematch', {
+      .text(400, 262, `P2 Mode: ${this.player2Mode === 'cpu' ? 'CPU' : 'Human'}`, {
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 304, 'Press R to rematch', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '26px',
@@ -1091,7 +1200,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 344, 'Press C to change fighters', {
+      .text(400, 352, 'Press C to change fighters', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',
@@ -1099,7 +1208,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 392, 'Press Enter or Space to return to Home', {
+      .text(400, 400, 'Press Enter or Space to return to Home', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -1128,6 +1237,7 @@ class ResultScene extends Phaser.Scene {
       this.scene.start('BattleScene', {
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
+        player2Mode: this.player2Mode,
       });
       return;
     }
@@ -1137,6 +1247,7 @@ class ResultScene extends Phaser.Scene {
       this.scene.start('CharacterSelectScene', {
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
+        player2Mode: this.player2Mode,
       });
       return;
     }
