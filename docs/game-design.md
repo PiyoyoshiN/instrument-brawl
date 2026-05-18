@@ -194,7 +194,21 @@ The game still intentionally avoids new fighters, specials, items, progression, 
 
 Known minor follow-up: ResultScene subtitle wording may be adjusted later if needed.
 
-Next recommended direction is either audio-ready structure without assets or controlled Phase 5 planning. Do not add new gameplay yet unless a focused task explicitly asks for it.
+Next recommended direction is Phase 5 foundation cleanup, Quick Help planning, and roadmap alignment. Do not add new gameplay yet unless a focused task explicitly asks for it.
+
+## Phase 5 design direction
+
+Phase 5 is not a gameplay expansion phase. It should focus on foundation cleanup, compact Quick Help planning, and full roadmap alignment.
+
+Do not add a full tutorial yet. Future help should be a compact in-battle Pause / Quick Help overlay that can quickly remind players of controls, P2 Human/CPU mode, and basic match rules without adding a tutorial scene or practice mode.
+
+Later phase direction:
+
+- Phase 6: effects trial and presentation experiments.
+- Phase 7: game shell direction for Home / Mode / Options and localStorage-based save planning.
+- Phase 8: match rule expansion consideration such as Retire / Timer / rounds, without rushing rounds.
+- Phase 9: encyclopedia, records, and light worldbuilding.
+- Phase 10+: specials, items, new fighters, and larger content expansion.
 
 ## Later candidate ideas
 

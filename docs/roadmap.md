@@ -164,7 +164,32 @@ Still intentionally avoided:
 
 Known minor follow-up: ResultScene subtitle wording may be adjusted later if needed.
 
-Next recommended direction: prepare audio-ready structure without assets, or start controlled Phase 5 planning. Do not add new gameplay yet.
+Next recommended direction: enter Phase 5 for foundation cleanup, Quick Help planning, and full roadmap alignment. Do not add new gameplay yet.
+
+## Phase 5: foundation cleanup and roadmap alignment
+
+Goal: prepare the project for future phases without expanding gameplay. Phase 5 is not a gameplay expansion phase.
+
+Phase 5 scope:
+
+- Foundation cleanup for small maintainability/readability issues.
+- Planning for a compact in-battle Pause / Quick Help overlay.
+- Full roadmap alignment so future tasks know what belongs in later phases.
+
+Phase 5 guardrails:
+
+- Do not add a full tutorial yet.
+- Do not implement Pause / Quick Help until a focused task explicitly asks for it.
+- Do not add new fighters, specials, items, progression, story, encyclopedia, timer, rounds, retire button, settings screen, online play, or BGM/SE assets.
+- Keep PRs focused: 1 PR = 1 feature.
+
+## Phase 6-10+ direction
+
+- Phase 6: effects trial and presentation experiments.
+- Phase 7: game shell direction for Home / Mode / Options and localStorage-based save planning.
+- Phase 8: match rule expansion consideration such as Retire / Timer / rounds, without rushing rounds.
+- Phase 9: encyclopedia, records, and light worldbuilding.
+- Phase 10+: specials, items, new fighters, and larger content expansion.
 
 ## Features to avoid for now
 
