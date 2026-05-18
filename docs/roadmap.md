@@ -173,15 +173,24 @@ Goal: prepare the project for future phases without expanding gameplay. Phase 5 
 Phase 5 scope:
 
 - Foundation cleanup for small maintainability/readability issues.
-- Planning for a compact in-battle Pause / Quick Help overlay.
+- Phase 5-3: Document compact in-battle Pause / Quick Help overlay design before implementation.
 - Full roadmap alignment so future tasks know what belongs in later phases.
 
 Phase 5 guardrails:
 
 - Do not add a full tutorial yet.
-- Do not implement Pause / Quick Help until a focused task explicitly asks for it.
+- Do not implement Pause / Quick Help until a focused implementation task explicitly asks for it.
 - Do not add new fighters, specials, items, progression, story, encyclopedia, timer, rounds, retire button, settings screen, online play, or BGM/SE assets.
 - Keep PRs focused: 1 PR = 1 feature.
+
+### Pause / Quick Help planning
+
+- Quick Help should be a compact in-battle overlay, not a full tutorial.
+- Proposed toggle key: `P`, because current controls do not use it.
+- One-screen content should include Resume `P`, P1 controls, P2 Human controls, P2 CPU automatic control, current P2 mode, one-hit attack rule, Ready / Fight reminder, and Result controls.
+- Later pause behavior should stop movement, new attacks, CPU behavior, and active attack updates.
+- Later pause behavior must not break Ready / Fight, `matchOver`, ResultScene transition, R rematch, or C return-to-character-select.
+- Forfeit / Retire, Timer, Rounds, Practice mode, TutorialScene, and Settings are not part of this task.
 
 ## Phase 6-10+ direction
 

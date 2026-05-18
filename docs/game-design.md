@@ -202,6 +202,31 @@ Phase 5 is not a gameplay expansion phase. It should focus on foundation cleanup
 
 Do not add a full tutorial yet. Future help should be a compact in-battle Pause / Quick Help overlay that can quickly remind players of controls, P2 Human/CPU mode, and basic match rules without adding a tutorial scene or practice mode.
 
+### Pause / Quick Help overlay design
+
+Quick Help should be a compact in-battle overlay, not a full tutorial. Use `P` as the proposed toggle key; current controls do not use `P`.
+
+The overlay should fit on one screen and show only essential information:
+
+- Resume: `P`.
+- P1 controls: `A` / `D` move, `W` / `Space` attack.
+- P2 Human controls: `Left` / `Right` move, `Up` / `Enter` attack.
+- P2 CPU: controlled automatically.
+- Current P2 mode: Human or CPU.
+- One attack can hit only once.
+- Wait for Ready / Fight before control starts.
+- Result controls: `R` rematch, `C` character select, `Enter` / `Space` Home.
+
+Expected pause behavior for implementation:
+
+- Pause should stop movement.
+- Pause should stop new attacks.
+- Pause should stop CPU behavior.
+- Pause should stop active attack updates.
+- Pause should not break Ready / Fight, `matchOver`, ResultScene transition, R rematch, or C return-to-character-select.
+
+Forfeit / Retire, Timer, Rounds, Practice mode, TutorialScene, and Settings are not part of this task.
+
 Later phase direction:
 
 - Phase 6: effects trial and presentation experiments.

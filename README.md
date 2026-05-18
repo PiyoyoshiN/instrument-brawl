@@ -79,7 +79,7 @@ The current game still intentionally avoids new fighters, specials, items, progr
 
 Known minor follow-up: ResultScene subtitle wording may be adjusted later if needed.
 
-Phase 5 is now the next documentation and foundation phase. It should focus on foundation cleanup, Quick Help planning, and full roadmap alignment; it is not a gameplay expansion phase. Do not add a full tutorial yet. Future help should be a compact in-battle Pause / Quick Help overlay.
+Phase 5 is now the next documentation and foundation phase. It should focus on foundation cleanup, Quick Help planning, and full roadmap alignment; it is not a gameplay expansion phase. Do not add a full tutorial yet. Future help should be a compact in-battle Pause / Quick Help overlay, with `P` planned as the toggle key.
 
 ## Phase 5 and later direction
 
