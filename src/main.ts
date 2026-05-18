@@ -1228,7 +1228,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 174, 'Final hit landed', {
+      .text(400, 174, 'Match finished', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
