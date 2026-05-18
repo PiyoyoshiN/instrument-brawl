@@ -616,6 +616,10 @@ class BattleScene extends Phaser.Scene {
   private startCountdownEvent?: Phaser.Time.TimerEvent;
   private startPromptClearEvent?: Phaser.Time.TimerEvent;
   private resultTransitionEvent?: Phaser.Time.TimerEvent;
+  private pauseOverlay?: Phaser.GameObjects.Container;
+  private pauseKey?: Phaser.Input.Keyboard.Key;
+  private isPaused = false;
+  private pauseStartedAt = 0;
   private hitMarker?: Phaser.GameObjects.Text;
   private hitMarkerEvent?: Phaser.Time.TimerEvent;
   private nextCpuDecisionAt = 0;
@@ -643,6 +647,10 @@ class BattleScene extends Phaser.Scene {
     this.activeAttacks = [];
     this.nextCpuDecisionAt = 0;
     this.cpuRetreatUntil = 0;
+    this.isPaused = false;
+    this.pauseStartedAt = 0;
+    this.pauseKey = undefined;
+    this.destroyPauseOverlay();
     this.startCountdownEvent?.remove(false);
     this.startCountdownEvent = undefined;
     this.startPromptClearEvent?.remove(false);
@@ -698,7 +706,7 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 150, this.player2Mode === 'cpu' ? 'P1: A / D move, W / Space attack    P2: CPU' : 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack', {
+      .text(400, 150, this.player2Mode === 'cpu' ? 'P1: A / D move, W / Space attack    P2: CPU    P: pause/help' : 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack    P: pause/help', {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -717,7 +725,11 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
-    if (this.matchOver || !this.matchStarted) {
+    if (this.pauseKey && !this.matchOver && Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
+      this.togglePause(time);
+    }
+
+    if (this.isPaused || this.matchOver || !this.matchStarted) {
       return;
     }
 
@@ -845,7 +857,10 @@ class BattleScene extends Phaser.Scene {
       player2Right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
       player2Attack: Phaser.Input.Keyboard.KeyCodes.UP,
       player2AltAttack: Phaser.Input.Keyboard.KeyCodes.ENTER,
+      pause: Phaser.Input.Keyboard.KeyCodes.P,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
+
+    this.pauseKey = keys.pause;
 
     return {
       player1: {
@@ -859,6 +874,109 @@ class BattleScene extends Phaser.Scene {
         attacks: [keys.player2Attack, keys.player2AltAttack],
       },
     };
+  }
+
+  private togglePause(time: number) {
+    if (this.isPaused) {
+      this.resumeBattle(time);
+      return;
+    }
+
+    this.pauseBattle(time);
+  }
+
+  private pauseBattle(time: number) {
+    this.isPaused = true;
+    this.pauseStartedAt = time;
+    this.setPausableTimersPaused(true);
+    this.showPauseOverlay();
+  }
+
+  private resumeBattle(time: number) {
+    const pausedDuration = Math.max(0, time - this.pauseStartedAt);
+
+    this.isPaused = false;
+    this.pauseStartedAt = 0;
+    this.shiftPausedTimestamps(pausedDuration);
+    this.setPausableTimersPaused(false);
+    this.destroyPauseOverlay();
+  }
+
+  private shiftPausedTimestamps(pausedDuration: number) {
+    if (pausedDuration <= 0) {
+      return;
+    }
+
+    this.player1.nextAttackAt += pausedDuration;
+    this.player2.nextAttackAt += pausedDuration;
+    this.nextCpuDecisionAt += pausedDuration;
+    this.cpuRetreatUntil += pausedDuration;
+
+    for (const attack of this.activeAttacks) {
+      attack.expiresAt += pausedDuration;
+    }
+  }
+
+  private setPausableTimersPaused(paused: boolean) {
+    if (this.startCountdownEvent) {
+      this.startCountdownEvent.paused = paused;
+    }
+
+    if (this.startPromptClearEvent) {
+      this.startPromptClearEvent.paused = paused;
+    }
+
+    if (this.hitMarkerEvent) {
+      this.hitMarkerEvent.paused = paused;
+    }
+
+    if (this.player1?.hitFlashEvent) {
+      this.player1.hitFlashEvent.paused = paused;
+    }
+
+    if (this.player2?.hitFlashEvent) {
+      this.player2.hitFlashEvent.paused = paused;
+    }
+  }
+
+  private showPauseOverlay() {
+    this.destroyPauseOverlay();
+
+    const overlay = this.add.container(400, 300).setDepth(20);
+    const currentMode = this.player2Mode === 'cpu' ? 'CPU' : 'Human';
+
+    overlay.add([
+      this.add.rectangle(0, 0, gameWidth, gameHeight, 0x020617, 0.7),
+      this.add.rectangle(0, 0, 620, 380, 0x111827, 0.95).setStrokeStyle(4, 0xfacc15),
+      this.add.text(0, -156, 'Paused / Quick Help', {
+        align: 'center',
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '32px',
+      }).setOrigin(0.5),
+      this.add.text(-260, -104, [
+        'Resume: P',
+        'P1: A / D move, W / Space attack',
+        'P2 Human: Left / Right move, Up / Enter attack',
+        'P2 CPU: controlled automatically',
+        `Current P2 mode: ${currentMode}`,
+        'Rule: one attack can hit only once',
+        'Ready / Fight: controls start after Fight',
+        'Result: R rematch, C character select, Enter / Space Home',
+      ], {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+        lineSpacing: 10,
+      }).setOrigin(0, 0),
+    ]);
+
+    this.pauseOverlay = overlay;
+  }
+
+  private destroyPauseOverlay() {
+    this.pauseOverlay?.destroy(true);
+    this.pauseOverlay = undefined;
   }
 
   private moveFighter(fighter: Fighter, keys: PlayerControls, delta: number) {
@@ -1128,6 +1246,10 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
+    if (this.isPaused) {
+      this.resumeBattle(this.time.now);
+    }
+
     this.matchOver = true;
     this.add.rectangle(400, 292, 360, 86, 0x020617, 0.62).setStrokeStyle(3, 0xfacc15).setDepth(7);
     this.add.text(400, 292, resultData.displayTitle ?? 'Match Over', {
@@ -1136,6 +1258,9 @@ class BattleScene extends Phaser.Scene {
       fontFamily: 'system-ui, sans-serif',
       fontSize: '30px',
     }).setOrigin(0.5).setDepth(8);
+    this.destroyPauseOverlay();
+    this.isPaused = false;
+    this.pauseStartedAt = 0;
     this.clearActiveAttacks();
     this.player1.knockbackVelocity = 0;
     this.player2.knockbackVelocity = 0;
@@ -1151,6 +1276,9 @@ class BattleScene extends Phaser.Scene {
   }
 
   private cleanupBattleScene() {
+    this.destroyPauseOverlay();
+    this.isPaused = false;
+    this.pauseStartedAt = 0;
     this.clearActiveAttacks();
     this.startCountdownEvent?.remove(false);
     this.startCountdownEvent = undefined;

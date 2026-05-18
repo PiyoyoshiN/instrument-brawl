@@ -31,6 +31,7 @@
 - P1 W / Space: attack
 - P2 Left / Right: move when P2 mode is Human
 - P2 Up / Enter: attack when P2 mode is Human
+- P: pause / quick help
 
 ### Result
 
