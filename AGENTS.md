@@ -20,6 +20,18 @@ This is a browser-based 1v1 physics fighting game where musical instruments figh
 - Prioritize a playable MVP.
 - Keep changes small.
 - Do not implement online multiplayer yet.
-- Do not add character select yet.
+- Character select exists; keep it minimal and do not overbuild it yet.
 - Do not add complex combo systems yet.
-- Run npm run build after changes.
+- Phase 4 checkpoint is complete; future PRs should move to Phase 5 unless explicitly instructed otherwise.
+- Phase 5 means foundation cleanup, Quick Help planning, and full roadmap alignment; it is not a gameplay expansion phase.
+- Do not add a full tutorial yet; future help should be a compact in-battle Pause / Quick Help overlay.
+- Keep one attack hitting only once unless explicitly instructed otherwise.
+- Keep PRs focused: 1 PR = 1 feature.
+- Run npm run build after code changes.
+
+## PR titles
+
+- PR titles must include the phase number and concrete task name.
+- After Phase 1, do not use generic scaffold/prototype wording.
+- Good example: `Phase 2-7: Prepare basic scene flow`.
+- Bad examples: `Initial scaffold`, `Initial playable prototype`, `Add Phaser prototype`, `Build tooling and docs`.
