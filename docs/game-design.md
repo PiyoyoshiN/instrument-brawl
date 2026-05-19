@@ -192,7 +192,6 @@ Phase 4 currently has local 2P as the default, optional P2 CPU mode, four select
 
 The game still intentionally avoids new fighters, specials, items, progression, story, encyclopedia, timer, rounds, retire button, BGM/SE audio files, settings screen, and online play.
 
-Known minor follow-up: ResultScene subtitle wording may be adjusted later if needed.
 
 Next recommended direction is Phase 5 foundation cleanup, Quick Help planning, and roadmap alignment. Do not add new gameplay yet unless a focused task explicitly asks for it.
 
