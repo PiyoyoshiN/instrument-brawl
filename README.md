@@ -78,13 +78,13 @@ Implemented Phase 4 checkpoint items:
 
 The current game still intentionally avoids new fighters, specials, items, progression, story, encyclopedia, timer, rounds, retire button, BGM/SE audio files, settings screen, and online play.
 
-Phase 5 is now the next documentation and foundation phase. It should focus on foundation cleanup, Quick Help planning, and full roadmap alignment; it is not a gameplay expansion phase. Do not add a full tutorial yet. Future help should be a compact in-battle Pause / Quick Help overlay, with `P` planned as the toggle key.
+Phase 5 checkpoint is now documented: foundation cleanup and roadmap alignment are complete, ResultScene subtitle wording is polished to `Match finished`, and a compact in-battle Pause / Quick Help overlay is implemented with `P` (not a full tutorial).
 
 ## Phase 5 and later direction
 
-Phase 5 should prepare the project for later work without adding new gameplay. Keep it focused on foundation cleanup, compact Quick Help planning, and roadmap alignment.
+Phase 5 stayed focused on foundation cleanup, compact Pause / Quick Help, and roadmap alignment without gameplay expansion.
 
-Longer-term direction:
+Next recommended direction:
 
 - Phase 6: effects trial and presentation experiments.
 - Phase 7: game shell direction for Home / Mode / Options and localStorage-based save planning.

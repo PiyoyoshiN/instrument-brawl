@@ -162,24 +162,26 @@ Still intentionally avoided:
 - Settings screen.
 - Online play.
 
-Known minor follow-up: ResultScene subtitle wording may be adjusted later if needed.
+Phase 5 checkpoint follow-ups from this note are complete: ResultScene subtitle wording is now `Match finished`, and Pause / Quick Help is implemented as a compact in-battle overlay.
 
-Next recommended direction: enter Phase 5 for foundation cleanup, Quick Help planning, and full roadmap alignment. Do not add new gameplay yet.
+Next recommended direction: move to Phase 6 effects trial and presentation experiments.
 
-## Phase 5: foundation cleanup and roadmap alignment
+## Phase 5: foundation cleanup and roadmap alignment — checkpoint complete
 
 Goal: prepare the project for future phases without expanding gameplay. Phase 5 is not a gameplay expansion phase.
 
-Phase 5 scope:
+Checkpoint summary:
 
-- Foundation cleanup for small maintainability/readability issues.
-- Phase 5-3: Document compact in-battle Pause / Quick Help overlay design before implementation.
-- Full roadmap alignment so future tasks know what belongs in later phases.
+- Foundation cleanup and roadmap alignment updates were completed.
+- ResultScene subtitle wording is polished to `Match finished`.
+- Compact in-battle Pause / Quick Help is implemented with `P` (not a full tutorial).
+- Manual playtest checklist is documented at `docs/playtest-checklist.md`.
+- Audio-ready folder structure exists at `public/assets/audio/bgm/.gitkeep` and `public/assets/audio/sfx/.gitkeep` with no BGM/SE assets.
 
 Phase 5 guardrails:
 
 - Do not add a full tutorial yet.
-- Do not implement Pause / Quick Help until a focused implementation task explicitly asks for it.
+- Keep Pause / Quick Help compact and in-battle; do not expand it into a full tutorial system.
 - Do not add new fighters, specials, items, progression, story, encyclopedia, timer, rounds, retire button, settings screen, online play, or BGM/SE assets.
 - Keep PRs focused: 1 PR = 1 feature.
 
