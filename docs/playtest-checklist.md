@@ -46,3 +46,8 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] No new fighters/specials/items/progression/story/encyclopedia were added.
 - [ ] No timer/rounds/retire/settings/tutorial/practice/save/online were added.
 - [ ] No BGM/SE assets, images, or sprites were added.
+
+
+## Phase 6 note
+
+- [ ] Effects trial PRs follow `docs/phase-6-effects-trial.md` guardrails and keep gameplay values unchanged.

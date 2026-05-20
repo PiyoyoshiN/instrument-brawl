@@ -228,7 +228,7 @@ Forfeit / Retire, Timer, Rounds, Practice mode, TutorialScene, and Settings are 
 
 Later phase direction:
 
-- Phase 6: effects trial and presentation experiments.
+- Phase 6: effects trial and presentation experiments (see `docs/phase-6-effects-trial.md`).
 - Phase 7: game shell direction for Home / Mode / Options and localStorage-based save planning.
 - Phase 8: match rule expansion consideration such as Retire / Timer / rounds, without rushing rounds.
 - Phase 9: encyclopedia, records, and light worldbuilding.

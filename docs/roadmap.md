@@ -194,6 +194,9 @@ Phase 5 guardrails:
 - Later pause behavior must not break Ready / Fight, `matchOver`, ResultScene transition, R rematch, or C return-to-character-select.
 - Forfeit / Retire, Timer, Rounds, Practice mode, TutorialScene, and Settings are not part of this task.
 
+
+Phase 6 trial design details are documented in `docs/phase-6-effects-trial.md`.
+
 ## Phase 6-10+ direction
 
 - Phase 6: effects trial and presentation experiments.
