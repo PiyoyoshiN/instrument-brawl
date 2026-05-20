@@ -206,6 +206,34 @@ type ResultSceneData = BattleSceneData & {
   displayTitle?: string;
 };
 
+type AttackVisualStyle = {
+  fillColor: number;
+  strokeColor: number;
+};
+
+const attackVisualPaletteByFighterId: Record<string, AttackVisualStyle[]> = {
+  'electric-guitar': [
+    { fillColor: 0xfacc15, strokeColor: 0xfef08a },
+    { fillColor: 0xf59e0b, strokeColor: 0xfcd34d },
+    { fillColor: 0xfef3c7, strokeColor: 0xfffbeb },
+  ],
+  bass: [
+    { fillColor: 0x0ea5e9, strokeColor: 0xbae6fd },
+    { fillColor: 0x06b6d4, strokeColor: 0xcffafe },
+    { fillColor: 0x1e3a8a, strokeColor: 0x93c5fd },
+  ],
+  'drum-sticks': [
+    { fillColor: 0xfde047, strokeColor: 0xfef9c3 },
+    { fillColor: 0xfef3c7, strokeColor: 0xfffbeb },
+    { fillColor: 0xfbbf24, strokeColor: 0xfde68a },
+  ],
+  keyboard: [
+    { fillColor: 0xa78bfa, strokeColor: 0xede9fe },
+    { fillColor: 0xc4b5fd, strokeColor: 0xe9d5ff },
+    { fillColor: 0x7c3aed, strokeColor: 0xc4b5fd },
+  ],
+};
+
 
 class HomeScene extends Phaser.Scene {
   private enterKey?: Phaser.Input.Keyboard.Key;
@@ -1078,12 +1106,27 @@ class BattleScene extends Phaser.Scene {
     this.moveFighterByDirection(this.player2, moveDirection, delta);
   }
 
+
+  private getAttackVisualStyle(fighter: Fighter): AttackVisualStyle {
+    const palette = attackVisualPaletteByFighterId[fighter.definition.id];
+
+    if (!palette || palette.length === 0) {
+      return {
+        fillColor: fighter.stats.attackColor,
+        strokeColor: fighter.stats.attackStrokeColor,
+      };
+    }
+
+    return Phaser.Math.RND.pick(palette);
+  }
+
   private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
     const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + fighter.stats.attackWidth / 2);
     const hitboxY = fighter.body.y + fighter.stats.attackYOffset;
+    const attackVisualStyle = this.getAttackVisualStyle(fighter);
     const hitbox = this.add
-      .rectangle(hitboxX, hitboxY, fighter.stats.attackWidth, fighter.stats.attackHeight, fighter.stats.attackColor, 0.35)
-      .setStrokeStyle(2, fighter.stats.attackStrokeColor)
+      .rectangle(hitboxX, hitboxY, fighter.stats.attackWidth, fighter.stats.attackHeight, attackVisualStyle.fillColor, 0.35)
+      .setStrokeStyle(2, attackVisualStyle.strokeColor)
       .setDepth(1);
 
     this.activeAttacks.push({
