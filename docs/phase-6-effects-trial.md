@@ -91,3 +91,44 @@ Implemented trial steps:
 
 These are intentionally small visual-only experiments, not final polish.
 Effects remain intentionally primitive and easy to revise/remove in later phases.
+
+
+## Future impact class hook (planning only)
+
+Current Phase 6 tiny hit shake is intentionally common and visual-only. This is temporary.
+Future implementation should prefer **attack-type-based feel** over simple fighter-only feel.
+
+Potential future `attackMethod` / `impactClass` values:
+
+1. `direct-heavy`
+   - Heavy physical hit.
+   - Candidate examples: Bass body hit, Keyboard body hit.
+   - Future feel: stronger shake, thicker spark, heavier impact marker.
+   - Possible later balance hook: stronger knockback/damage in a separate balance phase.
+
+2. `direct-medium`
+   - Standard physical hit.
+   - Candidate example: Electric Guitar direct hit.
+   - Future feel: medium shake, sharp spark, standard impact label.
+
+3. `direct-light`
+   - Light physical hit.
+   - Candidate example: Drum Sticks hit.
+   - Future feel: weaker shake, smaller spark, snappier hit feedback.
+   - Future hook: high critical-rate candidate (not implemented now).
+
+4. `sonic`
+   - Sound-wave / ranged / amplifier-style attack.
+   - Candidate examples: future amp-equipped Guitar/Bass/Keyboard sound attacks.
+   - Future feel: little/no camera shake, waveform/ripple visual, marker style different from direct hits.
+
+5. `hybrid`
+   - Direct hit plus sound/energy accent.
+   - Candidate examples: future powered Guitar/Bass/Keyboard attacks.
+   - Future feel: light shake plus waveform accent, mixed direct/sonic feedback.
+
+Not implemented in Phase 6:
+
+- No attack class data in code yet.
+- No per-class gameplay tuning yet.
+- No projectile/sonic attack implementation yet.

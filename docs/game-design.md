@@ -240,6 +240,21 @@ Current feedback stack in BattleScene is visual-only:
 
 These are effects trials only and do not change gameplay values/logic.
 
+
+### Future combat/effect identity hook
+
+Current hit effects are intentionally shared visual-only trials. In later phases, hits should feel different by future attack impact class rather than treating all attacks the same.
+
+Future identity direction:
+
+- `direct-heavy`: heavier physical impact feel.
+- `direct-medium`: standard sharp direct-hit feel.
+- `direct-light`: lighter/snappier direct-hit feel.
+- `sonic`: waveform/ranged-style feedback with little/no shake.
+- `hybrid`: mixed direct + sonic accents.
+
+This is planning only. No impact-class implementation or gameplay tuning is part of current Phase 6.
+
 Later phase direction:
 
 - Phase 6: effects trial and presentation experiments (see `docs/phase-6-effects-trial.md`).

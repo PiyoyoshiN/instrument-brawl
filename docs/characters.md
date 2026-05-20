@@ -110,3 +110,21 @@ These are later candidate ideas only and are not Phase 3 fighters:
 - Retire button.
 - Duplicate-pick prevention.
 - Detailed balance analysis UI.
+
+
+## Future attack impact identity hooks (planning only)
+
+These are future identity hooks only. They do not change current gameplay/code.
+
+- **Electric Guitar:** future `direct-medium` / `sonic` / `hybrid` candidate.
+- **Bass:** future `direct-heavy` / `sonic` / `hybrid` candidate.
+- **Drum Sticks:** future `direct-light` and high-critical-rate candidate.
+- **Keyboard:** future `direct-heavy` or wide-control / `sonic` / `hybrid` candidate.
+
+Future hook notes:
+
+- Guitar/Bass/Keyboard can remain melee + ranged hybrid candidates.
+- Drum Sticks can remain close-range / high-critical-rate candidate.
+- Amp equipment can remain a future hook for sonic/ranged attacks.
+- Other accessories can later affect melee power, defense, critical rate, guard support, or sonic behavior.
+

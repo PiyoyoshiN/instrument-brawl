@@ -214,6 +214,8 @@ These remain visual-only trial effects under Phase 6 guardrails; gameplay values
 
 Next recommended direction: move to Phase 7 game shell direction (Home / Mode / Options) and localStorage planning, unless explicitly instructed otherwise.
 
+Future hook note: later combat/effects work can introduce planned `impactClass` / `attackMethod` categories (`direct-heavy`, `direct-medium`, `direct-light`, `sonic`, `hybrid`) as implementation tasks.
+
 ## Phase 6-10+ direction
 
 - Phase 6: effects trial and presentation experiments.
