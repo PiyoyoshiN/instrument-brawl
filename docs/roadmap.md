@@ -197,6 +197,23 @@ Phase 5 guardrails:
 
 Phase 6 trial design details are documented in `docs/phase-6-effects-trial.md`.
 
+
+## Phase 6 checkpoint
+
+Phase 6 effects trial/presentation experiments are complete as a checkpoint.
+
+Implemented in Phase 6:
+
+- 6-2 Attack visual color variation.
+- 6-3 Small primitive hit spark.
+- 6-4 `HIT -damage` marker enhancement with `CLEAN HIT` sub-label.
+- 6-5 Tiny camera shake on confirmed hit.
+- 6-6 Small primitive win/draw effect at match end.
+
+These remain visual-only trial effects under Phase 6 guardrails; gameplay values/logic were not expanded.
+
+Next recommended direction: move to Phase 7 game shell direction (Home / Mode / Options) and localStorage planning, unless explicitly instructed otherwise.
+
 ## Phase 6-10+ direction
 
 - Phase 6: effects trial and presentation experiments.

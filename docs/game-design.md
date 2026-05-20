@@ -226,6 +226,20 @@ Expected pause behavior for implementation:
 
 Forfeit / Retire, Timer, Rounds, Practice mode, TutorialScene, and Settings are not part of this task.
 
+### Current Phase 6 presentation/effects note
+
+Current feedback stack in BattleScene is visual-only:
+
+- Attack color variation.
+- Hit flash.
+- Small hit spark.
+- `HIT -damage` marker.
+- `CLEAN HIT` sub-label.
+- Tiny hit shake on confirmed hit.
+- Small win/draw effect at match end.
+
+These are effects trials only and do not change gameplay values/logic.
+
 Later phase direction:
 
 - Phase 6: effects trial and presentation experiments (see `docs/phase-6-effects-trial.md`).

@@ -28,23 +28,25 @@ Also do not add scope-expansion content:
 - Do not add new fighters, specials, items, or equipment systems.
 - Do not add rounds, timers, story, encyclopedia, online, or save systems.
 
-## Current visual baseline (already implemented)
+## Current visual baseline after Phase 6 trials
 
-Treat these as existing baseline effects, not new Phase 6 features:
+Current prototype visuals/effects:
 
 - Rectangle prototype visuals.
 - Fighter body colors.
-- Attack rectangles with fixed colors.
+- Attack rectangles with per-fighter color variation.
 - Hit flash.
-- `HIT -damage` marker.
+- Small primitive hit spark.
+- `HIT -damage` marker plus `CLEAN HIT` sub-label.
+- Tiny camera shake on confirmed hit.
+- Small primitive win/draw accent at match end.
 - Match-end overlay.
 
-Not implemented yet:
+Still not implemented:
 
-- Spark system.
-- Screen shake.
-- Win effect.
 - Audio/asset-based feedback.
+- BGM/SE playback.
+- Image/sprite/3D-based effects.
 
 ## Planned Phase 6 trial order
 
@@ -72,3 +74,20 @@ Not implemented yet:
 - Amp/equipment ideas.
 - Stamps/reactions.
 - 3D conversion.
+
+
+## Phase 6 checkpoint
+
+Phase 6 effects trial implementation is complete for 6-1 through 6-6.
+
+Implemented trial steps:
+
+1. **Phase 6-1:** Effects trial design docs.
+2. **Phase 6-2:** Attack visual color variation.
+3. **Phase 6-3:** Small primitive hit spark.
+4. **Phase 6-4:** Impact marker / `CLEAN HIT` sub-label trial.
+5. **Phase 6-5:** Tiny camera shake on confirmed hit.
+6. **Phase 6-6:** Small primitive win/draw effect at match end.
+
+These are intentionally small visual-only experiments, not final polish.
+Effects remain intentionally primitive and easy to revise/remove in later phases.

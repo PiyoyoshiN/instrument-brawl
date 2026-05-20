@@ -51,3 +51,14 @@ Use this short checklist before merging gameplay-adjacent PRs.
 ## Phase 6 note
 
 - [ ] Effects trial PRs follow `docs/phase-6-effects-trial.md` guardrails and keep gameplay values unchanged.
+
+
+## Phase 6 effects checklist
+
+- [ ] Attack color variation appears by fighter.
+- [ ] Hit spark appears on confirmed hit.
+- [ ] `HIT -damage` and `CLEAN HIT` appear on confirmed hit.
+- [ ] Tiny shake appears on hit and not on miss.
+- [ ] Win/draw effect appears only when match ends.
+- [ ] No assets/audio were added for effects.
+- [ ] `P` pause, `R` rematch, and `C` return-to-character-select still work.
