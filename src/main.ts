@@ -17,6 +17,8 @@ const matchStartDelayMs = 900;
 const matchStartFightTextDurationMs = 450;
 const hitMarkerDurationMs = 360;
 const hitSparkDurationMs = 140;
+const hitShakeDurationMs = 60;
+const hitShakeIntensity = 0.003;
 const hpBarWidth = 220;
 const hpBarHeight = 18;
 const hpBarInset = 3;
@@ -1169,6 +1171,7 @@ class BattleScene extends Phaser.Scene {
         this.flashFighter(attack.defender);
         this.showHitSpark(attack.defender, attack.attacker);
         this.showHitMarker(attack.defender, attack.attacker.stats.attackDamage);
+        this.shakeCameraOnHit();
         this.checkMatchResult();
 
         if (this.matchOver) {
@@ -1178,6 +1181,15 @@ class BattleScene extends Phaser.Scene {
     }
   }
 
+
+
+  private shakeCameraOnHit() {
+    if (this.matchOver || this.isPaused) {
+      return;
+    }
+
+    this.cameras.main.shake(hitShakeDurationMs, hitShakeIntensity);
+  }
 
   private showHitSpark(defender: Fighter, attacker: Fighter) {
     if (this.matchOver) {
