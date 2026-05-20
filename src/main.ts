@@ -16,6 +16,7 @@ const matchEndDelayMs = 450;
 const matchStartDelayMs = 900;
 const matchStartFightTextDurationMs = 450;
 const hitMarkerDurationMs = 360;
+const hitSparkDurationMs = 140;
 const hpBarWidth = 220;
 const hpBarHeight = 18;
 const hpBarInset = 3;
@@ -650,6 +651,8 @@ class BattleScene extends Phaser.Scene {
   private pauseStartedAt = 0;
   private hitMarker?: Phaser.GameObjects.Text;
   private hitMarkerEvent?: Phaser.Time.TimerEvent;
+  private activeHitSparks: Phaser.GameObjects.Rectangle[] = [];
+  private hitSparkEvents: Phaser.Time.TimerEvent[] = [];
   private nextCpuDecisionAt = 0;
   private cpuRetreatUntil = 0;
   private controls?: {
@@ -685,6 +688,7 @@ class BattleScene extends Phaser.Scene {
     this.startPromptClearEvent = undefined;
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
+    this.clearHitSparks();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanupBattleScene, this);
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
@@ -965,6 +969,10 @@ class BattleScene extends Phaser.Scene {
     if (this.player2?.hitFlashEvent) {
       this.player2.hitFlashEvent.paused = paused;
     }
+
+    for (const sparkEvent of this.hitSparkEvents) {
+      sparkEvent.paused = paused;
+    }
   }
 
   private showPauseOverlay() {
@@ -1158,6 +1166,7 @@ class BattleScene extends Phaser.Scene {
         this.applyDamage(attack.defenderHp, attack.attacker.stats.attackDamage);
         this.applyKnockback(attack.defender, attack.attacker.facing, attack.attacker.stats.knockbackSpeed);
         this.flashFighter(attack.defender);
+        this.showHitSpark(attack.defender, attack.attacker);
         this.showHitMarker(attack.defender, attack.attacker.stats.attackDamage);
         this.checkMatchResult();
 
@@ -1166,6 +1175,47 @@ class BattleScene extends Phaser.Scene {
         }
       }
     }
+  }
+
+
+  private showHitSpark(defender: Fighter, attacker: Fighter) {
+    if (this.matchOver) {
+      return;
+    }
+
+    const sparkColor = attacker.stats.attackStrokeColor;
+    const sparkCenterX = defender.body.x + attacker.facing * 14;
+    const sparkCenterY = defender.body.y - defender.body.height * 0.1;
+    const sparkOffsets = [
+      { x: -10, y: -4, width: 10, height: 3, angle: -28 },
+      { x: -2, y: -10, width: 9, height: 3, angle: -8 },
+      { x: 7, y: -2, width: 11, height: 3, angle: 22 },
+      { x: 2, y: 8, width: 8, height: 2, angle: 14 },
+    ];
+
+    const sparkRects = sparkOffsets.map((offset) => this.add
+      .rectangle(
+        sparkCenterX + offset.x * attacker.facing,
+        sparkCenterY + offset.y,
+        offset.width,
+        offset.height,
+        sparkColor,
+        0.88,
+      )
+      .setAngle(offset.angle * attacker.facing)
+      .setDepth(7));
+
+    this.activeHitSparks.push(...sparkRects);
+    const sparkEvent = this.time.delayedCall(hitSparkDurationMs, () => {
+      for (const sparkRect of sparkRects) {
+        sparkRect.destroy();
+      }
+
+      this.activeHitSparks = this.activeHitSparks.filter((sparkRect) => !sparkRects.includes(sparkRect));
+      this.hitSparkEvents = this.hitSparkEvents.filter((event) => event !== sparkEvent);
+    });
+
+    this.hitSparkEvents.push(sparkEvent);
   }
 
   private showHitMarker(fighter: Fighter, damage: number) {
@@ -1333,6 +1383,7 @@ class BattleScene extends Phaser.Scene {
     this.hitMarkerEvent = undefined;
     this.hitMarker?.destroy();
     this.hitMarker = undefined;
+    this.clearHitSparks();
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
 
@@ -1345,6 +1396,21 @@ class BattleScene extends Phaser.Scene {
       this.player2.knockbackVelocity = 0;
       this.resetFighterColor(this.player2);
     }
+  }
+
+
+  private clearHitSparks() {
+    for (const sparkEvent of this.hitSparkEvents) {
+      sparkEvent.remove(false);
+    }
+
+    this.hitSparkEvents = [];
+
+    for (const sparkRect of this.activeHitSparks) {
+      sparkRect.destroy();
+    }
+
+    this.activeHitSparks = [];
   }
 
   private clearActiveAttacks() {
