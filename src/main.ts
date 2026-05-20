@@ -650,6 +650,7 @@ class BattleScene extends Phaser.Scene {
   private isPaused = false;
   private pauseStartedAt = 0;
   private hitMarker?: Phaser.GameObjects.Text;
+  private hitMarkerSubLabel?: Phaser.GameObjects.Text;
   private hitMarkerEvent?: Phaser.Time.TimerEvent;
   private activeHitSparks: Phaser.GameObjects.Rectangle[] = [];
   private hitSparkEvents: Phaser.Time.TimerEvent[] = [];
@@ -1224,6 +1225,7 @@ class BattleScene extends Phaser.Scene {
     }
 
     this.hitMarker?.destroy();
+    this.hitMarkerSubLabel?.destroy();
     this.hitMarkerEvent?.remove(false);
     this.hitMarker = this.add
       .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 28, `HIT -${damage}`, {
@@ -1234,9 +1236,22 @@ class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setDepth(6);
+
+    this.hitMarkerSubLabel = this.add
+      .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, 'CLEAN HIT', {
+        align: 'center',
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '12px',
+      })
+      .setOrigin(0.5)
+      .setDepth(6);
+
     this.hitMarkerEvent = this.time.delayedCall(hitMarkerDurationMs, () => {
       this.hitMarker?.destroy();
+      this.hitMarkerSubLabel?.destroy();
       this.hitMarker = undefined;
+      this.hitMarkerSubLabel = undefined;
       this.hitMarkerEvent = undefined;
     });
   }
@@ -1382,7 +1397,9 @@ class BattleScene extends Phaser.Scene {
     this.hitMarkerEvent?.remove(false);
     this.hitMarkerEvent = undefined;
     this.hitMarker?.destroy();
+    this.hitMarkerSubLabel?.destroy();
     this.hitMarker = undefined;
+    this.hitMarkerSubLabel = undefined;
     this.clearHitSparks();
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
