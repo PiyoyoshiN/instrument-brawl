@@ -1361,6 +1361,41 @@ class BattleScene extends Phaser.Scene {
     this.endMatch(resultData);
   }
 
+
+  private showWinEffect(resultData: ResultSceneData) {
+    const isDraw = resultData.result === 'draw';
+    const accentColor = isDraw ? 0xe2e8f0 : 0xfef08a;
+    const strokeColor = isDraw ? 0x94a3b8 : 0xfacc15;
+    const accentLabel = isDraw ? 'DRAW' : 'WIN!';
+
+    const bars = [
+      { x: 304, y: 262, width: 26, height: 6, angle: -18 },
+      { x: 340, y: 246, width: 20, height: 5, angle: -10 },
+      { x: 460, y: 246, width: 20, height: 5, angle: 10 },
+      { x: 496, y: 262, width: 26, height: 6, angle: 18 },
+      { x: 332, y: 324, width: 22, height: 5, angle: 14 },
+      { x: 468, y: 324, width: 22, height: 5, angle: -14 },
+    ];
+
+    for (const bar of bars) {
+      this.add
+        .rectangle(bar.x, bar.y, bar.width, bar.height, accentColor, 0.9)
+        .setAngle(bar.angle)
+        .setStrokeStyle(1, strokeColor)
+        .setDepth(6);
+    }
+
+    this.add
+      .text(400, 252, accentLabel, {
+        align: 'center',
+        color: isDraw ? '#e2e8f0' : '#fef08a',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '14px',
+      })
+      .setOrigin(0.5)
+      .setDepth(6);
+  }
+
   private endMatch(resultData: ResultSceneData) {
     if (this.matchOver) {
       return;
@@ -1378,6 +1413,7 @@ class BattleScene extends Phaser.Scene {
       fontFamily: 'system-ui, sans-serif',
       fontSize: '30px',
     }).setOrigin(0.5).setDepth(8);
+    this.showWinEffect(resultData);
     this.destroyPauseOverlay();
     this.isPaused = false;
     this.pauseStartedAt = 0;
