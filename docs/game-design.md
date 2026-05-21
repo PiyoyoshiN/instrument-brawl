@@ -284,8 +284,18 @@ Phase 7 target flow for later implementation:
 Scene role intent:
 
 - Home: game entrance, with Start + future Options (+ possible future lightweight Records entry).
+  - Home Start should later route to ModeSelectScene instead of directly to CharacterSelectScene.
 - Mode Select (future): clear Local 2P vs P1 CPU choice before Character Select.
+
+Mode Select mapping (future):
+
+- Local 2P -> `player2Mode: "human"`
+- P1 vs CPU -> `player2Mode: "cpu"`
+- Mode Select should start CharacterSelectScene with `{ player2Mode }`.
+- Suggested controls: Up/Down or Left/Right choose, Enter/Space confirm, Escape return Home.
 - Character Select: fighter selection; keep existing P2 Human/CPU toggle as fallback/manual override for now.
+  - If Mode Select chose Local 2P, Character Select should initially show Human.
+  - If Mode Select chose P1 vs CPU, Character Select should initially show CPU.
 - Battle: consume selected fighters and P2 mode from scene data.
 - Result: preserve fighters and P2 mode through rematch/return flows.
 

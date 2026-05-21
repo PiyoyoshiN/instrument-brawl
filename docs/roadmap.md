@@ -256,13 +256,21 @@ Planned scene roles:
 
 - **HomeScene:** simple entrance with Start, Options, and possible future Records entry.
 - **ModeSelectScene (future):** clearly choose Local 2P or P1 vs CPU before Character Select.
+  - Local 2P -> `player2Mode: "human"`
+  - P1 vs CPU -> `player2Mode: "cpu"`
+  - Should start CharacterSelectScene with `{ player2Mode }`.
+  - Suggested controls: Up/Down or Left/Right choose, Enter/Space confirm, Escape return Home.
 - **CharacterSelectScene:** choose fighters; keep current P2 Human/CPU toggle as fallback/manual override for now.
-- **BattleScene:** receive selected fighters and P2 mode through scene data.
-- **ResultScene:** preserve fighters and P2 mode through `R` rematch and `C` return-to-character-select.
+  - If Mode Select chose Local 2P, Character Select should initially show Human.
+  - If Mode Select chose P1 vs CPU, Character Select should initially show CPU.
+- **BattleScene:** continue receiving `player1FighterId`, `player2FighterId`, and `player2Mode` through scene data.
+- **ResultScene:** continue preserving fighters and `player2Mode` through `R` rematch and `C` return-to-character-select.
 - **OptionsScene (future):** later manage effects ON/OFF and screen shake ON/OFF.
 - **Records (future):** lightweight foundation only, not full achievements/unlocks.
 
 Implementation status for this step: documentation only. No scene implementation/localStorage/records code changes yet.
+
+Home Start should later route to ModeSelectScene instead of directly opening CharacterSelectScene. Options and Records remain future entries.
 
 ## Phase 6-10+ direction
 
