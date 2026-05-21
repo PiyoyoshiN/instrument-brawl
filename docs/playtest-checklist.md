@@ -78,6 +78,11 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Existing CharacterSelectScene P2 Human/CPU toggle is kept as current behavior.
 - [ ] No gameplay values/logic changes are introduced during planning-only PRs.
 - [ ] No audio/assets or online/server-saving implementation is introduced in planning-only PRs.
+- [ ] Docs explicitly define future Options scope as only Effects ON/OFF and Screen Shake ON/OFF preferences.
+- [ ] Docs map Options preferences to `preferences.effectsEnabled` and `preferences.screenShakeEnabled` defaults (`true`/`true`).
+- [ ] Docs state Options implementation/wiring is future scope; no scene/UI behavior changes in this docs-only step.
+- [ ] Docs state Effects OFF is visual-only (no gameplay logic/value changes) and Screen Shake OFF affects only tiny shake.
+- [ ] Docs keep BGM/SE settings and Records preferences out of current Options scope.
 
 
 ## Mode Select behavior checks

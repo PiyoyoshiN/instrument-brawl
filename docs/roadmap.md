@@ -304,6 +304,32 @@ Integration timing (future implementation PRs):
 - save after confirmed selections and option changes (selection-save for Mode/Character confirm is now implemented)
 - no server storage, no account sync, no Records persistence yet
 
+
+
+### Phase 7-11: Options preferences scope (design only)
+
+This step is documentation-only. No `OptionsScene` implementation, UI wiring, or runtime preference application is included yet.
+
+Planned Options preferences:
+
+- `preferences.effectsEnabled` (default `true`)
+- `preferences.screenShakeEnabled` (default `true`)
+
+Planned storage rules:
+
+- Reuse existing key: `instrument-brawl:settings`
+- Keep fallback to defaults when localStorage is unavailable/invalid
+- Keep preferences local-only (no server/account sync)
+
+Planned effect scope (future wiring):
+
+- Effects OFF: disable visual-only extras like hit spark / `CLEAN HIT` / win-draw accent effects / other nonessential presentation effects
+- Screen Shake OFF: disable tiny screen/camera shake only
+- Screen Shake OFF must not disable other effects
+- Effects OFF must not change gameplay values/logic
+- BGM/SE settings remain out of scope until audio implementation exists
+- Records preferences/storage remain out of scope
+
 ## Phase 6-10+ direction
 
 - Phase 6: effects trial and presentation experiments.

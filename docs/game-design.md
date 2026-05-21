@@ -348,6 +348,32 @@ Planned load/save rules for later implementation:
 - Keep data local-only; no server save, no account sync.
 - Do not store Records data yet (Records remains future scope).
 
+
+
+### Phase 7-11 Options preferences scope (design only)
+
+`OptionsScene` remains future scope in this phase step. This PR defines preference behavior only in docs.
+
+Planned Option items (future):
+
+- Effects ON/OFF -> `preferences.effectsEnabled`
+- Screen Shake ON/OFF -> `preferences.screenShakeEnabled`
+
+Defaults and fallback:
+
+- defaults: `effectsEnabled: true`, `screenShakeEnabled: true`
+- if localStorage is unavailable or invalid, use defaults
+
+Planned behavior constraints:
+
+- Changes should later save immediately or on confirm (implementation timing TBD)
+- Effects OFF should later disable visual-only extras (hit spark, `CLEAN HIT`, win/draw accent effects, and similar nonessential presentation effects)
+- Screen Shake OFF should later disable tiny shake only
+- Screen Shake OFF should not disable other visual effects
+- Effects OFF must not change gameplay values/logic (hit detection, damage, knockback, CPU behavior, one-hit-per-attack)
+- BGM/SE settings are excluded until audio playback/assets are implemented
+- Records preferences are excluded in this step
+
 ## Later candidate ideas
 
 These are later ideas only, not Phase 3 fighters:

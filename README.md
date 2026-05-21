@@ -152,6 +152,35 @@ Planned behavior (future tasks):
 - No server saving and no online/account sync.
 - No Records data is stored yet (Records remains future planning scope).
 
+
+
+## Phase 7-11 Options preferences scope (design only)
+
+Phase 7-11 is docs-only planning. `OptionsScene` is still future implementation and is not part of this step.
+
+Planned Options scope (future):
+
+- Effects: ON/OFF -> `preferences.effectsEnabled`
+- Screen Shake: ON/OFF -> `preferences.screenShakeEnabled`
+
+Storage and defaults:
+
+- Use existing local settings object key: `instrument-brawl:settings`
+- Keep default preferences as:
+  - `effectsEnabled: true`
+  - `screenShakeEnabled: true`
+- If localStorage is unavailable/invalid, continue with defaults.
+
+Planned behavior notes (future tasks):
+
+- Options changes should eventually save immediately or on confirm.
+- Effects OFF should later disable only visual-only extras (e.g. hit spark, `CLEAN HIT` sub-label, win/draw accent effects, other nonessential presentation effects).
+- Screen Shake OFF should later disable only tiny camera/screen shake.
+- Screen Shake OFF should not disable other effects.
+- Effects OFF must not alter gameplay values/logic (damage, knockback, hit detection, CPU behavior, one-hit-per-attack rule).
+- BGM/SE settings are out of scope until audio playback/assets exist.
+- Records data is out of scope for Options at this step.
+
 ## Play online
 
 GitHub Pages deployment URL:
