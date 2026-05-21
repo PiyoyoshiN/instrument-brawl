@@ -667,65 +667,65 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 176, 'Choose Local 2P or P1 vs CPU', {
+      .text(400, 176, 'Choose your match mode', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '22px',
+        fontSize: '20px',
       })
       .setOrigin(0.5);
 
-    this.local2pButton = this.add.rectangle(280, 286, 250, 170, 0x0f172a).setStrokeStyle(4, 0xfacc15);
-    this.cpuButton = this.add.rectangle(520, 286, 250, 170, 0x0f172a).setStrokeStyle(3, 0x475569);
+    this.local2pButton = this.add.rectangle(400, 286, 440, 118, 0x0f172a).setStrokeStyle(4, 0xfacc15);
+    this.cpuButton = this.add.rectangle(400, 432, 440, 118, 0x0f172a).setStrokeStyle(3, 0x475569);
 
     this.add
-      .text(280, 272, 'Local 2P', {
+      .text(400, 266, 'VS HUMAN', {
         align: 'center',
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '30px',
+        fontSize: '40px',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(280, 312, 'P2: Human', {
+      .text(400, 312, 'Local 2P', {
         align: 'center',
         color: '#cbd5e1',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '18px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(520, 272, 'P1 vs CPU', {
-        align: 'center',
-        color: '#f8fafc',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '30px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(520, 312, 'P2: CPU', {
-        align: 'center',
-        color: '#cbd5e1',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '18px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(400, 392, '← / → or ↑ / ↓: choose mode', {
-        color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(400, 430, 'Enter / Space: confirm    Esc: return Home', {
+      .text(400, 412, 'VS CPU', {
+        align: 'center',
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '40px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 458, 'P1 vs CPU', {
+        align: 'center',
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 528, '↑ / ↓ : choose mode', {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '19px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 558, 'Enter / Space: confirm    Esc: return Home', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '22px',
+        fontSize: '20px',
       })
       .setOrigin(0.5);
 
@@ -789,6 +789,8 @@ class ModeSelectScene extends Phaser.Scene {
 
     this.local2pButton?.setStrokeStyle(humanSelected ? 4 : 3, humanSelected ? 0xfacc15 : 0x475569);
     this.cpuButton?.setStrokeStyle(humanSelected ? 3 : 4, humanSelected ? 0x475569 : 0xfacc15);
+    this.local2pButton?.setFillStyle(humanSelected ? 0x1f2937 : 0x0f172a);
+    this.cpuButton?.setFillStyle(humanSelected ? 0x0f172a : 0x1f2937);
   }
 
   private confirmModeSelection() {

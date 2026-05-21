@@ -102,7 +102,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 ## Mode Select behavior checks
 
 - [ ] Home Enter/Space opens Mode Select.
-- [ ] Mode Select shows two choices at once: Local 2P and P1 vs CPU.
+- [ ] Mode Select shows two vertical choices: VS HUMAN (Local 2P) and VS CPU (P1 vs CPU).
 - [ ] Clicking/tapping Local 2P opens Character Select with P2 Mode: Human.
 - [ ] Clicking/tapping P1 vs CPU opens Character Select with P2 Mode: CPU.
 - [ ] Keyboard highlight moves between the two choices.
