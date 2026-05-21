@@ -259,7 +259,8 @@ Scene roles (current + future scope):
   - Local 2P -> `player2Mode: "human"`
   - P1 vs CPU -> `player2Mode: "cpu"`
   - Starts CharacterSelectScene with `{ player2Mode }`.
-  - Suggested controls: Up/Down or Left/Right choose, Enter/Space confirm, Escape return Home.
+  - Suggested controls: Up/Down or Left/Right choose highlight, Enter/Space confirm, Escape return Home.
+  - Click/tap on a button also confirms that mode.
 - **CharacterSelectScene:** choose fighters; keep current P2 Human/CPU toggle as fallback/manual override for now.
   - If Mode Select chose Local 2P, Character Select initially shows Human.
   - If Mode Select chose P1 vs CPU, Character Select initially shows CPU.

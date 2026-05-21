@@ -293,7 +293,7 @@ Mode Select mapping (future):
 
 - Local 2P -> `player2Mode: "human"`
 - P1 vs CPU -> `player2Mode: "cpu"`
-- Mode Select starts CharacterSelectScene with `{ player2Mode }`.
+- Mode Select starts CharacterSelectScene with `{ player2Mode }` (button click/tap or keyboard confirm).
 - Suggested controls: Up/Down or Left/Right choose, Enter/Space confirm, Escape return Home.
 - Character Select: fighter selection; keep existing P2 Human/CPU toggle as fallback/manual override for now.
   - If Mode Select chose Local 2P, Character Select should initially show Human.

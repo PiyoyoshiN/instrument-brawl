@@ -330,7 +330,8 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
 
 class ModeSelectScene extends Phaser.Scene {
   private mode: Player2Mode = 'human';
-  private modeText?: Phaser.GameObjects.Text;
+  private local2pButton?: Phaser.GameObjects.Rectangle;
+  private cpuButton?: Phaser.GameObjects.Rectangle;
   private leftKey?: Phaser.Input.Keyboard.Key;
   private rightKey?: Phaser.Input.Keyboard.Key;
   private upKey?: Phaser.Input.Keyboard.Key;
@@ -369,17 +370,47 @@ class ModeSelectScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.modeText = this.add
-      .text(400, 272, '', {
+    this.local2pButton = this.add.rectangle(280, 286, 250, 170, 0x0f172a).setStrokeStyle(4, 0xfacc15);
+    this.cpuButton = this.add.rectangle(520, 286, 250, 170, 0x0f172a).setStrokeStyle(3, 0x475569);
+
+    this.add
+      .text(280, 272, 'Local 2P', {
         align: 'center',
-        color: '#facc15',
+        color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '34px',
+        fontSize: '30px',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(400, 340, '← / → or ↑ / ↓: choose mode', {
+      .text(280, 312, 'P2: Human', {
+        align: 'center',
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(520, 272, 'P1 vs CPU', {
+        align: 'center',
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '30px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(520, 312, 'P2: CPU', {
+        align: 'center',
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 392, '← / → or ↑ / ↓: choose mode', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -387,14 +418,23 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 378, 'Enter / Space: confirm    Esc: return Home', {
+      .text(400, 430, 'Enter / Space: confirm    Esc: return Home', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
       })
       .setOrigin(0.5);
 
-    this.updateModeText();
+    this.local2pButton.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
+      this.mode = 'human';
+      this.confirmModeSelection();
+    });
+    this.cpuButton.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
+      this.mode = 'cpu';
+      this.confirmModeSelection();
+    });
+
+    this.updateModeVisuals();
 
     const keyboard = this.input.keyboard;
 
@@ -423,7 +463,7 @@ class ModeSelectScene extends Phaser.Scene {
       (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))
     ) {
       this.mode = this.mode === 'human' ? 'cpu' : 'human';
-      this.updateModeText();
+      this.updateModeVisuals();
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
@@ -436,17 +476,26 @@ class ModeSelectScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
-      this.transitionStarted = true;
-      this.scene.start('CharacterSelectScene', {
-        player2Mode: this.mode,
-      });
+      this.confirmModeSelection();
     }
   }
 
-  private updateModeText() {
-    const modeLabel = this.mode === 'cpu' ? 'P1 vs CPU' : 'Local 2P';
+  private updateModeVisuals() {
+    const humanSelected = this.mode === 'human';
 
-    this.modeText?.setText(`< ${modeLabel} >`);
+    this.local2pButton?.setStrokeStyle(humanSelected ? 4 : 3, humanSelected ? 0xfacc15 : 0x475569);
+    this.cpuButton?.setStrokeStyle(humanSelected ? 3 : 4, humanSelected ? 0x475569 : 0xfacc15);
+  }
+
+  private confirmModeSelection() {
+    if (this.transitionStarted || this.time.now < this.inputEnabledAt) {
+      return;
+    }
+
+    this.transitionStarted = true;
+    this.scene.start('CharacterSelectScene', {
+      player2Mode: this.mode,
+    });
   }
 }
 

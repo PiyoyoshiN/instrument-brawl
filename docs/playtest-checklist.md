@@ -75,8 +75,11 @@ Use this short checklist before merging gameplay-adjacent PRs.
 ## Mode Select behavior checks
 
 - [ ] Home Enter/Space opens Mode Select.
-- [ ] Local 2P opens Character Select with P2 Mode: Human.
-- [ ] P1 vs CPU opens Character Select with P2 Mode: CPU.
+- [ ] Mode Select shows two choices at once: Local 2P and P1 vs CPU.
+- [ ] Clicking/tapping Local 2P opens Character Select with P2 Mode: Human.
+- [ ] Clicking/tapping P1 vs CPU opens Character Select with P2 Mode: CPU.
+- [ ] Keyboard highlight moves between the two choices.
+- [ ] Enter/Space confirms the highlighted choice.
 - [ ] Character Select P2 Down still toggles Human/CPU.
 - [ ] Battle receives selected P2 mode.
 - [ ] Result `R` rematch preserves P2 mode.
@@ -87,7 +90,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Docs clearly separate current flow (`Home -> Character Select -> Battle -> Result`) from target Phase 7 flow (`Home -> Mode Select -> Character Select -> Battle -> Result`).
 - [ ] Docs reflect ModeSelectScene as implemented and keep OptionsScene/localStorage/Records as future scope (not implemented yet).
-- [ ] Mode Select mapping docs are explicit: Local 2P -> `player2Mode: "human"`, P1 vs CPU -> `player2Mode: "cpu"`.
+- [ ] Mode Select mapping docs are explicit: Local 2P -> `player2Mode: "human"`, P1 vs CPU -> `player2Mode: "cpu"` via two visible choices.
 - [ ] Docs state ModeSelectScene starts CharacterSelectScene with `{ player2Mode }`.
 - [ ] Docs state Home Start goes to ModeSelectScene.
 - [ ] Existing CharacterSelect P2 Human/CPU toggle is retained as current fallback/manual override.

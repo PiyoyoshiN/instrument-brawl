@@ -16,6 +16,7 @@ Current and planned Phase 7 flow: `Home -> Mode Select -> Character Select -> Ba
 
 Mode Select behavior:
 
+- Two button-style choices are shown at once: Local 2P and P1 vs CPU.
 - Local 2P maps to `player2Mode: "human"`.
 - P1 vs CPU maps to `player2Mode: "cpu"`.
 - Home Start now goes Home -> Mode Select -> Character Select.
