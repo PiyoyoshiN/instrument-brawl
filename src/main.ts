@@ -287,6 +287,25 @@ function saveStoredSettings(settings: StoredSettings): StoredSettings {
   return sanitized;
 }
 
+function saveLastSelected(partialLastSelected: Partial<StoredSettings['lastSelected']>) {
+  try {
+    const current = loadStoredSettings();
+
+    saveStoredSettings({
+      ...current,
+      lastSelected: {
+        ...current.lastSelected,
+        ...partialLastSelected,
+      },
+      preferences: {
+        ...current.preferences,
+      },
+    });
+  } catch {
+    // keep runtime behavior unchanged when storage is unavailable/fails
+  }
+}
+
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
   label: Phaser.GameObjects.Text;
@@ -620,6 +639,9 @@ class ModeSelectScene extends Phaser.Scene {
     }
 
     this.transitionStarted = true;
+    saveLastSelected({
+      player2Mode: this.mode,
+    });
     this.scene.start('CharacterSelectScene', {
       player2Mode: this.mode,
     });
@@ -876,10 +898,19 @@ class CharacterSelectScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      const player1FighterId = fighterDefinitions[this.player1Index].id;
+      const player2FighterId = fighterDefinitions[this.player2Index].id;
+
+      saveLastSelected({
+        player1FighterId,
+        player2FighterId,
+        player2Mode: this.player2Mode,
+      });
+
       this.transitionStarted = true;
       this.scene.start('BattleScene', {
-        player1FighterId: fighterDefinitions[this.player1Index].id,
-        player2FighterId: fighterDefinitions[this.player2Index].id,
+        player1FighterId,
+        player2FighterId,
         player2Mode: this.player2Mode,
       });
     }

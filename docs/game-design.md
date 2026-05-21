@@ -314,7 +314,7 @@ Later phase direction:
 
 ### Phase 7-7 localStorage save foundation (design only)
 
-This phase defines storage design only. No runtime save/load implementation is included yet.
+Storage contract is defined and helper utilities exist. Confirmed selection save is implemented, while load/apply to initial UI remains future work.
 
 Planned key and payload:
 
@@ -338,8 +338,8 @@ Planned key and payload:
 
 Planned load/save rules for later implementation:
 
-- Load should be attempted when entering ModeSelectScene / CharacterSelectScene.
-- Save should happen after confirmed selections or option changes.
+- Load should be attempted when entering ModeSelectScene / CharacterSelectScene (future task).
+- Save should happen after confirmed selections or option changes (confirmed mode/fighter selections are now saved).
 - If localStorage is unavailable, behavior remains current default behavior.
 - If parsing fails or payload shape is invalid, ignore persisted data and use defaults.
 - If fighter IDs are not valid registry IDs, replace with default fighter IDs.

@@ -276,7 +276,7 @@ Home Start routes to ModeSelectScene. Options and Records remain future entries.
 
 ### Phase 7-7: localStorage save foundation (design only)
 
-Phase 7-7 was documentation-only. Phase 7-8 adds utility helper functions only, without scene wiring yet.
+Phase 7-7 was documentation-only. Phase 7-8 added utility helpers. Phase 7-9 saves confirmed selections only (no UI restore yet).
 
 Planned persisted fields:
 
@@ -300,8 +300,8 @@ Planned fallback behavior:
 
 Integration timing (future implementation PRs):
 
-- load on ModeSelectScene / CharacterSelectScene entry
-- save after confirmed selections and option changes
+- load on ModeSelectScene / CharacterSelectScene entry (future task)
+- save after confirmed selections and option changes (selection-save for Mode/Character confirm is now implemented)
 - no server storage, no account sync, no Records persistence yet
 
 ## Phase 6-10+ direction

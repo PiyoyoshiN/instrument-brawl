@@ -112,7 +112,7 @@ Next recommended direction:
 
 ## Phase 7-7 localStorage save foundation (design only)
 
-Phase 7-7 defined the localStorage contract, and Phase 7-8 adds safe utility helpers only. Scene behavior is still unchanged (no load/apply/save wiring yet).
+Phase 7-7 defined the localStorage contract, and Phase 7-8 adds safe utility helpers only. Confirmed selections are now saved via safe localStorage helpers, but saved values are not loaded/applied to initial UI yet.
 
 Planned save scope (future implementation):
 
