@@ -62,3 +62,11 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Win/draw effect appears only when match ends.
 - [ ] No assets/audio were added for effects.
 - [ ] `P` pause, `R` rematch, and `C` return-to-character-select still work.
+
+
+## Phase 7 planning checklist
+
+- [ ] Phase 7 docs keep Home / Mode Select / Options and local save as planning scope only.
+- [ ] Existing CharacterSelectScene P2 Human/CPU toggle is kept as current behavior.
+- [ ] No gameplay values/logic changes are introduced during planning-only PRs.
+- [ ] No audio/assets or online/server-saving implementation is introduced in planning-only PRs.

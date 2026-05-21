@@ -255,6 +255,21 @@ Future identity direction:
 
 This is planning only. No impact-class implementation or gameplay tuning is part of current Phase 6.
 
+
+### Phase 7 game shell/local save foundation note
+
+Phase 7 should define shell/save scope before implementation:
+
+- Home / Mode Select / Options direction planning.
+- Local 2P and P1 vs CPU selection clarity from future Mode Select.
+- Keep existing CharacterSelectScene P2 Human/CPU toggle for now.
+- localStorage planning for preferences and last selected fighters/mode.
+- Effects ON/OFF and screen shake ON/OFF preference planning.
+- Lightweight Records foundation planning.
+- Server saving deferred until online/account scope exists.
+
+This is scope planning only; gameplay values/logic remain unchanged.
+
 Later phase direction:
 
 - Phase 6: effects trial and presentation experiments (see `docs/phase-6-effects-trial.md`).

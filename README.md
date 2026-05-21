@@ -87,7 +87,7 @@ Phase 5 stayed focused on foundation cleanup, compact Pause / Quick Help, and ro
 Next recommended direction:
 
 - Phase 6 effects trial checkpoint is complete (small visual-only experiments).
-- Phase 7: game shell direction for Home / Mode / Options and localStorage-based save planning.
+- Phase 7: game shell & local save foundation direction (Home / Mode / Options planning, localStorage preference planning, and lightweight records foundation planning).
 - Phase 8: match rule expansion consideration such as Retire / Timer / rounds, without rushing rounds.
 - Phase 9: encyclopedia, records, and light worldbuilding.
 - Phase 10+: specials, items, new fighters, and larger content expansion.

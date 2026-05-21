@@ -216,6 +216,31 @@ Next recommended direction: move to Phase 7 game shell direction (Home / Mode / 
 
 Future hook note: later combat/effects work can introduce planned `impactClass` / `attackMethod` categories (`direct-heavy`, `direct-medium`, `direct-light`, `sonic`, `hybrid`) as implementation tasks.
 
+
+## Phase 7-1: game shell and local save foundation scope
+
+Phase 7 starts as planning/scope definition, not immediate implementation.
+
+Phase 7 scope direction:
+
+- Define Home / Mode Select / Options direction.
+- Clarify that Local 2P and P1 vs CPU should later be selected clearly from Mode Select.
+- Keep the current CharacterSelectScene P2 Human/CPU toggle for now.
+- Plan localStorage-based preferences (no implementation yet).
+- Plan save/load hooks for last selected P1 fighter, P2 fighter, and P2 mode.
+- Plan effects ON/OFF preference.
+- Plan screen shake ON/OFF preference.
+- Plan lightweight Records foundation scope.
+- Keep server saving deferred until real online/account features are considered.
+
+Phase 7 non-goals at this step:
+
+- No gameplay-value changes (HP/damage/knockback/cooldown/duration/hitbox/CPU/one-hit rule).
+- No ModeSelectScene/OptionsScene/localStorage/Records implementation yet.
+- No equipment, amps, ranged/sonic attacks, guard/just-guard, critical damage, specials, items, new fighters, timer, rounds, story, encyclopedia, online, or server saving.
+- No BGM/SE assets or playback.
+- No images, sprites, or 3D.
+
 ## Phase 6-10+ direction
 
 - Phase 6: effects trial and presentation experiments.
