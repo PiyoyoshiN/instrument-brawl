@@ -1,0 +1,361 @@
+# Roadmap
+
+## Current status
+
+Instrument Brawl is currently a simple browser-playable local 1v1 prototype built with Phaser, Vite, and TypeScript.
+
+- Current selectable fighters: Electric Guitar, Bass, Drum Sticks, and Keyboard.
+- CharacterSelectScene lets both players choose from the fighter registry.
+- P1 controls: A / D move, W / Space attack.
+- P2 controls: Left / Right move, Up / Enter attack.
+- R starts a rematch from the result screen.
+- C returns from ResultScene to CharacterSelectScene with selected fighter IDs preserved.
+- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> ModeSelect -> CharacterSelect -> Battle -> Result scene flow, clearer result screen, scene cleanup safeguards, final Phase 2 balance tuning, fighter registry, scene-data fighter ID handoff, minimal character select, and character select readability/stat display polish are implemented.
+
+## Completed
+
+### Phase 1: playable prototype — complete
+
+Goal: make the smallest fun version of the game.
+
+- Create a browser-playable local 1v1 match.
+- Add one arena.
+- Add Electric Guitar and Bass as fixed starter fighters.
+- Add simple movement for both players.
+- Add one attack for each fighter.
+- Add HP, damage, knockback, and win/loss detection.
+- Add a quick restart flow.
+- Add GitHub Pages deployment setup.
+
+### Phase 2: better game feel — complete
+
+Goal: make the prototype funnier and more satisfying without making it complex.
+
+Completed steps:
+
+- Phase 2-1: Attack hit detection is active during the visible attack duration, while one attack still hits only once.
+- Phase 2-2: Knockback uses simple velocity-based movement.
+- Phase 2-3: Hit feedback flash is implemented.
+- Phase 2-4: Electric Guitar and Bass have light stat differences.
+- Phase 2-5: Guitar and Bass have different attack hitbox sizes/shapes.
+- Phase 2-6: Simple HP bars and clearer HP text are implemented.
+- Phase 2-7: Basic HomeScene -> BattleScene -> ResultScene flow is implemented.
+- Phase 2-8: Result screen and match-end readability polish is implemented.
+- Phase 2-9: Scene state reset and cleanup safeguards are implemented.
+- Phase 2-10: Final Guitar and Bass balance tuning is implemented.
+
+Current implemented fighter tuning:
+
+| Fighter | HP | Move speed | Damage | Knockback speed | Attack style |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Electric Guitar | 100 | 260 | 10 | 520 | Faster standard fighter with a sharper horizontal attack hitbox |
+| Bass | 105 | 230 | 10 | 580 | Slower heavier fighter with a taller/heavier attack hitbox |
+| Drum Sticks | 80 | 310 | 8 | 420 | Lightweight fast fighter with short reach |
+| Keyboard | 95 | 215 | 9 | 500 | Wide awkward area-control fighter with a broad body and long reach |
+
+### Phase 2.5: future expansion preparation — complete
+
+Goal: prepare the project for future expansion without adding new gameplay content yet.
+
+Completed steps:
+
+- Phase 2.5-1: Fighter definitions are organized for safer future character expansion.
+- Phase 2.5-2a: BattleScene shows a short Ready/Fight prompt before movement and attacks begin.
+- Phase 2.5-2b: Simple fighter registry is implemented for future expansion.
+- Phase 2.5-3: BattleScene can receive P1/P2 fighter IDs through scene data.
+- Phase 2.5-4: A minimal CharacterSelectScene is implemented using the fighter registry and initially exposed Electric Guitar and Bass.
+- Phase 2.5-5: ResultScene can return to CharacterSelectScene with selected fighter IDs preserved.
+- Phase 2.5-6: CharacterSelectScene readability is improved with clearer selected fighter labels and lightweight HP, Speed, Damage, and Knockback stat display.
+
+## Phase 3: core band 4 fighters — complete
+
+Goal: expand the selectable roster to the core band set while keeping each fighter simple, funny, and readable. This goal is complete.
+
+Core band fighters:
+
+1. Electric Guitar — already implemented.
+2. Bass — already implemented.
+3. Drum Sticks — implemented in Phase 3-2.
+4. Keyboard — implemented in Phase 3-6 with a wider 112 x 70 body and area-control reach.
+
+Completed steps:
+
+- Phase 3-2: Drum Sticks is implemented as a lightweight fast fighter with short reach, low HP, lower damage, and lower knockback.
+- Phase 3-3: CharacterSelectScene is polished for the current three-fighter roster with clearer fighter count and selected index display.
+- Phase 3-4: Drum Sticks receives a light balance sanity pass; stats remain unchanged pending more playtest feedback.
+- Phase 3-5: Optional per-fighter body dimensions are prepared for future fighters like Keyboard while existing fighters keep the default 72 x 120 body.
+- Phase 3-6: Keyboard is implemented as the fourth core band fighter with wide body dimensions, awkward slower movement, and a broad one-hit attack.
+- Phase 3-7: The four-fighter roster receives a light sanity pass; current values are kept because the fighters remain readable, distinct, and playable.
+- Phase 3-8: Phase 3 completion is documented and future work is directed toward Phase 4 presentation/polish.
+
+Phase 3 completion summary:
+
+- Fighter registry, CharacterSelectScene, BattleScene scene-data handoff, ResultScene rematch, and ResultScene return-to-character-select support all four core fighters.
+- Phase 3 kept one attack per fighter, one attack hitting only once, simple rectangle prototype visuals, local 1v1 only, and same-character selection allowed.
+- Phase 3 intentionally avoided CPU, BGM/SE, story, encyclopedia, progression, specials, items, timer, rounds, retire button, and new non-core fighters.
+
+Later candidate ideas only, not Phase 3 fighters:
+
+- Microphone.
+- Piano.
+- Bongo.
+- Tambourine.
+
+## Phase 4: solo play preparation, presentation, and audio-ready planning
+
+Goal: make the completed core loop easier to play alone, clearer to read, and ready for later presentation/audio work without adding audio assets yet.
+
+Phase 4 is not only visual polish. It includes solo play preparation, presentation/polish, and audio-ready structure planning.
+
+Early Phase 4 priorities:
+
+- Phase 4-1: Define Phase 4 scope and guardrails.
+- Phase 4-2: Design minimal P1 vs CPU mode before implementation.
+- Phase 4-3: Implement minimal P2 CPU mode for solo play while preserving local 2-player as the default.
+- Phase 4-4: CPU sanity pass keeps local 2-player unchanged and lightly tunes CPU comfort distance so short-reach CPU fighters do not stop just outside attack range.
+- Phase 4-7: Light menu visual polish improves Home, Character Select, and Result readability without changing controls or scene flow.
+- Phase 4-8: Light arena visual polish improves BattleScene floor separation, background lines, and fighter grounding while keeping rectangle visuals.
+- Phase 4-9: Light hit and result effects polish adds small text/rectangle feedback while preserving damage, one-hit attacks, and ResultScene flow.
+- CharacterSelectScene defaults to P2 Human mode and allows choosing P2 Human or CPU.
+- Match scene data preserves `player2Mode` (`human` or `cpu`) from CharacterSelectScene to BattleScene to ResultScene.
+- ResultScene R rematch and C return-to-character-select preserve selected fighters and P2 Human/CPU mode.
+- The first CPU stays simple: control P2 only, wait for Ready/Fight, stop after matchOver, approach P1 when far away, attack when close enough, and optionally back away sometimes.
+- CPU uses existing fighter stats and existing attack cooldown, attack duration, one-hit-per-attack rule, HP, hit flash, knockback, win/draw detection, and ResultScene flow.
+- Do not add difficulty settings, learning AI, strong prediction, perfect avoidance, or CPU-only stat changes yet.
+- Improve menus, arena readability, hit/win/restart feedback, and comedic presentation details in small focused PRs.
+
+Audio guardrails:
+
+- Phase 4-6: Document audio policy without adding audio assets.
+- Do not add BGM/SE audio files yet.
+- Later Phase 4 work may prepare an audio-ready structure such as `public/assets/audio/bgm` and `public/assets/audio/sfx`.
+- Future audio sources must be safe for a public GitHub repository, such as self-made audio, CC0 assets, or properly credited licensed assets such as CC-BY when credits are handled.
+- Do not commit commercial songs, existing game BGM, YouTube audio, unclear-license files, or ear-copy recreations of copyrighted tracks.
+- Future lightweight audio settings may include `soundEnabled` and `masterVolume`, but do not build a full settings screen yet.
+
+Early Phase 4 non-goals:
+
+- New fighters.
+- Specials, items, progression, story, encyclopedia, timer, rounds, or retire button.
+- Over-normalizing fighter differences.
+- Large mixed-scope PRs; keep 1 PR = 1 feature.
+
+## Phase 4-10 checkpoint
+
+Phase 4 checkpoint status is documented after the solo-play and light-presentation pass.
+
+Implemented at this checkpoint:
+
+- Four selectable fighters: Electric Guitar, Bass, Drum Sticks, and Keyboard.
+- Local 2P remains the default.
+- Optional P2 CPU mode is available from CharacterSelectScene.
+- P2 Human/CPU mode is preserved through BattleScene, ResultScene, R rematch, and C return-to-character-select.
+- Minimal CPU behavior and the CPU sanity pass are implemented.
+- Audio policy is documented without audio assets.
+- Light menu polish, arena polish, and hit/result feedback polish are implemented.
+
+Still intentionally avoided:
+
+- New fighters.
+- Specials, items, progression, story, encyclopedia, timer, rounds, or retire button.
+- BGM/SE audio files.
+- Settings screen.
+- Online play.
+
+Phase 5 checkpoint follow-ups from this note are complete: ResultScene subtitle wording is now `Match finished`, and Pause / Quick Help is implemented as a compact in-battle overlay.
+
+Next recommended direction: move to Phase 6 effects trial and presentation experiments.
+
+## Phase 5: foundation cleanup and roadmap alignment — checkpoint complete
+
+Goal: prepare the project for future phases without expanding gameplay. Phase 5 is not a gameplay expansion phase.
+
+Checkpoint summary:
+
+- Foundation cleanup and roadmap alignment updates were completed.
+- ResultScene subtitle wording is polished to `Match finished`.
+- Compact in-battle Pause / Quick Help is implemented with `P` (not a full tutorial).
+- Manual playtest checklist is documented at `docs/playtest-checklist.md`.
+- Audio-ready folder structure exists at `public/assets/audio/bgm/.gitkeep` and `public/assets/audio/sfx/.gitkeep` with no BGM/SE assets.
+
+Phase 5 guardrails:
+
+- Do not add a full tutorial yet.
+- Keep Pause / Quick Help compact and in-battle; do not expand it into a full tutorial system.
+- Do not add new fighters, specials, items, progression, story, encyclopedia, timer, rounds, retire button, settings screen, online play, or BGM/SE assets.
+- Keep PRs focused: 1 PR = 1 feature.
+
+### Pause / Quick Help planning
+
+- Quick Help should be a compact in-battle overlay, not a full tutorial.
+- Proposed toggle key: `P`, because current controls do not use it.
+- One-screen content should include Resume `P`, P1 controls, P2 Human controls, P2 CPU automatic control, current P2 mode, one-hit attack rule, Ready / Fight reminder, and Result controls.
+- Later pause behavior should stop movement, new attacks, CPU behavior, and active attack updates.
+- Later pause behavior must not break Ready / Fight, `matchOver`, ResultScene transition, R rematch, or C return-to-character-select.
+- Forfeit / Retire, Timer, Rounds, Practice mode, TutorialScene, and Settings are not part of this task.
+
+
+Phase 6 trial design details are documented in `docs/phase-6-effects-trial.md`.
+
+
+## Phase 6 checkpoint
+
+Phase 6 effects trial/presentation experiments are complete as a checkpoint.
+
+Implemented in Phase 6:
+
+- 6-2 Attack visual color variation.
+- 6-3 Small primitive hit spark.
+- 6-4 `HIT -damage` marker enhancement with `CLEAN HIT` sub-label.
+- 6-5 Tiny camera shake on confirmed hit.
+- 6-6 Small primitive win/draw effect at match end.
+
+These remain visual-only trial effects under Phase 6 guardrails; gameplay values/logic were not expanded.
+
+Next recommended direction: move to Phase 7 game shell direction (Home / Mode / Options) and localStorage planning, unless explicitly instructed otherwise.
+
+Future hook note: later combat/effects work can introduce planned `impactClass` / `attackMethod` categories (`direct-heavy`, `direct-medium`, `direct-light`, `sonic`, `hybrid`) as implementation tasks.
+
+
+## Phase 7-1: game shell and local save foundation scope
+
+Phase 7 now has initial game-shell implementation plus ongoing save/options scope planning.
+
+Phase 7 scope direction:
+
+- Home -> Mode Select -> Character Select scene flow is now implemented.
+- Mode Select now clearly offers Local 2P and P1 vs CPU before Character Select.
+- Keep the current CharacterSelectScene P2 Human/CPU toggle for now.
+- Plan localStorage-based preferences (no implementation yet).
+- Plan save/load hooks for last selected P1 fighter, P2 fighter, and P2 mode.
+- Plan effects ON/OFF preference.
+- Plan screen shake ON/OFF preference.
+- Plan lightweight Records foundation scope.
+- Keep server saving deferred until real online/account features are considered.
+
+Phase 7 non-goals at this step:
+
+- No gameplay-value changes (HP/damage/knockback/cooldown/duration/hitbox/CPU/one-hit rule).
+- No OptionsScene/localStorage/Records implementation yet.
+- No equipment, amps, ranged/sonic attacks, guard/just-guard, critical damage, specials, items, new fighters, timer, rounds, story, encyclopedia, online, or server saving.
+- No BGM/SE assets or playback.
+- No images, sprites, or 3D.
+
+
+## Phase 7-2: document game shell scene flow
+
+Current implemented scene flow is now:
+
+- `HomeScene -> ModeSelectScene -> CharacterSelectScene -> BattleScene -> ResultScene`
+
+Current flow:
+
+- `HomeScene -> ModeSelectScene -> CharacterSelectScene -> BattleScene -> ResultScene`
+
+Scene roles (current + future scope):
+
+- **HomeScene:** simple entrance with Start, Options, and possible future Records entry.
+- **ModeSelectScene:** choose Local 2P or P1 vs CPU before Character Select.
+  - Local 2P -> `player2Mode: "human"`
+  - P1 vs CPU -> `player2Mode: "cpu"`
+  - Starts CharacterSelectScene with `{ player2Mode }`.
+  - Suggested controls: Up/Down or Left/Right choose highlight, Enter/Space confirm, Escape return Home.
+  - Click/tap on a button also confirms that mode.
+- **CharacterSelectScene:** choose fighters; keep current P2 Human/CPU toggle as fallback/manual override for now.
+  - If Mode Select chose Local 2P, Character Select initially shows Human.
+  - If Mode Select chose P1 vs CPU, Character Select initially shows CPU.
+- **BattleScene:** continue receiving `player1FighterId`, `player2FighterId`, and `player2Mode` through scene data.
+- **ResultScene:** continue preserving fighters and `player2Mode` through `R` rematch and `C` return-to-character-select.
+- **OptionsScene (future):** later manage effects ON/OFF and screen shake ON/OFF.
+- **Records (future):** lightweight foundation only, not full achievements/unlocks.
+
+Current status: ModeSelectScene implementation is complete.
+- Minimal `OptionsScene` shell exists with local Effects ON/OFF and Screen Shake ON/OFF toggles.
+- Options preference toggles save to `preferences.effectsEnabled` and `preferences.screenShakeEnabled`.
+- Preferences are not applied to BattleScene visuals/behavior yet (future wiring).
+- Records remains planning-only.
+
+Home Start routes to ModeSelectScene. Options and Records remain future entries.
+
+
+### Phase 7-7: localStorage save foundation (design only)
+
+Phase 7-7 was documentation-only. Phase 7-8 added utility helpers. Phase 7-9 saves confirmed selections. Phase 7-10 restores last selections to initial Mode/Character UI state.
+
+Planned persisted fields:
+
+- `lastSelected.player1FighterId`
+- `lastSelected.player2FighterId`
+- `lastSelected.player2Mode`
+- `preferences.effectsEnabled`
+- `preferences.screenShakeEnabled`
+
+Suggested key/payload:
+
+- key: `instrument-brawl:settings`
+- payload: small JSON object with `version` for future migration support
+
+Planned fallback behavior:
+
+- localStorage unavailable -> use current in-memory defaults
+- parse error/invalid shape -> ignore persisted payload and use defaults
+- invalid fighter IDs -> replace with default fighter IDs
+- invalid `player2Mode` -> use `"human"`
+
+Integration timing (future implementation PRs):
+
+- load on ModeSelectScene / CharacterSelectScene entry (implemented in Phase 7-10)
+- save after confirmed selections and option changes (selection-save for Mode/Character confirm is now implemented)
+- no server storage, no account sync, no Records persistence yet
+
+
+
+### Phase 7-11: Options preferences scope (design only)
+
+This step is documentation-only. No `OptionsScene` implementation, UI wiring, or runtime preference application is included yet.
+
+Planned Options preferences:
+
+- `preferences.effectsEnabled` (default `true`)
+- `preferences.screenShakeEnabled` (default `true`)
+
+Planned storage rules:
+
+- Reuse existing key: `instrument-brawl:settings`
+- Keep fallback to defaults when localStorage is unavailable/invalid
+- Keep preferences local-only (no server/account sync)
+
+Planned effect scope (future wiring):
+
+- Effects OFF: disable visual-only extras like hit spark / `CLEAN HIT` / win-draw accent effects / other nonessential presentation effects
+- Screen Shake OFF: disable tiny screen/camera shake only
+- Screen Shake OFF must not disable other effects
+- Effects OFF must not change gameplay values/logic
+- BGM/SE settings remain out of scope until audio implementation exists
+- Records preferences/storage remain out of scope
+
+## Phase 6-10+ direction
+
+- Phase 6: effects trial and presentation experiments.
+- Phase 7: game shell direction for Home / Mode / Options and localStorage-based save planning.
+- Phase 8: match rule expansion consideration such as Retire / Timer / rounds, without rushing rounds.
+- Phase 9: encyclopedia, records, and light worldbuilding.
+- Phase 10+: specials, items, new fighters, and larger content expansion.
+
+## Features to avoid for now
+
+- Online multiplayer.
+- Complex combos.
+- Competitive ranking.
+- Large move lists.
+- Campaign or story mode.
+- Unlock systems.
+- Deep customization.
+- CPU behavior beyond the minimal early Phase 4 P2 CPU.
+- BGM/SE audio files.
+- Story or encyclopedia features.
+- Progression systems.
+- Specials or items.
+- Timer or rounds.
+- Retire button.
+- More fighters before Phase 4 solo play preparation and presentation/polish improve the completed core band roster.
