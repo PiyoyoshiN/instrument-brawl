@@ -334,6 +334,40 @@ Planned effect scope (future wiring):
 - BGM/SE settings remain out of scope until audio implementation exists
 - Records preferences/storage remain out of scope
 
+
+
+### Phase 7-14: lightweight Records foundation (design only)
+
+This step is planning-only. No RecordsScene, no runtime records storage, and no Home menu wiring are added yet.
+
+Planned Records principles:
+
+- local-only and lightweight
+- no gameplay impact
+- no unlock dependency
+- no online/account/server dependency
+
+Candidate fields for later implementation:
+
+- `totalMatches`, `p1Wins`, `p2Wins`, `draws`
+- `cpuMatches`, `local2pMatches`
+- `lastPlayedAt`
+- optional later: per-fighter pick counts
+
+Out of scope:
+
+- achievements/trophies/unlocks
+- encyclopedia/story completion metrics
+- online rank/matchmaking/account stats
+- detailed logs/per-hit analytics/damage history/replay data
+
+Storage direction for later implementation:
+
+- keep settings separate: `instrument-brawl:settings`
+- prefer separate records key: `instrument-brawl:records`
+- include `version` for migration
+- sanitize invalid values and fallback to empty/default records when storage is unavailable/invalid
+
 ## Phase 6-10+ direction
 
 - Phase 6: effects trial and presentation experiments.

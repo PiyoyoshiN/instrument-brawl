@@ -374,6 +374,41 @@ Planned behavior constraints:
 - BGM/SE settings are excluded until audio playback/assets are implemented
 - Records preferences are excluded in this step
 
+
+
+### Phase 7-14 lightweight Records foundation (design only)
+
+Records in Phase 7 are planning-only foundation work. Implementation is deferred.
+
+Future scope intent:
+
+- local-only, lightweight match summaries
+- no gameplay effects
+- no fighter/item unlock effects
+- no online/account/server dependency
+
+Candidate future fields:
+
+- `totalMatches`, `p1Wins`, `p2Wins`, `draws`
+- `cpuMatches`, `local2pMatches`
+- `lastPlayedAt`
+- optional later: per-fighter pick counts
+
+Not tracked in this foundation scope:
+
+- achievements/trophies/unlocks
+- encyclopedia/story progression stats
+- online rank/matchmaking/account stats
+- detailed battle logs/per-hit analytics/damage history/replay data
+
+Future storage direction:
+
+- keep settings in `instrument-brawl:settings`
+- prefer separate records key `instrument-brawl:records`
+- include a version field
+- sanitize invalid records values
+- use empty/default records when localStorage is unavailable/invalid
+
 ## Later candidate ideas
 
 These are later ideas only, not Phase 3 fighters:

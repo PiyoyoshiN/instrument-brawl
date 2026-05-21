@@ -192,6 +192,46 @@ Planned behavior notes (future tasks):
 - BGM/SE settings are out of scope until audio playback/assets exist.
 - Records data is out of scope for Options at this step.
 
+
+
+## Phase 7-14 Records foundation scope (design only)
+
+Phase 7-14 is docs-only planning for a lightweight Records foundation.
+
+Records direction (future):
+
+- Local-only data (no account/server/online dependency)
+- Lightweight summary data only
+- No gameplay impact
+- No unlock effects (fighters/items remain unaffected)
+- Keep Records separate from settings storage when implemented
+
+Suggested future record fields:
+
+- `totalMatches`
+- `p1Wins`
+- `p2Wins`
+- `draws`
+- `cpuMatches`
+- `local2pMatches`
+- `lastPlayedAt`
+- optional later: per-fighter pick counts
+
+Not in scope for Records foundation:
+
+- achievements/trophies/unlocks
+- encyclopedia completion/story progress
+- online rank/matchmaking/account stats
+- detailed battle logs/per-hit analytics/damage history/replay data
+
+Suggested future storage split:
+
+- keep settings key: `instrument-brawl:settings`
+- use a separate records key later: `instrument-brawl:records`
+- include `version` for migration
+- sanitize invalid records values
+- if localStorage is unavailable/invalid, use empty/default records
+
 ## Play online
 
 GitHub Pages deployment URL:

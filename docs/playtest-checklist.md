@@ -83,6 +83,10 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Docs state Options implementation/wiring is future scope; no scene/UI behavior changes in this docs-only step.
 - [ ] Docs state Effects OFF is visual-only (no gameplay logic/value changes) and Screen Shake OFF affects only tiny shake.
 - [ ] Docs keep BGM/SE settings and Records preferences out of current Options scope.
+- [ ] Docs define Records as a future lightweight local-only foundation (planning-only in this phase step).
+- [ ] Docs keep Records separate from settings storage direction (`instrument-brawl:records` suggested, `instrument-brawl:settings` unchanged).
+- [ ] Docs list lightweight candidate counters only (matches/wins/draws/mode split/lastPlayedAt).
+- [ ] Docs explicitly exclude achievements/unlocks/story/online/account/deep analytics/replay tracking from current Records scope.
 
 
 ## Options behavior checks
