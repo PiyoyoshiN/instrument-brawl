@@ -296,7 +296,7 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       .setOrigin(0.5);
 
     this.add
-      .text(400, 414, 'Press Enter or Space to select fighters', {
+      .text(400, 414, 'Press Enter or Space to choose mode', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',
@@ -323,8 +323,130 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
       this.transitionStarted = true;
-      this.scene.start('CharacterSelectScene');
+      this.scene.start('ModeSelectScene');
     }
+  }
+}
+
+class ModeSelectScene extends Phaser.Scene {
+  private mode: Player2Mode = 'human';
+  private modeText?: Phaser.GameObjects.Text;
+  private leftKey?: Phaser.Input.Keyboard.Key;
+  private rightKey?: Phaser.Input.Keyboard.Key;
+  private upKey?: Phaser.Input.Keyboard.Key;
+  private downKey?: Phaser.Input.Keyboard.Key;
+  private enterKey?: Phaser.Input.Keyboard.Key;
+  private spaceKey?: Phaser.Input.Keyboard.Key;
+  private escapeKey?: Phaser.Input.Keyboard.Key;
+  private inputEnabledAt = 0;
+  private transitionStarted = false;
+
+  constructor() {
+    super('ModeSelectScene');
+  }
+
+  create() {
+    this.inputEnabledAt = this.time.now + 150;
+    this.transitionStarted = false;
+    this.mode = 'human';
+
+    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    this.add
+      .text(400, 120, 'Mode Select', {
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '44px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 176, 'Choose Local 2P or P1 vs CPU', {
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      })
+      .setOrigin(0.5);
+
+    this.modeText = this.add
+      .text(400, 272, '', {
+        align: 'center',
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '34px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 340, '← / → or ↑ / ↓: choose mode', {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 378, 'Enter / Space: confirm    Esc: return Home', {
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      })
+      .setOrigin(0.5);
+
+    this.updateModeText();
+
+    const keyboard = this.input.keyboard;
+
+    if (!keyboard) {
+      return;
+    }
+
+    this.leftKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    this.rightKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    this.upKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    this.downKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.escapeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+  }
+
+  update(time: number) {
+    if (this.transitionStarted || time < this.inputEnabledAt) {
+      return;
+    }
+
+    if (
+      (this.leftKey && Phaser.Input.Keyboard.JustDown(this.leftKey)) ||
+      (this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) ||
+      (this.rightKey && Phaser.Input.Keyboard.JustDown(this.rightKey)) ||
+      (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))
+    ) {
+      this.mode = this.mode === 'human' ? 'cpu' : 'human';
+      this.updateModeText();
+    }
+
+    if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      this.transitionStarted = true;
+      this.scene.start('HomeScene');
+      return;
+    }
+
+    if (
+      (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
+      (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
+    ) {
+      this.transitionStarted = true;
+      this.scene.start('CharacterSelectScene', {
+        player2Mode: this.mode,
+      });
+    }
+  }
+
+  private updateModeText() {
+    const modeLabel = this.mode === 'cpu' ? 'P1 vs CPU' : 'Local 2P';
+
+    this.modeText?.setText(`< ${modeLabel} >`);
   }
 }
 
@@ -1644,5 +1766,5 @@ new Phaser.Game({
   width: gameWidth,
   height: gameHeight,
   backgroundColor: '#111827',
-  scene: [HomeScene, CharacterSelectScene, BattleScene, ResultScene],
+  scene: [HomeScene, ModeSelectScene, CharacterSelectScene, BattleScene, ResultScene],
 });

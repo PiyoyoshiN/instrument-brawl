@@ -8,9 +8,9 @@
 ## Current status
 
 - Browser-playable Phaser + Vite + TypeScript game.
-- Local 1v1 battle with Home -> Character Select -> Battle -> Result scene flow.
+- Local 1v1 battle with Home -> Mode Select -> Character Select -> Battle -> Result scene flow.
 
-Current scene flow: `Home -> Character Select -> Battle -> Result`.
+Current scene flow: `Home -> Mode Select -> Character Select -> Battle -> Result`.
 
 Phase 7 target scene flow (documentation scope): `Home -> Mode Select -> Character Select -> Battle -> Result`.
 
@@ -26,6 +26,12 @@ Phase 7 Mode Select planning:
 - Phase 2.5 and Phase 3 are complete; the core band 4 fighters are implemented.
 
 ## Controls
+
+### Mode select
+
+- Left / Right or Up / Down: choose mode (Local 2P / P1 vs CPU)
+- Enter / Space: confirm mode and open Character Select
+- Escape: return Home
 
 ### Character select
 

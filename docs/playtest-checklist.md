@@ -4,7 +4,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 ## Core flow and roster
 
-- [ ] Home -> Character Select -> Battle -> Result flow works.
+- [ ] Home -> Mode Select -> Character Select -> Battle -> Result flow works.
 - [ ] Four selectable fighters are available: Electric Guitar, Bass, Drum Sticks, Keyboard.
 - [ ] Local 2P remains the default mode.
 
@@ -71,6 +71,17 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] No gameplay values/logic changes are introduced during planning-only PRs.
 - [ ] No audio/assets or online/server-saving implementation is introduced in planning-only PRs.
 
+
+## Mode Select behavior checks
+
+- [ ] Home Enter/Space opens Mode Select.
+- [ ] Local 2P opens Character Select with P2 Mode: Human.
+- [ ] P1 vs CPU opens Character Select with P2 Mode: CPU.
+- [ ] Character Select P2 Down still toggles Human/CPU.
+- [ ] Battle receives selected P2 mode.
+- [ ] Result `R` rematch preserves P2 mode.
+- [ ] Result `C` return-to-character-select preserves P2 mode.
+- [ ] Escape from Mode Select returns Home.
 
 ## Phase 7 scene-flow planning checklist
 

@@ -21,7 +21,7 @@ The game is currently a simple local 1v1 prototype built with Phaser, Vite, and 
 - Velocity-based knockback is implemented.
 - Visible-duration attack hit detection is implemented.
 - One attack causes only one hit.
-- HomeScene, CharacterSelectScene, BattleScene, and ResultScene provide the current match flow.
+- HomeScene, ModeSelectScene, CharacterSelectScene, BattleScene, and ResultScene provide the current match flow.
 - BattleScene shows a short Ready/Fight prompt before fighters can move or attack.
 
 ## Initial MVP
@@ -48,6 +48,12 @@ Keep controls simple so the game is easy to test and tune.
 - P1 A / D: choose fighter.
 - P2 Left / Right: choose fighter.
 - Enter / Space: start battle.
+- Escape: return Home.
+
+### Mode select
+
+- Left / Right or Up / Down: choose mode.
+- Enter / Space: confirm and open CharacterSelectScene with `player2Mode`.
 - Escape: return Home.
 
 ### Player 1 battle controls
@@ -275,7 +281,7 @@ This is scope planning only; gameplay values/logic remain unchanged.
 
 Current implemented flow:
 
-- `HomeScene -> CharacterSelectScene -> BattleScene -> ResultScene`
+- `HomeScene -> ModeSelectScene -> CharacterSelectScene -> BattleScene -> ResultScene`
 
 Phase 7 target flow for later implementation:
 
@@ -299,7 +305,7 @@ Mode Select mapping (future):
 - Battle: consume selected fighters and P2 mode from scene data.
 - Result: preserve fighters and P2 mode through rematch/return flows.
 
-This is planning-only documentation. No scene implementation/localStorage/records behavior changes are included in this step.
+ModeSelectScene behavior is now implemented. Options/localStorage/Records behavior remains planning-only.
 
 Later phase direction:
 

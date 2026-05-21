@@ -10,7 +10,7 @@ Instrument Brawl is currently a simple browser-playable local 1v1 prototype buil
 - P2 controls: Left / Right move, Up / Enter attack.
 - R starts a rematch from the result screen.
 - C returns from ResultScene to CharacterSelectScene with selected fighter IDs preserved.
-- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> CharacterSelect -> Battle -> Result scene flow, clearer result screen, scene cleanup safeguards, final Phase 2 balance tuning, fighter registry, scene-data fighter ID handoff, minimal character select, and character select readability/stat display polish are implemented.
+- HP bars, clearer HP text, hit flash, visible-duration attack hit detection, one-hit-per-attack behavior, velocity-based knockback, win detection, draw detection, Home -> ModeSelect -> CharacterSelect -> Battle -> Result scene flow, clearer result screen, scene cleanup safeguards, final Phase 2 balance tuning, fighter registry, scene-data fighter ID handoff, minimal character select, and character select readability/stat display polish are implemented.
 
 ## Completed
 
@@ -244,9 +244,9 @@ Phase 7 non-goals at this step:
 
 ## Phase 7-2: document game shell scene flow
 
-Current implemented scene flow remains:
+Current implemented scene flow is now:
 
-- `HomeScene -> CharacterSelectScene -> BattleScene -> ResultScene`
+- `HomeScene -> ModeSelectScene -> CharacterSelectScene -> BattleScene -> ResultScene`
 
 Phase 7 target flow for future implementation:
 
@@ -268,7 +268,7 @@ Planned scene roles:
 - **OptionsScene (future):** later manage effects ON/OFF and screen shake ON/OFF.
 - **Records (future):** lightweight foundation only, not full achievements/unlocks.
 
-Implementation status for this step: documentation only. No scene implementation/localStorage/records code changes yet.
+Implementation status for this step: ModeSelectScene implementation is complete. localStorage/Options/Records are still planning-only.
 
 Home Start should later route to ModeSelectScene instead of directly opening CharacterSelectScene. Options and Records remain future entries.
 
