@@ -219,12 +219,12 @@ Future hook note: later combat/effects work can introduce planned `impactClass` 
 
 ## Phase 7-1: game shell and local save foundation scope
 
-Phase 7 starts as planning/scope definition, not immediate implementation.
+Phase 7 now has initial game-shell implementation plus ongoing save/options scope planning.
 
 Phase 7 scope direction:
 
-- Define Home / Mode Select / Options direction.
-- Clarify that Local 2P and P1 vs CPU should later be selected clearly from Mode Select.
+- Home -> Mode Select -> Character Select scene flow is now implemented.
+- Mode Select now clearly offers Local 2P and P1 vs CPU before Character Select.
 - Keep the current CharacterSelectScene P2 Human/CPU toggle for now.
 - Plan localStorage-based preferences (no implementation yet).
 - Plan save/load hooks for last selected P1 fighter, P2 fighter, and P2 mode.
@@ -236,7 +236,7 @@ Phase 7 scope direction:
 Phase 7 non-goals at this step:
 
 - No gameplay-value changes (HP/damage/knockback/cooldown/duration/hitbox/CPU/one-hit rule).
-- No ModeSelectScene/OptionsScene/localStorage/Records implementation yet.
+- No OptionsScene/localStorage/Records implementation yet.
 - No equipment, amps, ranged/sonic attacks, guard/just-guard, critical damage, specials, items, new fighters, timer, rounds, story, encyclopedia, online, or server saving.
 - No BGM/SE assets or playback.
 - No images, sprites, or 3D.
@@ -248,29 +248,29 @@ Current implemented scene flow is now:
 
 - `HomeScene -> ModeSelectScene -> CharacterSelectScene -> BattleScene -> ResultScene`
 
-Phase 7 target flow for future implementation:
+Current flow:
 
 - `HomeScene -> ModeSelectScene -> CharacterSelectScene -> BattleScene -> ResultScene`
 
-Planned scene roles:
+Scene roles (current + future scope):
 
 - **HomeScene:** simple entrance with Start, Options, and possible future Records entry.
-- **ModeSelectScene (future):** clearly choose Local 2P or P1 vs CPU before Character Select.
+- **ModeSelectScene:** choose Local 2P or P1 vs CPU before Character Select.
   - Local 2P -> `player2Mode: "human"`
   - P1 vs CPU -> `player2Mode: "cpu"`
-  - Should start CharacterSelectScene with `{ player2Mode }`.
+  - Starts CharacterSelectScene with `{ player2Mode }`.
   - Suggested controls: Up/Down or Left/Right choose, Enter/Space confirm, Escape return Home.
 - **CharacterSelectScene:** choose fighters; keep current P2 Human/CPU toggle as fallback/manual override for now.
-  - If Mode Select chose Local 2P, Character Select should initially show Human.
-  - If Mode Select chose P1 vs CPU, Character Select should initially show CPU.
+  - If Mode Select chose Local 2P, Character Select initially shows Human.
+  - If Mode Select chose P1 vs CPU, Character Select initially shows CPU.
 - **BattleScene:** continue receiving `player1FighterId`, `player2FighterId`, and `player2Mode` through scene data.
 - **ResultScene:** continue preserving fighters and `player2Mode` through `R` rematch and `C` return-to-character-select.
 - **OptionsScene (future):** later manage effects ON/OFF and screen shake ON/OFF.
 - **Records (future):** lightweight foundation only, not full achievements/unlocks.
 
-Implementation status for this step: ModeSelectScene implementation is complete. localStorage/Options/Records are still planning-only.
+Current status: ModeSelectScene implementation is complete. localStorage/Options/Records are still planning-only.
 
-Home Start should later route to ModeSelectScene instead of directly opening CharacterSelectScene. Options and Records remain future entries.
+Home Start routes to ModeSelectScene. Options and Records remain future entries.
 
 ## Phase 6-10+ direction
 

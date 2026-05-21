@@ -86,9 +86,9 @@ Use this short checklist before merging gameplay-adjacent PRs.
 ## Phase 7 scene-flow planning checklist
 
 - [ ] Docs clearly separate current flow (`Home -> Character Select -> Battle -> Result`) from target Phase 7 flow (`Home -> Mode Select -> Character Select -> Battle -> Result`).
-- [ ] Docs keep ModeSelectScene, OptionsScene, localStorage, and Records as future implementation scope (not implemented yet).
+- [ ] Docs reflect ModeSelectScene as implemented and keep OptionsScene/localStorage/Records as future scope (not implemented yet).
 - [ ] Mode Select mapping docs are explicit: Local 2P -> `player2Mode: "human"`, P1 vs CPU -> `player2Mode: "cpu"`.
-- [ ] Docs state ModeSelectScene should start CharacterSelectScene with `{ player2Mode }`.
-- [ ] Docs state Home Start should later go to ModeSelectScene.
+- [ ] Docs state ModeSelectScene starts CharacterSelectScene with `{ player2Mode }`.
+- [ ] Docs state Home Start goes to ModeSelectScene.
 - [ ] Existing CharacterSelect P2 Human/CPU toggle is retained as current fallback/manual override.
 - [ ] Existing Battle/Result data handoff expectations (fighters + P2 mode) remain documented.

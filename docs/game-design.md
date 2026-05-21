@@ -266,8 +266,8 @@ This is planning only. No impact-class implementation or gameplay tuning is part
 
 Phase 7 should define shell/save scope before implementation:
 
-- Home / Mode Select / Options direction planning.
-- Local 2P and P1 vs CPU selection clarity from future Mode Select.
+- Home / Mode Select / Options direction is defined; Mode Select is implemented, Options remains future scope.
+- Local 2P and P1 vs CPU selection is now handled in Mode Select.
 - Keep existing CharacterSelectScene P2 Human/CPU toggle for now.
 - localStorage planning for preferences and last selected fighters/mode.
 - Effects ON/OFF and screen shake ON/OFF preference planning.
@@ -283,21 +283,17 @@ Current implemented flow:
 
 - `HomeScene -> ModeSelectScene -> CharacterSelectScene -> BattleScene -> ResultScene`
 
-Phase 7 target flow for later implementation:
-
-- `HomeScene -> ModeSelectScene -> CharacterSelectScene -> BattleScene -> ResultScene`
-
 Scene role intent:
 
 - Home: game entrance, with Start + future Options (+ possible future lightweight Records entry).
-  - Home Start should later route to ModeSelectScene instead of directly to CharacterSelectScene.
-- Mode Select (future): clear Local 2P vs P1 CPU choice before Character Select.
+  - Home Start routes to ModeSelectScene.
+- Mode Select: clear Local 2P vs P1 CPU choice before Character Select.
 
 Mode Select mapping (future):
 
 - Local 2P -> `player2Mode: "human"`
 - P1 vs CPU -> `player2Mode: "cpu"`
-- Mode Select should start CharacterSelectScene with `{ player2Mode }`.
+- Mode Select starts CharacterSelectScene with `{ player2Mode }`.
 - Suggested controls: Up/Down or Left/Right choose, Enter/Space confirm, Escape return Home.
 - Character Select: fighter selection; keep existing P2 Human/CPU toggle as fallback/manual override for now.
   - If Mode Select chose Local 2P, Character Select should initially show Human.
@@ -305,7 +301,7 @@ Mode Select mapping (future):
 - Battle: consume selected fighters and P2 mode from scene data.
 - Result: preserve fighters and P2 mode through rematch/return flows.
 
-ModeSelectScene behavior is now implemented. Options/localStorage/Records behavior remains planning-only.
+ModeSelectScene behavior is implemented. Options/localStorage/Records behavior remains planning-only.
 
 Later phase direction:
 
