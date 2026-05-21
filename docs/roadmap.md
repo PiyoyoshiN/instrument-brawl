@@ -269,7 +269,11 @@ Scene roles (current + future scope):
 - **OptionsScene (future):** later manage effects ON/OFF and screen shake ON/OFF.
 - **Records (future):** lightweight foundation only, not full achievements/unlocks.
 
-Current status: ModeSelectScene implementation is complete. localStorage/Options/Records are still planning-only.
+Current status: ModeSelectScene implementation is complete.
+- Minimal `OptionsScene` shell exists with local Effects ON/OFF and Screen Shake ON/OFF toggles.
+- Options preference toggles save to `preferences.effectsEnabled` and `preferences.screenShakeEnabled`.
+- Preferences are not applied to BattleScene visuals/behavior yet (future wiring).
+- Records remains planning-only.
 
 Home Start routes to ModeSelectScene. Options and Records remain future entries.
 

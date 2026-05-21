@@ -306,6 +306,25 @@ function saveLastSelected(partialLastSelected: Partial<StoredSettings['lastSelec
   }
 }
 
+function savePreferences(partialPreferences: Partial<StoredSettings['preferences']>) {
+  try {
+    const current = loadStoredSettings();
+
+    saveStoredSettings({
+      ...current,
+      lastSelected: {
+        ...current.lastSelected,
+      },
+      preferences: {
+        ...current.preferences,
+        ...partialPreferences,
+      },
+    });
+  } catch {
+    // keep runtime behavior unchanged when storage is unavailable/fails
+  }
+}
+
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
   label: Phaser.GameObjects.Text;
@@ -387,6 +406,11 @@ const attackVisualPaletteByFighterId: Record<string, AttackVisualStyle[]> = {
 class HomeScene extends Phaser.Scene {
   private enterKey?: Phaser.Input.Keyboard.Key;
   private spaceKey?: Phaser.Input.Keyboard.Key;
+  private upKey?: Phaser.Input.Keyboard.Key;
+  private downKey?: Phaser.Input.Keyboard.Key;
+  private selectedIndex = 0;
+  private startCard?: Phaser.GameObjects.Rectangle;
+  private optionsCard?: Phaser.GameObjects.Rectangle;
   private inputEnabledAt = 0;
   private transitionStarted = false;
 
@@ -442,12 +466,39 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       .setOrigin(0.5);
 
     this.add
-      .text(400, 414, 'Press Enter or Space to choose mode', {
-        color: '#facc15',
+      .text(400, 392, '↑ / ↓ : choose', {
+        color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '24px',
+        fontSize: '18px',
       })
       .setOrigin(0.5);
+
+    this.startCard = this.add.rectangle(286, 442, 220, 76, 0x0f172a).setStrokeStyle(4, 0xfacc15);
+    this.optionsCard = this.add.rectangle(514, 442, 220, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
+    this.add
+      .text(286, 442, 'Start', {
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '30px',
+      })
+      .setOrigin(0.5);
+    this.add
+      .text(514, 442, 'Options', {
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '30px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 500, 'Enter / Space: confirm', {
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      })
+      .setOrigin(0.5);
+
+    this.updateSelectionVisuals();
 
     const keyboard = this.input.keyboard;
 
@@ -457,6 +508,8 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
 
     this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.upKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    this.downKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
   }
 
   update(time: number) {
@@ -465,12 +518,117 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
     }
 
     if (
+      (this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) ||
+      (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))
+    ) {
+      this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
+      this.updateSelectionVisuals();
+    }
+
+    if (
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
       this.transitionStarted = true;
-      this.scene.start('ModeSelectScene');
+      this.scene.start(this.selectedIndex === 0 ? 'ModeSelectScene' : 'OptionsScene');
     }
+  }
+
+  private updateSelectionVisuals() {
+    const startSelected = this.selectedIndex === 0;
+    this.startCard?.setStrokeStyle(startSelected ? 4 : 3, startSelected ? 0xfacc15 : 0x475569);
+    this.optionsCard?.setStrokeStyle(startSelected ? 3 : 4, startSelected ? 0x475569 : 0xfacc15);
+  }
+}
+
+class OptionsScene extends Phaser.Scene {
+  private selectedIndex = 0;
+  private effectsEnabled = true;
+  private screenShakeEnabled = true;
+  private effectsText?: Phaser.GameObjects.Text;
+  private screenShakeText?: Phaser.GameObjects.Text;
+  private upKey?: Phaser.Input.Keyboard.Key;
+  private downKey?: Phaser.Input.Keyboard.Key;
+  private leftKey?: Phaser.Input.Keyboard.Key;
+  private rightKey?: Phaser.Input.Keyboard.Key;
+  private enterKey?: Phaser.Input.Keyboard.Key;
+  private spaceKey?: Phaser.Input.Keyboard.Key;
+  private escapeKey?: Phaser.Input.Keyboard.Key;
+  private inputEnabledAt = 0;
+  private transitionStarted = false;
+
+  constructor() {
+    super('OptionsScene');
+  }
+
+  create() {
+    this.inputEnabledAt = this.time.now + 150;
+    this.transitionStarted = false;
+    this.selectedIndex = 0;
+    const stored = loadStoredSettings();
+    this.effectsEnabled = stored.preferences.effectsEnabled;
+    this.screenShakeEnabled = stored.preferences.screenShakeEnabled;
+
+    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    this.add.text(400, 120, 'Options', { color: '#ffffff', fontFamily: 'system-ui, sans-serif', fontSize: '44px' }).setOrigin(0.5);
+    this.add.text(400, 176, 'Lightweight local preferences', { color: '#cbd5e1', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
+
+    this.effectsText = this.add.text(400, 260, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
+    this.screenShakeText = this.add.text(400, 320, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
+
+    this.add.text(400, 402, '↑ / ↓: choose    ← / → or Enter / Space: toggle', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
+    this.add.text(400, 438, 'Esc: return Home', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
+
+    this.updateTexts();
+
+    const keyboard = this.input.keyboard;
+    if (!keyboard) return;
+    this.upKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    this.downKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    this.leftKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    this.rightKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.escapeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+  }
+
+  update(time: number) {
+    if (this.transitionStarted || time < this.inputEnabledAt) return;
+
+    if ((this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) || (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))) {
+      this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
+      this.updateTexts();
+    }
+
+    if (
+      (this.leftKey && Phaser.Input.Keyboard.JustDown(this.leftKey)) ||
+      (this.rightKey && Phaser.Input.Keyboard.JustDown(this.rightKey)) ||
+      (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
+      (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
+    ) {
+      if (this.selectedIndex === 0) {
+        this.effectsEnabled = !this.effectsEnabled;
+        savePreferences({ effectsEnabled: this.effectsEnabled });
+      } else {
+        this.screenShakeEnabled = !this.screenShakeEnabled;
+        savePreferences({ screenShakeEnabled: this.screenShakeEnabled });
+      }
+      this.updateTexts();
+    }
+
+    if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      this.transitionStarted = true;
+      this.scene.start('HomeScene');
+    }
+  }
+
+  private updateTexts() {
+    const prefixA = this.selectedIndex === 0 ? '> ' : '  ';
+    const prefixB = this.selectedIndex === 1 ? '> ' : '  ';
+    this.effectsText?.setText(`${prefixA}Effects: ${this.effectsEnabled ? 'ON' : 'OFF'}`);
+    this.screenShakeText?.setText(`${prefixB}Screen Shake: ${this.screenShakeEnabled ? 'ON' : 'OFF'}`);
   }
 }
 
@@ -1975,5 +2133,5 @@ new Phaser.Game({
   width: gameWidth,
   height: gameHeight,
   backgroundColor: '#111827',
-  scene: [HomeScene, ModeSelectScene, CharacterSelectScene, BattleScene, ResultScene],
+  scene: [HomeScene, OptionsScene, ModeSelectScene, CharacterSelectScene, BattleScene, ResultScene],
 });

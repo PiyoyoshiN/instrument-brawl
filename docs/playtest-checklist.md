@@ -85,6 +85,14 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Docs keep BGM/SE settings and Records preferences out of current Options scope.
 
 
+## Options behavior checks
+
+- [ ] Home -> Options opens OptionsScene.
+- [ ] Options Esc returns Home.
+- [ ] Options can toggle/save Effects ON/OFF and Screen Shake ON/OFF.
+- [ ] Reload + reopen Options reflects saved preference values.
+- [ ] Preferences save does not alter BattleScene behavior yet.
+
 ## Mode Select behavior checks
 
 - [ ] Home Enter/Space opens Mode Select.

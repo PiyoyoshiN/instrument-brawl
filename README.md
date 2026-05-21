@@ -10,9 +10,9 @@
 - Browser-playable Phaser + Vite + TypeScript game.
 - Local 1v1 battle with Home -> Mode Select -> Character Select -> Battle -> Result scene flow.
 
-Current scene flow: `Home -> Mode Select -> Character Select -> Battle -> Result`.
+Current scene flow: `Home -> Mode Select -> Character Select -> Battle -> Result` (+ `Home -> Options -> Home`).
 
-Current and planned Phase 7 flow: `Home -> Mode Select -> Character Select -> Battle -> Result`.
+Current and planned Phase 7 flow: `Home -> Mode Select -> Character Select -> Battle -> Result`, with a minimal Options shell from Home.
 
 Mode Select behavior:
 
@@ -40,6 +40,12 @@ Mode Select behavior:
 - P2 Left / Right: choose fighter
 - P2 Down: switch P2 Human / CPU
 - Enter / Space: start battle
+- Escape: return Home
+
+### Options
+
+- Up / Down: choose setting
+- Left / Right or Enter / Space: toggle selected setting
 - Escape: return Home
 
 ### Battle
@@ -151,6 +157,8 @@ Planned behavior (future tasks):
 - Load occurs when entering ModeSelectScene / CharacterSelectScene.
 - No server saving and no online/account sync.
 - No Records data is stored yet (Records remains future planning scope).
+- OptionsScene now allows toggling/saving `effectsEnabled` and `screenShakeEnabled` only.
+- Preferences are persisted and restored in Options UI, but are not applied to BattleScene behavior yet.
 
 
 

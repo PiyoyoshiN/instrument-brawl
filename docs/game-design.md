@@ -352,7 +352,7 @@ Planned load/save rules for later implementation:
 
 ### Phase 7-11 Options preferences scope (design only)
 
-`OptionsScene` remains future scope in this phase step. This PR defines preference behavior only in docs.
+A minimal `OptionsScene` shell is implemented in Phase 7-12. It supports toggling and saving two local preferences only.
 
 Planned Option items (future):
 
@@ -366,9 +366,9 @@ Defaults and fallback:
 
 Planned behavior constraints:
 
-- Changes should later save immediately or on confirm (implementation timing TBD)
-- Effects OFF should later disable visual-only extras (hit spark, `CLEAN HIT`, win/draw accent effects, and similar nonessential presentation effects)
-- Screen Shake OFF should later disable tiny shake only
+- Changes save on toggle in current minimal OptionsScene implementation
+- Effects OFF should later disable visual-only extras (hit spark, `CLEAN HIT`, win/draw accent effects, and similar nonessential presentation effects). (Not wired to BattleScene yet)
+- Screen Shake OFF should later disable tiny shake only. (Not wired to BattleScene yet)
 - Screen Shake OFF should not disable other visual effects
 - Effects OFF must not change gameplay values/logic (hit detection, damage, knockback, CPU behavior, one-hit-per-attack)
 - BGM/SE settings are excluded until audio playback/assets are implemented
