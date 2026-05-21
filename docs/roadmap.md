@@ -272,7 +272,7 @@ Scene roles (current + future scope):
 Current status: ModeSelectScene implementation is complete.
 - Minimal `OptionsScene` shell exists with local Effects ON/OFF and Screen Shake ON/OFF toggles.
 - Options preference toggles save to `preferences.effectsEnabled` and `preferences.screenShakeEnabled`.
-- Preferences are not applied to BattleScene visuals/behavior yet (future wiring).
+- Preferences are applied to BattleScene presentation only (visual extras + tiny shake gating).
 - Records remains planning-only.
 
 Home Start routes to ModeSelectScene. Options and Records remain future entries.

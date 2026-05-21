@@ -91,7 +91,9 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Options Esc returns Home.
 - [ ] Options can toggle/save Effects ON/OFF and Screen Shake ON/OFF.
 - [ ] Reload + reopen Options reflects saved preference values.
-- [ ] Preferences save does not alter BattleScene behavior yet.
+- [ ] Effects OFF hides nonessential visual extras (hit spark / CLEAN HIT sub-label / win-draw accent effects).
+- [ ] Screen Shake OFF disables tiny shake only.
+- [ ] Gameplay logic/values remain unchanged by these options.
 
 ## Mode Select behavior checks
 

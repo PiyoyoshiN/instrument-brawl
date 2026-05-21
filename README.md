@@ -157,8 +157,11 @@ Planned behavior (future tasks):
 - Load occurs when entering ModeSelectScene / CharacterSelectScene.
 - No server saving and no online/account sync.
 - No Records data is stored yet (Records remains future planning scope).
-- OptionsScene now allows toggling/saving `effectsEnabled` and `screenShakeEnabled` only.
-- Preferences are persisted and restored in Options UI, but are not applied to BattleScene behavior yet.
+- OptionsScene now allows toggling/saving `effectsEnabled` and `screenShakeEnabled`.
+- Preferences are persisted/restored in Options UI and now applied to BattleScene presentation only:
+  - Effects OFF hides nonessential extras (hit spark, CLEAN HIT sub-label, win/draw accent effects).
+  - Screen Shake OFF disables tiny shake only.
+- Gameplay values/logic are unchanged (HP/damage/knockback/hit detection/CPU/one-hit rule).
 
 
 

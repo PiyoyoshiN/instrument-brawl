@@ -1147,6 +1147,8 @@ class BattleScene extends Phaser.Scene {
   private hitSparkEvents: Phaser.Time.TimerEvent[] = [];
   private nextCpuDecisionAt = 0;
   private cpuRetreatUntil = 0;
+  private effectsEnabled = true;
+  private screenShakeEnabled = true;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
@@ -1170,6 +1172,9 @@ class BattleScene extends Phaser.Scene {
     this.activeAttacks = [];
     this.nextCpuDecisionAt = 0;
     this.cpuRetreatUntil = 0;
+    const stored = loadStoredSettings();
+    this.effectsEnabled = stored.preferences.effectsEnabled;
+    this.screenShakeEnabled = stored.preferences.screenShakeEnabled;
     this.isPaused = false;
     this.pauseStartedAt = 0;
     this.pauseKey = undefined;
@@ -1673,7 +1678,7 @@ class BattleScene extends Phaser.Scene {
 
 
   private shakeCameraOnHit() {
-    if (this.matchOver || this.isPaused) {
+    if (this.matchOver || this.isPaused || !this.screenShakeEnabled) {
       return;
     }
 
@@ -1681,7 +1686,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   private showHitSpark(defender: Fighter, attacker: Fighter) {
-    if (this.matchOver) {
+    if (this.matchOver || !this.effectsEnabled) {
       return;
     }
 
@@ -1738,15 +1743,17 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(6);
 
-    this.hitMarkerSubLabel = this.add
-      .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, 'CLEAN HIT', {
-        align: 'center',
-        color: '#ffffff',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '12px',
-      })
-      .setOrigin(0.5)
-      .setDepth(6);
+    if (this.effectsEnabled) {
+      this.hitMarkerSubLabel = this.add
+        .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, 'CLEAN HIT', {
+          align: 'center',
+          color: '#ffffff',
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: '12px',
+        })
+        .setOrigin(0.5)
+        .setDepth(6);
+    }
 
     this.hitMarkerEvent = this.time.delayedCall(hitMarkerDurationMs, () => {
       this.hitMarker?.destroy();
@@ -1852,6 +1859,10 @@ class BattleScene extends Phaser.Scene {
 
 
   private showWinEffect(resultData: ResultSceneData) {
+    if (!this.effectsEnabled) {
+      return;
+    }
+
     const isDraw = resultData.result === 'draw';
     const accentColor = isDraw ? 0xe2e8f0 : 0xfef08a;
     const strokeColor = isDraw ? 0x94a3b8 : 0xfacc15;
