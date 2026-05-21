@@ -495,7 +495,7 @@ class ModeSelectScene extends Phaser.Scene {
   create() {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
-    this.mode = 'human';
+    this.mode = loadStoredSettings().lastSelected.player2Mode;
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
@@ -679,9 +679,11 @@ class CharacterSelectScene extends Phaser.Scene {
   }
 
   init(data: CharacterSelectSceneData = {}) {
-    this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
-    this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
-    this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
+    const stored = loadStoredSettings();
+
+    this.player1FighterId = data.player1FighterId ?? stored.lastSelected.player1FighterId;
+    this.player2FighterId = data.player2FighterId ?? stored.lastSelected.player2FighterId;
+    this.player2Mode = data.player2Mode ?? stored.lastSelected.player2Mode;
   }
 
   create() {

@@ -112,7 +112,7 @@ Next recommended direction:
 
 ## Phase 7-7 localStorage save foundation (design only)
 
-Phase 7-7 defined the localStorage contract, and Phase 7-8 adds safe utility helpers only. Confirmed selections are now saved via safe localStorage helpers, but saved values are not loaded/applied to initial UI yet.
+Phase 7-7 defined the localStorage contract, and Phase 7-8 adds safe utility helpers only. Confirmed selections are saved, and last selected mode/fighters are now restored into Mode Select and Character Select initial UI. ModeSelect scene data still overrides stored P2 mode when provided.
 
 Planned save scope (future implementation):
 

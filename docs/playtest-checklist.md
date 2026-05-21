@@ -73,7 +73,8 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Docs explicitly keep save/load as future implementation only (no runtime code changes in this PR).
 - [ ] Utility helpers exist for load/save/sanitize with safe localStorage try/catch fallback behavior.
 - [ ] Confirmed selections are saved to localStorage on Mode Select confirm and Character Select battle start.
-- [ ] Saved values are not yet restored/applied to initial UI state after reload (future task).
+- [ ] Saved values are restored to initial Mode Select / Character Select UI state after reload.
+- [ ] Character Select uses ModeSelectScene-provided P2 mode over stored P2 mode when provided.
 - [ ] Existing CharacterSelectScene P2 Human/CPU toggle is kept as current behavior.
 - [ ] No gameplay values/logic changes are introduced during planning-only PRs.
 - [ ] No audio/assets or online/server-saving implementation is introduced in planning-only PRs.
