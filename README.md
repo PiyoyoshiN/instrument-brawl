@@ -112,7 +112,7 @@ Next recommended direction:
 
 ## Phase 7-7 localStorage save foundation (design only)
 
-Phase 7-7 defines a docs-only localStorage foundation. No save logic is implemented yet.
+Phase 7-7 defined the localStorage contract, and Phase 7-8 adds safe utility helpers only. Scene behavior is still unchanged (no load/apply/save wiring yet).
 
 Planned save scope (future implementation):
 

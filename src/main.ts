@@ -159,6 +159,133 @@ const defaultPlayer2FighterId = 'bass';
 const defaultPlayer1FighterDefinition = getFighterDefinition(defaultPlayer1FighterId);
 const defaultPlayer2FighterDefinition = getFighterDefinition(defaultPlayer2FighterId);
 const defaultPlayer2Mode: Player2Mode = 'human';
+const settingsStorageKey = 'instrument-brawl:settings';
+const settingsVersion = 1;
+
+type StoredSettings = {
+  version: number;
+  lastSelected: {
+    player1FighterId: string;
+    player2FighterId: string;
+    player2Mode: Player2Mode;
+  };
+  preferences: {
+    effectsEnabled: boolean;
+    screenShakeEnabled: boolean;
+  };
+};
+
+const defaultStoredSettings: StoredSettings = {
+  version: settingsVersion,
+  lastSelected: {
+    player1FighterId: defaultPlayer1FighterId,
+    player2FighterId: defaultPlayer2FighterId,
+    player2Mode: defaultPlayer2Mode,
+  },
+  preferences: {
+    effectsEnabled: true,
+    screenShakeEnabled: true,
+  },
+};
+
+function sanitizeStoredSettings(value: unknown): StoredSettings {
+  const base: StoredSettings = {
+    version: settingsVersion,
+    lastSelected: {
+      player1FighterId: defaultPlayer1FighterId,
+      player2FighterId: defaultPlayer2FighterId,
+      player2Mode: defaultPlayer2Mode,
+    },
+    preferences: {
+      effectsEnabled: true,
+      screenShakeEnabled: true,
+    },
+  };
+
+  if (!value || typeof value !== 'object') {
+    return base;
+  }
+
+  const candidate = value as Partial<StoredSettings> & Record<string, unknown>;
+  const lastSelected = candidate.lastSelected;
+  const preferences = candidate.preferences;
+
+  const player1Candidate =
+    lastSelected && typeof lastSelected === 'object'
+      ? (lastSelected as Record<string, unknown>).player1FighterId
+      : undefined;
+  if (typeof player1Candidate === 'string' && fighterDefinitionById.has(player1Candidate)) {
+    base.lastSelected.player1FighterId = player1Candidate;
+  }
+
+  const player2Candidate =
+    lastSelected && typeof lastSelected === 'object'
+      ? (lastSelected as Record<string, unknown>).player2FighterId
+      : undefined;
+  if (typeof player2Candidate === 'string' && fighterDefinitionById.has(player2Candidate)) {
+    base.lastSelected.player2FighterId = player2Candidate;
+  }
+
+  const modeCandidate =
+    lastSelected && typeof lastSelected === 'object'
+      ? (lastSelected as Record<string, unknown>).player2Mode
+      : undefined;
+  if (modeCandidate === 'human' || modeCandidate === 'cpu') {
+    base.lastSelected.player2Mode = modeCandidate;
+  }
+
+  const effectsEnabledCandidate =
+    preferences && typeof preferences === 'object'
+      ? (preferences as Record<string, unknown>).effectsEnabled
+      : undefined;
+  if (typeof effectsEnabledCandidate === 'boolean') {
+    base.preferences.effectsEnabled = effectsEnabledCandidate;
+  }
+
+  const screenShakeEnabledCandidate =
+    preferences && typeof preferences === 'object'
+      ? (preferences as Record<string, unknown>).screenShakeEnabled
+      : undefined;
+  if (typeof screenShakeEnabledCandidate === 'boolean') {
+    base.preferences.screenShakeEnabled = screenShakeEnabledCandidate;
+  }
+
+  return base;
+}
+
+function loadStoredSettings(): StoredSettings {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return { ...defaultStoredSettings, lastSelected: { ...defaultStoredSettings.lastSelected }, preferences: { ...defaultStoredSettings.preferences } };
+    }
+
+    const raw = window.localStorage.getItem(settingsStorageKey);
+
+    if (!raw) {
+      return { ...defaultStoredSettings, lastSelected: { ...defaultStoredSettings.lastSelected }, preferences: { ...defaultStoredSettings.preferences } };
+    }
+
+    return sanitizeStoredSettings(JSON.parse(raw));
+  } catch {
+    return { ...defaultStoredSettings, lastSelected: { ...defaultStoredSettings.lastSelected }, preferences: { ...defaultStoredSettings.preferences } };
+  }
+}
+
+function saveStoredSettings(settings: StoredSettings): StoredSettings {
+  const sanitized = sanitizeStoredSettings(settings);
+
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return sanitized;
+    }
+
+    window.localStorage.setItem(settingsStorageKey, JSON.stringify(sanitized));
+  } catch {
+    return sanitized;
+  }
+
+  return sanitized;
+}
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;

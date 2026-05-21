@@ -276,7 +276,7 @@ Home Start routes to ModeSelectScene. Options and Records remain future entries.
 
 ### Phase 7-7: localStorage save foundation (design only)
 
-Goal for this step is documentation and contract definition only.
+Phase 7-7 was documentation-only. Phase 7-8 adds utility helper functions only, without scene wiring yet.
 
 Planned persisted fields:
 

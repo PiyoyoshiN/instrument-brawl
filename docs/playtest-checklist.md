@@ -71,6 +71,8 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Docs list planned fields: last selected P1 fighter, last selected P2 fighter, last selected P2 mode, effects enabled, screen shake enabled.
 - [ ] Docs describe fallback behavior for unavailable storage, parse failure, invalid fighter IDs, and invalid player2Mode (`human` fallback).
 - [ ] Docs explicitly keep save/load as future implementation only (no runtime code changes in this PR).
+- [ ] Utility helpers exist for load/save/sanitize with safe localStorage try/catch fallback behavior.
+- [ ] Utility helpers are not wired to scene flow yet (no visible behavior changes in this step).
 - [ ] Existing CharacterSelectScene P2 Human/CPU toggle is kept as current behavior.
 - [ ] No gameplay values/logic changes are introduced during planning-only PRs.
 - [ ] No audio/assets or online/server-saving implementation is introduced in planning-only PRs.
