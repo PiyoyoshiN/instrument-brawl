@@ -109,6 +109,49 @@ Next recommended direction:
 - Phase 9: encyclopedia, records, and light worldbuilding.
 - Phase 10+: specials, items, new fighters, and larger content expansion.
 
+
+## Phase 7-7 localStorage save foundation (design only)
+
+Phase 7-7 defines a docs-only localStorage foundation. No save logic is implemented yet.
+
+Planned save scope (future implementation):
+
+- Last selected P1 fighter ID
+- Last selected P2 fighter ID
+- Last selected P2 mode
+- Effects enabled flag
+- Screen shake enabled flag
+
+Suggested storage shape (single key + lightweight JSON):
+
+- Key: `instrument-brawl:settings`
+- Value: small JSON object with versioning for future migration
+
+```json
+{
+  "version": 1,
+  "lastSelected": {
+    "player1FighterId": "electric-guitar",
+    "player2FighterId": "bass",
+    "player2Mode": "human"
+  },
+  "preferences": {
+    "effectsEnabled": true,
+    "screenShakeEnabled": true
+  }
+}
+```
+
+Planned behavior (future tasks):
+
+- If localStorage is unavailable or JSON parsing fails, fall back to current defaults.
+- Invalid fighter IDs are ignored and replaced by default fighter IDs.
+- Invalid `player2Mode` falls back to `"human"`.
+- Save occurs only after confirmed selections or option changes.
+- Load occurs when entering ModeSelectScene / CharacterSelectScene.
+- No server saving and no online/account sync.
+- No Records data is stored yet (Records remains future planning scope).
+
 ## Play online
 
 GitHub Pages deployment URL:

@@ -311,6 +311,42 @@ Later phase direction:
 - Phase 9: encyclopedia, records, and light worldbuilding.
 - Phase 10+: specials, items, new fighters, and larger content expansion.
 
+
+### Phase 7-7 localStorage save foundation (design only)
+
+This phase defines storage design only. No runtime save/load implementation is included yet.
+
+Planned key and payload:
+
+- Key: `instrument-brawl:settings`
+- Payload: lightweight local JSON object with versioning
+
+```json
+{
+  "version": 1,
+  "lastSelected": {
+    "player1FighterId": "electric-guitar",
+    "player2FighterId": "bass",
+    "player2Mode": "human"
+  },
+  "preferences": {
+    "effectsEnabled": true,
+    "screenShakeEnabled": true
+  }
+}
+```
+
+Planned load/save rules for later implementation:
+
+- Load should be attempted when entering ModeSelectScene / CharacterSelectScene.
+- Save should happen after confirmed selections or option changes.
+- If localStorage is unavailable, behavior remains current default behavior.
+- If parsing fails or payload shape is invalid, ignore persisted data and use defaults.
+- If fighter IDs are not valid registry IDs, replace with default fighter IDs.
+- If `player2Mode` is invalid, use `"human"`.
+- Keep data local-only; no server save, no account sync.
+- Do not store Records data yet (Records remains future scope).
+
 ## Later candidate ideas
 
 These are later ideas only, not Phase 3 fighters:

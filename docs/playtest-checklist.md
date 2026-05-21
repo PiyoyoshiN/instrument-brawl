@@ -67,6 +67,10 @@ Use this short checklist before merging gameplay-adjacent PRs.
 ## Phase 7 planning checklist
 
 - [ ] Phase 7 docs keep Home / Mode Select / Options and local save as planning scope only.
+- [ ] Docs define one namespaced localStorage key (`instrument-brawl:settings`) with a versioned JSON payload plan.
+- [ ] Docs list planned fields: last selected P1 fighter, last selected P2 fighter, last selected P2 mode, effects enabled, screen shake enabled.
+- [ ] Docs describe fallback behavior for unavailable storage, parse failure, invalid fighter IDs, and invalid player2Mode (`human` fallback).
+- [ ] Docs explicitly keep save/load as future implementation only (no runtime code changes in this PR).
 - [ ] Existing CharacterSelectScene P2 Human/CPU toggle is kept as current behavior.
 - [ ] No gameplay values/logic changes are introduced during planning-only PRs.
 - [ ] No audio/assets or online/server-saving implementation is introduced in planning-only PRs.

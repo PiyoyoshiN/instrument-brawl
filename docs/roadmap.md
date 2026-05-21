@@ -273,6 +273,37 @@ Current status: ModeSelectScene implementation is complete. localStorage/Options
 
 Home Start routes to ModeSelectScene. Options and Records remain future entries.
 
+
+### Phase 7-7: localStorage save foundation (design only)
+
+Goal for this step is documentation and contract definition only.
+
+Planned persisted fields:
+
+- `lastSelected.player1FighterId`
+- `lastSelected.player2FighterId`
+- `lastSelected.player2Mode`
+- `preferences.effectsEnabled`
+- `preferences.screenShakeEnabled`
+
+Suggested key/payload:
+
+- key: `instrument-brawl:settings`
+- payload: small JSON object with `version` for future migration support
+
+Planned fallback behavior:
+
+- localStorage unavailable -> use current in-memory defaults
+- parse error/invalid shape -> ignore persisted payload and use defaults
+- invalid fighter IDs -> replace with default fighter IDs
+- invalid `player2Mode` -> use `"human"`
+
+Integration timing (future implementation PRs):
+
+- load on ModeSelectScene / CharacterSelectScene entry
+- save after confirmed selections and option changes
+- no server storage, no account sync, no Records persistence yet
+
 ## Phase 6-10+ direction
 
 - Phase 6: effects trial and presentation experiments.
