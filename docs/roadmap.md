@@ -241,6 +241,29 @@ Phase 7 non-goals at this step:
 - No BGM/SE assets or playback.
 - No images, sprites, or 3D.
 
+
+## Phase 7-2: document game shell scene flow
+
+Current implemented scene flow remains:
+
+- `HomeScene -> CharacterSelectScene -> BattleScene -> ResultScene`
+
+Phase 7 target flow for future implementation:
+
+- `HomeScene -> ModeSelectScene -> CharacterSelectScene -> BattleScene -> ResultScene`
+
+Planned scene roles:
+
+- **HomeScene:** simple entrance with Start, Options, and possible future Records entry.
+- **ModeSelectScene (future):** clearly choose Local 2P or P1 vs CPU before Character Select.
+- **CharacterSelectScene:** choose fighters; keep current P2 Human/CPU toggle as fallback/manual override for now.
+- **BattleScene:** receive selected fighters and P2 mode through scene data.
+- **ResultScene:** preserve fighters and P2 mode through `R` rematch and `C` return-to-character-select.
+- **OptionsScene (future):** later manage effects ON/OFF and screen shake ON/OFF.
+- **Records (future):** lightweight foundation only, not full achievements/unlocks.
+
+Implementation status for this step: documentation only. No scene implementation/localStorage/records code changes yet.
+
 ## Phase 6-10+ direction
 
 - Phase 6: effects trial and presentation experiments.

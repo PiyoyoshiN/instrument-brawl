@@ -70,3 +70,11 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Existing CharacterSelectScene P2 Human/CPU toggle is kept as current behavior.
 - [ ] No gameplay values/logic changes are introduced during planning-only PRs.
 - [ ] No audio/assets or online/server-saving implementation is introduced in planning-only PRs.
+
+
+## Phase 7 scene-flow planning checklist
+
+- [ ] Docs clearly separate current flow (`Home -> Character Select -> Battle -> Result`) from target Phase 7 flow (`Home -> Mode Select -> Character Select -> Battle -> Result`).
+- [ ] Docs keep ModeSelectScene, OptionsScene, localStorage, and Records as future implementation scope (not implemented yet).
+- [ ] Existing CharacterSelect P2 Human/CPU toggle is retained as current fallback/manual override.
+- [ ] Existing Battle/Result data handoff expectations (fighters + P2 mode) remain documented.

@@ -270,6 +270,27 @@ Phase 7 should define shell/save scope before implementation:
 
 This is scope planning only; gameplay values/logic remain unchanged.
 
+
+### Phase 7 scene flow direction
+
+Current implemented flow:
+
+- `HomeScene -> CharacterSelectScene -> BattleScene -> ResultScene`
+
+Phase 7 target flow for later implementation:
+
+- `HomeScene -> ModeSelectScene -> CharacterSelectScene -> BattleScene -> ResultScene`
+
+Scene role intent:
+
+- Home: game entrance, with Start + future Options (+ possible future lightweight Records entry).
+- Mode Select (future): clear Local 2P vs P1 CPU choice before Character Select.
+- Character Select: fighter selection; keep existing P2 Human/CPU toggle as fallback/manual override for now.
+- Battle: consume selected fighters and P2 mode from scene data.
+- Result: preserve fighters and P2 mode through rematch/return flows.
+
+This is planning-only documentation. No scene implementation/localStorage/records behavior changes are included in this step.
+
 Later phase direction:
 
 - Phase 6: effects trial and presentation experiments (see `docs/phase-6-effects-trial.md`).

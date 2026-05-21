@@ -9,6 +9,10 @@
 
 - Browser-playable Phaser + Vite + TypeScript game.
 - Local 1v1 battle with Home -> Character Select -> Battle -> Result scene flow.
+
+Current scene flow: `Home -> Character Select -> Battle -> Result`.
+
+Phase 7 target scene flow (documentation scope): `Home -> Mode Select -> Character Select -> Battle -> Result`.
 - CharacterSelectScene uses the fighter registry and currently offers Electric Guitar, Bass, Drum Sticks, and Keyboard.
 - P2 defaults to Human for local 2-player, with an optional simple CPU mode available from Character Select.
 - Movement, attacks, HP, damage, velocity-based knockback, hit flash, win/draw detection, Ready/Fight start prompt, rematch, and return-to-character-select flow are implemented.
