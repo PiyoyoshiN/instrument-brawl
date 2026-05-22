@@ -1,4 +1,4 @@
-# Playtest Checklist (Phase 5)
+# Playtest Checklist (Phase 7 checkpoint)
 
 Use this short checklist before merging gameplay-adjacent PRs.
 
@@ -64,13 +64,13 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] `P` pause, `R` rematch, and `C` return-to-character-select still work.
 
 
-## Phase 7 planning checklist
+## Phase 7 checkpoint checklist
 
-- [ ] Phase 7 docs keep Home / Mode Select / Options and local save as planning scope only.
+- [ ] Phase 7 checkpoint is documented as complete (game shell + mode select + options + localStorage settings + records foundation docs).
 - [ ] Docs define one namespaced localStorage key (`instrument-brawl:settings`) with a versioned JSON payload plan.
 - [ ] Docs list planned fields: last selected P1 fighter, last selected P2 fighter, last selected P2 mode, effects enabled, screen shake enabled.
 - [ ] Docs describe fallback behavior for unavailable storage, parse failure, invalid fighter IDs, and invalid player2Mode (`human` fallback).
-- [ ] Docs explicitly keep save/load as future implementation only (no runtime code changes in this PR).
+- [ ] Docs state Records runtime/RecordsScene/Home Records wiring remain future scope.
 - [ ] Utility helpers exist for load/save/sanitize with safe localStorage try/catch fallback behavior.
 - [ ] Confirmed selections are saved to localStorage on Mode Select confirm and Character Select battle start.
 - [ ] Saved values are restored to initial Mode Select / Character Select UI state after reload.
@@ -119,12 +119,13 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Result `C` return-to-character-select preserves P2 mode.
 - [ ] Escape from Mode Select returns Home.
 
-## Phase 7 scene-flow planning checklist
+## Phase 8 scope checklist (docs)
 
-- [ ] Docs clearly separate current flow (`Home -> Character Select -> Battle -> Result`) from target Phase 7 flow (`Home -> Mode Select -> Character Select -> Battle -> Result`).
-- [ ] Docs reflect ModeSelectScene as implemented and keep OptionsScene/localStorage/Records as future scope (not implemented yet).
-- [ ] Mode Select mapping docs are explicit: Local 2P -> `player2Mode: "human"`, P1 vs CPU -> `player2Mode: "cpu"` via two visible choices.
-- [ ] Docs state ModeSelectScene starts CharacterSelectScene with `{ player2Mode }`.
-- [ ] Docs state Home Start goes to ModeSelectScene.
-- [ ] Existing CharacterSelect P2 Human/CPU toggle is retained as current fallback/manual override.
-- [ ] Existing Battle/Result data handoff expectations (fighters + P2 mode) remain documented.
+- [ ] Phase 8 is explicitly defined as **not** a major combat expansion phase.
+- [ ] Phase 8 implementation targets are listed: Reset Preferences, Records localStorage utility, Save match result once, RecordsScene shell, Home Records entry, Reset Records, Playtest checklist updates.
+- [ ] Phase 8 docs/design-only targets are listed: Retire/Forfeit, Timer, Equipment/Amp, `attackMethod`/`impactClass`, and critical rate/guard/just guard as future design topics only.
+- [ ] Phase 8 immediate non-goals are listed (no equipment/amp/ranged/sonic/critical/guard/just-guard/specials/rounds/timer gameplay/new fighters/encyclopedia/story/online/server save/BGM-SE assets/images/sprites/3D implementation).
+- [ ] Phase 8 guardrails state no changes to HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, or one-hit-per-attack during scope/docs tasks.
+- [ ] Phase 8 task list includes 8-1 through 8-17 with 8-1 complete and 8-2 as this docs task.
+- [ ] Next recommended task is explicit: Phase 8-3 Reset preferences design docs.
+

@@ -262,19 +262,19 @@ Future identity direction:
 This is planning only. No impact-class implementation or gameplay tuning is part of current Phase 6.
 
 
-### Phase 7 game shell/local save foundation note
+### Phase 7 checkpoint note
 
-Phase 7 should define shell/save scope before implementation:
+Phase 7 checkpoint is complete with the following scope:
 
-- Home / Mode Select / Options direction is defined; Mode Select is implemented, Options remains future scope.
+- Home / Mode Select / Options flow is implemented (Home includes Start/Options).
 - Local 2P and P1 vs CPU selection is now handled in Mode Select.
 - Keep existing CharacterSelectScene P2 Human/CPU toggle for now.
-- localStorage planning for preferences and last selected fighters/mode.
-- Effects ON/OFF and screen shake ON/OFF preference planning.
+- localStorage settings are implemented for preferences and last selected fighters/mode.
+- Effects ON/OFF and screen shake ON/OFF are implemented and saved.
 - Lightweight Records foundation planning.
 - Server saving deferred until online/account scope exists.
 
-This is scope planning only; gameplay values/logic remain unchanged.
+Gameplay values/logic remain unchanged. Records runtime and reset-preferences/reset-records remain future implementation scope.
 
 
 ### Phase 7 scene flow direction
@@ -289,7 +289,7 @@ Scene role intent:
   - Home Start routes to ModeSelectScene.
 - Mode Select: clear Local 2P vs P1 CPU choice before Character Select.
 
-Mode Select mapping (future):
+Mode Select mapping:
 
 - Local 2P -> `player2Mode: "human"`
 - P1 vs CPU -> `player2Mode: "cpu"`
@@ -301,7 +301,7 @@ Mode Select mapping (future):
 - Battle: consume selected fighters and P2 mode from scene data.
 - Result: preserve fighters and P2 mode through rematch/return flows.
 
-ModeSelectScene behavior is implemented. Options/localStorage/Records behavior remains planning-only.
+ModeSelectScene behavior is implemented. Options and localStorage settings behavior are implemented for the current Phase 7 checkpoint. Records runtime remains future scope.
 
 Later phase direction:
 
@@ -311,6 +311,49 @@ Later phase direction:
 - Phase 9: encyclopedia, records, and light worldbuilding.
 - Phase 10+: specials, items, new fighters, and larger content expansion.
 
+
+### Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
+
+Phase 8 is not a major combat expansion phase.
+
+Implementation targets in later Phase 8 tasks:
+
+- Reset Preferences
+- Records localStorage utility
+- Save match result once
+- RecordsScene shell
+- Home Records entry
+- Reset Records
+- Playtest checklist updates
+
+Docs/design-only targets in Phase 8:
+
+- Retire / Forfeit
+- Timer
+- Equipment / Amp
+- `attackMethod` / `impactClass`
+- Critical rate / guard / just guard as future topics only
+
+Immediate non-goals:
+
+- No equipment implementation
+- No amp/ranged/sonic attack implementation
+- No critical damage/rate gameplay implementation
+- No guard or just guard implementation
+- No special moves
+- No rounds
+- No timer gameplay implementation
+- No new fighters
+- No encyclopedia implementation
+- No story
+- No online play
+- No server saving
+- No BGM/SE assets
+- No images, sprites, or 3D
+
+Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
+
+Next recommended task: **Phase 8-3: Reset preferences design docs**.
 
 ### Phase 7-7 localStorage save foundation (design only)
 
