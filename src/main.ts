@@ -406,6 +406,8 @@ const attackVisualPaletteByFighterId: Record<string, AttackVisualStyle[]> = {
 class HomeScene extends Phaser.Scene {
   private enterKey?: Phaser.Input.Keyboard.Key;
   private spaceKey?: Phaser.Input.Keyboard.Key;
+  private leftKey?: Phaser.Input.Keyboard.Key;
+  private rightKey?: Phaser.Input.Keyboard.Key;
   private upKey?: Phaser.Input.Keyboard.Key;
   private downKey?: Phaser.Input.Keyboard.Key;
   private selectedIndex = 0;
@@ -466,7 +468,7 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       .setOrigin(0.5);
 
     this.add
-      .text(400, 392, '↑ / ↓ : choose', {
+      .text(400, 392, '← / → : choose', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -508,6 +510,8 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
 
     this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.leftKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    this.rightKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     this.upKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
     this.downKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
   }
@@ -518,6 +522,8 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
     }
 
     if (
+      (this.leftKey && Phaser.Input.Keyboard.JustDown(this.leftKey)) ||
+      (this.rightKey && Phaser.Input.Keyboard.JustDown(this.rightKey)) ||
       (this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) ||
       (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))
     ) {

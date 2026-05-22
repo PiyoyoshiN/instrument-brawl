@@ -28,6 +28,11 @@ Mode Select behavior:
 
 ## Controls
 
+### Home
+
+- Left / Right: choose Start / Options
+- Enter / Space: confirm
+
 ### Mode select
 
 - Up / Down (or Left / Right): choose mode (VS HUMAN / VS CPU)

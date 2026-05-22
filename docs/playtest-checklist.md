@@ -89,6 +89,12 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Docs explicitly exclude achievements/unlocks/story/online/account/deep analytics/replay tracking from current Records scope.
 
 
+## Home menu checks
+
+- [ ] Home Start button is on the left and Options button is on the right.
+- [ ] Home Left/Right changes highlighted button.
+- [ ] Home Enter/Space confirms highlighted Start/Options choice.
+
 ## Options behavior checks
 
 - [ ] Home -> Options opens OptionsScene.
