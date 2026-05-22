@@ -325,6 +325,30 @@ function savePreferences(partialPreferences: Partial<StoredSettings['preferences
   }
 }
 
+function resetStoredSettings(): StoredSettings {
+  try {
+    return saveStoredSettings({
+      ...defaultStoredSettings,
+      lastSelected: {
+        ...defaultStoredSettings.lastSelected,
+      },
+      preferences: {
+        ...defaultStoredSettings.preferences,
+      },
+    });
+  } catch {
+    return {
+      ...defaultStoredSettings,
+      lastSelected: {
+        ...defaultStoredSettings.lastSelected,
+      },
+      preferences: {
+        ...defaultStoredSettings.preferences,
+      },
+    };
+  }
+}
+
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
   label: Phaser.GameObjects.Text;
@@ -551,8 +575,10 @@ class OptionsScene extends Phaser.Scene {
   private selectedIndex = 0;
   private effectsEnabled = true;
   private screenShakeEnabled = true;
+  private isResetArmed = false;
   private effectsText?: Phaser.GameObjects.Text;
   private screenShakeText?: Phaser.GameObjects.Text;
+  private resetPreferencesText?: Phaser.GameObjects.Text;
   private upKey?: Phaser.Input.Keyboard.Key;
   private downKey?: Phaser.Input.Keyboard.Key;
   private leftKey?: Phaser.Input.Keyboard.Key;
@@ -571,6 +597,7 @@ class OptionsScene extends Phaser.Scene {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
     this.selectedIndex = 0;
+    this.isResetArmed = false;
     const stored = loadStoredSettings();
     this.effectsEnabled = stored.preferences.effectsEnabled;
     this.screenShakeEnabled = stored.preferences.screenShakeEnabled;
@@ -583,9 +610,10 @@ class OptionsScene extends Phaser.Scene {
 
     this.effectsText = this.add.text(400, 260, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
     this.screenShakeText = this.add.text(400, 320, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
+    this.resetPreferencesText = this.add.text(400, 380, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
 
-    this.add.text(400, 402, '↑ / ↓: choose    ← / → or Enter / Space: toggle', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
-    this.add.text(400, 438, 'Esc: return Home', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
+    this.add.text(400, 438, '↑ / ↓: choose    ← / → or Enter / Space: toggle/confirm', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
+    this.add.text(400, 470, 'Esc: return Home', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
 
     this.updateTexts();
 
@@ -604,7 +632,13 @@ class OptionsScene extends Phaser.Scene {
     if (this.transitionStarted || time < this.inputEnabledAt) return;
 
     if ((this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) || (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))) {
-      this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
+      const previousIndex = this.selectedIndex;
+      this.selectedIndex = (this.selectedIndex + 1) % 3;
+
+      if (previousIndex === 2 || this.selectedIndex !== 2) {
+        this.isResetArmed = false;
+      }
+
       this.updateTexts();
     }
 
@@ -615,11 +649,20 @@ class OptionsScene extends Phaser.Scene {
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
       if (this.selectedIndex === 0) {
+        this.isResetArmed = false;
         this.effectsEnabled = !this.effectsEnabled;
         savePreferences({ effectsEnabled: this.effectsEnabled });
-      } else {
+      } else if (this.selectedIndex === 1) {
+        this.isResetArmed = false;
         this.screenShakeEnabled = !this.screenShakeEnabled;
         savePreferences({ screenShakeEnabled: this.screenShakeEnabled });
+      } else if (!this.isResetArmed) {
+        this.isResetArmed = true;
+      } else {
+        const reset = resetStoredSettings();
+        this.effectsEnabled = reset.preferences.effectsEnabled;
+        this.screenShakeEnabled = reset.preferences.screenShakeEnabled;
+        this.isResetArmed = false;
       }
       this.updateTexts();
     }
@@ -633,8 +676,11 @@ class OptionsScene extends Phaser.Scene {
   private updateTexts() {
     const prefixA = this.selectedIndex === 0 ? '> ' : '  ';
     const prefixB = this.selectedIndex === 1 ? '> ' : '  ';
+    const prefixC = this.selectedIndex === 2 ? '> ' : '  ';
+    const resetText = this.isResetArmed ? 'Reset Preferences: Press again to confirm' : 'Reset Preferences';
     this.effectsText?.setText(`${prefixA}Effects: ${this.effectsEnabled ? 'ON' : 'OFF'}`);
     this.screenShakeText?.setText(`${prefixB}Screen Shake: ${this.screenShakeEnabled ? 'ON' : 'OFF'}`);
+    this.resetPreferencesText?.setText(`${prefixC}${resetText}`);
   }
 }
 
