@@ -212,7 +212,7 @@ Implemented in Phase 6:
 
 These remain visual-only trial effects under Phase 6 guardrails; gameplay values/logic were not expanded.
 
-Next recommended direction: move to Phase 7 game shell direction (Home / Mode / Options) and localStorage planning, unless explicitly instructed otherwise.
+Next recommended direction: Phase 7 checkpoint is complete; move to Phase 8 planning starting with Phase 8-2 scope definition.
 
 Future hook note: later combat/effects work can introduce planned `impactClass` / `attackMethod` categories (`direct-heavy`, `direct-medium`, `direct-light`, `sonic`, `hybrid`) as implementation tasks.
 
@@ -368,13 +368,34 @@ Storage direction for later implementation:
 - include `version` for migration
 - sanitize invalid values and fallback to empty/default records when storage is unavailable/invalid
 
-## Phase 6-10+ direction
 
-- Phase 6: effects trial and presentation experiments.
-- Phase 7: game shell direction for Home / Mode / Options and localStorage-based save planning.
-- Phase 8: match rule expansion consideration such as Retire / Timer / rounds, without rushing rounds.
-- Phase 9: encyclopedia, records, and light worldbuilding.
-- Phase 10+: specials, items, new fighters, and larger content expansion.
+## Phase 7 checkpoint
+
+Phase 7 checkpoint is complete.
+
+- Game shell complete.
+- Mode Select complete.
+- Options complete.
+- localStorage settings complete (`instrument-brawl:settings`).
+- Records foundation docs complete.
+- Records runtime is not implemented yet.
+## Phase 8 next direction
+
+Phase 7 checkpoint is complete.
+
+Phase 8 should start with **Phase 8-2: define Phase 8 scope**.
+
+Phase 8 focus:
+
+- Reset preferences
+- Records runtime implementation
+- RecordsScene implementation
+- Reset Records
+- docs planning for Retire / Timer / Equipment / Amp / `attackMethod`
+
+Phase 8 immediate non-goals:
+
+- No immediate implementation of equipment systems, ranged attacks, critical damage/rate, guard/just-guard, rounds, timer gameplay, new fighters, story, encyclopedia, online, server save, BGM/SE assets, sprites, or 3D.
 
 ## Features to avoid for now
 
