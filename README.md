@@ -12,7 +12,7 @@
 
 Current scene flow: `Home -> Mode Select -> Character Select -> Battle -> Result` (+ `Home -> Options -> Home`).
 
-Current and planned Phase 7 flow: `Home -> Mode Select -> Character Select -> Battle -> Result`, with a minimal Options shell from Home.
+Phase 7 checkpoint flow: `Home -> Mode Select -> Character Select -> Battle -> Result` (+ `Home -> Options -> Home`).
 
 Mode Select behavior:
 
@@ -121,121 +121,118 @@ Next recommended direction:
 - Phase 10+: specials, items, new fighters, and larger content expansion.
 
 
-## Phase 7-7 localStorage save foundation (design only)
+## Phase 7 checkpoint summary
 
-Phase 7-7 defined the localStorage contract, and Phase 7-8 adds safe utility helpers only. Confirmed selections are saved, and last selected mode/fighters are now restored into Mode Select and Character Select initial UI. ModeSelect scene data still overrides stored P2 mode when provided.
+Phase 7 checkpoint is complete.
 
-Planned save scope (future implementation):
+Completed in Phase 7:
 
-- Last selected P1 fighter ID
-- Last selected P2 fighter ID
-- Last selected P2 mode
-- Effects enabled flag
-- Screen shake enabled flag
+- Game shell complete: `Home -> Mode Select -> Character Select -> Battle -> Result` and `Home -> Options -> Home`.
+- Mode Select complete: VS HUMAN / Local 2P maps to `player2Mode: "human"`; VS CPU / P1 vs CPU maps to `player2Mode: "cpu"`.
+- Character Select keeps the existing P2 Human/CPU toggle as fallback/manual override.
+- `player2Mode` is preserved through Battle, Result, `R` rematch, and `C` return-to-character-select.
+- localStorage settings complete using `instrument-brawl:settings`.
+- Saved settings include `lastSelected.player1FighterId`, `lastSelected.player2FighterId`, `lastSelected.player2Mode`, `preferences.effectsEnabled`, and `preferences.screenShakeEnabled`.
+- Stored selections are restored into Mode Select / Character Select initial UI, and invalid stored values safely fall back to defaults.
+- Options complete for this phase scope: Effects ON/OFF and Screen Shake ON/OFF are toggleable and saved.
+- Effects OFF hides nonessential extras only; Screen Shake OFF disables tiny shake only.
+- Gameplay values and logic remain unchanged.
+- Records foundation docs complete.
+- Records runtime implementation is not implemented yet (no RecordsScene/Home Records entry/match result storage yet).
+- Reset preferences is not implemented yet.
 
-Suggested storage shape (single key + lightweight JSON):
+## Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
 
-- Key: `instrument-brawl:settings`
-- Value: small JSON object with versioning for future migration
+Phase 8 is **not** a major combat expansion phase.
 
-```json
-{
-  "version": 1,
-  "lastSelected": {
-    "player1FighterId": "electric-guitar",
-    "player2FighterId": "bass",
-    "player2Mode": "human"
-  },
-  "preferences": {
-    "effectsEnabled": true,
-    "screenShakeEnabled": true
-  }
-}
-```
+### Phase 8 implementation targets
 
-Planned behavior (future tasks):
+- Reset Preferences
+- Records localStorage utility
+- Save match result once
+- RecordsScene shell
+- Home Records entry
+- Reset Records
+- Playtest checklist updates
 
-- If localStorage is unavailable or JSON parsing fails, fall back to current defaults.
-- Invalid fighter IDs are ignored and replaced by default fighter IDs.
-- Invalid `player2Mode` falls back to `"human"`.
-- Save occurs only after confirmed selections or option changes.
-- Load occurs when entering ModeSelectScene / CharacterSelectScene.
-- No server saving and no online/account sync.
-- No Records data is stored yet (Records remains future planning scope).
-- OptionsScene now allows toggling/saving `effectsEnabled` and `screenShakeEnabled`.
-- Preferences are persisted/restored in Options UI and now applied to BattleScene presentation only:
-  - Effects OFF hides nonessential extras (hit spark, CLEAN HIT sub-label, win/draw accent effects).
-  - Screen Shake OFF disables tiny shake only.
-- Gameplay values/logic are unchanged (HP/damage/knockback/hit detection/CPU/one-hit rule).
+### Phase 8 docs/design-only targets
 
+- Retire / Forfeit
+- Timer
+- Equipment / Amp
+- `attackMethod` / `impactClass`
+- Critical rate / guard / just guard (future design topics only)
 
+### Phase 8 immediate non-goals
 
-## Phase 7-11 Options preferences scope (design only)
-
-Phase 7-11 is docs-only planning. `OptionsScene` is still future implementation and is not part of this step.
-
-Planned Options scope (future):
-
-- Effects: ON/OFF -> `preferences.effectsEnabled`
-- Screen Shake: ON/OFF -> `preferences.screenShakeEnabled`
-
-Storage and defaults:
-
-- Use existing local settings object key: `instrument-brawl:settings`
-- Keep default preferences as:
-  - `effectsEnabled: true`
-  - `screenShakeEnabled: true`
-- If localStorage is unavailable/invalid, continue with defaults.
-
-Planned behavior notes (future tasks):
-
-- Options changes should eventually save immediately or on confirm.
-- Effects OFF should later disable only visual-only extras (e.g. hit spark, `CLEAN HIT` sub-label, win/draw accent effects, other nonessential presentation effects).
-- Screen Shake OFF should later disable only tiny camera/screen shake.
-- Screen Shake OFF should not disable other effects.
-- Effects OFF must not alter gameplay values/logic (damage, knockback, hit detection, CPU behavior, one-hit-per-attack rule).
-- BGM/SE settings are out of scope until audio playback/assets exist.
-- Records data is out of scope for Options at this step.
+- No equipment implementation
+- No amp/ranged/sonic attack implementation
+- No critical damage/rate gameplay implementation
+- No guard or just guard implementation
+- No special moves
+- No rounds
+- No timer gameplay implementation
+- No new fighters
+- No encyclopedia implementation
+- No story
+- No online play
+- No server saving
+- No BGM/SE assets
+- No images, sprites, or 3D
 
 
+### Phase 8-3 Reset Preferences design (docs only)
 
-## Phase 7-14 Records foundation scope (design only)
+Reset Preferences is settings-only and is separate from Reset Records.
 
-Phase 7-14 is docs-only planning for a lightweight Records foundation.
+- Target key: `instrument-brawl:settings` only
+- Must not read/write/delete `instrument-brawl:records`
+- Must not combine with Reset Records into a single reset-all action in this phase
 
-Records direction (future):
+Reset target defaults:
 
-- Local-only data (no account/server/online dependency)
-- Lightweight summary data only
-- No gameplay impact
-- No unlock effects (fighters/items remain unaffected)
-- Keep Records separate from settings storage when implemented
+- `lastSelected.player1FighterId`: `electric-guitar` (Electric Guitar)
+- `lastSelected.player2FighterId`: `bass` (Bass)
+- `lastSelected.player2Mode`: `human` (Human)
+- `preferences.effectsEnabled`: `true` (ON)
+- `preferences.screenShakeEnabled`: `true` (ON)
 
-Suggested future record fields:
+Future UI behavior (simple, no modal system):
 
-- `totalMatches`
-- `p1Wins`
-- `p2Wins`
-- `draws`
-- `cpuMatches`
-- `local2pMatches`
-- `lastPlayedAt`
-- optional later: per-fighter pick counts
+- Reset Preferences lives in `OptionsScene`
+- It is a separate selectable row/action from Effects and Screen Shake
+- First confirm arms reset and shows a small prompt like `Press again to confirm`
+- Second confirm executes reset
+- Escape or moving selection away cancels the pending confirmation
 
-Not in scope for Records foundation:
+Expected behavior after reset:
 
-- achievements/trophies/unlocks
-- encyclopedia completion/story progress
-- online rank/matchmaking/account stats
-- detailed battle logs/per-hit analytics/damage history/replay data
+- Stored settings return to defaults
+- Reopening Mode Select highlights default Human mode
+- Reopening Character Select uses default fighters unless scene data overrides
+- Reopening Options shows Effects ON and Screen Shake ON
+- Gameplay values/logic remain unchanged
 
-Suggested future storage split:
+Failure/fallback behavior:
 
-- keep settings key: `instrument-brawl:settings`
-- use a separate records key later: `instrument-brawl:records`
-- include `version` for migration
-- sanitize invalid records values
-- if localStorage is unavailable/invalid, use empty/default records
+- If localStorage is unavailable, fail safely and keep runtime usable
+- If remove/save fails, gameplay must not crash
+- Existing sanitize/default fallback behavior remains the safety net
+
+### Phase 8 guardrails for scope/docs tasks
+
+During Phase 8 scope/docs tasks, do not change:
+
+- HP
+- damage
+- knockback
+- attack cooldown
+- attack duration
+- hitbox
+- CPU behavior
+- one-hit-per-attack
+
+**Next recommended task:** Phase 8-4: Reset preferences implementation.
 
 ## Play online
 
