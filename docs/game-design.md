@@ -312,6 +312,49 @@ Later phase direction:
 - Phase 10+: specials, items, new fighters, and larger content expansion.
 
 
+### Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
+
+Phase 8 is not a major combat expansion phase.
+
+Implementation targets in later Phase 8 tasks:
+
+- Reset Preferences
+- Records localStorage utility
+- Save match result once
+- RecordsScene shell
+- Home Records entry
+- Reset Records
+- Playtest checklist updates
+
+Docs/design-only targets in Phase 8:
+
+- Retire / Forfeit
+- Timer
+- Equipment / Amp
+- `attackMethod` / `impactClass`
+- Critical rate / guard / just guard as future topics only
+
+Immediate non-goals:
+
+- No equipment implementation
+- No amp/ranged/sonic attack implementation
+- No critical damage/rate gameplay implementation
+- No guard or just guard implementation
+- No special moves
+- No rounds
+- No timer gameplay implementation
+- No new fighters
+- No encyclopedia implementation
+- No story
+- No online play
+- No server saving
+- No BGM/SE assets
+- No images, sprites, or 3D
+
+Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
+
+Next recommended task: **Phase 8-3: Reset preferences design docs**.
+
 ### Phase 7-7 localStorage save foundation (design only)
 
 Storage contract is defined and helper utilities exist. Confirmed selection save and restore to initial Mode/Character UI are implemented.

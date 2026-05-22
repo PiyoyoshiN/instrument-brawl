@@ -379,23 +379,79 @@ Phase 7 checkpoint is complete.
 - localStorage settings complete (`instrument-brawl:settings`).
 - Records foundation docs complete.
 - Records runtime is not implemented yet.
-## Phase 8 next direction
+## Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
 
-Phase 7 checkpoint is complete.
+Phase 8 is not a major combat expansion phase.
 
-Phase 8 should start with **Phase 8-2: define Phase 8 scope**.
+### Phase 8 task list (8-1 to 8-17)
 
-Phase 8 focus:
+- 8-1 Phase 7 checkpoint docs — already complete
+- 8-2 Phase 8 scope docs — this task
+- 8-3 Reset preferences design docs
+- 8-4 Reset preferences implementation
+- 8-5 Records runtime design docs
+- 8-6 Records storage utility
+- 8-7 Save match result once
+- 8-8 RecordsScene shell
+- 8-9 Home Records entry
+- 8-10 Reset Records design docs
+- 8-11 Reset Records implementation
+- 8-12 Retire / Forfeit design docs
+- 8-13 Timer design docs
+- 8-14 Equipment / Amp design docs
+- 8-15 `attackMethod` / `impactClass` docs
+- 8-16 Playtest checklist update
+- 8-17 Phase 8 checkpoint docs
 
-- Reset preferences
-- Records runtime implementation
-- RecordsScene implementation
+### Phase 8 implementation targets
+
+- Reset Preferences
+- Records localStorage utility
+- Save match result once
+- RecordsScene shell
+- Home Records entry
 - Reset Records
-- docs planning for Retire / Timer / Equipment / Amp / `attackMethod`
+- Playtest checklist updates
 
-Phase 8 immediate non-goals:
+### Phase 8 docs/design-only targets
 
-- No immediate implementation of equipment systems, ranged attacks, critical damage/rate, guard/just-guard, rounds, timer gameplay, new fighters, story, encyclopedia, online, server save, BGM/SE assets, sprites, or 3D.
+- Retire / Forfeit
+- Timer
+- Equipment / Amp
+- `attackMethod` / `impactClass`
+- Critical rate / guard / just guard as future design topics only
+
+### Phase 8 immediate non-goals
+
+- No equipment implementation
+- No amp/ranged/sonic attack implementation
+- No critical damage/rate gameplay implementation
+- No guard or just guard implementation
+- No special moves
+- No rounds
+- No timer gameplay implementation
+- No new fighters
+- No encyclopedia implementation
+- No story
+- No online play
+- No server saving
+- No BGM/SE assets
+- No images, sprites, or 3D
+
+### Phase 8 guardrails for scope/docs tasks
+
+Do not change gameplay values/logic during Phase 8 scope/docs tasks:
+
+- HP
+- damage
+- knockback
+- attack cooldown
+- attack duration
+- hitbox
+- CPU behavior
+- one-hit-per-attack
+
+**Next recommended task:** Phase 8-3: Reset preferences design docs.
 
 ## Features to avoid for now
 

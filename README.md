@@ -141,17 +141,59 @@ Completed in Phase 7:
 - Records runtime implementation is not implemented yet (no RecordsScene/Home Records entry/match result storage yet).
 - Reset preferences is not implemented yet.
 
-## Phase 8 next direction
+## Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
 
-- **Phase 8-2 should define the concrete Phase 8 scope.**
-- Phase 8 should focus on:
-  - Reset preferences
-  - Records runtime
-  - RecordsScene
-  - Reset Records
-  - docs planning for Retire / Timer / Equipment / Amp / `attackMethod`
+Phase 8 is **not** a major combat expansion phase.
 
-Phase 8 should **not** immediately implement equipment systems, ranged attacks, critical damage/rate, guard/just-guard, rounds, timer gameplay expansion, new fighters, story, encyclopedia, online, server save, BGM/SE assets, sprites, or 3D.
+### Phase 8 implementation targets
+
+- Reset Preferences
+- Records localStorage utility
+- Save match result once
+- RecordsScene shell
+- Home Records entry
+- Reset Records
+- Playtest checklist updates
+
+### Phase 8 docs/design-only targets
+
+- Retire / Forfeit
+- Timer
+- Equipment / Amp
+- `attackMethod` / `impactClass`
+- Critical rate / guard / just guard (future design topics only)
+
+### Phase 8 immediate non-goals
+
+- No equipment implementation
+- No amp/ranged/sonic attack implementation
+- No critical damage/rate gameplay implementation
+- No guard or just guard implementation
+- No special moves
+- No rounds
+- No timer gameplay implementation
+- No new fighters
+- No encyclopedia implementation
+- No story
+- No online play
+- No server saving
+- No BGM/SE assets
+- No images, sprites, or 3D
+
+### Phase 8 guardrails for scope/docs tasks
+
+During Phase 8 scope/docs tasks, do not change:
+
+- HP
+- damage
+- knockback
+- attack cooldown
+- attack duration
+- hitbox
+- CPU behavior
+- one-hit-per-attack
+
+**Next recommended task:** Phase 8-3: Reset preferences design docs.
 
 ## Play online
 
