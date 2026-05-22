@@ -119,13 +119,25 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Result `C` return-to-character-select preserves P2 mode.
 - [ ] Escape from Mode Select returns Home.
 
-## Phase 8 scope checklist (docs)
+## Phase 8-3 Reset Preferences design checklist (docs)
 
-- [ ] Phase 8 is explicitly defined as **not** a major combat expansion phase.
-- [ ] Phase 8 implementation targets are listed: Reset Preferences, Records localStorage utility, Save match result once, RecordsScene shell, Home Records entry, Reset Records, Playtest checklist updates.
-- [ ] Phase 8 docs/design-only targets are listed: Retire/Forfeit, Timer, Equipment/Amp, `attackMethod`/`impactClass`, and critical rate/guard/just guard as future design topics only.
-- [ ] Phase 8 immediate non-goals are listed (no equipment/amp/ranged/sonic/critical/guard/just-guard/specials/rounds/timer gameplay/new fighters/encyclopedia/story/online/server save/BGM-SE assets/images/sprites/3D implementation).
-- [ ] Phase 8 guardrails state no changes to HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, or one-hit-per-attack during scope/docs tasks.
-- [ ] Phase 8 task list includes 8-1 through 8-17 with 8-1 complete and 8-2 as this docs task.
-- [ ] Next recommended task is explicit: Phase 8-3 Reset preferences design docs.
+- [ ] Reset Preferences is defined as settings-only (`instrument-brawl:settings` only).
+- [ ] Docs state Reset Preferences must not modify/delete `instrument-brawl:records`.
+- [ ] Docs keep Reset Preferences separate from future Reset Records (no reset-all in this phase).
+- [ ] Reset default values are explicit: `electric-guitar`, `bass`, `human`, `effectsEnabled: true`, `screenShakeEnabled: true`.
+- [ ] Docs define simple OptionsScene UX: separate row, two-step confirm (`Press again to confirm`), Escape/move-away cancel.
+- [ ] Docs define expected post-reset behavior for Mode Select, Character Select, and Options defaults restoration.
+- [ ] Docs define safe failure/fallback behavior for unavailable/failing localStorage and preserve sanitize/default fallback.
 
+## Phase 8-3 future implementation verification checklist
+
+- [ ] Change settings away from defaults (fighters/mode/effects/screen shake).
+- [ ] Use Reset Preferences action from Options.
+- [ ] Reload page.
+- [ ] Confirm defaults are restored in settings-backed UI state.
+- [ ] Confirm Effects and Screen Shake return to ON.
+- [ ] Confirm Human mode/default fighters return where applicable (unless scene data override applies).
+- [ ] Confirm Records storage is not removed or modified.
+- [ ] Confirm gameplay values/logic are unchanged (HP/damage/knockback/cooldown/duration/hitbox/CPU/one-hit rule).
+
+**Next recommended task:** Phase 8-4: Reset preferences implementation.

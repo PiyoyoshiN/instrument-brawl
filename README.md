@@ -180,6 +180,45 @@ Phase 8 is **not** a major combat expansion phase.
 - No BGM/SE assets
 - No images, sprites, or 3D
 
+
+### Phase 8-3 Reset Preferences design (docs only)
+
+Reset Preferences is settings-only and is separate from Reset Records.
+
+- Target key: `instrument-brawl:settings` only
+- Must not read/write/delete `instrument-brawl:records`
+- Must not combine with Reset Records into a single reset-all action in this phase
+
+Reset target defaults:
+
+- `lastSelected.player1FighterId`: `electric-guitar` (Electric Guitar)
+- `lastSelected.player2FighterId`: `bass` (Bass)
+- `lastSelected.player2Mode`: `human` (Human)
+- `preferences.effectsEnabled`: `true` (ON)
+- `preferences.screenShakeEnabled`: `true` (ON)
+
+Future UI behavior (simple, no modal system):
+
+- Reset Preferences lives in `OptionsScene`
+- It is a separate selectable row/action from Effects and Screen Shake
+- First confirm arms reset and shows a small prompt like `Press again to confirm`
+- Second confirm executes reset
+- Escape or moving selection away cancels the pending confirmation
+
+Expected behavior after reset:
+
+- Stored settings return to defaults
+- Reopening Mode Select highlights default Human mode
+- Reopening Character Select uses default fighters unless scene data overrides
+- Reopening Options shows Effects ON and Screen Shake ON
+- Gameplay values/logic remain unchanged
+
+Failure/fallback behavior:
+
+- If localStorage is unavailable, fail safely and keep runtime usable
+- If remove/save fails, gameplay must not crash
+- Existing sanitize/default fallback behavior remains the safety net
+
 ### Phase 8 guardrails for scope/docs tasks
 
 During Phase 8 scope/docs tasks, do not change:
@@ -193,7 +232,7 @@ During Phase 8 scope/docs tasks, do not change:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-3: Reset preferences design docs.
+**Next recommended task:** Phase 8-4: Reset preferences implementation.
 
 ## Play online
 

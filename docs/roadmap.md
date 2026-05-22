@@ -387,7 +387,7 @@ Phase 8 is not a major combat expansion phase.
 
 - 8-1 Phase 7 checkpoint docs — already complete
 - 8-2 Phase 8 scope docs — this task
-- 8-3 Reset preferences design docs
+- 8-3 Reset preferences design docs — this task
 - 8-4 Reset preferences implementation
 - 8-5 Records runtime design docs
 - 8-6 Records storage utility
@@ -438,6 +438,43 @@ Phase 8 is not a major combat expansion phase.
 - No BGM/SE assets
 - No images, sprites, or 3D
 
+### Phase 8-3: Reset preferences design docs
+
+Design rules:
+
+- Reset Preferences resets settings only (`instrument-brawl:settings`)
+- Do not modify/delete/read `instrument-brawl:records`
+- Keep Reset Preferences separate from future Reset Records (no reset-all in this phase)
+
+Reset defaults:
+
+- P1 fighter: `electric-guitar`
+- P2 fighter: `bass`
+- P2 mode: `human`
+- Effects: `true`
+- Screen shake: `true`
+
+Future UI behavior (OptionsScene):
+
+- Separate Reset Preferences row/action
+- Two-step confirmation (`Press again to confirm`)
+- Escape or moving away cancels pending confirmation
+- Keep implementation minimal; no modal system design in this phase
+
+Expected post-reset behavior:
+
+- Settings storage returns to defaults
+- Mode Select restores default Human highlight
+- Character Select restores default fighters unless scene data overrides
+- Options restores Effects ON and Screen Shake ON
+- Gameplay logic/values remain unchanged
+
+Failure/fallback behavior:
+
+- localStorage unavailable -> fail safely without crash
+- remove/save failure -> fail safely without crash
+- existing sanitize/default fallback remains active
+
 ### Phase 8 guardrails for scope/docs tasks
 
 Do not change gameplay values/logic during Phase 8 scope/docs tasks:
@@ -451,7 +488,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-3: Reset preferences design docs.
+**Next recommended task:** Phase 8-4: Reset preferences implementation.
 
 ## Features to avoid for now
 

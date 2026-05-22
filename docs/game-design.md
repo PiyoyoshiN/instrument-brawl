@@ -353,7 +353,47 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 8-3: Reset preferences design docs**.
+Next recommended task: **Phase 8-4: Reset preferences implementation**.
+
+### Phase 8-3 Reset Preferences design (docs only)
+
+Reset Preferences in Phase 8 is settings-only.
+
+Design constraints:
+
+- Operate only on `instrument-brawl:settings`
+- Do not modify `instrument-brawl:records`
+- Keep Reset Preferences and Reset Records as separate actions
+- Do not introduce a combined reset-all action in this phase
+
+Reset target defaults:
+
+- `player1FighterId`: `electric-guitar`
+- `player2FighterId`: `bass`
+- `player2Mode`: `human`
+- `effectsEnabled`: `true`
+- `screenShakeEnabled`: `true`
+
+Future OptionsScene UX:
+
+- Add a separate Reset Preferences row
+- Use simple two-step confirm (first press arms, second press executes)
+- Show a compact hint such as `Press again to confirm`
+- Escape or moving selection cancels the armed state
+- No modal system design in this phase
+
+Expected behavior:
+
+- Defaults are saved back to settings storage
+- Mode Select and Character Select default state is restored (unless explicit scene data override exists)
+- Options shows Effects ON + Screen Shake ON
+- Gameplay values/logic do not change
+
+Failure behavior:
+
+- localStorage unavailable/failure must fail safely
+- No gameplay crash on reset failure
+- Existing sanitize/default behavior remains fallback
 
 ### Phase 7-7 localStorage save foundation (design only)
 
