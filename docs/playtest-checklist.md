@@ -100,9 +100,12 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Home -> Options opens OptionsScene.
 - [ ] Options Esc returns Home.
 - [ ] Options can toggle/save Effects ON/OFF and Screen Shake ON/OFF.
+- [ ] Options has a Reset Preferences row with two-step confirm behavior.
 - [ ] Reload + reopen Options reflects saved preference values.
 - [ ] Effects OFF hides nonessential visual extras (hit spark / CLEAN HIT sub-label / win-draw accent effects).
 - [ ] Screen Shake OFF disables tiny shake only.
+- [ ] Reset Preferences first confirm arms reset and second confirm executes reset.
+- [ ] Moving selection away from Reset Preferences cancels pending confirmation.
 - [ ] Gameplay logic/values remain unchanged by these options.
 
 ## Mode Select behavior checks
