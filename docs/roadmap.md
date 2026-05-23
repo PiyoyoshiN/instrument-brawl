@@ -396,8 +396,8 @@ Phase 8 is not a major combat expansion phase.
 - 8-9 Home Records entry — complete
 - 8-10 Reset Records design docs — complete
 - 8-11 Reset Records implementation — complete
-- 8-12 Retire / Forfeit design docs — this task
-- 8-13 Timer design docs
+- 8-12 Retire / Forfeit design docs — complete
+- 8-13 Timer design docs — this task
 - 8-14 Equipment / Amp design docs
 - 8-15 `attackMethod` / `impactClass` docs
 - 8-16 Playtest checklist update
@@ -631,6 +631,71 @@ Out of scope:
 - no CPU retire AI
 - no server/cloud save
 
+
+### Phase 8-13: Timer design docs
+
+Purpose and role:
+
+- optional future pacing tool
+- prevents very long/stalled matches
+- keeps quick replayable tone
+- no rounds coupling in Phase 8
+
+Optional behavior direction:
+
+- not implemented in Phase 8
+- not default-enabled until later playtesting
+- current no-timer behavior stays baseline
+
+Duration direction (future candidates):
+
+- default candidate: 60 seconds
+- alternatives: 45 seconds, 90 seconds
+- no timer settings/custom durations in Phase 8
+
+Timeout result rules:
+
+- higher HP wins on timeout
+- equal HP -> draw
+- existing KO/draw combat-end rules remain valid
+- use existing ResultScene flow and `p1`/`p2`/`draw` result kinds
+- no timeout-specific result bucket now
+
+Timeout records behavior:
+
+- treated as normal completed match
+- increment `totalMatches` once
+- increment winner/draw bucket accordingly
+- increment `cpuMatches`/`local2pMatches` by mode
+- update `lastPlayedAt`
+- once-per-result rule still prevents double count
+- no timer-specific records fields in Phase 8
+
+Future UI/pause direction:
+
+- compact timer label in BattleScene top-center area
+- simple text (`Time: 60` style)
+- pause/help freezes timer
+- timer starts after Ready/Fight control start
+- timer stops after `matchOver`
+- no audio countdown or heavy animation
+
+Interaction with Retire:
+
+- retire and timer stay separate
+- retire-first -> retire result wins
+- timeout-first -> timeout result wins
+- no merged retire/timer logic in Phase 8 docs task
+
+Out of scope:
+
+- no timer implementation in this docs task
+- no timer UI/settings implementation
+- no rounds/sudden death/overtime/time bonus
+- no timer-specific records fields
+- no online/server timer sync
+- no competitive/tournament rules expansion
+
 ### Phase 8 guardrails for scope/docs tasks
 
 Do not change gameplay values/logic during Phase 8 scope/docs tasks:
@@ -644,7 +709,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-13: Timer design docs.
+**Next recommended task:** Phase 8-14: Equipment / Amp design docs.
 
 ## Features to avoid for now
 

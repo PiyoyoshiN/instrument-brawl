@@ -232,3 +232,32 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] `C` return after retire does not double-count previous result.
 - [ ] Records counters follow normal `p1`/`p2` win rules.
 - [ ] Settings and records reset behavior remains unchanged.
+
+
+## Phase 8-13 Timer design checklist (docs)
+
+- [ ] Docs define timer as optional future pacing tool, not a Phase 8 implementation item.
+- [ ] Docs keep no-timer behavior as baseline and timer disabled by default for now.
+- [ ] Docs define future duration candidates (60 default candidate, 45/90 alternatives).
+- [ ] Docs define timeout winner rule (higher HP wins, equal HP draw) without a new result bucket.
+- [ ] Docs define timeout records behavior using existing normal counters and once-per-result guard.
+- [ ] Docs explicitly forbid timer-specific records fields in Phase 8.
+- [ ] Docs define compact future timer UI direction and no animation-heavy/audio countdown behavior.
+- [ ] Docs define pause behavior (timer pauses during Pause/Quick Help and starts after Ready/Fight).
+- [ ] Docs define retire-vs-timeout precedence rules while keeping both features separate.
+- [ ] Docs keep rounds/sudden death/overtime/time bonus out of scope.
+
+## Phase 8-13 future implementation verification checklist
+
+- [ ] Timer does not start before Fight.
+- [ ] Timer pauses during Pause / Quick Help.
+- [ ] Timer resumes after unpause.
+- [ ] Timeout with P1 higher HP results in P1 win.
+- [ ] Timeout with P2 higher HP results in P2 win.
+- [ ] Timeout with equal HP results in draw.
+- [ ] Timeout records exactly once.
+- [ ] `R` rematch after timeout does not double-count previous result.
+- [ ] `C` return after timeout does not double-count previous result.
+- [ ] Timer does not change HP, damage, knockback, hitboxes, CPU behavior, or one-hit-per-attack.
+- [ ] Retire result takes precedence if retire happens before timeout.
+- [ ] Existing KO/draw behavior remains unchanged.

@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 8-13: Timer design docs**.
+Next recommended task: **Phase 8-14: Equipment / Amp design docs**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -543,6 +543,60 @@ Out of scope:
 - no timer/rounds/surrender stats/retire achievements/penalties
 - no online/disconnect or CPU retire AI
 - no server/cloud persistence
+
+
+### Phase 8-13 Timer design (docs only)
+
+Timer is a future optional pacing tool, not a Phase 8 implementation task.
+
+Design intent:
+
+- reduce dragged-out matches
+- keep matches quick/silly/replayable
+- avoid competitive over-structuring
+- do not introduce rounds in Phase 8
+
+Optional status and duration direction:
+
+- keep no-timer as current baseline
+- timer not default-enabled yet
+- candidate default duration: 60 seconds
+- later candidates: 45 seconds / 90 seconds
+- no timer settings/custom duration UI in Phase 8
+
+Timeout resolution (future):
+
+- higher remaining HP wins
+- equal HP -> draw
+- existing combat KO/draw behavior remains valid
+- continue using existing ResultScene flow and `p1`/`p2`/`draw`
+- no timeout-only result bucket now
+
+Records behavior on timeout (future):
+
+- counts as normal completed match
+- normal counters and mode split increment once
+- `lastPlayedAt` updates
+- once-per-result guard still prevents duplicate counting
+- no timer-specific record fields in Phase 8
+
+Future UI/pause/retire interactions:
+
+- compact top-center timer text in BattleScene
+- no heavy animation/audio countdown
+- pause/help freezes timer
+- timer starts after Ready/Fight control begins
+- timer stops after `matchOver`
+- retire and timer remain separate; first resolved event decides result
+
+Out of scope:
+
+- no timer implementation in this docs task
+- no timer UI/settings implementation
+- no rounds/sudden death/overtime/time bonus
+- no timer-specific records fields
+- no online/server timer sync
+- no tournament/competitive rule expansion
 
 ### Phase 7-7 localStorage save foundation (design only)
 

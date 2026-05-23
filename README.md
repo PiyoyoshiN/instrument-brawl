@@ -140,7 +140,7 @@ Completed in Phase 7:
 - Gameplay values and logic remain unchanged.
 - Records foundation docs complete.
 - Records runtime implementation is in progress: storage utility, once-per-match result saving, RecordsScene shell, and Reset Records are implemented.
-- Reset preferences is not implemented yet.
+- Reset Preferences is implemented in OptionsScene.
 
 ## Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
 
@@ -158,7 +158,7 @@ Phase 8 is **not** a major combat expansion phase.
 
 ### Phase 8 docs/design-only targets
 
-- Retire / Forfeit
+- Retire / Forfeit — this task
 - Timer
 - Equipment / Amp
 - `attackMethod` / `impactClass`
@@ -402,6 +402,88 @@ Out of scope:
 - No CPU retire AI
 - No server/cloud save
 
+
+### Phase 8-13 Timer design (docs only)
+
+Purpose:
+
+- Timer is a future optional pacing tool
+- It helps prevent matches from dragging forever
+- It supports quick, silly, replayable matches
+- It should not push the game toward strict competitive rules
+- It does not introduce rounds in Phase 8
+
+Future optional behavior direction:
+
+- Timer is not implemented in Phase 8
+- Timer is not enabled by default until later playtesting
+- Current no-timer behavior remains baseline
+- Treat timer as later match-rule expansion
+
+Future duration direction:
+
+- Primary candidate: 60 seconds
+- Later test candidates: 45 seconds / 90 seconds
+- No timer settings UI in Phase 8
+- No custom timer lengths in Phase 8
+
+Timeout winner rules (future):
+
+- Higher remaining HP wins
+- Equal HP -> draw
+- Existing KO/draw rules still apply if both reach 0 by combat before/at match end
+- Timeout should use existing ResultScene flow
+- Result kind remains `p1` / `p2` / `draw`
+- No new timeout-specific result bucket in Phase 8
+
+Records behavior on timeout (future):
+
+- Count as normal completed match
+- Increment `totalMatches` once
+- Timeout P1 win -> `p1Wins` +1
+- Timeout P2 win -> `p2Wins` +1
+- Timeout draw -> `draws` +1
+- Increment `cpuMatches` or `local2pMatches` by `player2Mode`
+- Update `lastPlayedAt`
+- Existing once-per-result rule must still prevent double counts
+- No timer-specific records fields (`timeoutWins`, `timeoutDraws`, `timeRemaining`) in Phase 8
+
+Future UI direction:
+
+- Compact timer display in BattleScene
+- Suggested location: top center near title/HP area
+- Simple text style (e.g., `Time: 60`, `Time: 12`)
+- Readable but not dominant
+- No animation-heavy timer effects in Phase 8 design
+- No audio countdown
+
+Pause interaction direction:
+
+- Timer pauses while Pause / Quick Help is open
+- Timer does not count during pause
+- Timer starts only after Ready/Fight completes and control begins
+- Timer stops after `matchOver`
+- Timer must not break Ready/Fight timing
+
+Interaction with Retire / Forfeit:
+
+- Retire remains separate from timer
+- If retire happens before timeout, retire result wins
+- If timeout happens first, timeout result wins
+- Do not merge retire/timer logic in Phase 8
+- Do not implement either in this docs task
+
+Out of scope:
+
+- No timer implementation in this docs task
+- No timer UI implementation
+- No timer settings/custom durations
+- No rounds/sudden death/overtime/time bonus
+- No timer-specific records fields
+- No audio countdown
+- No online/server timer sync
+- No tournament/competitive rule expansion
+
 ### Phase 8 guardrails for scope/docs tasks
 
 During Phase 8 scope/docs tasks, do not change:
@@ -421,7 +503,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 8-13: Timer design docs.
+**Next recommended task:** Phase 8-14: Equipment / Amp design docs.
 
 ## Play online
 
