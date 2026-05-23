@@ -84,6 +84,10 @@ const equipmentDefinitionById = new Map<EquipmentId, EquipmentDefinition>(
   equipmentDefinitions.map((definition) => [definition.id, definition]),
 );
 
+function getAllEquipmentDefinitions(): EquipmentDefinition[] {
+  return [...equipmentDefinitions];
+}
+
 function isEquipmentId(value: unknown): value is EquipmentId {
   return value === 'none' || value === 'amp' || value === 'pick' || value === 'case';
 }
@@ -2578,6 +2582,19 @@ class EquipmentSelectScene extends Phaser.Scene {
   private player1FighterId?: string;
   private player2FighterId?: string;
   private player2Mode: Player2Mode = defaultPlayer2Mode;
+  private player1EquipmentId: EquipmentId = 'none';
+  private player2EquipmentId: EquipmentId = 'none';
+  private selectedEquipmentRow: 0 | 1 = 0;
+  private equipmentOptions = getAllEquipmentDefinitions();
+  private equipmentRowsText?: Phaser.GameObjects.Text;
+  private equipmentDescriptionText?: Phaser.GameObjects.Text;
+  private statusText?: Phaser.GameObjects.Text;
+  private upKey?: Phaser.Input.Keyboard.Key;
+  private downKey?: Phaser.Input.Keyboard.Key;
+  private leftKey?: Phaser.Input.Keyboard.Key;
+  private rightKey?: Phaser.Input.Keyboard.Key;
+  private enterKey?: Phaser.Input.Keyboard.Key;
+  private spaceKey?: Phaser.Input.Keyboard.Key;
   private escapeKey?: Phaser.Input.Keyboard.Key;
 
   constructor() {
@@ -2588,10 +2605,12 @@ class EquipmentSelectScene extends Phaser.Scene {
     this.player1FighterId = data?.player1FighterId;
     this.player2FighterId = data?.player2FighterId;
     this.player2Mode = data?.player2Mode === 'cpu' ? 'cpu' : 'human';
+    this.player1EquipmentId = 'none';
+    this.player2EquipmentId = 'none';
+    this.selectedEquipmentRow = 0;
   }
 
   create() {
-    const defaultEquipment = getEquipmentDefinition('none');
     const p1Label = this.player1FighterId ? getFighterDefinition(this.player1FighterId).displayName : 'Not selected';
     const p2Label = this.player2FighterId ? getFighterDefinition(this.player2FighterId).displayName : 'Not selected';
 
@@ -2616,42 +2635,69 @@ class EquipmentSelectScene extends Phaser.Scene {
       fontSize: '22px',
     }).setOrigin(0.5);
 
-    this.add.text(400, 260, `P1 Equipment: ${defaultEquipment.shortLabel}`, {
-      color: '#facc15',
+    this.equipmentRowsText = this.add.text(400, 258, '', {
+      color: '#f8fafc',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '30px',
-    }).setOrigin(0.5);
+      lineSpacing: 14,
+      align: 'left',
+    }).setOrigin(0.5, 0);
 
-    this.add.text(400, 306, `P2 Equipment: ${defaultEquipment.shortLabel}`, {
-      color: '#facc15',
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '30px',
-    }).setOrigin(0.5);
-
-    this.add.text(400, 368, 'Equipment selection is coming next.', {
+    this.equipmentDescriptionText = this.add.text(400, 360, '', {
       color: '#e2e8f0',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '20px',
+      align: 'center',
     }).setOrigin(0.5);
 
-    this.add.text(400, 398, 'Current shell does not affect battle.', {
-      color: '#e2e8f0',
+    this.statusText = this.add.text(400, 394, 'Equipment handoff is coming next.', {
+      color: '#94a3b8',
       fontFamily: 'system-ui, sans-serif',
-      fontSize: '20px',
+      fontSize: '18px',
+      align: 'center',
     }).setOrigin(0.5);
 
-    this.add.text(400, 500, 'Esc: Back', {
+    this.add.text(400, 500, 'Up/Down: Row   Left/Right: Equipment   Enter/Space: Confirm later   Esc: Back', {
       color: '#facc15',
       fontFamily: 'system-ui, sans-serif',
-      fontSize: '24px',
+      fontSize: '18px',
+      align: 'center',
     }).setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
     if (!keyboard) return;
+    this.upKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    this.downKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    this.leftKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    this.rightKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.escapeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
+    this.updateEquipmentTexts();
   }
 
   update() {
+    if ((this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) || (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))) {
+      this.selectedEquipmentRow = this.selectedEquipmentRow === 0 ? 1 : 0;
+      this.updateEquipmentTexts();
+    }
+
+    if (this.leftKey && Phaser.Input.Keyboard.JustDown(this.leftKey)) {
+      this.cycleEquipment(-1);
+    }
+
+    if (this.rightKey && Phaser.Input.Keyboard.JustDown(this.rightKey)) {
+      this.cycleEquipment(1);
+    }
+
+    if (
+      (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
+      (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
+    ) {
+      this.statusText?.setText('Equipment handoff is coming next.');
+    }
+
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
       this.scene.start('CharacterSelectScene', {
         player1FighterId: this.player1FighterId,
@@ -2659,6 +2705,37 @@ class EquipmentSelectScene extends Phaser.Scene {
         player2Mode: this.player2Mode,
       });
     }
+  }
+
+  private cycleEquipment(direction: -1 | 1) {
+    const current = this.selectedEquipmentRow === 0 ? this.player1EquipmentId : this.player2EquipmentId;
+    const currentIndex = Math.max(0, this.equipmentOptions.findIndex((definition) => definition.id === current));
+    const nextIndex = (currentIndex + direction + this.equipmentOptions.length) % this.equipmentOptions.length;
+    const nextEquipmentId = this.equipmentOptions[nextIndex].id;
+
+    if (this.selectedEquipmentRow === 0) {
+      this.player1EquipmentId = nextEquipmentId;
+    } else {
+      this.player2EquipmentId = nextEquipmentId;
+    }
+
+    this.updateEquipmentTexts();
+  }
+
+  private updateEquipmentTexts() {
+    const p1Equipment = getEquipmentDefinition(this.player1EquipmentId);
+    const p2Equipment = getEquipmentDefinition(this.player2EquipmentId);
+    const focusedEquipment = this.selectedEquipmentRow === 0 ? p1Equipment : p2Equipment;
+    const p1Prefix = this.selectedEquipmentRow === 0 ? '> ' : '  ';
+    const p2Prefix = this.selectedEquipmentRow === 1 ? '> ' : '  ';
+
+    this.equipmentRowsText?.setText(
+      `${p1Prefix}P1 Equipment: ${p1Equipment.shortLabel}
+${p2Prefix}P2 Equipment: ${p2Equipment.shortLabel}`,
+    );
+    this.equipmentDescriptionText?.setText(
+      `${focusedEquipment.displayName}: ${focusedEquipment.description}`,
+    );
   }
 }
 
