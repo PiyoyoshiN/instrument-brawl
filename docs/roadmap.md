@@ -786,7 +786,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 9-1: Define Phase 9 scope and guardrails.
+**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
 
 ## Features to avoid for now
 
@@ -844,7 +844,7 @@ Out of scope:
 - no records/settings schema changes
 - no assets/audio/online/server work
 
-**Next recommended task:** Phase 9-1: Define Phase 9 scope and guardrails.
+**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
 
 
 ### Phase 8-17: Phase 8 checkpoint docs
@@ -883,4 +883,70 @@ Manual verification reminder before next phase:
 - Match records count once and ResultScene exits do not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-1: Define Phase 9 scope and guardrails.
+**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
+
+
+## Phase 9: Equipment Shell & Attack Identity Foundation
+
+Phase 9 is not a combat-buff phase. It prepares a lightweight equipment shell and attack-identity vocabulary while preserving current gameplay values.
+
+Core direction:
+
+- equipment selection shell
+- scene-to-scene equipment ID handoff
+- last-selected equipment persistence planning
+- compact equipment labels in Battle/Result UI
+- attack identity language foundation (`attackMethod` / `impactClass`)
+
+Initial equipment candidates:
+
+- `none` (No Accessory)
+- `amp` (Amp)
+- `pick` (Pick)
+- `case` (Case)
+
+### Phase 9 task plan (9-1 .. 9-17)
+
+- 9-1 Phase 9 scope and guardrails docs (**docs-only**) — this task
+- 9-2 Phase 8 docs cleanup (**docs-only**) — next
+- 9-3 Equipment concept docs (**docs-only**)
+- 9-4 Equipment data model docs (**docs-only**)
+- 9-5 Equipment registry implementation (**runtime**)
+- 9-6 EquipmentSelectScene design docs (**docs-only**)
+- 9-7 EquipmentSelectScene shell (**runtime**)
+- 9-8 P1/P2 equipment selection (**runtime**)
+- 9-9 Equipment data handoff (**runtime**)
+- 9-10 Rematch / return preservation (**runtime**)
+- 9-11 localStorage equipment persistence (**runtime**)
+- 9-12 Battle HUD equipment labels (**runtime**)
+- 9-13 Result equipment display (**runtime**)
+- 9-14 Amp visual-only accent trial (**runtime visual-only**)
+- 9-15 Future equipment effect docs (**docs-only**)
+- 9-16 Playtest checklist update (**docs-only**)
+- 9-17 Phase 9 checkpoint docs (**docs-only**)
+
+Phase 9 explicit non-goals:
+
+- no real damage/range/defense increase
+- no critical damage/rate
+- no guard/just guard
+- no special moves/combos
+- no timer gameplay/rounds/retire button
+- no new fighters/story/encyclopedia runtime
+- no online/server/cloud save
+- no BGM/SE assets/playback or image/sprite/3D assets
+- no equipment-specific records schema/analytics
+
+Gameplay/system guardrails remain unchanged:
+
+- HP, damage, knockback
+- attack cooldown, attack duration
+- hitbox size/hit detection
+- CPU behavior
+- one-hit-per-attack rule
+- Ready/Fight timing
+- Pause/Quick Help behavior
+- ResultScene `R` / `C` / Home transitions
+- records schema
+
+**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.

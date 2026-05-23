@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 9-1: Define Phase 9 scope and guardrails**.
+Next recommended task: **Phase 9-2: Phase 8 docs cleanup**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -886,3 +886,32 @@ These are later ideas only, not Phase 3 fighters:
 - Large story mode.
 - Unlocks or inventory.
 - Final art, animation, or sound polish.
+
+
+### Phase 9 design direction: Equipment shell + attack identity foundation
+
+Phase 9 starts as shell/foundation work, not a combat buff phase.
+
+Equipment model direction:
+
+- each player can have 0 or 1 support equipment
+- future candidates: No Accessory (`none`), Amp (`amp`), Pick (`pick`), Case (`case`)
+- equipment identity should stay lightweight/readable and optional
+
+Amp direction:
+
+- Amp may later reference sonic/ranged/hybrid language
+- Phase 9 does not guarantee ranged implementation
+- no runtime ranged/sonic attack behavior in this docs step
+
+Attack identity direction:
+
+- `attackMethod` / `impactClass` remain planning language unless explicitly implemented in a later runtime task
+- no schema/runtime behavior changes in this docs step
+
+Guardrails:
+
+- preserve Phase 8 gameplay/system invariants
+- no combat value tuning or records schema expansion for equipment
+
+Next recommended task: **Phase 9-2: Phase 8 docs cleanup**.

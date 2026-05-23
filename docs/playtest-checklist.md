@@ -145,7 +145,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
 
-**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
+**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)
@@ -400,3 +400,20 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Ready / Fight timing unchanged.
 - [ ] Pause / Quick Help behavior unchanged.
 - [ ] ResultScene `R` / `C` / Home transitions unchanged.
+
+
+## Phase 9-1 scope and guardrails checklist (docs)
+
+- [ ] Docs define Phase 9 as **Equipment Shell & Attack Identity Foundation**.
+- [ ] Docs state Phase 9-1 is docs-only.
+- [ ] Docs define equipment shell purpose (selection, scene handoff, persistence planning, labels).
+- [ ] Docs define 0-or-1 equipment per player direction.
+- [ ] Docs list future candidates: `none` / `amp` / `pick` / `case`.
+- [ ] Docs keep Amp/runtime equipment behavior as not implemented in this PR.
+- [ ] Docs keep `attackMethod` / `impactClass` as planning language (no runtime/schema changes now).
+- [ ] Docs preserve Phase 8 guardrails (HP/damage/knockback/cooldown/duration/hitbox/CPU/one-hit/Ready-Fight/Pause/Result transitions).
+- [ ] Docs explicitly forbid combat-value changes in Phase 9-1 docs step.
+- [ ] Docs explicitly forbid equipment-specific records schema/analytics in Phase 9-1 docs step.
+- [ ] Docs confirm this PR does not modify runtime code.
+
+**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.

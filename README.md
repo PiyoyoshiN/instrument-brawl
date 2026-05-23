@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
+**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -666,11 +666,8 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
+**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
 
-- Electric Guitar / Bass / Drum Sticks / Keyboard remain unchanged baseline.
-- Do not assign final category values yet.
-- No runtime attack behavior changes in this phase task.
 
 ## Phase 8 checkpoint
 
@@ -708,6 +705,45 @@ Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, at
 - Existing battle flow still works
 
 **Next recommended task:** Phase 9-1: Define Phase 9 scope and guardrails.
+
+
+
+## Phase 9 scope: Equipment Shell & Attack Identity Foundation
+
+Phase 9 begins with **Equipment Shell & Attack Identity Foundation**.
+
+Phase 9-1 is docs-only and defines scope/guardrails before runtime work.
+
+Phase 9 purpose (not a combat-buff phase):
+
+- choose equipment
+- pass equipment IDs between scenes
+- save/restore last selected equipment
+- display equipment labels
+- prepare future attack identity language
+
+Planned initial equipment candidates (future tasks):
+
+- `none`: No Accessory
+- `amp`: Amp
+- `pick`: Pick
+- `case`: Case
+
+Important for this PR:
+
+- Equipment/Amp runtime behavior is not implemented here.
+- No EquipmentSelectScene, registry runtime wiring, or equipment persistence runtime implementation is added in this PR.
+- `attackMethod` / `impactClass` remain planning language unless a later explicit runtime task implements them.
+
+Phase 9 guardrails:
+
+- no damage/range/defense buffs
+- no critical/guard/just-guard/specials/combos
+- no timer/rounds/retire runtime additions in this phase-start docs step
+- no equipment-specific records schema/analytics
+- preserve existing Phase 8 gameplay/system guardrails
+
+**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
 
 ## Play online
 
