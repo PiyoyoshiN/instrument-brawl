@@ -1,4 +1,4 @@
-# Playtest Checklist (Phase 5)
+# Playtest Checklist (Phase 7 checkpoint)
 
 Use this short checklist before merging gameplay-adjacent PRs.
 
@@ -64,13 +64,13 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] `P` pause, `R` rematch, and `C` return-to-character-select still work.
 
 
-## Phase 7 planning checklist
+## Phase 7 checkpoint checklist
 
-- [ ] Phase 7 docs keep Home / Mode Select / Options and local save as planning scope only.
+- [ ] Phase 7 checkpoint is documented as complete (game shell + mode select + options + localStorage settings + records foundation docs).
 - [ ] Docs define one namespaced localStorage key (`instrument-brawl:settings`) with a versioned JSON payload plan.
 - [ ] Docs list planned fields: last selected P1 fighter, last selected P2 fighter, last selected P2 mode, effects enabled, screen shake enabled.
 - [ ] Docs describe fallback behavior for unavailable storage, parse failure, invalid fighter IDs, and invalid player2Mode (`human` fallback).
-- [ ] Docs explicitly keep save/load as future implementation only (no runtime code changes in this PR).
+- [ ] Docs state Records runtime, RecordsScene, and Home Records wiring status is current (implemented where completed).
 - [ ] Utility helpers exist for load/save/sanitize with safe localStorage try/catch fallback behavior.
 - [ ] Confirmed selections are saved to localStorage on Mode Select confirm and Character Select battle start.
 - [ ] Saved values are restored to initial Mode Select / Character Select UI state after reload.
@@ -91,18 +91,21 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 ## Home menu checks
 
-- [ ] Home Start button is on the left and Options button is on the right.
-- [ ] Home Left/Right changes highlighted button.
-- [ ] Home Enter/Space confirms highlighted Start/Options choice.
+- [ ] Home shows Start / Records / Options entries.
+- [ ] Home Left/Right (and Up/Down) changes highlighted entry with safe wrap.
+- [ ] Home Enter/Space confirms Start -> Mode Select, Records -> RecordsScene, Options -> OptionsScene.
 
 ## Options behavior checks
 
 - [ ] Home -> Options opens OptionsScene.
 - [ ] Options Esc returns Home.
 - [ ] Options can toggle/save Effects ON/OFF and Screen Shake ON/OFF.
+- [ ] Options has a Reset Preferences row with two-step confirm behavior.
 - [ ] Reload + reopen Options reflects saved preference values.
 - [ ] Effects OFF hides nonessential visual extras (hit spark / CLEAN HIT sub-label / win-draw accent effects).
 - [ ] Screen Shake OFF disables tiny shake only.
+- [ ] Reset Preferences first confirm arms reset and second confirm executes reset.
+- [ ] Moving selection away from Reset Preferences cancels pending confirmation.
 - [ ] Gameplay logic/values remain unchanged by these options.
 
 ## Mode Select behavior checks
@@ -119,12 +122,281 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Result `C` return-to-character-select preserves P2 mode.
 - [ ] Escape from Mode Select returns Home.
 
-## Phase 7 scene-flow planning checklist
+## Phase 8-3 Reset Preferences design checklist (docs)
 
-- [ ] Docs clearly separate current flow (`Home -> Character Select -> Battle -> Result`) from target Phase 7 flow (`Home -> Mode Select -> Character Select -> Battle -> Result`).
-- [ ] Docs reflect ModeSelectScene as implemented and keep OptionsScene/localStorage/Records as future scope (not implemented yet).
-- [ ] Mode Select mapping docs are explicit: Local 2P -> `player2Mode: "human"`, P1 vs CPU -> `player2Mode: "cpu"` via two visible choices.
-- [ ] Docs state ModeSelectScene starts CharacterSelectScene with `{ player2Mode }`.
-- [ ] Docs state Home Start goes to ModeSelectScene.
-- [ ] Existing CharacterSelect P2 Human/CPU toggle is retained as current fallback/manual override.
-- [ ] Existing Battle/Result data handoff expectations (fighters + P2 mode) remain documented.
+- [ ] Reset Preferences is defined as settings-only (`instrument-brawl:settings` only).
+- [ ] Docs state Reset Preferences must not modify/delete `instrument-brawl:records`.
+- [ ] Docs keep Reset Preferences separate from future Reset Records (no reset-all in this phase).
+- [ ] Reset default values are explicit: `electric-guitar`, `bass`, `human`, `effectsEnabled: true`, `screenShakeEnabled: true`.
+- [ ] Docs define simple OptionsScene UX: separate row, two-step confirm (`Press again to confirm`), Escape/move-away cancel.
+- [ ] Docs define expected post-reset behavior for Mode Select, Character Select, and Options defaults restoration.
+- [ ] Docs define safe failure/fallback behavior for unavailable/failing localStorage and preserve sanitize/default fallback.
+
+## Phase 8-3 future implementation verification checklist
+
+- [ ] Change settings away from defaults (fighters/mode/effects/screen shake).
+- [ ] Use Reset Preferences action from Options.
+- [ ] Reload page.
+- [ ] Confirm defaults are restored in settings-backed UI state.
+- [ ] Confirm Effects and Screen Shake return to ON.
+- [ ] Confirm Human mode/default fighters return where applicable (unless scene data override applies).
+- [ ] Confirm Records storage is not removed or modified.
+- [ ] Confirm gameplay values/logic are unchanged (HP/damage/knockback/cooldown/duration/hitbox/CPU/one-hit rule).
+
+- [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
+
+**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
+
+
+## Phase 8-5 Records runtime design checklist (docs)
+
+- [ ] Records are local-only (no server/account/cloud, no online rank/matchmaking stats).
+- [ ] Records key is explicitly `instrument-brawl:records` and separate from `instrument-brawl:settings`.
+- [ ] Initial records payload is versioned and includes: version, totalMatches, p1Wins, p2Wins, draws, cpuMatches, local2pMatches, lastPlayedAt.
+- [ ] Default values are explicit: version 1, all counters 0, lastPlayedAt null.
+- [ ] Counting rules define total/win/draw/mode increments and ISO `lastPlayedAt` update.
+- [ ] Docs explicitly forbid per-hit logs, damage history, replay data, and detailed analytics.
+- [ ] Double-count prevention is explicit: one completed match saved once.
+- [ ] Docs explicitly state no duplicate counts from Result transitions, R rematch, C return, or Home return.
+- [ ] Preferred future save timing is explicit and justified (save once on first ResultScene entry).
+- [ ] Sanitize/fallback behavior is explicit for unavailable storage, parse failure, invalid payload, and unknown version.
+- [ ] Docs state invalid records must not delete settings and Reset Preferences must not delete records.
+
+## Phase 8-5 future implementation verification checklist
+
+- [ ] Finish a P1 win and confirm `totalMatches` + `p1Wins` increment once.
+- [ ] Finish a P2 win and confirm `totalMatches` + `p2Wins` increment once.
+- [ ] Finish a draw and confirm `totalMatches` + `draws` increment once.
+- [ ] Finish a CPU match and confirm `cpuMatches` increments once.
+- [ ] Finish a Local 2P match and confirm `local2pMatches` increments once.
+- [ ] Use `R` rematch and confirm previous result is not double-counted.
+- [ ] Use `C` return-to-character-select and confirm previous result is not double-counted.
+- [ ] Return Home from Result and confirm previous result is not double-counted.
+- [ ] Confirm Reset Preferences does not delete records.
+- [ ] Confirm settings and records use separate keys.
+- [ ] RecordsScene shell can open (direct scene start/dev hook) and display stored local records.
+- [ ] RecordsScene shows Last Played as `Never` when `lastPlayedAt` is null.
+- [ ] RecordsScene supports Esc / Enter / Space return Home.
+- [ ] RecordsScene Reset Records first confirm arms and second confirm executes reset.
+- [ ] Moving selection away from Reset Records cancels pending confirmation.
+- [ ] Reset Records returns counters to 0 and Last Played to Never.
+- [ ] Reset Records does not change `instrument-brawl:settings`.
+
+
+## Phase 8-10 Reset Records design checklist (docs)
+
+- [ ] Docs define Reset Records as records-only (`instrument-brawl:records` only).
+- [ ] Docs state Reset Records must not modify/delete `instrument-brawl:settings`.
+- [ ] Docs keep Reset Records separate from Reset Preferences (no Reset All in this phase).
+- [ ] Reset default records values are explicit (version 1, counters 0, `lastPlayedAt: null`).
+- [ ] Docs define simple RecordsScene UX: separate row, two-step confirm, Escape/move-away cancel.
+- [ ] Docs define expected post-reset behavior: counters 0 and Last Played Never, settings unchanged.
+- [ ] Docs define safe failure/fallback behavior and no settings deletion on invalid records.
+
+## Phase 8-10 future implementation verification checklist
+
+- [ ] Play/simulate at least one match so records are non-zero.
+- [ ] Use Reset Records from RecordsScene.
+- [ ] Confirm all record counters return to 0.
+- [ ] Confirm Last Played returns to Never.
+- [ ] Reload page and confirm records remain reset.
+- [ ] Confirm `instrument-brawl:settings` remains unchanged.
+- [ ] Confirm Reset Preferences does not delete records unless Reset Records is used separately.
+- [ ] Confirm gameplay values/logic are unchanged.
+
+
+## Phase 8-12 Retire / Forfeit design checklist (docs)
+
+- [ ] Docs define Retire/Forfeit as a voluntary early-end escape hatch, not a complex rule system.
+- [ ] Docs define winner mapping: P1 retire -> P2 win, P2 Human retire -> P1 win, CPU does not retire.
+- [ ] Docs define retire as non-draw and keep existing ResultScene flow with result kind `p1`/`p2`.
+- [ ] Docs define retire records behavior using normal counters (`totalMatches`, winner bucket, mode split, `lastPlayedAt`).
+- [ ] Docs explicitly forbid retire-specific counters in Phase 8.
+- [ ] Docs define compact future UI direction in Pause/Quick Help with two-step confirm.
+- [ ] Docs define cancel paths and no full pause/admin menu expansion.
+- [ ] Docs define control constraints (no battle `R` repurpose; no control stealing).
+- [ ] Docs define timing constraints (only after Fight, disabled after `matchOver`).
+- [ ] Docs define simple ResultScene text direction without adding a new result bucket.
+- [ ] Docs keep timer/rounds/online/server/CPU-retire-AI out of scope.
+
+## Phase 8-12 future implementation verification checklist
+
+- [ ] P1 retire causes P2 win.
+- [ ] P2 Human retire causes P1 win.
+- [ ] P1 vs CPU retire causes CPU/P2 win.
+- [ ] CPU does not retire by itself.
+- [ ] Retire is not available before Fight.
+- [ ] Retire does nothing after `matchOver`.
+- [ ] Retire result records exactly once.
+- [ ] `R` rematch after retire does not double-count previous result.
+- [ ] `C` return after retire does not double-count previous result.
+- [ ] Records counters follow normal `p1`/`p2` win rules.
+- [ ] Settings and records reset behavior remains unchanged.
+
+
+## Phase 8-13 Timer design checklist (docs)
+
+- [ ] Docs define timer as optional future pacing tool, not a Phase 8 implementation item.
+- [ ] Docs keep no-timer behavior as baseline and timer disabled by default for now.
+- [ ] Docs define future duration candidates (60 default candidate, 45/90 alternatives).
+- [ ] Docs define timeout winner rule (higher HP wins, equal HP draw) without a new result bucket.
+- [ ] Docs define timeout records behavior using existing normal counters and once-per-result guard.
+- [ ] Docs explicitly forbid timer-specific records fields in Phase 8.
+- [ ] Docs define compact future timer UI direction and no animation-heavy/audio countdown behavior.
+- [ ] Docs define pause behavior (timer pauses during Pause/Quick Help and starts after Ready/Fight).
+- [ ] Docs define retire-vs-timeout precedence rules while keeping both features separate.
+- [ ] Docs keep rounds/sudden death/overtime/time bonus out of scope.
+
+## Phase 8-13 future implementation verification checklist
+
+- [ ] Timer does not start before Fight.
+- [ ] Timer pauses during Pause / Quick Help.
+- [ ] Timer resumes after unpause.
+- [ ] Timeout with P1 higher HP results in P1 win.
+- [ ] Timeout with P2 higher HP results in P2 win.
+- [ ] Timeout with equal HP results in draw.
+- [ ] Timeout records exactly once.
+- [ ] `R` rematch after timeout does not double-count previous result.
+- [ ] `C` return after timeout does not double-count previous result.
+- [ ] Timer does not change HP, damage, knockback, hitboxes, CPU behavior, or one-hit-per-attack.
+- [ ] Retire result takes precedence if retire happens before timeout.
+- [ ] Existing KO/draw behavior remains unchanged.
+
+
+## Phase 8-14 Equipment / Amp design checklist (docs)
+
+- [ ] Docs define Equipment as future lightweight optional match-customization, not RPG/progression.
+- [ ] Docs keep no-equipment behavior as baseline and equipment unavailable in Phase 8 implementation.
+- [ ] Docs define future structure as 0-or-1 support equipment per player with match-local scope.
+- [ ] Docs define Amp as design-only first candidate and forbid implementation in this task.
+- [ ] Docs list Amp candidate options as experiments without final stat decisions.
+- [ ] Docs include balance guardrails (no huge spikes, preserve fighter identity, no critical/guard/special systems in Phase 8).
+- [ ] Docs define future UI direction (`Equipment: None` / `Equipment: Amp`) without implementing UI now.
+- [ ] Docs keep equipment out of records schema/analytics in Phase 8.
+- [ ] Docs defer detailed `attackMethod` / `impactClass` decisions to Phase 8-15.
+- [ ] Docs keep equipment/ranged/sonic/combat-tuning/progression/assets/online out of scope.
+
+## Phase 8-14 future implementation verification checklist
+
+- [ ] Equipment defaults to `None` when eventually implemented.
+- [ ] No-equipment baseline still works.
+- [ ] Equipment does not change records schema.
+- [ ] Equipment does not affect settings/reset behavior.
+- [ ] Amp does not create accidental huge damage/range advantage without tradeoff.
+- [ ] Amp does not obscure hit readability.
+- [ ] Fighter identity remains readable with equipment.
+- [ ] Equipment can be disabled for simple matches.
+- [ ] Same-fighter and same-equipment mirror matches remain understandable.
+- [ ] No gameplay values change during this docs-only task.
+
+
+## Phase 8-15 attackMethod / impactClass design checklist (docs)
+
+- [ ] Docs define `attackMethod` as future delivery-style label and `impactClass` as future impact-feel label.
+- [ ] Docs list `attackMethod` candidates: `direct`, `sonic`, `ranged`, `hybrid`.
+- [ ] Docs list `impactClass` candidates: `physical`, `sound`, `burst`, `technical`.
+- [ ] Docs clarify labels are documentation/planning categories and do not change gameplay by themselves.
+- [ ] Docs keep current runtime as conceptual `direct` baseline and avoid runtime implementation in this phase.
+- [ ] Docs explain the difference between the two categories with non-binding examples.
+- [ ] Docs avoid final per-fighter category assignments in this task.
+- [ ] Docs relate Amp/Equipment as future experiments only, not implementation commitments.
+- [ ] Docs keep categories out of records/settings schema in Phase 8.
+- [ ] Docs keep combat tuning/projectiles/sonic implementation out of scope.
+
+## Phase 8-15 future implementation verification checklist
+
+- [ ] Current direct baseline still behaves unchanged.
+- [ ] Future `attackMethod` labels do not change gameplay unless explicitly implemented later.
+- [ ] Future `impactClass` labels do not change damage/knockback/cooldown by themselves.
+- [ ] Ranged/sonic concepts remain out of Phase 8 runtime.
+- [ ] Amp remains design-only during this phase.
+- [ ] Records schema remains unchanged.
+- [ ] Settings/reset behavior remains unchanged.
+- [ ] Fighter identity remains readable.
+- [ ] No gameplay values change during this docs-only task.
+
+
+## Phase 8 implemented feature checks (pre-checkpoint)
+
+### Options + Reset Preferences (implemented)
+
+- [ ] Home -> Options -> Home flow works.
+- [ ] Options toggles Effects ON/OFF.
+- [ ] Options toggles Screen Shake ON/OFF.
+- [ ] Reset Preferences exists in OptionsScene.
+- [ ] Reset Preferences requires two-step confirmation.
+- [ ] Reset Preferences restores defaults: P1 `electric-guitar`, P2 `bass`, P2 mode `human`, Effects ON, Screen Shake ON.
+- [ ] Reset Preferences changes only `instrument-brawl:settings` and does not delete/modify `instrument-brawl:records`.
+
+### Records runtime (implemented)
+
+- [ ] `instrument-brawl:records` is separate from `instrument-brawl:settings`.
+- [ ] P1 win increments `totalMatches` and `p1Wins` exactly once.
+- [ ] P2 win increments `totalMatches` and `p2Wins` exactly once.
+- [ ] Draw increments `totalMatches` and `draws` exactly once.
+- [ ] P1 vs CPU match increments `cpuMatches` exactly once.
+- [ ] Local 2P match increments `local2pMatches` exactly once.
+- [ ] `lastPlayedAt` updates after recorded match completion.
+- [ ] `R` rematch from Result does not double-count previous match.
+- [ ] `C` return-to-character-select from Result does not double-count previous match.
+- [ ] Enter/Space return Home from Result does not double-count previous match.
+
+### RecordsScene shell (implemented)
+
+- [ ] Home -> Records opens RecordsScene.
+- [ ] RecordsScene displays Total Matches / P1 Wins / P2 Wins / Draws / VS CPU Matches / Local 2P Matches / Last Played.
+- [ ] RecordsScene shows `Last Played: Never` when `lastPlayedAt` is null.
+- [ ] RecordsScene supports return Home (Esc / Enter / Space as currently implemented).
+- [ ] Home -> Records -> Home flow works.
+
+### Reset Records (implemented)
+
+- [ ] Reset Records exists in RecordsScene.
+- [ ] Reset Records requires two-step confirmation.
+- [ ] Reset Records resets only `instrument-brawl:records`.
+- [ ] Reset Records sets counters to 0.
+- [ ] Reset Records sets `lastPlayedAt` to null / `Last Played: Never`.
+- [ ] Reset Records does not delete/modify `instrument-brawl:settings`.
+- [ ] Reset Records does not change Effects / Screen Shake.
+- [ ] Reset Records does not change last selected fighters or P2 mode.
+
+## Phase 8 design-only future checks (not implemented yet)
+
+### Retire / Forfeit (design-only)
+
+- [ ] P1 retire -> P2 win.
+- [ ] P2 Human retire -> P1 win.
+- [ ] CPU does not retire by itself.
+- [ ] Retire result records exactly once.
+
+### Timer (design-only)
+
+- [ ] Timer starts after Fight.
+- [ ] Timer pauses during Pause / Quick Help and resumes after unpause.
+- [ ] Timeout higher HP decides winner; equal HP is draw.
+- [ ] Timeout result records exactly once.
+
+### Equipment / Amp (design-only)
+
+- [ ] Future default equipment is `None`.
+- [ ] Equipment does not change records schema in Phase 8.
+- [ ] Amp remains design-only in Phase 8 runtime.
+
+### attackMethod / impactClass (design-only)
+
+- [ ] Labels do not change gameplay by themselves.
+- [ ] No runtime/schema change in Phase 8.
+
+## Phase 8 regression guardrails (must remain unchanged)
+
+- [ ] HP unchanged.
+- [ ] Damage unchanged.
+- [ ] Knockback unchanged.
+- [ ] Attack cooldown unchanged.
+- [ ] Attack duration unchanged.
+- [ ] Hitbox behavior unchanged.
+- [ ] CPU behavior unchanged.
+- [ ] One-hit-per-attack unchanged.
+- [ ] Ready / Fight timing unchanged.
+- [ ] Pause / Quick Help behavior unchanged.
+- [ ] ResultScene `R` / `C` / Home transitions unchanged.
