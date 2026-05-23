@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 8-15: attackMethod / impactClass docs.
+**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -667,6 +667,47 @@ Out of scope:
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
 **Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
+
+- Electric Guitar / Bass / Drum Sticks / Keyboard remain unchanged baseline.
+- Do not assign final category values yet.
+- No runtime attack behavior changes in this phase task.
+
+## Phase 8 checkpoint
+
+Phase 8 is checkpoint-ready and docs-complete.
+
+### Implemented runtime features
+
+- OptionsScene preferences are implemented: Effects ON/OFF and Screen Shake ON/OFF.
+- Reset Preferences is implemented with two-step confirmation, resets settings only (`instrument-brawl:settings`), and restores defaults (`electric-guitar`, `bass`, `human`, Effects ON, Screen Shake ON).
+- Records runtime is implemented at `instrument-brawl:records` with: `totalMatches`, `p1Wins`, `p2Wins`, `draws`, `cpuMatches`, `local2pMatches`, `lastPlayedAt`.
+- ResultScene records completed matches once per match result entry.
+- RecordsScene is implemented, displays local records, and Home -> Records -> Home works.
+- Reset Records is implemented with two-step confirmation and resets records only (`instrument-brawl:records`).
+- Settings and records remain separate localStorage keys.
+
+### Design-only future items (not implemented)
+
+- Retire / Forfeit: planned voluntary early match end (`P1 retire -> P2 win`, `P2 Human retire -> P1 win`).
+- Timer: planned optional pacing tool (60s candidate; timeout uses higher HP winner, equal HP draw).
+- Equipment / Amp: planned optional lightweight match customization; Amp is first candidate; no ranged/sonic runtime in Phase 8.
+- `attackMethod` / `impactClass`: planned future labels only; no schema/runtime changes in Phase 8.
+
+### Phase 8 guardrails (unchanged)
+
+Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, attack duration, hitboxes, CPU behavior, one-hit-per-attack, Ready/Fight timing, Pause/Quick Help behavior, and ResultScene `R` / `C` / Home transitions.
+
+### Manual verification reminder before Phase 9
+
+- Home -> Options -> Home
+- Home -> Records -> Home
+- Reset Preferences does not touch records
+- Reset Records does not touch settings
+- Match records count once
+- ResultScene `R` / `C` / Home return does not double-count
+- Existing battle flow still works
+
+**Next recommended task:** Phase 9-1: Define Phase 9 scope and guardrails.
 
 ## Play online
 

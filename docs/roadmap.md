@@ -786,7 +786,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
+**Next recommended task:** Phase 9-1: Define Phase 9 scope and guardrails.
 
 ## Features to avoid for now
 
@@ -844,4 +844,43 @@ Out of scope:
 - no records/settings schema changes
 - no assets/audio/online/server work
 
-**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
+**Next recommended task:** Phase 9-1: Define Phase 9 scope and guardrails.
+
+
+### Phase 8-17: Phase 8 checkpoint docs
+
+Phase 8 checkpoint is docs-complete and ready.
+
+Implemented runtime summary:
+
+- Options preferences (Effects / Screen Shake), Reset Preferences two-step settings-only reset.
+- Records runtime (`instrument-brawl:records`) with total/win/draw/mode counters and `lastPlayedAt`.
+- ResultScene once-per-completed-match recording.
+- RecordsScene display and Home -> Records -> Home flow.
+- Reset Records two-step records-only reset.
+- Settings and records remain separate keys.
+
+Design-only future summary (not implemented):
+
+- Retire / Forfeit
+- Timer
+- Equipment / Amp
+- `attackMethod` / `impactClass`
+
+Checkpoint guardrails unchanged:
+
+- HP, damage, knockback, cooldown, attack duration, hitboxes
+- CPU behavior, one-hit-per-attack
+- Ready/Fight timing, Pause/Quick Help behavior
+- ResultScene `R` / `C` / Home transitions
+
+Manual verification reminder before next phase:
+
+- Home -> Options -> Home
+- Home -> Records -> Home
+- Reset Preferences does not touch records
+- Reset Records does not touch settings
+- Match records count once and ResultScene exits do not double-count
+- Existing battle flow still works
+
+**Next recommended task:** Phase 9-1: Define Phase 9 scope and guardrails.

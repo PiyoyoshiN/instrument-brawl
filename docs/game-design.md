@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 8-17: Phase 8 checkpoint docs**.
+Next recommended task: **Phase 9-1: Define Phase 9 scope and guardrails**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 

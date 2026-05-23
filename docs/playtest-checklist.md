@@ -1,4 +1,4 @@
-# Playtest Checklist (Phase 7 checkpoint)
+# Playtest Checklist (Phase 8 checkpoint)
 
 Use this short checklist before merging gameplay-adjacent PRs.
 
