@@ -449,6 +449,14 @@ function recordStoredMatchResult(result: 'p1' | 'p2' | 'draw', player2Mode: Play
   }
 }
 
+function resetStoredRecords(): StoredRecords {
+  try {
+    return saveStoredRecords(getDefaultStoredRecords());
+  } catch {
+    return getDefaultStoredRecords();
+  }
+}
+
 function resetStoredSettings(): StoredSettings {
   try {
     return saveStoredSettings({
@@ -2353,9 +2361,16 @@ class ResultScene extends Phaser.Scene {
 }
 
 class RecordsScene extends Phaser.Scene {
+  private selectedIndex = 0;
+  private records = getDefaultStoredRecords();
+  private recordsText?: Phaser.GameObjects.Text;
+  private resetRecordsText?: Phaser.GameObjects.Text;
+  private upKey?: Phaser.Input.Keyboard.Key;
+  private downKey?: Phaser.Input.Keyboard.Key;
   private enterKey?: Phaser.Input.Keyboard.Key;
   private spaceKey?: Phaser.Input.Keyboard.Key;
   private escapeKey?: Phaser.Input.Keyboard.Key;
+  private isResetArmed = false;
   private inputEnabledAt = 0;
   private transitionStarted = false;
 
@@ -2366,9 +2381,9 @@ class RecordsScene extends Phaser.Scene {
   create() {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
-
-    const records = loadStoredRecords();
-    const lastPlayedLabel = records.lastPlayedAt ?? 'Never';
+    this.selectedIndex = 0;
+    this.isResetArmed = false;
+    this.records = loadStoredRecords();
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 300, 700, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
@@ -2381,32 +2396,37 @@ class RecordsScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add
-      .text(
-        400,
-        168,
-        `Total Matches: ${records.totalMatches}
-P1 Wins: ${records.p1Wins}
-P2 Wins: ${records.p2Wins}
-Draws: ${records.draws}
-VS CPU Matches: ${records.cpuMatches}
-Local 2P Matches: ${records.local2pMatches}
-Last Played: ${lastPlayedLabel}`,
-        {
-          align: 'left',
-          color: '#e2e8f0',
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '28px',
-          lineSpacing: 12,
-        },
-      )
+    this.recordsText = this.add
+      .text(400, 168, '', {
+        align: 'left',
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '28px',
+        lineSpacing: 12,
+      })
       .setOrigin(0.5, 0);
 
+    this.resetRecordsText = this.add
+      .text(400, 428, '', {
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '30px',
+      })
+      .setOrigin(0.5);
+
     this.add
-      .text(400, 504, 'Esc / Enter / Space: return Home', {
+      .text(400, 476, '↑ / ↓: choose    Enter / Space: confirm', {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 506, 'Esc: return Home', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '22px',
+        fontSize: '20px',
       })
       .setOrigin(0.5);
 
@@ -2416,9 +2436,13 @@ Last Played: ${lastPlayedLabel}`,
       return;
     }
 
+    this.upKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    this.downKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
     this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.escapeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
+    this.updateTexts();
   }
 
   update(time: number) {
@@ -2426,14 +2450,57 @@ Last Played: ${lastPlayedLabel}`,
       return;
     }
 
+    if ((this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) || (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))) {
+      this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
+
+      if (this.selectedIndex !== 1) {
+        this.isResetArmed = false;
+      }
+
+      this.updateTexts();
+    }
+
     if (
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
-      (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey)) ||
-      (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey))
+      (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      if (this.selectedIndex === 0) {
+        this.transitionStarted = true;
+        this.scene.start('HomeScene');
+        return;
+      }
+
+      if (!this.isResetArmed) {
+        this.isResetArmed = true;
+      } else {
+        this.records = resetStoredRecords();
+        this.isResetArmed = false;
+      }
+
+      this.updateTexts();
+    }
+
+    if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      this.isResetArmed = false;
       this.transitionStarted = true;
       this.scene.start('HomeScene');
     }
+  }
+
+  private updateTexts() {
+    const lastPlayedLabel = this.records.lastPlayedAt ?? 'Never';
+    this.recordsText?.setText(`Total Matches: ${this.records.totalMatches}
+P1 Wins: ${this.records.p1Wins}
+P2 Wins: ${this.records.p2Wins}
+Draws: ${this.records.draws}
+VS CPU Matches: ${this.records.cpuMatches}
+Local 2P Matches: ${this.records.local2pMatches}
+Last Played: ${lastPlayedLabel}`);
+
+    const prefixHome = this.selectedIndex === 0 ? '> ' : '  ';
+    const prefixReset = this.selectedIndex === 1 ? '> ' : '  ';
+    const resetLabel = this.isResetArmed ? 'Reset Records: Press again to confirm' : 'Reset Records';
+    this.resetRecordsText?.setText(`${prefixHome}Return Home\n${prefixReset}${resetLabel}`);
   }
 }
 

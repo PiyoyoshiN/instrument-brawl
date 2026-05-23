@@ -354,8 +354,9 @@ During Phase 8 scope/docs tasks, do not change:
 - Phase 8-7 match result saving is implemented with once-per-result recording to `instrument-brawl:records`.
 - RecordsScene shell is implemented and displays local records from `instrument-brawl:records`.
 - Home Records entry is implemented (Home -> Records -> Home).
+- Reset Records is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 8-11: Reset Records implementation.
+**Next recommended task:** Phase 8-12: Retire / Forfeit design docs.
 
 ## Play online
 

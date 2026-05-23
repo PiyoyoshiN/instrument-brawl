@@ -145,7 +145,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
 
-**Next recommended task:** Phase 8-11: Reset Records implementation.
+**Next recommended task:** Phase 8-12: Retire / Forfeit design docs.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)
@@ -177,6 +177,10 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] RecordsScene shell can open (direct scene start/dev hook) and display stored local records.
 - [ ] RecordsScene shows Last Played as `Never` when `lastPlayedAt` is null.
 - [ ] RecordsScene supports Esc / Enter / Space return Home.
+- [ ] RecordsScene Reset Records first confirm arms and second confirm executes reset.
+- [ ] Moving selection away from Reset Records cancels pending confirmation.
+- [ ] Reset Records returns counters to 0 and Last Played to Never.
+- [ ] Reset Records does not change `instrument-brawl:settings`.
 
 
 ## Phase 8-10 Reset Records design checklist (docs)
