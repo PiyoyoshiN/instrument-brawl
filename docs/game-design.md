@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 8-6: Records storage utility**.
+Next recommended task: **Phase 8-11: Reset Records implementation**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -448,6 +448,51 @@ Out of scope:
 - online rank/matchmaking/account stats
 - replay data, damage logs, per-fighter deep analytics
 - server/cloud persistence
+
+
+### Phase 8-10 Reset Records design (docs only)
+
+Reset Records is records-only and separate from Reset Preferences.
+
+Design constraints:
+
+- Operate only on `instrument-brawl:records`
+- Do not modify `instrument-brawl:settings`
+- Keep Reset Records and Reset Preferences as separate actions
+- Do not introduce Reset All in this phase
+
+Reset target defaults:
+
+- `version: 1`
+- `totalMatches: 0`
+- `p1Wins: 0`
+- `p2Wins: 0`
+- `draws: 0`
+- `cpuMatches: 0`
+- `local2pMatches: 0`
+- `lastPlayedAt: null`
+
+Future RecordsScene UX:
+
+- Add a separate Reset Records row
+- Use simple two-step confirm
+- Show hint: `Reset Records: Press again to confirm`
+- Escape or moving selection cancels armed state
+- No modal/admin menu design in this phase
+
+Expected behavior:
+
+- Records values reset immediately in RecordsScene (zeros + `Last Played: Never`)
+- Settings state remains unchanged
+- Reset Preferences behavior remains unchanged
+- Gameplay values/logic do not change
+
+Failure behavior:
+
+- localStorage unavailable/failure must fail safely
+- no gameplay crash on reset failure
+- sanitize/default records behavior remains fallback
+- invalid records must not delete settings
 
 ### Phase 7-7 localStorage save foundation (design only)
 

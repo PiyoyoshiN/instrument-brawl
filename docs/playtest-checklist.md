@@ -70,7 +70,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Docs define one namespaced localStorage key (`instrument-brawl:settings`) with a versioned JSON payload plan.
 - [ ] Docs list planned fields: last selected P1 fighter, last selected P2 fighter, last selected P2 mode, effects enabled, screen shake enabled.
 - [ ] Docs describe fallback behavior for unavailable storage, parse failure, invalid fighter IDs, and invalid player2Mode (`human` fallback).
-- [ ] Docs state Records runtime/RecordsScene/Home Records wiring remain future scope.
+- [ ] Docs state Records runtime, RecordsScene, and Home Records wiring status is current (implemented where completed).
 - [ ] Utility helpers exist for load/save/sanitize with safe localStorage try/catch fallback behavior.
 - [ ] Confirmed selections are saved to localStorage on Mode Select confirm and Character Select battle start.
 - [ ] Saved values are restored to initial Mode Select / Character Select UI state after reload.
@@ -145,7 +145,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
 
-**Next recommended task:** Phase 8-9: Home Records entry.
+**Next recommended task:** Phase 8-11: Reset Records implementation.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)
@@ -177,3 +177,25 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] RecordsScene shell can open (direct scene start/dev hook) and display stored local records.
 - [ ] RecordsScene shows Last Played as `Never` when `lastPlayedAt` is null.
 - [ ] RecordsScene supports Esc / Enter / Space return Home.
+
+
+## Phase 8-10 Reset Records design checklist (docs)
+
+- [ ] Docs define Reset Records as records-only (`instrument-brawl:records` only).
+- [ ] Docs state Reset Records must not modify/delete `instrument-brawl:settings`.
+- [ ] Docs keep Reset Records separate from Reset Preferences (no Reset All in this phase).
+- [ ] Reset default records values are explicit (version 1, counters 0, `lastPlayedAt: null`).
+- [ ] Docs define simple RecordsScene UX: separate row, two-step confirm, Escape/move-away cancel.
+- [ ] Docs define expected post-reset behavior: counters 0 and Last Played Never, settings unchanged.
+- [ ] Docs define safe failure/fallback behavior and no settings deletion on invalid records.
+
+## Phase 8-10 future implementation verification checklist
+
+- [ ] Play/simulate at least one match so records are non-zero.
+- [ ] Use Reset Records from RecordsScene.
+- [ ] Confirm all record counters return to 0.
+- [ ] Confirm Last Played returns to Never.
+- [ ] Reload page and confirm records remain reset.
+- [ ] Confirm `instrument-brawl:settings` remains unchanged.
+- [ ] Confirm Reset Preferences does not delete records unless Reset Records is used separately.
+- [ ] Confirm gameplay values/logic are unchanged.

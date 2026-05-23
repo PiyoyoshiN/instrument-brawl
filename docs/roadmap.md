@@ -392,9 +392,9 @@ Phase 8 is not a major combat expansion phase.
 - 8-5 Records runtime design docs — this task
 - 8-6 Records storage utility
 - 8-7 Save match result once
-- 8-8 RecordsScene shell
-- 8-9 Home Records entry
-- 8-10 Reset Records design docs
+- 8-8 RecordsScene shell — complete
+- 8-9 Home Records entry — complete
+- 8-10 Reset Records design docs — this task
 - 8-11 Reset Records implementation
 - 8-12 Retire / Forfeit design docs
 - 8-13 Timer design docs
@@ -533,6 +533,48 @@ Out of scope in this phase step:
 - replay/damage logs/per-fighter deep analytics
 - server/cloud save
 
+
+### Phase 8-10: Reset Records design docs
+
+Design rules:
+
+- Reset Records resets only `instrument-brawl:records`
+- Do not modify/delete/read `instrument-brawl:settings`
+- Keep Reset Records separate from Reset Preferences
+- No Reset All action in this phase
+
+Reset defaults:
+
+- `version: 1`
+- `totalMatches: 0`
+- `p1Wins: 0`
+- `p2Wins: 0`
+- `draws: 0`
+- `cpuMatches: 0`
+- `local2pMatches: 0`
+- `lastPlayedAt: null`
+
+Future UI behavior (RecordsScene):
+
+- Add dedicated `Reset Records` row/action
+- Two-step confirmation (`Reset Records: Press again to confirm`)
+- Escape or moving selection away cancels pending confirmation
+- Keep interaction simple (no modal/admin menu)
+
+Expected post-reset behavior:
+
+- RecordsScene shows 0 counters and `Last Played: Never`
+- `instrument-brawl:settings` remains unchanged
+- Effects/screen shake and last selected fighters/mode remain unchanged
+- Gameplay logic/values remain unchanged
+
+Failure/fallback behavior:
+
+- unavailable localStorage -> fail safely without crash
+- save/remove failure -> fail safely without crash
+- sanitize/default records fallback remains active
+- invalid records handling must not remove settings
+
 ### Phase 8 guardrails for scope/docs tasks
 
 Do not change gameplay values/logic during Phase 8 scope/docs tasks:
@@ -546,7 +588,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-6: Records storage utility.
+**Next recommended task:** Phase 8-11: Reset Records implementation.
 
 ## Features to avoid for now
 

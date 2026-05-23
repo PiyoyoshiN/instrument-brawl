@@ -139,7 +139,7 @@ Completed in Phase 7:
 - Effects OFF hides nonessential extras only; Screen Shake OFF disables tiny shake only.
 - Gameplay values and logic remain unchanged.
 - Records foundation docs complete.
-- Records runtime implementation is not implemented yet (no RecordsScene/Home Records entry/match result storage yet).
+- Records runtime implementation is in progress: storage utility, once-per-match result saving, and RecordsScene shell are implemented; Reset Records is not implemented yet.
 - Reset preferences is not implemented yet.
 
 ## Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
@@ -152,7 +152,7 @@ Phase 8 is **not** a major combat expansion phase.
 - Records localStorage utility
 - Save match result once
 - RecordsScene shell
-- Home Records entry
+- Home Records entry — complete
 - Reset Records
 - Playtest checklist updates
 
@@ -292,6 +292,51 @@ Records runtime out of scope:
 - replay data, damage logs, per-fighter detailed analytics
 - server/cloud save
 
+
+### Phase 8-10 Reset Records design (docs only)
+
+Reset Records is records-only and separate from Reset Preferences.
+
+- Target key: `instrument-brawl:records` only
+- Must not read/write/delete `instrument-brawl:settings`
+- Must not change Reset Preferences behavior
+- Must not introduce a combined Reset All action in this phase
+
+Reset target defaults:
+
+- `version: 1`
+- `totalMatches: 0`
+- `p1Wins: 0`
+- `p2Wins: 0`
+- `draws: 0`
+- `cpuMatches: 0`
+- `local2pMatches: 0`
+- `lastPlayedAt: null`
+
+Future UI behavior (simple):
+
+- Location: `RecordsScene`
+- Add a separate `Reset Records` row/action
+- First confirm arms reset and shows `Reset Records: Press again to confirm`
+- Second confirm executes reset
+- Escape or moving selection away cancels armed reset
+- Keep this as compact inline behavior (no modal/admin menu)
+
+Expected behavior after reset:
+
+- Records storage returns to default empty values
+- RecordsScene immediately shows zeros and `Last Played: Never`
+- Settings remain unchanged (`instrument-brawl:settings`)
+- Effects/Screen Shake and last selected fighters/mode remain unchanged
+- Gameplay values/logic remain unchanged
+
+Failure/fallback behavior:
+
+- If localStorage is unavailable, fail safely and keep runtime usable
+- If save/remove fails, gameplay must not crash
+- Existing sanitize/default records fallback remains safety net
+- Invalid records must not delete settings
+
 ### Phase 8 guardrails for scope/docs tasks
 
 During Phase 8 scope/docs tasks, do not change:
@@ -308,9 +353,9 @@ During Phase 8 scope/docs tasks, do not change:
 - Phase 8-6 records storage utility is implemented.
 - Phase 8-7 match result saving is implemented with once-per-result recording to `instrument-brawl:records`.
 - RecordsScene shell is implemented and displays local records from `instrument-brawl:records`.
-- Home Records entry remains future scope.
+- Home Records entry is implemented (Home -> Records -> Home).
 
-**Next recommended task:** Phase 8-10: Reset Records design docs.
+**Next recommended task:** Phase 8-11: Reset Records implementation.
 
 ## Play online
 
