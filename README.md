@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 9-3: Equipment concept docs.
+**Next recommended task:** Phase 9-4: Equipment data model docs.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -666,7 +666,7 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 9-3: Equipment concept docs.
+**Next recommended task:** Phase 9-4: Equipment data model docs.
 
 
 ## Phase 8 checkpoint
@@ -704,7 +704,7 @@ Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, at
 - ResultScene `R` / `C` / Home return does not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-3: Equipment concept docs.
+**Next recommended task:** Phase 9-4: Equipment data model docs.
 
 
 
@@ -735,6 +735,27 @@ Important for this PR:
 - No EquipmentSelectScene, registry runtime wiring, or equipment persistence runtime implementation is added in this PR.
 - `attackMethod` / `impactClass` remain planning language unless a later explicit runtime task implements them.
 
+### Phase 9-3 equipment concept (docs only)
+
+This task defines equipment concept language only. No runtime equipment behavior is implemented in this PR.
+
+Candidate concepts:
+
+- `none` (No Accessory): baseline/default; fully playable/readable; comparison point.
+- `amp` (Amp): sound-projection/stage-presence flavor; may later relate to sonic/sound/hybrid identity language; not a ranged/projectile/damage/reach buff here.
+- `pick` (Pick): sharper/precise playing flavor; may later support technical wording; not critical-rate/critical-damage/faster-attack/damage-up here.
+- `case` (Case): sturdy/carrying-stage-gear flavor; may later support protective wording; not defense-up/damage-reduction/shield/guard/just-guard here.
+
+Concept guardrails for this step:
+
+- equipment remains 0-or-1 support equipment per player
+- lightweight/optional and match-local in concept
+- fighter identity must remain readable
+- no RPG/meta systems (unlocks/rarity/crafting/loot/currency/shop/progression/account/server)
+- same equipment for both players stays allowed unless a later task changes it
+- no equipment-specific records schema or usage/win-rate analytics
+- no gameplay tuning and no runtime/schema implementation in this task
+
 Phase 9 guardrails:
 
 - no damage/range/defense buffs
@@ -743,7 +764,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-3: Equipment concept docs.
+**Next recommended task:** Phase 9-4: Equipment data model docs.
 
 ## Play online
 

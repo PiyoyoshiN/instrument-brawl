@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 9-3: Equipment concept docs**.
+Next recommended task: **Phase 9-4: Equipment data model docs**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -914,4 +914,35 @@ Guardrails:
 - preserve Phase 8 gameplay/system invariants
 - no combat value tuning or records schema expansion for equipment
 
-Next recommended task: **Phase 9-3: Equipment concept docs**.
+Next recommended task: **Phase 9-4: Equipment data model docs**.
+
+
+### Phase 9-3 Equipment concept (docs only)
+
+Role of equipment (for):
+
+- lightweight optional support identity per player (0 or 1)
+- flavor readability and future shell/UI language
+- match-local concept for simple local battles
+
+Non-role of equipment (not for in this step):
+
+- no stat buffs (damage/range/defense/critical/speed)
+- no new combat systems (guard/just guard/specials/rounds/timer/retire)
+- no progression/meta systems (unlocks/rarity/crafting/loot/currency/shop/account/server)
+- no records analytics extension for equipment
+
+Initial concept candidates:
+
+- `none` / No Accessory: baseline default, fully playable/readable, comparison point.
+- `amp` / Amp: louder stage/sound projection flavor; may later connect to sonic/sound/hybrid language; not a ranged/projectile/reach/damage buff at this stage.
+- `pick` / Pick: sharper/precise flavor; may later connect to technical/sharper wording; not critical/damage/speed buffs at this stage.
+- `case` / Case: sturdy/protective stage gear flavor; may later connect to sturdy/protective language; not defense/shield/guard behavior at this stage.
+
+Implementation boundary:
+
+- this is concept-only docs work
+- no runtime/schema changes (no registry, scene, handoff, persistence, HUD/result labels, or effect implementation)
+- `attackMethod` / `impactClass` remain planning language unless a later explicit runtime task implements them
+
+Next recommended task: **Phase 9-4: Equipment data model docs**.

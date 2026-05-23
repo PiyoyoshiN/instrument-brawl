@@ -145,7 +145,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
 
-**Next recommended task:** Phase 9-3: Equipment concept docs.
+**Next recommended task:** Phase 9-4: Equipment data model docs.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)
@@ -416,17 +416,31 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Docs explicitly forbid equipment-specific records schema/analytics in Phase 9-1 docs step.
 - [ ] Docs confirm this PR does not modify runtime code.
 
-**Next recommended task:** Phase 9-3: Equipment concept docs.
+**Next recommended task:** Phase 9-4: Equipment data model docs.
 
 
 ## Phase 9-2 docs cleanup checklist (docs)
 
 - [ ] Docs consistently mark Phase 8 as complete.
 - [ ] Docs consistently mark Phase 9-1 as complete.
-- [ ] Current next recommended task is Phase 9-3: Equipment concept docs.
+- [ ] Current next recommended task is Phase 9-4: Equipment data model docs.
 - [ ] Stale status wording (records/reset/options future scope) is updated to current implemented state.
 - [ ] Docs explicitly keep Phase 9 runtime equipment features as not implemented yet.
 - [ ] Docs preserve guardrails: no combat-value changes and no equipment records analytics in this cleanup task.
 - [ ] This PR does not modify runtime code.
 
-**Next recommended task:** Phase 9-3: Equipment concept docs.
+**Next recommended task:** Phase 9-4: Equipment data model docs.
+
+
+## Phase 9-3 equipment concept checklist (docs)
+
+- [ ] Equipment concept purpose is defined (lightweight optional support shell).
+- [ ] Equipment non-purpose is defined (not combat buffs/stat tuning/meta-progression).
+- [ ] `none` / No Accessory is documented as baseline default.
+- [ ] `amp` / `pick` / `case` are documented as flavor-first concepts.
+- [ ] Amp/Pick/Case are explicitly not defined as stat buffs in this step.
+- [ ] No runtime code is modified in this docs task.
+- [ ] Equipment-specific records schema/analytics remain out of scope.
+- [ ] Next recommended task is Phase 9-4: Equipment data model docs.
+
+**Next recommended task:** Phase 9-4: Equipment data model docs.
