@@ -1086,6 +1086,8 @@ class CharacterSelectScene extends Phaser.Scene {
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
   private player2Mode = defaultPlayer2Mode;
+  private player1EquipmentId: EquipmentId = 'none';
+  private player2EquipmentId: EquipmentId = 'none';
   private player1Index = 0;
   private player2Index = 0;
   private player1NameText?: Phaser.GameObjects.Text;
@@ -1118,6 +1120,8 @@ class CharacterSelectScene extends Phaser.Scene {
     this.player1FighterId = data.player1FighterId ?? stored.lastSelected.player1FighterId;
     this.player2FighterId = data.player2FighterId ?? stored.lastSelected.player2FighterId;
     this.player2Mode = data.player2Mode ?? stored.lastSelected.player2Mode;
+    this.player1EquipmentId = getEquipmentDefinition(data.player1EquipmentId).id;
+    this.player2EquipmentId = getEquipmentDefinition(data.player2EquipmentId).id;
   }
 
   create() {
@@ -1348,6 +1352,8 @@ class CharacterSelectScene extends Phaser.Scene {
         player1FighterId,
         player2FighterId,
         player2Mode: this.player2Mode,
+        player1EquipmentId: this.player1EquipmentId,
+        player2EquipmentId: this.player2EquipmentId,
       });
     }
   }
@@ -2211,6 +2217,8 @@ class BattleScene extends Phaser.Scene {
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
         player2Mode: this.player2Mode,
+        player1EquipmentId: this.player1EquipmentId,
+        player2EquipmentId: this.player2EquipmentId,
       });
     });
   }
@@ -2398,6 +2406,8 @@ class ResultScene extends Phaser.Scene {
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
         player2Mode: this.player2Mode,
+        player1EquipmentId: this.player1EquipmentId,
+        player2EquipmentId: this.player2EquipmentId,
       });
       return;
     }
@@ -2408,6 +2418,8 @@ class ResultScene extends Phaser.Scene {
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
         player2Mode: this.player2Mode,
+        player1EquipmentId: this.player1EquipmentId,
+        player2EquipmentId: this.player2EquipmentId,
       });
       return;
     }
@@ -2623,8 +2635,8 @@ class EquipmentSelectScene extends Phaser.Scene {
     this.player1FighterId = data?.player1FighterId;
     this.player2FighterId = data?.player2FighterId;
     this.player2Mode = data?.player2Mode === 'cpu' ? 'cpu' : 'human';
-    this.player1EquipmentId = 'none';
-    this.player2EquipmentId = 'none';
+    this.player1EquipmentId = getEquipmentDefinition(data?.player1EquipmentId).id;
+    this.player2EquipmentId = getEquipmentDefinition(data?.player2EquipmentId).id;
     this.selectedEquipmentRow = 0;
   }
 
@@ -2728,6 +2740,8 @@ class EquipmentSelectScene extends Phaser.Scene {
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
         player2Mode: this.player2Mode,
+        player1EquipmentId: this.player1EquipmentId,
+        player2EquipmentId: this.player2EquipmentId,
       });
     }
   }

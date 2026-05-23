@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 9-10: Rematch / return preservation**.
+Next recommended task: **Phase 9-11: localStorage equipment persistence**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -914,7 +914,7 @@ Guardrails:
 - preserve Phase 8 gameplay/system invariants
 - no combat value tuning or records schema expansion for equipment
 
-Next recommended task: **Phase 9-10: Rematch / return preservation**.
+Next recommended task: **Phase 9-11: localStorage equipment persistence**.
 
 
 ### Phase 9-3 Equipment concept (docs only)
@@ -945,7 +945,7 @@ Implementation boundary:
 - no runtime/schema changes (no registry, scene, handoff, persistence, HUD/result labels, or effect implementation)
 - `attackMethod` / `impactClass` remain planning language unless a later explicit runtime task implements them
 
-Next recommended task: **Phase 9-10: Rematch / return preservation**.
+Next recommended task: **Phase 9-11: localStorage equipment persistence**.
 
 
 ### Phase 9-4 Equipment data model (docs only)
@@ -999,7 +999,7 @@ Implementation boundary:
 - no runtime type/schema added to `src/main.ts`
 - Phase 9-5 is the first runtime step (equipment registry)
 
-Next recommended task: **Phase 9-10: Rematch / return preservation**.
+Next recommended task: **Phase 9-11: localStorage equipment persistence**.
 
 
 ### Phase 9-6 EquipmentSelectScene design (docs only)
@@ -1050,4 +1050,4 @@ Boundaries:
 - no equipment buff/stat/system behavior
 - no persistence/records analytics/account/progression design expansion in this task
 
-Next recommended task: **Phase 9-10: Rematch / return preservation**.
+Next recommended task: **Phase 9-11: localStorage equipment persistence**.

@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 9-10: Rematch / return preservation.
+**Next recommended task:** Phase 9-11: localStorage equipment persistence.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -666,7 +666,7 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 9-10: Rematch / return preservation.
+**Next recommended task:** Phase 9-11: localStorage equipment persistence.
 
 
 ## Phase 8 checkpoint
@@ -704,7 +704,7 @@ Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, at
 - ResultScene `R` / `C` / Home return does not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-10: Rematch / return preservation.
+**Next recommended task:** Phase 9-11: localStorage equipment persistence.
 
 
 
@@ -850,6 +850,8 @@ Phase 9-8 updates EquipmentSelectScene to support local P1/P2 equipment selectio
 
 Phase 9-9 connects EquipmentSelectScene to BattleScene via equipment ID scene-data handoff. Equipment IDs are accepted and resolved in BattleScene with safe fallback to `none`, and still have no gameplay effect.
 
+Phase 9-10 preserves selected equipment IDs through match-end navigation (Battle -> Result, Result R rematch, Result C return, CharacterSelect confirm-forward, and EquipmentSelect Esc back). Equipment remains gameplay-neutral, and persistence/HUD/Result visual display are still not implemented.
+
 Phase 9 guardrails:
 
 - no damage/range/defense buffs
@@ -858,7 +860,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-10: Rematch / return preservation.
+**Next recommended task:** Phase 9-11: localStorage equipment persistence.
 
 ## Play online
 
