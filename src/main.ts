@@ -560,6 +560,7 @@ class HomeScene extends Phaser.Scene {
   private downKey?: Phaser.Input.Keyboard.Key;
   private selectedIndex = 0;
   private startCard?: Phaser.GameObjects.Rectangle;
+  private recordsCard?: Phaser.GameObjects.Rectangle;
   private optionsCard?: Phaser.GameObjects.Rectangle;
   private inputEnabledAt = 0;
   private transitionStarted = false;
@@ -616,24 +617,32 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       .setOrigin(0.5);
 
     this.add
-      .text(400, 392, '← / → : choose', {
+      .text(400, 392, '← / → / ↑ / ↓ : choose', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
       .setOrigin(0.5);
 
-    this.startCard = this.add.rectangle(286, 442, 220, 76, 0x0f172a).setStrokeStyle(4, 0xfacc15);
-    this.optionsCard = this.add.rectangle(514, 442, 220, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
+    this.startCard = this.add.rectangle(220, 442, 180, 76, 0x0f172a).setStrokeStyle(4, 0xfacc15);
+    this.recordsCard = this.add.rectangle(400, 442, 180, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
+    this.optionsCard = this.add.rectangle(580, 442, 180, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
     this.add
-      .text(286, 442, 'Start', {
+      .text(220, 442, 'Start', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
       })
       .setOrigin(0.5);
     this.add
-      .text(514, 442, 'Options', {
+      .text(400, 442, 'Records', {
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '30px',
+      })
+      .setOrigin(0.5);
+    this.add
+      .text(580, 442, 'Options', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
@@ -671,11 +680,17 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
 
     if (
       (this.leftKey && Phaser.Input.Keyboard.JustDown(this.leftKey)) ||
+      (this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey))
+    ) {
+      this.selectedIndex = (this.selectedIndex + 2) % 3;
+      this.updateSelectionVisuals();
+    }
+
+    if (
       (this.rightKey && Phaser.Input.Keyboard.JustDown(this.rightKey)) ||
-      (this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) ||
       (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))
     ) {
-      this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
+      this.selectedIndex = (this.selectedIndex + 1) % 3;
       this.updateSelectionVisuals();
     }
 
@@ -684,14 +699,17 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
       this.transitionStarted = true;
-      this.scene.start(this.selectedIndex === 0 ? 'ModeSelectScene' : 'OptionsScene');
+      this.scene.start(this.selectedIndex === 0 ? 'ModeSelectScene' : this.selectedIndex === 1 ? 'RecordsScene' : 'OptionsScene');
     }
   }
 
   private updateSelectionVisuals() {
     const startSelected = this.selectedIndex === 0;
+    const recordsSelected = this.selectedIndex === 1;
+    const optionsSelected = this.selectedIndex === 2;
     this.startCard?.setStrokeStyle(startSelected ? 4 : 3, startSelected ? 0xfacc15 : 0x475569);
-    this.optionsCard?.setStrokeStyle(startSelected ? 3 : 4, startSelected ? 0x475569 : 0xfacc15);
+    this.recordsCard?.setStrokeStyle(recordsSelected ? 4 : 3, recordsSelected ? 0xfacc15 : 0x475569);
+    this.optionsCard?.setStrokeStyle(optionsSelected ? 4 : 3, optionsSelected ? 0xfacc15 : 0x475569);
   }
 }
 

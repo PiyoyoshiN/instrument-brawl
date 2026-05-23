@@ -10,7 +10,7 @@
 - Browser-playable Phaser + Vite + TypeScript game.
 - Local 1v1 battle with Home -> Mode Select -> Character Select -> Battle -> Result scene flow.
 
-Current scene flow: `Home -> Mode Select -> Character Select -> Battle -> Result` (+ `Home -> Options -> Home`).
+Current scene flow: `Home -> Mode Select -> Character Select -> Battle -> Result` (+ `Home -> Records -> Home` + `Home -> Options -> Home`).
 
 Phase 7 checkpoint flow: `Home -> Mode Select -> Character Select -> Battle -> Result` (+ `Home -> Options -> Home`).
 
@@ -20,6 +20,7 @@ Mode Select behavior:
 - Local 2P maps to `player2Mode: "human"`.
 - P1 vs CPU maps to `player2Mode: "cpu"`.
 - Home Start now goes Home -> Mode Select -> Character Select.
+- Home Records now opens RecordsScene for local records display.
 - CharacterSelectScene uses the fighter registry and currently offers Electric Guitar, Bass, Drum Sticks, and Keyboard.
 - P2 defaults to Human for local 2-player, with an optional simple CPU mode available from Character Select.
 - Movement, attacks, HP, damage, velocity-based knockback, hit flash, win/draw detection, Ready/Fight start prompt, rematch, and return-to-character-select flow are implemented.
@@ -30,7 +31,7 @@ Mode Select behavior:
 
 ### Home
 
-- Left / Right: choose Start / Options
+- Left / Right (or Up / Down): choose Start / Records / Options
 - Enter / Space: confirm
 
 ### Mode select
@@ -309,7 +310,7 @@ During Phase 8 scope/docs tasks, do not change:
 - RecordsScene shell is implemented and displays local records from `instrument-brawl:records`.
 - Home Records entry remains future scope.
 
-**Next recommended task:** Phase 8-9: Home Records entry.
+**Next recommended task:** Phase 8-10: Reset Records design docs.
 
 ## Play online
 

@@ -91,9 +91,9 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 ## Home menu checks
 
-- [ ] Home Start button is on the left and Options button is on the right.
-- [ ] Home Left/Right changes highlighted button.
-- [ ] Home Enter/Space confirms highlighted Start/Options choice.
+- [ ] Home shows Start / Records / Options entries.
+- [ ] Home Left/Right (and Up/Down) changes highlighted entry with safe wrap.
+- [ ] Home Enter/Space confirms Start -> Mode Select, Records -> RecordsScene, Options -> OptionsScene.
 
 ## Options behavior checks
 
