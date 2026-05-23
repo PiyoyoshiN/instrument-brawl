@@ -30,6 +30,72 @@ const cpuRetreatChance = 0.22;
 
 type Player2Mode = 'human' | 'cpu';
 
+
+type EquipmentId = 'none' | 'amp' | 'pick' | 'case';
+
+type EquipmentDefinition = {
+  id: EquipmentId;
+  displayName: string;
+  shortLabel: string;
+  description: string;
+  conceptRole: string;
+};
+
+const noneEquipmentDefinition: EquipmentDefinition = {
+  id: 'none',
+  displayName: 'No Accessory',
+  shortLabel: 'None',
+  description: 'No support equipment.',
+  conceptRole: 'default / baseline / no support equipment',
+};
+
+const ampEquipmentDefinition: EquipmentDefinition = {
+  id: 'amp',
+  displayName: 'Amp',
+  shortLabel: 'Amp',
+  description: 'Sound projection and stage presence flavor.',
+  conceptRole: 'sound projection / stage presence flavor',
+};
+
+const pickEquipmentDefinition: EquipmentDefinition = {
+  id: 'pick',
+  displayName: 'Pick',
+  shortLabel: 'Pick',
+  description: 'Sharper and more precise playing flavor.',
+  conceptRole: 'sharper / precise playing flavor',
+};
+
+const caseEquipmentDefinition: EquipmentDefinition = {
+  id: 'case',
+  displayName: 'Case',
+  shortLabel: 'Case',
+  description: 'Sturdy stage gear and carrying flavor.',
+  conceptRole: 'sturdy / protective stage gear flavor',
+};
+
+const equipmentDefinitions: EquipmentDefinition[] = [
+  noneEquipmentDefinition,
+  ampEquipmentDefinition,
+  pickEquipmentDefinition,
+  caseEquipmentDefinition,
+];
+
+const equipmentDefinitionById = new Map<EquipmentId, EquipmentDefinition>(
+  equipmentDefinitions.map((definition) => [definition.id, definition]),
+);
+
+function isEquipmentId(value: unknown): value is EquipmentId {
+  return value === 'none' || value === 'amp' || value === 'pick' || value === 'case';
+}
+
+function getEquipmentDefinition(id: unknown): EquipmentDefinition {
+  if (!isEquipmentId(id)) {
+    return noneEquipmentDefinition;
+  }
+
+  return equipmentDefinitionById.get(id) ?? noneEquipmentDefinition;
+}
+
 type FighterStats = {
   maxHp: number;
   moveSpeed: number;
@@ -325,6 +391,162 @@ function savePreferences(partialPreferences: Partial<StoredSettings['preferences
   }
 }
 
+
+const recordsStorageKey = 'instrument-brawl:records';
+const recordsVersion = 1;
+
+type StoredRecords = {
+  version: number;
+  totalMatches: number;
+  p1Wins: number;
+  p2Wins: number;
+  draws: number;
+  cpuMatches: number;
+  local2pMatches: number;
+  lastPlayedAt: string | null;
+};
+
+const defaultStoredRecords: StoredRecords = {
+  version: recordsVersion,
+  totalMatches: 0,
+  p1Wins: 0,
+  p2Wins: 0,
+  draws: 0,
+  cpuMatches: 0,
+  local2pMatches: 0,
+  lastPlayedAt: null,
+};
+
+function getDefaultStoredRecords(): StoredRecords {
+  return {
+    ...defaultStoredRecords,
+  };
+}
+
+function sanitizeStoredRecords(value: unknown): StoredRecords {
+  const base = getDefaultStoredRecords();
+
+  if (!value || typeof value !== 'object') {
+    return base;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  if (candidate.version !== recordsVersion) {
+    return base;
+  }
+
+  const sanitizeCounter = (field: keyof Omit<StoredRecords, 'version' | 'lastPlayedAt'>) => {
+    const raw = candidate[field];
+
+    if (typeof raw !== 'number' || !Number.isFinite(raw) || raw < 0) {
+      return 0;
+    }
+
+    return Math.floor(raw);
+  };
+
+  base.totalMatches = sanitizeCounter('totalMatches');
+  base.p1Wins = sanitizeCounter('p1Wins');
+  base.p2Wins = sanitizeCounter('p2Wins');
+  base.draws = sanitizeCounter('draws');
+  base.cpuMatches = sanitizeCounter('cpuMatches');
+  base.local2pMatches = sanitizeCounter('local2pMatches');
+
+  const lastPlayedAtCandidate = candidate.lastPlayedAt;
+  if (lastPlayedAtCandidate === null || typeof lastPlayedAtCandidate === 'string') {
+    base.lastPlayedAt = lastPlayedAtCandidate;
+  }
+
+  return base;
+}
+
+function loadStoredRecords(): StoredRecords {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return getDefaultStoredRecords();
+    }
+
+    const raw = window.localStorage.getItem(recordsStorageKey);
+
+    if (!raw) {
+      return getDefaultStoredRecords();
+    }
+
+    return sanitizeStoredRecords(JSON.parse(raw));
+  } catch {
+    return getDefaultStoredRecords();
+  }
+}
+
+function saveStoredRecords(records: StoredRecords): StoredRecords {
+  const sanitized = sanitizeStoredRecords(records);
+
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return sanitized;
+    }
+
+    window.localStorage.setItem(recordsStorageKey, JSON.stringify(sanitized));
+  } catch {
+    return sanitized;
+  }
+
+  return sanitized;
+}
+
+function recordStoredMatchResult(result: 'p1' | 'p2' | 'draw', player2Mode: Player2Mode): StoredRecords {
+  try {
+    const current = loadStoredRecords();
+    const next: StoredRecords = {
+      ...current,
+      totalMatches: current.totalMatches + 1,
+      p1Wins: current.p1Wins + (result === 'p1' ? 1 : 0),
+      p2Wins: current.p2Wins + (result === 'p2' ? 1 : 0),
+      draws: current.draws + (result === 'draw' ? 1 : 0),
+      cpuMatches: current.cpuMatches + (player2Mode === 'cpu' ? 1 : 0),
+      local2pMatches: current.local2pMatches + (player2Mode === 'human' ? 1 : 0),
+      lastPlayedAt: new Date().toISOString(),
+    };
+
+    return saveStoredRecords(next);
+  } catch {
+    return loadStoredRecords();
+  }
+}
+
+function resetStoredRecords(): StoredRecords {
+  try {
+    return saveStoredRecords(getDefaultStoredRecords());
+  } catch {
+    return getDefaultStoredRecords();
+  }
+}
+
+function resetStoredSettings(): StoredSettings {
+  try {
+    return saveStoredSettings({
+      ...defaultStoredSettings,
+      lastSelected: {
+        ...defaultStoredSettings.lastSelected,
+      },
+      preferences: {
+        ...defaultStoredSettings.preferences,
+      },
+    });
+  } catch {
+    return {
+      ...defaultStoredSettings,
+      lastSelected: {
+        ...defaultStoredSettings.lastSelected,
+      },
+      preferences: {
+        ...defaultStoredSettings.preferences,
+      },
+    };
+  }
+}
+
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
   label: Phaser.GameObjects.Text;
@@ -412,6 +634,7 @@ class HomeScene extends Phaser.Scene {
   private downKey?: Phaser.Input.Keyboard.Key;
   private selectedIndex = 0;
   private startCard?: Phaser.GameObjects.Rectangle;
+  private recordsCard?: Phaser.GameObjects.Rectangle;
   private optionsCard?: Phaser.GameObjects.Rectangle;
   private inputEnabledAt = 0;
   private transitionStarted = false;
@@ -468,24 +691,32 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       .setOrigin(0.5);
 
     this.add
-      .text(400, 392, '← / → : choose', {
+      .text(400, 392, '← / → / ↑ / ↓ : choose', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
       .setOrigin(0.5);
 
-    this.startCard = this.add.rectangle(286, 442, 220, 76, 0x0f172a).setStrokeStyle(4, 0xfacc15);
-    this.optionsCard = this.add.rectangle(514, 442, 220, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
+    this.startCard = this.add.rectangle(220, 442, 180, 76, 0x0f172a).setStrokeStyle(4, 0xfacc15);
+    this.recordsCard = this.add.rectangle(400, 442, 180, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
+    this.optionsCard = this.add.rectangle(580, 442, 180, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
     this.add
-      .text(286, 442, 'Start', {
+      .text(220, 442, 'Start', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
       })
       .setOrigin(0.5);
     this.add
-      .text(514, 442, 'Options', {
+      .text(400, 442, 'Records', {
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '30px',
+      })
+      .setOrigin(0.5);
+    this.add
+      .text(580, 442, 'Options', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
@@ -523,11 +754,17 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
 
     if (
       (this.leftKey && Phaser.Input.Keyboard.JustDown(this.leftKey)) ||
+      (this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey))
+    ) {
+      this.selectedIndex = (this.selectedIndex + 2) % 3;
+      this.updateSelectionVisuals();
+    }
+
+    if (
       (this.rightKey && Phaser.Input.Keyboard.JustDown(this.rightKey)) ||
-      (this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) ||
       (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))
     ) {
-      this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
+      this.selectedIndex = (this.selectedIndex + 1) % 3;
       this.updateSelectionVisuals();
     }
 
@@ -536,14 +773,17 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
       this.transitionStarted = true;
-      this.scene.start(this.selectedIndex === 0 ? 'ModeSelectScene' : 'OptionsScene');
+      this.scene.start(this.selectedIndex === 0 ? 'ModeSelectScene' : this.selectedIndex === 1 ? 'RecordsScene' : 'OptionsScene');
     }
   }
 
   private updateSelectionVisuals() {
     const startSelected = this.selectedIndex === 0;
+    const recordsSelected = this.selectedIndex === 1;
+    const optionsSelected = this.selectedIndex === 2;
     this.startCard?.setStrokeStyle(startSelected ? 4 : 3, startSelected ? 0xfacc15 : 0x475569);
-    this.optionsCard?.setStrokeStyle(startSelected ? 3 : 4, startSelected ? 0x475569 : 0xfacc15);
+    this.recordsCard?.setStrokeStyle(recordsSelected ? 4 : 3, recordsSelected ? 0xfacc15 : 0x475569);
+    this.optionsCard?.setStrokeStyle(optionsSelected ? 4 : 3, optionsSelected ? 0xfacc15 : 0x475569);
   }
 }
 
@@ -551,8 +791,10 @@ class OptionsScene extends Phaser.Scene {
   private selectedIndex = 0;
   private effectsEnabled = true;
   private screenShakeEnabled = true;
+  private isResetArmed = false;
   private effectsText?: Phaser.GameObjects.Text;
   private screenShakeText?: Phaser.GameObjects.Text;
+  private resetPreferencesText?: Phaser.GameObjects.Text;
   private upKey?: Phaser.Input.Keyboard.Key;
   private downKey?: Phaser.Input.Keyboard.Key;
   private leftKey?: Phaser.Input.Keyboard.Key;
@@ -571,6 +813,7 @@ class OptionsScene extends Phaser.Scene {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
     this.selectedIndex = 0;
+    this.isResetArmed = false;
     const stored = loadStoredSettings();
     this.effectsEnabled = stored.preferences.effectsEnabled;
     this.screenShakeEnabled = stored.preferences.screenShakeEnabled;
@@ -583,9 +826,10 @@ class OptionsScene extends Phaser.Scene {
 
     this.effectsText = this.add.text(400, 260, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
     this.screenShakeText = this.add.text(400, 320, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
+    this.resetPreferencesText = this.add.text(400, 380, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
 
-    this.add.text(400, 402, '↑ / ↓: choose    ← / → or Enter / Space: toggle', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
-    this.add.text(400, 438, 'Esc: return Home', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
+    this.add.text(400, 438, '↑ / ↓: choose    ← / → or Enter / Space: toggle/confirm', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
+    this.add.text(400, 470, 'Esc: return Home', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
 
     this.updateTexts();
 
@@ -604,7 +848,13 @@ class OptionsScene extends Phaser.Scene {
     if (this.transitionStarted || time < this.inputEnabledAt) return;
 
     if ((this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) || (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))) {
-      this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
+      const previousIndex = this.selectedIndex;
+      this.selectedIndex = (this.selectedIndex + 1) % 3;
+
+      if (previousIndex === 2 || this.selectedIndex !== 2) {
+        this.isResetArmed = false;
+      }
+
       this.updateTexts();
     }
 
@@ -615,11 +865,20 @@ class OptionsScene extends Phaser.Scene {
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
       if (this.selectedIndex === 0) {
+        this.isResetArmed = false;
         this.effectsEnabled = !this.effectsEnabled;
         savePreferences({ effectsEnabled: this.effectsEnabled });
-      } else {
+      } else if (this.selectedIndex === 1) {
+        this.isResetArmed = false;
         this.screenShakeEnabled = !this.screenShakeEnabled;
         savePreferences({ screenShakeEnabled: this.screenShakeEnabled });
+      } else if (!this.isResetArmed) {
+        this.isResetArmed = true;
+      } else {
+        const reset = resetStoredSettings();
+        this.effectsEnabled = reset.preferences.effectsEnabled;
+        this.screenShakeEnabled = reset.preferences.screenShakeEnabled;
+        this.isResetArmed = false;
       }
       this.updateTexts();
     }
@@ -633,8 +892,11 @@ class OptionsScene extends Phaser.Scene {
   private updateTexts() {
     const prefixA = this.selectedIndex === 0 ? '> ' : '  ';
     const prefixB = this.selectedIndex === 1 ? '> ' : '  ';
+    const prefixC = this.selectedIndex === 2 ? '> ' : '  ';
+    const resetText = this.isResetArmed ? 'Reset Preferences: Press again to confirm' : 'Reset Preferences';
     this.effectsText?.setText(`${prefixA}Effects: ${this.effectsEnabled ? 'ON' : 'OFF'}`);
     this.screenShakeText?.setText(`${prefixB}Screen Shake: ${this.screenShakeEnabled ? 'ON' : 'OFF'}`);
+    this.resetPreferencesText?.setText(`${prefixC}${resetText}`);
   }
 }
 
@@ -1997,6 +2259,8 @@ class BattleScene extends Phaser.Scene {
 
 class ResultScene extends Phaser.Scene {
   private result = 'Match Over';
+  private resultKind?: ResultSceneData['result'];
+  private hasRecordedResult = false;
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
   private player2Mode = defaultPlayer2Mode;
@@ -2014,6 +2278,8 @@ class ResultScene extends Phaser.Scene {
   }
 
   init(data: ResultSceneData = {}) {
+    this.hasRecordedResult = false;
+    this.resultKind = data.result;
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
@@ -2025,6 +2291,7 @@ class ResultScene extends Phaser.Scene {
   create() {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
+    this.recordResultOnce();
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 300, 620, 360, 0x1e293b).setStrokeStyle(4, 0x475569);
@@ -2144,6 +2411,255 @@ class ResultScene extends Phaser.Scene {
         return 'Match Over';
     }
   }
+
+  private recordResultOnce() {
+    if (this.hasRecordedResult) {
+      return;
+    }
+
+    if (this.resultKind !== 'p1' && this.resultKind !== 'p2' && this.resultKind !== 'draw') {
+      return;
+    }
+
+    this.hasRecordedResult = true;
+    recordStoredMatchResult(this.resultKind, this.player2Mode);
+  }
+}
+
+class RecordsScene extends Phaser.Scene {
+  private selectedIndex = 0;
+  private records = getDefaultStoredRecords();
+  private recordsText?: Phaser.GameObjects.Text;
+  private resetRecordsText?: Phaser.GameObjects.Text;
+  private upKey?: Phaser.Input.Keyboard.Key;
+  private downKey?: Phaser.Input.Keyboard.Key;
+  private enterKey?: Phaser.Input.Keyboard.Key;
+  private spaceKey?: Phaser.Input.Keyboard.Key;
+  private escapeKey?: Phaser.Input.Keyboard.Key;
+  private isResetArmed = false;
+  private inputEnabledAt = 0;
+  private transitionStarted = false;
+
+  constructor() {
+    super('RecordsScene');
+  }
+
+  create() {
+    this.inputEnabledAt = this.time.now + 150;
+    this.transitionStarted = false;
+    this.selectedIndex = 0;
+    this.isResetArmed = false;
+    this.records = loadStoredRecords();
+
+    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    this.add.rectangle(400, 300, 700, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    this.add
+      .text(400, 96, 'Records', {
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '44px',
+      })
+      .setOrigin(0.5);
+
+    this.recordsText = this.add
+      .text(400, 168, '', {
+        align: 'left',
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '28px',
+        lineSpacing: 12,
+      })
+      .setOrigin(0.5, 0);
+
+    this.resetRecordsText = this.add
+      .text(400, 428, '', {
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '30px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 476, '↑ / ↓: choose    Enter / Space: confirm', {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 506, 'Esc: return Home', {
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+      })
+      .setOrigin(0.5);
+
+    const keyboard = this.input.keyboard;
+
+    if (!keyboard) {
+      return;
+    }
+
+    this.upKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    this.downKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.escapeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
+    this.updateTexts();
+  }
+
+  update(time: number) {
+    if (this.transitionStarted || time < this.inputEnabledAt) {
+      return;
+    }
+
+    if ((this.upKey && Phaser.Input.Keyboard.JustDown(this.upKey)) || (this.downKey && Phaser.Input.Keyboard.JustDown(this.downKey))) {
+      this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
+
+      if (this.selectedIndex !== 1) {
+        this.isResetArmed = false;
+      }
+
+      this.updateTexts();
+    }
+
+    if (
+      (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
+      (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
+    ) {
+      if (this.selectedIndex === 0) {
+        this.transitionStarted = true;
+        this.scene.start('HomeScene');
+        return;
+      }
+
+      if (!this.isResetArmed) {
+        this.isResetArmed = true;
+      } else {
+        this.records = resetStoredRecords();
+        this.isResetArmed = false;
+      }
+
+      this.updateTexts();
+    }
+
+    if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      this.isResetArmed = false;
+      this.transitionStarted = true;
+      this.scene.start('HomeScene');
+    }
+  }
+
+  private updateTexts() {
+    const lastPlayedLabel = this.records.lastPlayedAt ?? 'Never';
+    this.recordsText?.setText(`Total Matches: ${this.records.totalMatches}
+P1 Wins: ${this.records.p1Wins}
+P2 Wins: ${this.records.p2Wins}
+Draws: ${this.records.draws}
+VS CPU Matches: ${this.records.cpuMatches}
+Local 2P Matches: ${this.records.local2pMatches}
+Last Played: ${lastPlayedLabel}`);
+
+    const prefixHome = this.selectedIndex === 0 ? '> ' : '  ';
+    const prefixReset = this.selectedIndex === 1 ? '> ' : '  ';
+    const resetLabel = this.isResetArmed ? 'Reset Records: Press again to confirm' : 'Reset Records';
+    this.resetRecordsText?.setText(`${prefixHome}Return Home\n${prefixReset}${resetLabel}`);
+  }
+}
+
+
+
+type EquipmentSelectSceneData = CharacterSelectSceneData;
+
+class EquipmentSelectScene extends Phaser.Scene {
+  private player1FighterId?: string;
+  private player2FighterId?: string;
+  private player2Mode: Player2Mode = defaultPlayer2Mode;
+  private escapeKey?: Phaser.Input.Keyboard.Key;
+
+  constructor() {
+    super('EquipmentSelectScene');
+  }
+
+  init(data?: EquipmentSelectSceneData) {
+    this.player1FighterId = data?.player1FighterId;
+    this.player2FighterId = data?.player2FighterId;
+    this.player2Mode = data?.player2Mode === 'cpu' ? 'cpu' : 'human';
+  }
+
+  create() {
+    const defaultEquipment = getEquipmentDefinition('none');
+    const p1Label = this.player1FighterId ? getFighterDefinition(this.player1FighterId).displayName : 'Not selected';
+    const p2Label = this.player2FighterId ? getFighterDefinition(this.player2FighterId).displayName : 'Not selected';
+
+    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    this.add.rectangle(400, 300, 720, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    this.add.text(400, 96, 'Equipment Select', {
+      color: '#ffffff',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '44px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 156, `P1 Fighter: ${p1Label}`, {
+      color: '#f8fafc',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '24px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 190, `P2 Fighter: ${p2Label} (${this.player2Mode === 'cpu' ? 'CPU' : 'Human'})`, {
+      color: '#e2e8f0',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '22px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 260, `P1 Equipment: ${defaultEquipment.shortLabel}`, {
+      color: '#facc15',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '30px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 306, `P2 Equipment: ${defaultEquipment.shortLabel}`, {
+      color: '#facc15',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '30px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 368, 'Equipment selection is coming next.', {
+      color: '#e2e8f0',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '20px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 398, 'Current shell does not affect battle.', {
+      color: '#e2e8f0',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '20px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 500, 'Esc: Back', {
+      color: '#facc15',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '24px',
+    }).setOrigin(0.5);
+
+    const keyboard = this.input.keyboard;
+    if (!keyboard) return;
+    this.escapeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+  }
+
+  update() {
+    if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      this.scene.start('CharacterSelectScene', {
+        player1FighterId: this.player1FighterId,
+        player2FighterId: this.player2FighterId,
+        player2Mode: this.player2Mode,
+      });
+    }
+  }
 }
 
 new Phaser.Game({
@@ -2152,5 +2668,5 @@ new Phaser.Game({
   width: gameWidth,
   height: gameHeight,
   backgroundColor: '#111827',
-  scene: [HomeScene, OptionsScene, ModeSelectScene, CharacterSelectScene, BattleScene, ResultScene],
+  scene: [HomeScene, OptionsScene, RecordsScene, ModeSelectScene, CharacterSelectScene, EquipmentSelectScene, BattleScene, ResultScene],
 });
