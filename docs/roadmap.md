@@ -786,7 +786,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-16: Playtest checklist update.
+**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
 
 ## Features to avoid for now
 
@@ -844,4 +844,4 @@ Out of scope:
 - no records/settings schema changes
 - no assets/audio/online/server work
 
-**Next recommended task:** Phase 8-16: Playtest checklist update.
+**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.

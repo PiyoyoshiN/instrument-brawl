@@ -666,7 +666,7 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 8-16: Playtest checklist update.
+**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
 
 ## Play online
 

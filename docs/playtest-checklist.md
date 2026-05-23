@@ -145,7 +145,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
 
-**Next recommended task:** Phase 8-16: Playtest checklist update.
+**Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)
@@ -314,3 +314,89 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Settings/reset behavior remains unchanged.
 - [ ] Fighter identity remains readable.
 - [ ] No gameplay values change during this docs-only task.
+
+
+## Phase 8 implemented feature checks (pre-checkpoint)
+
+### Options + Reset Preferences (implemented)
+
+- [ ] Home -> Options -> Home flow works.
+- [ ] Options toggles Effects ON/OFF.
+- [ ] Options toggles Screen Shake ON/OFF.
+- [ ] Reset Preferences exists in OptionsScene.
+- [ ] Reset Preferences requires two-step confirmation.
+- [ ] Reset Preferences restores defaults: P1 `electric-guitar`, P2 `bass`, P2 mode `human`, Effects ON, Screen Shake ON.
+- [ ] Reset Preferences changes only `instrument-brawl:settings` and does not delete/modify `instrument-brawl:records`.
+
+### Records runtime (implemented)
+
+- [ ] `instrument-brawl:records` is separate from `instrument-brawl:settings`.
+- [ ] P1 win increments `totalMatches` and `p1Wins` exactly once.
+- [ ] P2 win increments `totalMatches` and `p2Wins` exactly once.
+- [ ] Draw increments `totalMatches` and `draws` exactly once.
+- [ ] P1 vs CPU match increments `cpuMatches` exactly once.
+- [ ] Local 2P match increments `local2pMatches` exactly once.
+- [ ] `lastPlayedAt` updates after recorded match completion.
+- [ ] `R` rematch from Result does not double-count previous match.
+- [ ] `C` return-to-character-select from Result does not double-count previous match.
+- [ ] Enter/Space return Home from Result does not double-count previous match.
+
+### RecordsScene shell (implemented)
+
+- [ ] Home -> Records opens RecordsScene.
+- [ ] RecordsScene displays Total Matches / P1 Wins / P2 Wins / Draws / VS CPU Matches / Local 2P Matches / Last Played.
+- [ ] RecordsScene shows `Last Played: Never` when `lastPlayedAt` is null.
+- [ ] RecordsScene supports return Home (Esc / Enter / Space as currently implemented).
+- [ ] Home -> Records -> Home flow works.
+
+### Reset Records (implemented)
+
+- [ ] Reset Records exists in RecordsScene.
+- [ ] Reset Records requires two-step confirmation.
+- [ ] Reset Records resets only `instrument-brawl:records`.
+- [ ] Reset Records sets counters to 0.
+- [ ] Reset Records sets `lastPlayedAt` to null / `Last Played: Never`.
+- [ ] Reset Records does not delete/modify `instrument-brawl:settings`.
+- [ ] Reset Records does not change Effects / Screen Shake.
+- [ ] Reset Records does not change last selected fighters or P2 mode.
+
+## Phase 8 design-only future checks (not implemented yet)
+
+### Retire / Forfeit (design-only)
+
+- [ ] P1 retire -> P2 win.
+- [ ] P2 Human retire -> P1 win.
+- [ ] CPU does not retire by itself.
+- [ ] Retire result records exactly once.
+
+### Timer (design-only)
+
+- [ ] Timer starts after Fight.
+- [ ] Timer pauses during Pause / Quick Help and resumes after unpause.
+- [ ] Timeout higher HP decides winner; equal HP is draw.
+- [ ] Timeout result records exactly once.
+
+### Equipment / Amp (design-only)
+
+- [ ] Future default equipment is `None`.
+- [ ] Equipment does not change records schema in Phase 8.
+- [ ] Amp remains design-only in Phase 8 runtime.
+
+### attackMethod / impactClass (design-only)
+
+- [ ] Labels do not change gameplay by themselves.
+- [ ] No runtime/schema change in Phase 8.
+
+## Phase 8 regression guardrails (must remain unchanged)
+
+- [ ] HP unchanged.
+- [ ] Damage unchanged.
+- [ ] Knockback unchanged.
+- [ ] Attack cooldown unchanged.
+- [ ] Attack duration unchanged.
+- [ ] Hitbox behavior unchanged.
+- [ ] CPU behavior unchanged.
+- [ ] One-hit-per-attack unchanged.
+- [ ] Ready / Fight timing unchanged.
+- [ ] Pause / Quick Help behavior unchanged.
+- [ ] ResultScene `R` / `C` / Home transitions unchanged.
