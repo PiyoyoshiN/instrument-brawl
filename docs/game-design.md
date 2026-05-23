@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 8-11: Reset Records implementation**.
+Next recommended task: **Phase 8-13: Timer design docs**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -493,6 +493,56 @@ Failure behavior:
 - no gameplay crash on reset failure
 - sanitize/default records behavior remains fallback
 - invalid records must not delete settings
+
+
+### Phase 8-12 Retire / Forfeit design (docs only)
+
+Retire/Forfeit is a future voluntary early-end option, not a complex rule system.
+
+Design intent:
+
+- simple escape hatch for stuck/boring/clearly lost matches
+- no timer/round coupling
+- compact UX only
+
+Winner/result behavior (future):
+
+- P1 retire -> P2 win
+- P2 Human retire -> P1 win
+- In CPU mode, only human P1 can retire for now
+- CPU does not retire
+- no retire draw path
+- keep ResultScene flow and `p1`/`p2` result kind
+
+Records behavior (future):
+
+- retire counts as normal completed match
+- `totalMatches` + mode split + winner counters increment once
+- `lastPlayedAt` updates
+- existing once-per-result guard still prevents double-counting
+- no retire-specific counters yet
+
+Future UI/control/timing direction:
+
+- location: Pause / Quick Help overlay
+- two-step confirm (`Retire: Press again to confirm`)
+- cancel via `P` resume/cancel (and selectable-overlay cancel path later if needed)
+- do not reuse `R` battle key
+- retire only after Fight/matchStarted
+- retire disabled after `matchOver`
+
+Result text direction:
+
+- keep simple labels like `P1 Retired - P2 Wins`
+- no new result bucket now
+
+Out of scope:
+
+- no retire implementation in this docs task
+- no pause implementation change in this docs task
+- no timer/rounds/surrender stats/retire achievements/penalties
+- no online/disconnect or CPU retire AI
+- no server/cloud persistence
 
 ### Phase 7-7 localStorage save foundation (design only)
 

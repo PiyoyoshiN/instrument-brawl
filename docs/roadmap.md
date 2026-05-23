@@ -394,9 +394,9 @@ Phase 8 is not a major combat expansion phase.
 - 8-7 Save match result once
 - 8-8 RecordsScene shell — complete
 - 8-9 Home Records entry — complete
-- 8-10 Reset Records design docs — this task
-- 8-11 Reset Records implementation
-- 8-12 Retire / Forfeit design docs
+- 8-10 Reset Records design docs — complete
+- 8-11 Reset Records implementation — complete
+- 8-12 Retire / Forfeit design docs — this task
 - 8-13 Timer design docs
 - 8-14 Equipment / Amp design docs
 - 8-15 `attackMethod` / `impactClass` docs
@@ -575,6 +575,62 @@ Failure/fallback behavior:
 - sanitize/default records fallback remains active
 - invalid records handling must not remove settings
 
+
+### Phase 8-12: Retire / Forfeit design docs
+
+Purpose:
+
+- voluntary early match-end escape hatch
+- keep compact and non-complex
+- no timer/round expansion coupling
+
+Winner/result rules:
+
+- P1 retires -> P2 wins
+- P2 Human retires -> P1 wins
+- P1 vs CPU: only P1 can retire (CPU does not retire)
+- retire does not produce draw
+- use existing ResultScene flow with result kind `p1`/`p2`
+
+Records behavior:
+
+- retire counts as normal completed match
+- increment `totalMatches` once
+- increment winner bucket as above
+- increment `cpuMatches` or `local2pMatches` by `player2Mode`
+- update `lastPlayedAt`
+- once-per-result guard must prevent duplicate counts
+- no retire-specific counters in Phase 8
+
+Future UI direction:
+
+- location: Pause / Quick Help overlay
+- two-step confirm (`Retire: Press again to confirm`)
+- cancel via `P` resume/cancel; selectable-overlay cancel path can use Escape/move-away
+- no full pause/admin menu
+
+Control/timing constraints:
+
+- do not steal current battle controls
+- do not use battle `R` for retire
+- retire available only after Fight/matchStarted
+- retire does nothing after `matchOver`
+- no breakage of Ready/Fight or pause behavior
+
+Result display direction:
+
+- keep text simple (`P1 Retired - P2 Wins`, `P2 Retired - P1 Wins`)
+- keep result bucket as `p1`/`p2` (no new result type now)
+
+Out of scope:
+
+- no retire implementation in this docs task
+- no pause implementation changes in this docs task
+- no timer/rounds/surrender stats/retire achievements/penalties
+- no online/disconnect behavior
+- no CPU retire AI
+- no server/cloud save
+
 ### Phase 8 guardrails for scope/docs tasks
 
 Do not change gameplay values/logic during Phase 8 scope/docs tasks:
@@ -588,7 +644,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-11: Reset Records implementation.
+**Next recommended task:** Phase 8-13: Timer design docs.
 
 ## Features to avoid for now
 

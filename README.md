@@ -139,7 +139,7 @@ Completed in Phase 7:
 - Effects OFF hides nonessential extras only; Screen Shake OFF disables tiny shake only.
 - Gameplay values and logic remain unchanged.
 - Records foundation docs complete.
-- Records runtime implementation is in progress: storage utility, once-per-match result saving, and RecordsScene shell are implemented; Reset Records is not implemented yet.
+- Records runtime implementation is in progress: storage utility, once-per-match result saving, RecordsScene shell, and Reset Records are implemented.
 - Reset preferences is not implemented yet.
 
 ## Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
@@ -153,7 +153,7 @@ Phase 8 is **not** a major combat expansion phase.
 - Save match result once
 - RecordsScene shell
 - Home Records entry — complete
-- Reset Records
+- Reset Records — complete
 - Playtest checklist updates
 
 ### Phase 8 docs/design-only targets
@@ -337,6 +337,71 @@ Failure/fallback behavior:
 - Existing sanitize/default records fallback remains safety net
 - Invalid records must not delete settings
 
+
+### Phase 8-12 Retire / Forfeit design (docs only)
+
+Purpose:
+
+- Retire/Forfeit is a voluntary early match-end escape hatch for stuck, boring, or clearly lost matches
+- Keep it compact and simple
+- Do not turn it into a larger match-rule system
+- Do not introduce rounds/timer behavior
+
+Winner/result rules (future):
+
+- If P1 retires, P2 wins
+- If P2 Human retires, P1 wins
+- In P1 vs CPU mode, only P1 (human) can retire for now
+- CPU does not retire voluntarily
+- Retire never creates draw
+- Use existing ResultScene flow
+- Underlying result kind remains `p1` or `p2`
+
+Records behavior (future):
+
+- Retire counts as a normal completed match
+- Increment `totalMatches` once
+- P1 retire -> increment `p2Wins`
+- P2 Human retire -> increment `p1Wins`
+- Increment `cpuMatches` or `local2pMatches` by current mode
+- Update `lastPlayedAt`
+- Existing once-per-result guard must still prevent double count
+- Do not add `retireCount` / `p1Retires` / `p2Retires` in Phase 8
+
+Future UI/UX direction:
+
+- Preferred location: BattleScene Pause / Quick Help overlay
+- Retire needs two-step confirmation
+- First confirm arms: `Retire: Press again to confirm`
+- Second confirm executes retire
+- Cancel paths: `P` resume/cancel, and later selectable-overlay cancel via Escape/move-away if implemented
+- Keep UI compact (no full pause/admin menu)
+
+Control/timing constraints:
+
+- Keep existing battle controls unchanged
+- Do not use `R` in battle for retire (reserved for Result rematch)
+- Prefer pause/help-attached action instead of raw battle input
+- Retire only after Fight / matchStarted
+- Retire does nothing after `matchOver`
+- Must not break Ready/Fight timing or pause behavior
+- Use same end-match path family as KO/draw
+
+Result display direction:
+
+- Keep simple display text, e.g. `P1 Retired - P2 Wins` / `P2 Retired - P1 Wins`
+- Do not add new result bucket in this phase
+- Do not change records schema for retire text
+
+Out of scope:
+
+- No Retire implementation in this docs task
+- No Pause/Quick Help implementation change in this docs task
+- No timer/rounds/surrender stats/retire achievements/penalties
+- No online/disconnect behavior
+- No CPU retire AI
+- No server/cloud save
+
 ### Phase 8 guardrails for scope/docs tasks
 
 During Phase 8 scope/docs tasks, do not change:
@@ -354,9 +419,9 @@ During Phase 8 scope/docs tasks, do not change:
 - Phase 8-7 match result saving is implemented with once-per-result recording to `instrument-brawl:records`.
 - RecordsScene shell is implemented and displays local records from `instrument-brawl:records`.
 - Home Records entry is implemented (Home -> Records -> Home).
-- Reset Records is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
+- Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 8-12: Retire / Forfeit design docs.
+**Next recommended task:** Phase 8-13: Timer design docs.
 
 ## Play online
 

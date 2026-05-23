@@ -203,3 +203,32 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Confirm `instrument-brawl:settings` remains unchanged.
 - [ ] Confirm Reset Preferences does not delete records unless Reset Records is used separately.
 - [ ] Confirm gameplay values/logic are unchanged.
+
+
+## Phase 8-12 Retire / Forfeit design checklist (docs)
+
+- [ ] Docs define Retire/Forfeit as a voluntary early-end escape hatch, not a complex rule system.
+- [ ] Docs define winner mapping: P1 retire -> P2 win, P2 Human retire -> P1 win, CPU does not retire.
+- [ ] Docs define retire as non-draw and keep existing ResultScene flow with result kind `p1`/`p2`.
+- [ ] Docs define retire records behavior using normal counters (`totalMatches`, winner bucket, mode split, `lastPlayedAt`).
+- [ ] Docs explicitly forbid retire-specific counters in Phase 8.
+- [ ] Docs define compact future UI direction in Pause/Quick Help with two-step confirm.
+- [ ] Docs define cancel paths and no full pause/admin menu expansion.
+- [ ] Docs define control constraints (no battle `R` repurpose; no control stealing).
+- [ ] Docs define timing constraints (only after Fight, disabled after `matchOver`).
+- [ ] Docs define simple ResultScene text direction without adding a new result bucket.
+- [ ] Docs keep timer/rounds/online/server/CPU-retire-AI out of scope.
+
+## Phase 8-12 future implementation verification checklist
+
+- [ ] P1 retire causes P2 win.
+- [ ] P2 Human retire causes P1 win.
+- [ ] P1 vs CPU retire causes CPU/P2 win.
+- [ ] CPU does not retire by itself.
+- [ ] Retire is not available before Fight.
+- [ ] Retire does nothing after `matchOver`.
+- [ ] Retire result records exactly once.
+- [ ] `R` rematch after retire does not double-count previous result.
+- [ ] `C` return after retire does not double-count previous result.
+- [ ] Records counters follow normal `p1`/`p2` win rules.
+- [ ] Settings and records reset behavior remains unchanged.
