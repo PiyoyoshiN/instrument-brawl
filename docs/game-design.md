@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 8-14: Equipment / Amp design docs**.
+Next recommended task: **Phase 8-15: attackMethod / impactClass docs**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -597,6 +597,76 @@ Out of scope:
 - no timer-specific records fields
 - no online/server timer sync
 - no tournament/competitive rule expansion
+
+
+### Phase 8-14 Equipment / Amp design (docs only)
+
+Equipment is a future optional match-customization layer.
+
+Design intent:
+
+- keep variety funny/readable
+- avoid deep RPG/progression systems
+- preserve quick local replayability
+- keep no-equipment baseline as default
+
+Future structure direction:
+
+- eventual 0-or-1 support equipment per player
+- chosen around Character Select in a later phase
+- match-local scope only
+- no server/account/progression dependency
+
+Amp candidate direction:
+
+- first support-equipment concept
+- sound boost/projection flavor
+- possible later sonic/ranged-feeling behavior
+- Phase 8 remains design-only (no Amp gameplay implementation now)
+
+Candidate options (for later experiments):
+
+- visual sound-wave presentation only
+- presentation variation on attack
+- possible future reach modifier
+- possible future sonic/ranged attack-method variant
+- possible tradeoff if range is added later
+
+Guardrails:
+
+- do not erase fighter identity
+- avoid large damage spikes
+- no critical/guard/just-guard/special additions in Phase 8
+- no rounds/timer dependency requirement
+
+Future UI direction:
+
+- candidate: `Equipment: None` / `Equipment: Amp`
+- simple left/right selection
+- same-equipment mirror match readability should remain clear
+- Character Select must remain usable without equipment
+- do not implement in this docs task
+
+Records direction:
+
+- no equipment records fields/analytics in Phase 8
+- keep normal records counters only
+
+Relation to `attackMethod` / `impactClass`:
+
+- may reference these categories later
+- defer detailed category docs to Phase 8-15
+
+Out of scope:
+
+- no equipment/amp implementation
+- no equipment UI/storage/records schema changes
+- no ranged/sonic projectiles
+- no combat value/hitbox/cooldown/startup changes
+- no critical/guard/just-guard/special systems
+- no unlock/loot/currency/progression systems
+- no assets/sprites/3D/BGM/SE
+- no online/server/account features
 
 ### Phase 7-7 localStorage save foundation (design only)
 

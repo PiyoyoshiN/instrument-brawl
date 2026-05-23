@@ -261,3 +261,30 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Timer does not change HP, damage, knockback, hitboxes, CPU behavior, or one-hit-per-attack.
 - [ ] Retire result takes precedence if retire happens before timeout.
 - [ ] Existing KO/draw behavior remains unchanged.
+
+
+## Phase 8-14 Equipment / Amp design checklist (docs)
+
+- [ ] Docs define Equipment as future lightweight optional match-customization, not RPG/progression.
+- [ ] Docs keep no-equipment behavior as baseline and equipment unavailable in Phase 8 implementation.
+- [ ] Docs define future structure as 0-or-1 support equipment per player with match-local scope.
+- [ ] Docs define Amp as design-only first candidate and forbid implementation in this task.
+- [ ] Docs list Amp candidate options as experiments without final stat decisions.
+- [ ] Docs include balance guardrails (no huge spikes, preserve fighter identity, no critical/guard/special systems in Phase 8).
+- [ ] Docs define future UI direction (`Equipment: None` / `Equipment: Amp`) without implementing UI now.
+- [ ] Docs keep equipment out of records schema/analytics in Phase 8.
+- [ ] Docs defer detailed `attackMethod` / `impactClass` decisions to Phase 8-15.
+- [ ] Docs keep equipment/ranged/sonic/combat-tuning/progression/assets/online out of scope.
+
+## Phase 8-14 future implementation verification checklist
+
+- [ ] Equipment defaults to `None` when eventually implemented.
+- [ ] No-equipment baseline still works.
+- [ ] Equipment does not change records schema.
+- [ ] Equipment does not affect settings/reset behavior.
+- [ ] Amp does not create accidental huge damage/range advantage without tradeoff.
+- [ ] Amp does not obscure hit readability.
+- [ ] Fighter identity remains readable with equipment.
+- [ ] Equipment can be disabled for simple matches.
+- [ ] Same-fighter and same-equipment mirror matches remain understandable.
+- [ ] No gameplay values change during this docs-only task.

@@ -158,8 +158,8 @@ Phase 8 is **not** a major combat expansion phase.
 
 ### Phase 8 docs/design-only targets
 
-- Retire / Forfeit — this task
-- Timer
+- Retire / Forfeit — complete
+- Timer — complete
 - Equipment / Amp
 - `attackMethod` / `impactClass`
 - Critical rate / guard / just guard (future design topics only)
@@ -484,6 +484,93 @@ Out of scope:
 - No online/server timer sync
 - No tournament/competitive rule expansion
 
+
+### Phase 8-14 Equipment / Amp design (docs only)
+
+Equipment purpose:
+
+- Future lightweight match-customization layer
+- Add instrument-flavored variety while keeping matches silly/readable/local-fun
+- Avoid deep RPG systems (no progression/unlocks/rarity/crafting/loot/meta-builds)
+- Not implemented in Phase 8
+
+Optional behavior direction:
+
+- No-equipment remains baseline
+- Equipment remains optional and unavailable until later implementation
+- No equipment selection UI/storage/records fields in Phase 8
+
+Preferred future structure:
+
+- Each player may eventually choose 0 or 1 support equipment
+- Selection should happen near Character Select in a later phase
+- Match-local scope only
+- No progression persistence and no server/account dependency
+- Easy to disable for simple matches
+
+Amp concept direction (future candidate):
+
+- Amp is first support-equipment candidate
+- Flavor: boost/project instrument sound
+- Could later support sonic/ranged-feeling presentation/behavior
+- Phase 8 is design-only: no Amp attacks/ranged/sonic projectiles
+- No hitbox/damage/knockback/cooldown/attack-duration changes
+- No Amp assets/sprites/sound/3D
+
+Candidate Amp behavior options (not final):
+
+- visual-only sound-wave effect
+- slightly different attack presentation
+- future reach modifier experiment
+- future sonic/ranged attack-method experiment
+- future tradeoff idea if range is added (e.g., slower startup/lower damage)
+
+Important: no final stats/tuning decisions in this task.
+
+Equipment balance guardrails:
+
+- Must not erase fighter identity (Electric Guitar/Bass/Drum Sticks/Keyboard)
+- Must avoid huge damage spikes
+- No critical-rate/random-damage behavior in Phase 8
+- No guard/just-guard/special-move additions in Phase 8
+- No rounds/timer dependency for equipment
+- Keep readable via compact UI label
+
+Future UI direction (not implemented now):
+
+- Candidate location: Character Select follow-up or a small Equipment Select step before Battle
+- Candidate options: `Equipment: None`, `Equipment: Amp`
+- Simple left/right selection
+- Same equipment allowed for both players by default (subject to later playtesting)
+- Default should be `None`
+- Keep Character Select usable without equipment
+- Do not expand Home flow in this task
+
+Records direction:
+
+- No equipment fields in records during Phase 8
+- No equipment usage/win-loss analytics yet
+- Continue normal records counters only
+
+Relation to `attackMethod` / `impactClass`:
+
+- Equipment/Amp may later reference those categories
+- Do not finalize/implement those fields here
+- Detailed category docs belong to Phase 8-15
+
+Out of scope:
+
+- No Equipment implementation
+- No Amp implementation
+- No equipment UI/storage/records fields
+- No ranged attacks/sonic projectiles
+- No damage/hitbox/cooldown/startup changes
+- No critical rate/guard/just guard/special moves
+- No rounds/timer dependency
+- No unlock/rarity/crafting/loot/currency/shop/progression
+- No assets/sprites/3D/BGM/SE
+- No online/server/account storage
+
 ### Phase 8 guardrails for scope/docs tasks
 
 During Phase 8 scope/docs tasks, do not change:
@@ -503,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 8-14: Equipment / Amp design docs.
+**Next recommended task:** Phase 8-15: attackMethod / impactClass docs.
 
 ## Play online
 

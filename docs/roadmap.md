@@ -397,8 +397,8 @@ Phase 8 is not a major combat expansion phase.
 - 8-10 Reset Records design docs — complete
 - 8-11 Reset Records implementation — complete
 - 8-12 Retire / Forfeit design docs — complete
-- 8-13 Timer design docs — this task
-- 8-14 Equipment / Amp design docs
+- 8-13 Timer design docs — complete
+- 8-14 Equipment / Amp design docs — this task
 - 8-15 `attackMethod` / `impactClass` docs
 - 8-16 Playtest checklist update
 - 8-17 Phase 8 checkpoint docs
@@ -696,6 +696,83 @@ Out of scope:
 - no online/server timer sync
 - no competitive/tournament rules expansion
 
+
+### Phase 8-14: Equipment / Amp design docs
+
+Purpose and role:
+
+- future lightweight match-customization (not RPG/meta-progression)
+- keep silly/readable local-match variety
+- remain optional and easy to disable
+- not implemented in Phase 8
+
+Optional behavior baseline:
+
+- no-equipment baseline remains current standard
+- no equipment UI/storage/records integration in Phase 8
+
+Future structure direction:
+
+- 0 or 1 support equipment per player
+- selected near/after Character Select in future
+- match-local scope only
+- no account/server/progression dependency
+
+Amp candidate direction:
+
+- first support-equipment concept
+- flavor: boost/project instrument sound
+- may later support sonic/ranged-feeling behavior
+- Phase 8 stays design-only (no attacks/projectiles/assets)
+- no combat-value or hitbox/cooldown changes now
+
+Candidate options (not final):
+
+- visual-only sound-wave effect
+- attack presentation variation
+- future reach modifier experiment
+- future sonic/ranged attack-method experiment
+- possible future tradeoff if range is added
+
+Balance guardrails:
+
+- preserve fighter identity readability
+- no huge damage spikes
+- no critical/guard/just-guard/special systems in Phase 8
+- no rounds/timer dependency for equipment
+
+Future UI direction:
+
+- candidate: Character Select follow-up or tiny Equipment Select step
+- defaults: `Equipment: None`
+- candidate option: `Equipment: Amp`
+- simple left/right selection
+- same-equipment mirror matches allowed unless later playtesting changes this
+- do not expand Home flow in this docs task
+
+Records direction:
+
+- no equipment fields/analytics in records during Phase 8
+- keep normal records counters only
+
+Relation to attack categories:
+
+- equipment may later reference `attackMethod` / `impactClass`
+- detailed category definition deferred to Phase 8-15
+
+Out of scope:
+
+- no Equipment/Amp implementation
+- no equipment selection UI/storage
+- no equipment records fields
+- no ranged/sonic attacks
+- no damage/hitbox/cooldown/startup changes
+- no critical/guard/just-guard/specials
+- no rounds/timer dependency
+- no unlock/rarity/crafting/loot/currency/shop/progression
+- no assets/sprites/3D/BGM/SE
+- no online/server/account storage
+
 ### Phase 8 guardrails for scope/docs tasks
 
 Do not change gameplay values/logic during Phase 8 scope/docs tasks:
@@ -709,7 +786,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-14: Equipment / Amp design docs.
+**Next recommended task:** Phase 8-15: attackMethod / impactClass docs.
 
 ## Features to avoid for now
 
