@@ -591,6 +591,8 @@ type BattleSceneData = {
   player1FighterId?: string;
   player2FighterId?: string;
   player2Mode?: Player2Mode;
+  player1EquipmentId?: EquipmentId;
+  player2EquipmentId?: EquipmentId;
 };
 
 type CharacterSelectSceneData = BattleSceneData;
@@ -1342,7 +1344,7 @@ class CharacterSelectScene extends Phaser.Scene {
       });
 
       this.transitionStarted = true;
-      this.scene.start('BattleScene', {
+      this.scene.start('EquipmentSelectScene', {
         player1FighterId,
         player2FighterId,
         player2Mode: this.player2Mode,
@@ -1402,6 +1404,10 @@ class BattleScene extends Phaser.Scene {
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
   private player2Mode = defaultPlayer2Mode;
+  private player1EquipmentId: EquipmentId = 'none';
+  private player2EquipmentId: EquipmentId = 'none';
+  private player1Equipment = getEquipmentDefinition('none');
+  private player2Equipment = getEquipmentDefinition('none');
   private player1Definition = defaultPlayer1FighterDefinition;
   private player2Definition = defaultPlayer2FighterDefinition;
   private matchOver = false;
@@ -1436,6 +1442,10 @@ class BattleScene extends Phaser.Scene {
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
+    this.player1Equipment = getEquipmentDefinition(data.player1EquipmentId);
+    this.player2Equipment = getEquipmentDefinition(data.player2EquipmentId);
+    this.player1EquipmentId = this.player1Equipment.id;
+    this.player2EquipmentId = this.player2Equipment.id;
     this.player1Definition = getFighterDefinition(this.player1FighterId);
     this.player2Definition = getFighterDefinition(this.player2FighterId);
   }
@@ -2268,6 +2278,10 @@ class ResultScene extends Phaser.Scene {
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
   private player2Mode = defaultPlayer2Mode;
+  private player1EquipmentId: EquipmentId = 'none';
+  private player2EquipmentId: EquipmentId = 'none';
+  private player1Equipment = getEquipmentDefinition('none');
+  private player2Equipment = getEquipmentDefinition('none');
   private player1Definition = defaultPlayer1FighterDefinition;
   private player2Definition = defaultPlayer2FighterDefinition;
   private restartKey?: Phaser.Input.Keyboard.Key;
@@ -2287,6 +2301,10 @@ class ResultScene extends Phaser.Scene {
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
+    this.player1Equipment = getEquipmentDefinition(data.player1EquipmentId);
+    this.player2Equipment = getEquipmentDefinition(data.player2EquipmentId);
+    this.player1EquipmentId = this.player1Equipment.id;
+    this.player2EquipmentId = this.player2Equipment.id;
     this.player1Definition = getFighterDefinition(this.player1FighterId);
     this.player2Definition = getFighterDefinition(this.player2FighterId);
     this.result = data.displayTitle ?? this.getDisplayTitle(data.result);
@@ -2657,7 +2675,7 @@ class EquipmentSelectScene extends Phaser.Scene {
       align: 'center',
     }).setOrigin(0.5);
 
-    this.add.text(400, 500, 'Up/Down: Row   Left/Right: Equipment   Enter/Space: Confirm later   Esc: Back', {
+    this.add.text(400, 500, 'Up/Down: Row   Left/Right: Equipment   Enter/Space: Continue   Esc: Back', {
       color: '#facc15',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '18px',
@@ -2695,7 +2713,14 @@ class EquipmentSelectScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
-      this.statusText?.setText('Equipment handoff is coming next.');
+      this.scene.start('BattleScene', {
+        player1FighterId: this.player1FighterId,
+        player2FighterId: this.player2FighterId,
+        player2Mode: this.player2Mode,
+        player1EquipmentId: this.player1EquipmentId,
+        player2EquipmentId: this.player2EquipmentId,
+      });
+      return;
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {

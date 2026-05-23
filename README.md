@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -666,7 +666,7 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 
 ## Phase 8 checkpoint
@@ -704,7 +704,7 @@ Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, at
 - ResultScene `R` / `C` / Home return does not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 
 
@@ -846,7 +846,9 @@ Boundaries for this phase-step:
 
 Phase 9-7 EquipmentSelectScene shell is implemented as a standalone scene foundation. It is registered and supports Esc back. It is not inserted into the normal Character Select -> Battle flow yet.
 
-Phase 9-8 updates EquipmentSelectScene to support local P1/P2 equipment selection state (row focus + left/right cycling + description display). This remains scene-local only; Battle handoff is not implemented yet.
+Phase 9-8 updates EquipmentSelectScene to support local P1/P2 equipment selection state (row focus + left/right cycling + description display).
+
+Phase 9-9 connects EquipmentSelectScene to BattleScene via equipment ID scene-data handoff. Equipment IDs are accepted and resolved in BattleScene with safe fallback to `none`, and still have no gameplay effect.
 
 Phase 9 guardrails:
 
@@ -856,7 +858,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 ## Play online
 

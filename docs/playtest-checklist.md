@@ -145,7 +145,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)
@@ -416,20 +416,20 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Docs explicitly forbid equipment-specific records schema/analytics in Phase 9-1 docs step.
 - [ ] Docs confirm this PR does not modify runtime code.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 
 ## Phase 9-2 docs cleanup checklist (docs)
 
 - [ ] Docs consistently mark Phase 8 as complete.
 - [ ] Docs consistently mark Phase 9-1 as complete.
-- [ ] Current next recommended task is Phase 9-9: Equipment data handoff.
+- [ ] Current next recommended task is Phase 9-10: Rematch / return preservation.
 - [ ] Stale status wording (records/reset/options future scope) is updated to current implemented state.
 - [ ] Docs explicitly keep Phase 9 runtime equipment features as not implemented yet.
 - [ ] Docs preserve guardrails: no combat-value changes and no equipment records analytics in this cleanup task.
 - [ ] This PR does not modify runtime code.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 
 ## Phase 9-3 equipment concept checklist (docs)
@@ -441,9 +441,9 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Amp/Pick/Case are explicitly not defined as stat buffs in this step.
 - [ ] No runtime code is modified in this docs task.
 - [ ] Equipment-specific records schema/analytics remain out of scope.
-- [ ] Next recommended task is Phase 9-9: Equipment data handoff.
+- [ ] Next recommended task is Phase 9-10: Rematch / return preservation.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 
 ## Phase 9-4 equipment data model checklist (docs)
@@ -454,9 +454,9 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Amp/Pick/Case remain metadata/flavor only in this step.
 - [ ] No combat/stat fields are introduced in the planned model.
 - [ ] No runtime code is modified in this docs task.
-- [ ] Next recommended task is Phase 9-9: Equipment data handoff.
+- [ ] Next recommended task is Phase 9-10: Rematch / return preservation.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 
 ## Phase 9-5 equipment registry checklist
@@ -468,9 +468,9 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] `getEquipmentDefinition(id)` helper falls back to `none` for invalid/missing IDs.
 - [ ] Registry remains metadata-only (no combat/stat fields).
 - [ ] No equipment selection scene, handoff, persistence, HUD/Result labels, or Amp visual effect is added in this task.
-- [ ] Next recommended task is Phase 9-9: Equipment data handoff.
+- [ ] Next recommended task is Phase 9-10: Rematch / return preservation.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 
 ## Phase 9-6 EquipmentSelectScene design checklist (docs)
@@ -483,9 +483,9 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Docs define future data direction and fallback-to-`none` behavior for invalid/missing IDs.
 - [ ] Docs keep buff/progression/inventory/analytics systems out of scope in this step.
 - [ ] No runtime code is modified in this docs task.
-- [ ] Next recommended task is Phase 9-9: Equipment data handoff.
+- [ ] Next recommended task is Phase 9-10: Rematch / return preservation.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 
 ## Phase 9-7 EquipmentSelectScene shell checklist
@@ -497,9 +497,9 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Esc returns to CharacterSelectScene safely.
 - [ ] Normal flow remains unchanged: Home -> Mode Select -> Character Select -> Battle -> Result.
 - [ ] No equipment selection controls/handoff/persistence/HUD/Result labels/effects implemented in this task.
-- [ ] Next recommended task is Phase 9-9: Equipment data handoff.
+- [ ] Next recommended task is Phase 9-10: Rematch / return preservation.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
 
 
 ## Phase 9-8 P1/P2 equipment selection checklist
@@ -508,10 +508,25 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Up/Down changes focused row between P1 and P2.
 - [ ] Left/Right cycles equipment in order `none -> amp -> pick -> case -> none` with reverse wrap on Left.
 - [ ] Scene display updates selected P1/P2 equipment labels and focused equipment description.
-- [ ] Enter/Space does not start Battle and only shows a "handoff coming next" style message.
+- [ ] Enter/Space behavior was shell-only in 9-8 and is superseded by 9-9 handoff behavior.
 - [ ] Esc returns to CharacterSelectScene with existing fighter/mode context.
 - [ ] No battle handoff/persistence/HUD/Result/effects/analytics are implemented in this task.
 - [ ] Normal flow remains unchanged: Home -> Mode Select -> Character Select -> Battle -> Result.
-- [ ] Next recommended task is Phase 9-9: Equipment data handoff.
+- [ ] Next recommended task is Phase 9-10: Rematch / return preservation.
 
-**Next recommended task:** Phase 9-9: Equipment data handoff.
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
+
+
+## Phase 9-9 equipment data handoff checklist
+
+- [ ] CharacterSelectScene confirm routes to EquipmentSelectScene.
+- [ ] EquipmentSelectScene confirm routes to BattleScene.
+- [ ] Selected `player1EquipmentId` / `player2EquipmentId` are passed to BattleScene scene data.
+- [ ] Invalid/missing equipment IDs resolve to `none` in BattleScene.
+- [ ] Equipment has no gameplay effect.
+- [ ] No localStorage equipment persistence is added.
+- [ ] No Battle HUD equipment labels are added.
+- [ ] No Result equipment display is added.
+- [ ] Next recommended task is Phase 9-10: Rematch / return preservation.
+
+**Next recommended task:** Phase 9-10: Rematch / return preservation.
