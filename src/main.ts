@@ -2570,11 +2570,103 @@ Last Played: ${lastPlayedLabel}`);
   }
 }
 
+
+
+type EquipmentSelectSceneData = CharacterSelectSceneData;
+
+class EquipmentSelectScene extends Phaser.Scene {
+  private player1FighterId?: string;
+  private player2FighterId?: string;
+  private player2Mode: Player2Mode = defaultPlayer2Mode;
+  private escapeKey?: Phaser.Input.Keyboard.Key;
+
+  constructor() {
+    super('EquipmentSelectScene');
+  }
+
+  init(data?: EquipmentSelectSceneData) {
+    this.player1FighterId = data?.player1FighterId;
+    this.player2FighterId = data?.player2FighterId;
+    this.player2Mode = data?.player2Mode === 'cpu' ? 'cpu' : 'human';
+  }
+
+  create() {
+    const defaultEquipment = getEquipmentDefinition('none');
+    const p1Label = this.player1FighterId ? getFighterDefinition(this.player1FighterId).displayName : 'Not selected';
+    const p2Label = this.player2FighterId ? getFighterDefinition(this.player2FighterId).displayName : 'Not selected';
+
+    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    this.add.rectangle(400, 300, 720, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    this.add.text(400, 96, 'Equipment Select', {
+      color: '#ffffff',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '44px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 156, `P1 Fighter: ${p1Label}`, {
+      color: '#f8fafc',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '24px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 190, `P2 Fighter: ${p2Label} (${this.player2Mode === 'cpu' ? 'CPU' : 'Human'})`, {
+      color: '#e2e8f0',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '22px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 260, `P1 Equipment: ${defaultEquipment.shortLabel}`, {
+      color: '#facc15',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '30px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 306, `P2 Equipment: ${defaultEquipment.shortLabel}`, {
+      color: '#facc15',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '30px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 368, 'Equipment selection is coming next.', {
+      color: '#e2e8f0',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '20px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 398, 'Current shell does not affect battle.', {
+      color: '#e2e8f0',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '20px',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 500, 'Esc: Back', {
+      color: '#facc15',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '24px',
+    }).setOrigin(0.5);
+
+    const keyboard = this.input.keyboard;
+    if (!keyboard) return;
+    this.escapeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+  }
+
+  update() {
+    if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      this.scene.start('CharacterSelectScene', {
+        player1FighterId: this.player1FighterId,
+        player2FighterId: this.player2FighterId,
+        player2Mode: this.player2Mode,
+      });
+    }
+  }
+}
+
 new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
   width: gameWidth,
   height: gameHeight,
   backgroundColor: '#111827',
-  scene: [HomeScene, OptionsScene, RecordsScene, ModeSelectScene, CharacterSelectScene, BattleScene, ResultScene],
+  scene: [HomeScene, OptionsScene, RecordsScene, ModeSelectScene, CharacterSelectScene, EquipmentSelectScene, BattleScene, ResultScene],
 });

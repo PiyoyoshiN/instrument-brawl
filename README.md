@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 9-7: EquipmentSelectScene shell.
+**Next recommended task:** Phase 9-8: P1/P2 equipment selection.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -666,7 +666,7 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 9-7: EquipmentSelectScene shell.
+**Next recommended task:** Phase 9-8: P1/P2 equipment selection.
 
 
 ## Phase 8 checkpoint
@@ -704,7 +704,7 @@ Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, at
 - ResultScene `R` / `C` / Home return does not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-7: EquipmentSelectScene shell.
+**Next recommended task:** Phase 9-8: P1/P2 equipment selection.
 
 
 
@@ -844,6 +844,8 @@ Boundaries for this phase-step:
 - no inventory/unlocks/rarity/currency/progression/account/server
 - no equipment records analytics
 
+Phase 9-7 EquipmentSelectScene shell is implemented as a standalone scene foundation. It is registered, shows static fallback equipment labels, and supports Esc back. It is not inserted into the normal Character Select -> Battle flow yet.
+
 Phase 9 guardrails:
 
 - no damage/range/defense buffs
@@ -852,7 +854,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-7: EquipmentSelectScene shell.
+**Next recommended task:** Phase 9-8: P1/P2 equipment selection.
 
 ## Play online
 
