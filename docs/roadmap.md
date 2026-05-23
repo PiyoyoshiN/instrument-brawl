@@ -786,7 +786,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 9-4: Equipment data model docs.
+**Next recommended task:** Phase 9-5: Equipment registry implementation.
 
 ## Features to avoid for now
 
@@ -844,7 +844,7 @@ Out of scope:
 - no records/settings schema changes
 - no assets/audio/online/server work
 
-**Next recommended task:** Phase 9-4: Equipment data model docs.
+**Next recommended task:** Phase 9-5: Equipment registry implementation.
 
 
 ### Phase 8-17: Phase 8 checkpoint docs
@@ -883,7 +883,7 @@ Manual verification reminder before next phase:
 - Match records count once and ResultScene exits do not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-4: Equipment data model docs.
+**Next recommended task:** Phase 9-5: Equipment registry implementation.
 
 
 ## Phase 9: Equipment Shell & Attack Identity Foundation
@@ -910,7 +910,7 @@ Initial equipment candidates:
 - 9-1 Phase 9 scope and guardrails docs (**docs-only**) — this task
 - 9-2 Phase 8 docs cleanup (**docs-only**) — complete (this task)
 - 9-3 Equipment concept docs (**docs-only**) — complete (this task)
-- 9-4 Equipment data model docs (**docs-only**)
+- 9-4 Equipment data model docs (**docs-only**) — complete (this task)
 - 9-5 Equipment registry implementation (**runtime**)
 - 9-6 EquipmentSelectScene design docs (**docs-only**)
 - 9-7 EquipmentSelectScene shell (**runtime**)
@@ -949,4 +949,4 @@ Gameplay/system guardrails remain unchanged:
 - ResultScene `R` / `C` / Home transitions
 - records schema
 
-**Next recommended task:** Phase 9-4: Equipment data model docs.
+**Next recommended task:** Phase 9-5: Equipment registry implementation.

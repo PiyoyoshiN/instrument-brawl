@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 9-4: Equipment data model docs.
+**Next recommended task:** Phase 9-5: Equipment registry implementation.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -666,7 +666,7 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 9-4: Equipment data model docs.
+**Next recommended task:** Phase 9-5: Equipment registry implementation.
 
 
 ## Phase 8 checkpoint
@@ -704,7 +704,7 @@ Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, at
 - ResultScene `R` / `C` / Home return does not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-4: Equipment data model docs.
+**Next recommended task:** Phase 9-5: Equipment registry implementation.
 
 
 
@@ -756,6 +756,45 @@ Concept guardrails for this step:
 - no equipment-specific records schema or usage/win-rate analytics
 - no gameplay tuning and no runtime/schema implementation in this task
 
+### Phase 9-4 equipment data model (docs only)
+
+This step defines a planned TypeScript-style equipment metadata model in docs only. No runtime model is implemented in this PR.
+
+Planned union:
+
+```ts
+type EquipmentId = 'none' | 'amp' | 'pick' | 'case';
+```
+
+Planned definition shape:
+
+```ts
+type EquipmentDefinition = {
+  id: EquipmentId;
+  displayName: string;
+  shortLabel: string;
+  description: string;
+  conceptRole: string;
+};
+```
+
+Planned candidate metadata:
+
+- `none` -> displayName `No Accessory`, shortLabel `None`, conceptRole `default / baseline / no support equipment` (safe default/fallback)
+- `amp` -> displayName `Amp`, shortLabel `Amp`, conceptRole `sound projection / stage presence flavor` (no ranged/projectile/damage/reach implication)
+- `pick` -> displayName `Pick`, shortLabel `Pick`, conceptRole `sharper / precise playing flavor` (no critical/speed/damage implication)
+- `case` -> displayName `Case`, shortLabel `Case`, conceptRole `sturdy / protective stage gear flavor` (no defense/guard/shield implication)
+
+Data-model guardrails:
+
+- metadata only at this stage (identity/display)
+- no combat/stat/system fields and no progression/economy/account fields
+- invalid or missing equipment IDs should later resolve to `none`
+- same equipment for both players remains allowed
+- no records/settings schema impact in this docs task
+
+Future runtime direction (not implemented here): registry in Phase 9-5, later scene handoff (`player1EquipmentId`/`player2EquipmentId`), later persistence, later HUD/Result shortLabel display, and possible later Amp visual-only accent usage.
+
 Phase 9 guardrails:
 
 - no damage/range/defense buffs
@@ -764,7 +803,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-4: Equipment data model docs.
+**Next recommended task:** Phase 9-5: Equipment registry implementation.
 
 ## Play online
 

@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 9-4: Equipment data model docs**.
+Next recommended task: **Phase 9-5: Equipment registry implementation**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -914,7 +914,7 @@ Guardrails:
 - preserve Phase 8 gameplay/system invariants
 - no combat value tuning or records schema expansion for equipment
 
-Next recommended task: **Phase 9-4: Equipment data model docs**.
+Next recommended task: **Phase 9-5: Equipment registry implementation**.
 
 
 ### Phase 9-3 Equipment concept (docs only)
@@ -945,4 +945,58 @@ Implementation boundary:
 - no runtime/schema changes (no registry, scene, handoff, persistence, HUD/result labels, or effect implementation)
 - `attackMethod` / `impactClass` remain planning language unless a later explicit runtime task implements them
 
-Next recommended task: **Phase 9-4: Equipment data model docs**.
+Next recommended task: **Phase 9-5: Equipment registry implementation**.
+
+
+### Phase 9-4 Equipment data model (docs only)
+
+Planned TypeScript-style model (documentation only):
+
+```ts
+type EquipmentId = 'none' | 'amp' | 'pick' | 'case';
+
+type EquipmentDefinition = {
+  id: EquipmentId;
+  displayName: string;
+  shortLabel: string;
+  description: string;
+  conceptRole: string;
+};
+```
+
+Field intent:
+
+- `id`: stable equipment identity used for future registry/handoff/persistence
+- `displayName`: full readable name for menus/details
+- `shortLabel`: compact text for future HUD/Result display
+- `description`: short flavor summary
+- `conceptRole`: design-language tag for readability (not runtime power)
+
+Planned candidate metadata:
+
+- `none`: `No Accessory` / `None` / default baseline no-support-equipment role
+- `amp`: sound projection/stage presence flavor
+- `pick`: sharper/precise playing flavor
+- `case`: sturdy/protective stage gear flavor
+
+Safety/fallback rules:
+
+- equipment remains 0 or 1 support item per player
+- `none` is safe default/fallback
+- invalid/missing equipment IDs should later resolve to `none`
+- same equipment for both players is allowed
+
+Intentional exclusions (why):
+
+- combat/stat fields are excluded to prevent hidden buffs in this stage
+- excluded examples: damage/range/defense/speed/cooldown/duration/hitbox/knockback/critical/guard/shield/projectile/special behavior
+- progression/economy/account fields are excluded (rarity/unlock/price/currency/inventory/owner data)
+- records/settings schema fields are unchanged
+
+Implementation boundary:
+
+- docs-only in this step
+- no runtime type/schema added to `src/main.ts`
+- Phase 9-5 is the first runtime step (equipment registry)
+
+Next recommended task: **Phase 9-5: Equipment registry implementation**.
