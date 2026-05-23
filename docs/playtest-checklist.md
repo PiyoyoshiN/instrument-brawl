@@ -143,7 +143,9 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Confirm Records storage is not removed or modified.
 - [ ] Confirm gameplay values/logic are unchanged (HP/damage/knockback/cooldown/duration/hitbox/CPU/one-hit rule).
 
-**Next recommended task:** Phase 8-6: Records storage utility.
+- [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
+
+**Next recommended task:** Phase 8-7: Save match result once.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)

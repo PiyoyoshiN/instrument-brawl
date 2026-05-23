@@ -325,6 +325,110 @@ function savePreferences(partialPreferences: Partial<StoredSettings['preferences
   }
 }
 
+
+const recordsStorageKey = 'instrument-brawl:records';
+const recordsVersion = 1;
+
+type StoredRecords = {
+  version: number;
+  totalMatches: number;
+  p1Wins: number;
+  p2Wins: number;
+  draws: number;
+  cpuMatches: number;
+  local2pMatches: number;
+  lastPlayedAt: string | null;
+};
+
+const defaultStoredRecords: StoredRecords = {
+  version: recordsVersion,
+  totalMatches: 0,
+  p1Wins: 0,
+  p2Wins: 0,
+  draws: 0,
+  cpuMatches: 0,
+  local2pMatches: 0,
+  lastPlayedAt: null,
+};
+
+function getDefaultStoredRecords(): StoredRecords {
+  return {
+    ...defaultStoredRecords,
+  };
+}
+
+function sanitizeStoredRecords(value: unknown): StoredRecords {
+  const base = getDefaultStoredRecords();
+
+  if (!value || typeof value !== 'object') {
+    return base;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  if (candidate.version !== recordsVersion) {
+    return base;
+  }
+
+  const sanitizeCounter = (field: keyof Omit<StoredRecords, 'version' | 'lastPlayedAt'>) => {
+    const raw = candidate[field];
+
+    if (typeof raw !== 'number' || !Number.isFinite(raw) || raw < 0) {
+      return 0;
+    }
+
+    return Math.floor(raw);
+  };
+
+  base.totalMatches = sanitizeCounter('totalMatches');
+  base.p1Wins = sanitizeCounter('p1Wins');
+  base.p2Wins = sanitizeCounter('p2Wins');
+  base.draws = sanitizeCounter('draws');
+  base.cpuMatches = sanitizeCounter('cpuMatches');
+  base.local2pMatches = sanitizeCounter('local2pMatches');
+
+  const lastPlayedAtCandidate = candidate.lastPlayedAt;
+  if (lastPlayedAtCandidate === null || typeof lastPlayedAtCandidate === 'string') {
+    base.lastPlayedAt = lastPlayedAtCandidate;
+  }
+
+  return base;
+}
+
+function loadStoredRecords(): StoredRecords {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return getDefaultStoredRecords();
+    }
+
+    const raw = window.localStorage.getItem(recordsStorageKey);
+
+    if (!raw) {
+      return getDefaultStoredRecords();
+    }
+
+    return sanitizeStoredRecords(JSON.parse(raw));
+  } catch {
+    return getDefaultStoredRecords();
+  }
+}
+
+function saveStoredRecords(records: StoredRecords): StoredRecords {
+  const sanitized = sanitizeStoredRecords(records);
+
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return sanitized;
+    }
+
+    window.localStorage.setItem(recordsStorageKey, JSON.stringify(sanitized));
+  } catch {
+    return sanitized;
+  }
+
+  return sanitized;
+}
+
 function resetStoredSettings(): StoredSettings {
   try {
     return saveStoredSettings({

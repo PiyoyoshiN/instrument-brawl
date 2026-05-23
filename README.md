@@ -304,7 +304,9 @@ During Phase 8 scope/docs tasks, do not change:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-6: Records storage utility.
+- Phase 8-6 records storage utility is implemented (storage helpers only; match-result saving is still future scope).
+
+**Next recommended task:** Phase 8-7: Save match result once.
 
 ## Play online
 
