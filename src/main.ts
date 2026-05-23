@@ -429,6 +429,26 @@ function saveStoredRecords(records: StoredRecords): StoredRecords {
   return sanitized;
 }
 
+function recordStoredMatchResult(result: 'p1' | 'p2' | 'draw', player2Mode: Player2Mode): StoredRecords {
+  try {
+    const current = loadStoredRecords();
+    const next: StoredRecords = {
+      ...current,
+      totalMatches: current.totalMatches + 1,
+      p1Wins: current.p1Wins + (result === 'p1' ? 1 : 0),
+      p2Wins: current.p2Wins + (result === 'p2' ? 1 : 0),
+      draws: current.draws + (result === 'draw' ? 1 : 0),
+      cpuMatches: current.cpuMatches + (player2Mode === 'cpu' ? 1 : 0),
+      local2pMatches: current.local2pMatches + (player2Mode === 'human' ? 1 : 0),
+      lastPlayedAt: new Date().toISOString(),
+    };
+
+    return saveStoredRecords(next);
+  } catch {
+    return loadStoredRecords();
+  }
+}
+
 function resetStoredSettings(): StoredSettings {
   try {
     return saveStoredSettings({
@@ -2147,6 +2167,8 @@ class BattleScene extends Phaser.Scene {
 
 class ResultScene extends Phaser.Scene {
   private result = 'Match Over';
+  private resultKind?: ResultSceneData['result'];
+  private hasRecordedResult = false;
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
   private player2Mode = defaultPlayer2Mode;
@@ -2164,6 +2186,8 @@ class ResultScene extends Phaser.Scene {
   }
 
   init(data: ResultSceneData = {}) {
+    this.hasRecordedResult = false;
+    this.resultKind = data.result;
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
@@ -2175,6 +2199,7 @@ class ResultScene extends Phaser.Scene {
   create() {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
+    this.recordResultOnce();
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 300, 620, 360, 0x1e293b).setStrokeStyle(4, 0x475569);
@@ -2293,6 +2318,19 @@ class ResultScene extends Phaser.Scene {
       default:
         return 'Match Over';
     }
+  }
+
+  private recordResultOnce() {
+    if (this.hasRecordedResult) {
+      return;
+    }
+
+    if (this.resultKind !== 'p1' && this.resultKind !== 'p2' && this.resultKind !== 'draw') {
+      return;
+    }
+
+    this.hasRecordedResult = true;
+    recordStoredMatchResult(this.resultKind, this.player2Mode);
   }
 }
 

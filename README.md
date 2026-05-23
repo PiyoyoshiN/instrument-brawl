@@ -304,9 +304,11 @@ During Phase 8 scope/docs tasks, do not change:
 - CPU behavior
 - one-hit-per-attack
 
-- Phase 8-6 records storage utility is implemented (storage helpers only; match-result saving is still future scope).
+- Phase 8-6 records storage utility is implemented.
+- Phase 8-7 match result saving is implemented with once-per-result recording to `instrument-brawl:records`.
+- RecordsScene display remains future scope.
 
-**Next recommended task:** Phase 8-7: Save match result once.
+**Next recommended task:** Phase 8-8: RecordsScene shell.
 
 ## Play online
 

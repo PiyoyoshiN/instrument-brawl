@@ -145,7 +145,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
 
-**Next recommended task:** Phase 8-7: Save match result once.
+**Next recommended task:** Phase 8-8: RecordsScene shell.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)
