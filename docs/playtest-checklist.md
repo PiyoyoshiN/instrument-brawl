@@ -145,7 +145,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
 
-**Next recommended task:** Phase 8-12: Retire / Forfeit design docs.
+**Next recommended task:** Phase 8-16: Playtest checklist update.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)
@@ -287,4 +287,30 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Fighter identity remains readable with equipment.
 - [ ] Equipment can be disabled for simple matches.
 - [ ] Same-fighter and same-equipment mirror matches remain understandable.
+- [ ] No gameplay values change during this docs-only task.
+
+
+## Phase 8-15 attackMethod / impactClass design checklist (docs)
+
+- [ ] Docs define `attackMethod` as future delivery-style label and `impactClass` as future impact-feel label.
+- [ ] Docs list `attackMethod` candidates: `direct`, `sonic`, `ranged`, `hybrid`.
+- [ ] Docs list `impactClass` candidates: `physical`, `sound`, `burst`, `technical`.
+- [ ] Docs clarify labels are documentation/planning categories and do not change gameplay by themselves.
+- [ ] Docs keep current runtime as conceptual `direct` baseline and avoid runtime implementation in this phase.
+- [ ] Docs explain the difference between the two categories with non-binding examples.
+- [ ] Docs avoid final per-fighter category assignments in this task.
+- [ ] Docs relate Amp/Equipment as future experiments only, not implementation commitments.
+- [ ] Docs keep categories out of records/settings schema in Phase 8.
+- [ ] Docs keep combat tuning/projectiles/sonic implementation out of scope.
+
+## Phase 8-15 future implementation verification checklist
+
+- [ ] Current direct baseline still behaves unchanged.
+- [ ] Future `attackMethod` labels do not change gameplay unless explicitly implemented later.
+- [ ] Future `impactClass` labels do not change damage/knockback/cooldown by themselves.
+- [ ] Ranged/sonic concepts remain out of Phase 8 runtime.
+- [ ] Amp remains design-only during this phase.
+- [ ] Records schema remains unchanged.
+- [ ] Settings/reset behavior remains unchanged.
+- [ ] Fighter identity remains readable.
 - [ ] No gameplay values change during this docs-only task.

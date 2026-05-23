@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 8-15: attackMethod / impactClass docs**.
+Next recommended task: **Phase 8-16: Playtest checklist update**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -667,6 +667,99 @@ Out of scope:
 - no unlock/loot/currency/progression systems
 - no assets/sprites/3D/BGM/SE
 - no online/server/account features
+
+### Phase 8-15 attackMethod / impactClass design (docs only)
+
+Purpose:
+
+- `attackMethod` describes future delivery style.
+- `impactClass` describes future impact/hit-feel style.
+- both are documentation labels first (readability/effects/equipment planning/balance vocabulary).
+- labels do not alter gameplay by themselves.
+- labels are not records/settings fields in Phase 8.
+
+`attackMethod` future candidate values (design only):
+
+- `direct`
+- `sonic`
+- `ranged`
+- `hybrid`
+
+Suggested meaning:
+
+- `direct`: close/contact baseline
+- `sonic`: sound-wave/vibration style delivery
+- `ranged`: projectile/distance delivery (later phase)
+- `hybrid`: mixed direct + sonic/ranged style
+
+`impactClass` future candidate values (design only):
+
+- `physical`
+- `sound`
+- `burst`
+- `technical`
+
+Suggested meaning:
+
+- `physical`: solid contact feel
+- `sound`: vibration/sound-pressure feel
+- `burst`: short explosive/flashy feel
+- `technical`: precise controlled utility-like feel
+
+Difference examples (non-binding):
+
+- `direct + physical`
+- `sonic + sound`
+- `ranged + burst`
+- `hybrid + technical`
+
+Current fighter relation:
+
+- Electric Guitar / Bass / Drum Sticks / Keyboard remain unchanged runtime baseline.
+- no final per-fighter category assignment in this task.
+- no attack behavior updates in this task.
+
+Relation to Amp/Equipment:
+
+- Amp may later experiment with `sonic`/`ranged`/`hybrid`.
+- Amp may later align with `sound` impact flavor.
+- this is not a commitment to ranged Amp implementation.
+
+Future use cases (later phases):
+
+- effects direction
+- docs/UI attack descriptions
+- equipment planning
+- balance discussion language
+- future fighter differentiation
+
+Not used yet for:
+
+- records/settings fields
+- unlocks/achievements/progression
+- online/server/account data
+- automatic damage formulas
+
+Balance guardrails:
+
+- no automatic buffs from labels
+- `ranged` must not be strictly better than `direct`
+- later ranged/sonic behavior likely needs tradeoffs
+- no final tradeoff tuning in this docs task
+- preserve fighter identity readability
+
+Out of scope:
+
+- no TypeScript/runtime implementation
+- no FighterDefinition schema updates
+- no attackMethod/impactClass runtime fields
+- no projectile/sonic runtime behavior
+- no damage/knockback/cooldown/duration/hitbox changes
+- no critical/guard/just-guard/special systems
+- no timer/rounds implementation
+- no records/settings schema changes
+- no assets/sprites/3D/BGM/SE
+- no online/server/account storage
 
 ### Phase 7-7 localStorage save foundation (design only)
 

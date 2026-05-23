@@ -592,6 +592,82 @@ During Phase 8 scope/docs tasks, do not change:
 
 **Next recommended task:** Phase 8-15: attackMethod / impactClass docs.
 
+### Phase 8-15 attackMethod / impactClass design (docs only)
+
+Purpose:
+
+- `attackMethod` is a future label for *how* an attack is delivered.
+- `impactClass` is a future label for the *feel/type* of impact.
+- These are planning labels for readability, future effects/equipment planning, and later balance talks.
+- These labels do not change gameplay by themselves and are not records/settings fields in Phase 8.
+
+Future `attackMethod` candidate categories (design only):
+
+- `direct`: close/contact baseline (current conceptual baseline)
+- `sonic`: sound-wave/vibration flavored delivery
+- `ranged`: distance/projectile-like delivery in later phases
+- `hybrid`: mixed direct + sonic/ranged behavior
+
+Future `impactClass` candidate categories (design only):
+
+- `physical`: solid/contact-heavy hit feel
+- `sound`: vibration/sound-pressure flavored hit feel
+- `burst`: short explosive/flashy hit feel
+- `technical`: precise/controlled utility-like hit feel
+
+Difference and examples (non-binding design examples):
+
+- `attackMethod=direct`, `impactClass=physical`
+- `attackMethod=sonic`, `impactClass=sound`
+- `attackMethod=ranged`, `impactClass=burst`
+- `attackMethod=hybrid`, `impactClass=technical`
+
+Current fighters and current runtime:
+
+- Electric Guitar / Bass / Drum Sticks / Keyboard remain unchanged baseline.
+- Do not assign final category values yet.
+- No runtime attack behavior changes in this phase task.
+
+Relation to Equipment / Amp:
+
+- Amp may later experiment with `sonic`, `ranged`, or `hybrid` delivery labels.
+- Amp may later use `sound` impact flavor.
+- This is not a commitment to implement ranged Amp.
+- Any sonic/ranged runtime behavior requires a later implementation phase and playtesting.
+
+Future use cases:
+
+- visual-effect direction
+- docs/UI attack descriptions
+- equipment design discussions
+- fighter differentiation and balance discussion vocabulary
+
+Not used yet for:
+
+- records/settings schema
+- unlocks/achievements/progression
+- online/server/account systems
+- direct damage formula changes
+
+Balance guardrails:
+
+- Categories do not create automatic buffs.
+- `ranged` must not be strictly better than `direct`.
+- If implemented later, sonic/ranged likely needs tradeoffs (startup/cooldown/damage/duration/telegraphing).
+- Do not decide final tradeoffs or tune combat values in this docs task.
+
+Out of scope:
+
+- No TypeScript implementation or FighterDefinition schema changes.
+- No `attackMethod` / `impactClass` runtime fields yet.
+- No attack behavior/projectile/sonic implementation.
+- No HP/damage/knockback/cooldown/duration/hitbox changes.
+- No critical/guard/just guard/special/timer/rounds implementation.
+- No records/settings schema changes.
+- No assets/sprites/3D/BGM/SE or online/server/account storage.
+
+**Next recommended task:** Phase 8-16: Playtest checklist update.
+
 ## Play online
 
 GitHub Pages deployment URL:

@@ -786,7 +786,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-15: attackMethod / impactClass docs.
+**Next recommended task:** Phase 8-16: Playtest checklist update.
 
 ## Features to avoid for now
 
@@ -805,3 +805,43 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - Timer or rounds.
 - Retire button.
 - More fighters before Phase 4 solo play preparation and presentation/polish improve the completed core band roster.
+
+
+### Phase 8-15: attackMethod / impactClass docs
+
+Purpose:
+
+- Define future non-runtime category language for attack delivery (`attackMethod`) and hit-feel (`impactClass`).
+- Improve readability and planning vocabulary for effects/equipment/balance discussions.
+- Keep current gameplay unchanged.
+
+Category direction (docs only):
+
+- `attackMethod` candidates: `direct`, `sonic`, `ranged`, `hybrid`
+- `impactClass` candidates: `physical`, `sound`, `burst`, `technical`
+- Current runtime is conceptually `direct` baseline.
+- These are not TypeScript fields in Phase 8.
+
+Difference examples (non-binding):
+
+- `direct + physical`
+- `sonic + sound`
+- `ranged + burst`
+- `hybrid + technical`
+
+Guardrails:
+
+- no automatic buffs from categories
+- no combat tuning in this docs task
+- if later implemented, ranged/sonic likely needs tradeoffs and playtesting
+- preserve fighter identity readability
+
+Out of scope:
+
+- no runtime implementation/schema changes
+- no projectiles/sonic attacks
+- no damage/knockback/cooldown/duration/hitbox changes
+- no records/settings schema changes
+- no assets/audio/online/server work
+
+**Next recommended task:** Phase 8-16: Playtest checklist update.
