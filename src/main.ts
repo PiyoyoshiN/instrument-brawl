@@ -30,6 +30,72 @@ const cpuRetreatChance = 0.22;
 
 type Player2Mode = 'human' | 'cpu';
 
+
+type EquipmentId = 'none' | 'amp' | 'pick' | 'case';
+
+type EquipmentDefinition = {
+  id: EquipmentId;
+  displayName: string;
+  shortLabel: string;
+  description: string;
+  conceptRole: string;
+};
+
+const noneEquipmentDefinition: EquipmentDefinition = {
+  id: 'none',
+  displayName: 'No Accessory',
+  shortLabel: 'None',
+  description: 'No support equipment.',
+  conceptRole: 'default / baseline / no support equipment',
+};
+
+const ampEquipmentDefinition: EquipmentDefinition = {
+  id: 'amp',
+  displayName: 'Amp',
+  shortLabel: 'Amp',
+  description: 'Sound projection and stage presence flavor.',
+  conceptRole: 'sound projection / stage presence flavor',
+};
+
+const pickEquipmentDefinition: EquipmentDefinition = {
+  id: 'pick',
+  displayName: 'Pick',
+  shortLabel: 'Pick',
+  description: 'Sharper and more precise playing flavor.',
+  conceptRole: 'sharper / precise playing flavor',
+};
+
+const caseEquipmentDefinition: EquipmentDefinition = {
+  id: 'case',
+  displayName: 'Case',
+  shortLabel: 'Case',
+  description: 'Sturdy stage gear and carrying flavor.',
+  conceptRole: 'sturdy / protective stage gear flavor',
+};
+
+const equipmentDefinitions: EquipmentDefinition[] = [
+  noneEquipmentDefinition,
+  ampEquipmentDefinition,
+  pickEquipmentDefinition,
+  caseEquipmentDefinition,
+];
+
+const equipmentDefinitionById = new Map<EquipmentId, EquipmentDefinition>(
+  equipmentDefinitions.map((definition) => [definition.id, definition]),
+);
+
+function isEquipmentId(value: unknown): value is EquipmentId {
+  return value === 'none' || value === 'amp' || value === 'pick' || value === 'case';
+}
+
+function getEquipmentDefinition(id: unknown): EquipmentDefinition {
+  if (!isEquipmentId(id)) {
+    return noneEquipmentDefinition;
+  }
+
+  return equipmentDefinitionById.get(id) ?? noneEquipmentDefinition;
+}
+
 type FighterStats = {
   maxHp: number;
   moveSpeed: number;

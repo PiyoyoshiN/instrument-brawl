@@ -145,7 +145,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
 
-**Next recommended task:** Phase 9-5: Equipment registry implementation.
+**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)
@@ -416,20 +416,20 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Docs explicitly forbid equipment-specific records schema/analytics in Phase 9-1 docs step.
 - [ ] Docs confirm this PR does not modify runtime code.
 
-**Next recommended task:** Phase 9-5: Equipment registry implementation.
+**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
 
 
 ## Phase 9-2 docs cleanup checklist (docs)
 
 - [ ] Docs consistently mark Phase 8 as complete.
 - [ ] Docs consistently mark Phase 9-1 as complete.
-- [ ] Current next recommended task is Phase 9-5: Equipment registry implementation.
+- [ ] Current next recommended task is Phase 9-6: EquipmentSelectScene design docs.
 - [ ] Stale status wording (records/reset/options future scope) is updated to current implemented state.
 - [ ] Docs explicitly keep Phase 9 runtime equipment features as not implemented yet.
 - [ ] Docs preserve guardrails: no combat-value changes and no equipment records analytics in this cleanup task.
 - [ ] This PR does not modify runtime code.
 
-**Next recommended task:** Phase 9-5: Equipment registry implementation.
+**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
 
 
 ## Phase 9-3 equipment concept checklist (docs)
@@ -441,9 +441,9 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Amp/Pick/Case are explicitly not defined as stat buffs in this step.
 - [ ] No runtime code is modified in this docs task.
 - [ ] Equipment-specific records schema/analytics remain out of scope.
-- [ ] Next recommended task is Phase 9-5: Equipment registry implementation.
+- [ ] Next recommended task is Phase 9-6: EquipmentSelectScene design docs.
 
-**Next recommended task:** Phase 9-5: Equipment registry implementation.
+**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
 
 
 ## Phase 9-4 equipment data model checklist (docs)
@@ -454,6 +454,20 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Amp/Pick/Case remain metadata/flavor only in this step.
 - [ ] No combat/stat fields are introduced in the planned model.
 - [ ] No runtime code is modified in this docs task.
-- [ ] Next recommended task is Phase 9-5: Equipment registry implementation.
+- [ ] Next recommended task is Phase 9-6: EquipmentSelectScene design docs.
 
-**Next recommended task:** Phase 9-5: Equipment registry implementation.
+**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
+
+
+## Phase 9-5 equipment registry checklist
+
+- [ ] `EquipmentId` runtime union exists with `none | amp | pick | case`.
+- [ ] `EquipmentDefinition` runtime metadata shape exists (`id`, `displayName`, `shortLabel`, `description`, `conceptRole`).
+- [ ] Runtime definitions exist for `none`, `amp`, `pick`, `case`.
+- [ ] `isEquipmentId(value)` helper exists and validates known IDs only.
+- [ ] `getEquipmentDefinition(id)` helper falls back to `none` for invalid/missing IDs.
+- [ ] Registry remains metadata-only (no combat/stat fields).
+- [ ] No equipment selection scene, handoff, persistence, HUD/Result labels, or Amp visual effect is added in this task.
+- [ ] Next recommended task is Phase 9-6: EquipmentSelectScene design docs.
+
+**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.

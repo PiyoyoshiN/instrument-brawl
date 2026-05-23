@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 9-5: Equipment registry implementation.
+**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -666,7 +666,7 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 9-5: Equipment registry implementation.
+**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
 
 
 ## Phase 8 checkpoint
@@ -704,7 +704,7 @@ Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, at
 - ResultScene `R` / `C` / Home return does not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-5: Equipment registry implementation.
+**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
 
 
 
@@ -793,7 +793,9 @@ Data-model guardrails:
 - same equipment for both players remains allowed
 - no records/settings schema impact in this docs task
 
-Future runtime direction (not implemented here): registry in Phase 9-5, later scene handoff (`player1EquipmentId`/`player2EquipmentId`), later persistence, later HUD/Result shortLabel display, and possible later Amp visual-only accent usage.
+Phase 9-5 equipment registry is implemented as metadata-only runtime foundation in `src/main.ts` (definitions + safe fallback helper); no gameplay effect, no scene wiring, and no persistence/UI integration in this task.
+
+Future runtime direction (not implemented here): later scene handoff (`player1EquipmentId`/`player2EquipmentId`), later persistence, later HUD/Result shortLabel display, and possible later Amp visual-only accent usage.
 
 Phase 9 guardrails:
 
@@ -803,7 +805,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-5: Equipment registry implementation.
+**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
 
 ## Play online
 
