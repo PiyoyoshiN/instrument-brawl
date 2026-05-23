@@ -1,4 +1,4 @@
-# Playtest Checklist (Phase 5)
+# Playtest Checklist (Phase 7 checkpoint)
 
 Use this short checklist before merging gameplay-adjacent PRs.
 
@@ -64,13 +64,13 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] `P` pause, `R` rematch, and `C` return-to-character-select still work.
 
 
-## Phase 7 planning checklist
+## Phase 7 checkpoint checklist
 
-- [ ] Phase 7 docs keep Home / Mode Select / Options and local save as planning scope only.
+- [ ] Phase 7 checkpoint is documented as complete (game shell + mode select + options + localStorage settings + records foundation docs).
 - [ ] Docs define one namespaced localStorage key (`instrument-brawl:settings`) with a versioned JSON payload plan.
 - [ ] Docs list planned fields: last selected P1 fighter, last selected P2 fighter, last selected P2 mode, effects enabled, screen shake enabled.
 - [ ] Docs describe fallback behavior for unavailable storage, parse failure, invalid fighter IDs, and invalid player2Mode (`human` fallback).
-- [ ] Docs explicitly keep save/load as future implementation only (no runtime code changes in this PR).
+- [ ] Docs state Records runtime/RecordsScene/Home Records wiring remain future scope.
 - [ ] Utility helpers exist for load/save/sanitize with safe localStorage try/catch fallback behavior.
 - [ ] Confirmed selections are saved to localStorage on Mode Select confirm and Character Select battle start.
 - [ ] Saved values are restored to initial Mode Select / Character Select UI state after reload.
@@ -100,9 +100,12 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Home -> Options opens OptionsScene.
 - [ ] Options Esc returns Home.
 - [ ] Options can toggle/save Effects ON/OFF and Screen Shake ON/OFF.
+- [ ] Options has a Reset Preferences row with two-step confirm behavior.
 - [ ] Reload + reopen Options reflects saved preference values.
 - [ ] Effects OFF hides nonessential visual extras (hit spark / CLEAN HIT sub-label / win-draw accent effects).
 - [ ] Screen Shake OFF disables tiny shake only.
+- [ ] Reset Preferences first confirm arms reset and second confirm executes reset.
+- [ ] Moving selection away from Reset Preferences cancels pending confirmation.
 - [ ] Gameplay logic/values remain unchanged by these options.
 
 ## Mode Select behavior checks
@@ -119,12 +122,55 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Result `C` return-to-character-select preserves P2 mode.
 - [ ] Escape from Mode Select returns Home.
 
-## Phase 7 scene-flow planning checklist
+## Phase 8-3 Reset Preferences design checklist (docs)
 
-- [ ] Docs clearly separate current flow (`Home -> Character Select -> Battle -> Result`) from target Phase 7 flow (`Home -> Mode Select -> Character Select -> Battle -> Result`).
-- [ ] Docs reflect ModeSelectScene as implemented and keep OptionsScene/localStorage/Records as future scope (not implemented yet).
-- [ ] Mode Select mapping docs are explicit: Local 2P -> `player2Mode: "human"`, P1 vs CPU -> `player2Mode: "cpu"` via two visible choices.
-- [ ] Docs state ModeSelectScene starts CharacterSelectScene with `{ player2Mode }`.
-- [ ] Docs state Home Start goes to ModeSelectScene.
-- [ ] Existing CharacterSelect P2 Human/CPU toggle is retained as current fallback/manual override.
-- [ ] Existing Battle/Result data handoff expectations (fighters + P2 mode) remain documented.
+- [ ] Reset Preferences is defined as settings-only (`instrument-brawl:settings` only).
+- [ ] Docs state Reset Preferences must not modify/delete `instrument-brawl:records`.
+- [ ] Docs keep Reset Preferences separate from future Reset Records (no reset-all in this phase).
+- [ ] Reset default values are explicit: `electric-guitar`, `bass`, `human`, `effectsEnabled: true`, `screenShakeEnabled: true`.
+- [ ] Docs define simple OptionsScene UX: separate row, two-step confirm (`Press again to confirm`), Escape/move-away cancel.
+- [ ] Docs define expected post-reset behavior for Mode Select, Character Select, and Options defaults restoration.
+- [ ] Docs define safe failure/fallback behavior for unavailable/failing localStorage and preserve sanitize/default fallback.
+
+## Phase 8-3 future implementation verification checklist
+
+- [ ] Change settings away from defaults (fighters/mode/effects/screen shake).
+- [ ] Use Reset Preferences action from Options.
+- [ ] Reload page.
+- [ ] Confirm defaults are restored in settings-backed UI state.
+- [ ] Confirm Effects and Screen Shake return to ON.
+- [ ] Confirm Human mode/default fighters return where applicable (unless scene data override applies).
+- [ ] Confirm Records storage is not removed or modified.
+- [ ] Confirm gameplay values/logic are unchanged (HP/damage/knockback/cooldown/duration/hitbox/CPU/one-hit rule).
+
+- [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
+
+**Next recommended task:** Phase 8-8: RecordsScene shell.
+
+
+## Phase 8-5 Records runtime design checklist (docs)
+
+- [ ] Records are local-only (no server/account/cloud, no online rank/matchmaking stats).
+- [ ] Records key is explicitly `instrument-brawl:records` and separate from `instrument-brawl:settings`.
+- [ ] Initial records payload is versioned and includes: version, totalMatches, p1Wins, p2Wins, draws, cpuMatches, local2pMatches, lastPlayedAt.
+- [ ] Default values are explicit: version 1, all counters 0, lastPlayedAt null.
+- [ ] Counting rules define total/win/draw/mode increments and ISO `lastPlayedAt` update.
+- [ ] Docs explicitly forbid per-hit logs, damage history, replay data, and detailed analytics.
+- [ ] Double-count prevention is explicit: one completed match saved once.
+- [ ] Docs explicitly state no duplicate counts from Result transitions, R rematch, C return, or Home return.
+- [ ] Preferred future save timing is explicit and justified (save once on first ResultScene entry).
+- [ ] Sanitize/fallback behavior is explicit for unavailable storage, parse failure, invalid payload, and unknown version.
+- [ ] Docs state invalid records must not delete settings and Reset Preferences must not delete records.
+
+## Phase 8-5 future implementation verification checklist
+
+- [ ] Finish a P1 win and confirm `totalMatches` + `p1Wins` increment once.
+- [ ] Finish a P2 win and confirm `totalMatches` + `p2Wins` increment once.
+- [ ] Finish a draw and confirm `totalMatches` + `draws` increment once.
+- [ ] Finish a CPU match and confirm `cpuMatches` increments once.
+- [ ] Finish a Local 2P match and confirm `local2pMatches` increments once.
+- [ ] Use `R` rematch and confirm previous result is not double-counted.
+- [ ] Use `C` return-to-character-select and confirm previous result is not double-counted.
+- [ ] Return Home from Result and confirm previous result is not double-counted.
+- [ ] Confirm Reset Preferences does not delete records.
+- [ ] Confirm settings and records use separate keys.
