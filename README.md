@@ -668,6 +668,9 @@ Out of scope:
 
 **Next recommended task:** Phase 8-17: Phase 8 checkpoint docs.
 
+- Electric Guitar / Bass / Drum Sticks / Keyboard remain unchanged baseline.
+- Do not assign final category values yet.
+- No runtime attack behavior changes in this phase task.
 
 ## Phase 8 checkpoint
 
