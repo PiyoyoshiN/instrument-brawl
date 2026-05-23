@@ -145,7 +145,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 - [ ] Records storage utility helpers exist for `instrument-brawl:records` load/save/sanitize with safe fallback behavior and no runtime counting yet.
 
-**Next recommended task:** Phase 8-8: RecordsScene shell.
+**Next recommended task:** Phase 8-9: Home Records entry.
 
 
 ## Phase 8-5 Records runtime design checklist (docs)
@@ -174,3 +174,6 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Return Home from Result and confirm previous result is not double-counted.
 - [ ] Confirm Reset Preferences does not delete records.
 - [ ] Confirm settings and records use separate keys.
+- [ ] RecordsScene shell can open (direct scene start/dev hook) and display stored local records.
+- [ ] RecordsScene shows Last Played as `Never` when `lastPlayedAt` is null.
+- [ ] RecordsScene supports Esc / Enter / Space return Home.

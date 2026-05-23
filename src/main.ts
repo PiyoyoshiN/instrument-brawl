@@ -2334,11 +2334,96 @@ class ResultScene extends Phaser.Scene {
   }
 }
 
+class RecordsScene extends Phaser.Scene {
+  private enterKey?: Phaser.Input.Keyboard.Key;
+  private spaceKey?: Phaser.Input.Keyboard.Key;
+  private escapeKey?: Phaser.Input.Keyboard.Key;
+  private inputEnabledAt = 0;
+  private transitionStarted = false;
+
+  constructor() {
+    super('RecordsScene');
+  }
+
+  create() {
+    this.inputEnabledAt = this.time.now + 150;
+    this.transitionStarted = false;
+
+    const records = loadStoredRecords();
+    const lastPlayedLabel = records.lastPlayedAt ?? 'Never';
+
+    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    this.add.rectangle(400, 300, 700, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    this.add
+      .text(400, 96, 'Records', {
+        color: '#ffffff',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '44px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(
+        400,
+        168,
+        `Total Matches: ${records.totalMatches}
+P1 Wins: ${records.p1Wins}
+P2 Wins: ${records.p2Wins}
+Draws: ${records.draws}
+VS CPU Matches: ${records.cpuMatches}
+Local 2P Matches: ${records.local2pMatches}
+Last Played: ${lastPlayedLabel}`,
+        {
+          align: 'left',
+          color: '#e2e8f0',
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: '28px',
+          lineSpacing: 12,
+        },
+      )
+      .setOrigin(0.5, 0);
+
+    this.add
+      .text(400, 504, 'Esc / Enter / Space: return Home', {
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      })
+      .setOrigin(0.5);
+
+    const keyboard = this.input.keyboard;
+
+    if (!keyboard) {
+      return;
+    }
+
+    this.enterKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.spaceKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.escapeKey = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+  }
+
+  update(time: number) {
+    if (this.transitionStarted || time < this.inputEnabledAt) {
+      return;
+    }
+
+    if (
+      (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
+      (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey)) ||
+      (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey))
+    ) {
+      this.transitionStarted = true;
+      this.scene.start('HomeScene');
+    }
+  }
+}
+
 new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
   width: gameWidth,
   height: gameHeight,
   backgroundColor: '#111827',
-  scene: [HomeScene, OptionsScene, ModeSelectScene, CharacterSelectScene, BattleScene, ResultScene],
+  scene: [HomeScene, OptionsScene, RecordsScene, ModeSelectScene, CharacterSelectScene, BattleScene, ResultScene],
 });

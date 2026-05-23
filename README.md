@@ -306,9 +306,10 @@ During Phase 8 scope/docs tasks, do not change:
 
 - Phase 8-6 records storage utility is implemented.
 - Phase 8-7 match result saving is implemented with once-per-result recording to `instrument-brawl:records`.
-- RecordsScene display remains future scope.
+- RecordsScene shell is implemented and displays local records from `instrument-brawl:records`.
+- Home Records entry remains future scope.
 
-**Next recommended task:** Phase 8-8: RecordsScene shell.
+**Next recommended task:** Phase 8-9: Home Records entry.
 
 ## Play online
 
