@@ -301,7 +301,7 @@ Mode Select mapping:
 - Battle: consume selected fighters and P2 mode from scene data.
 - Result: preserve fighters and P2 mode through rematch/return flows.
 
-ModeSelectScene behavior is implemented. Options and localStorage settings behavior are implemented for the current Phase 7 checkpoint. Records runtime remains future scope.
+ModeSelectScene behavior is implemented. Options/localStorage settings are implemented, and Records runtime is implemented (storage, scene shell, once-per-match recording, and reset flow).
 
 Later phase direction:
 
@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 9-2: Phase 8 docs cleanup**.
+Next recommended task: **Phase 9-3: Equipment concept docs**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -827,7 +827,7 @@ Planned behavior constraints:
 
 ### Phase 7-14 lightweight Records foundation (design only)
 
-Records in Phase 7 are planning-only foundation work. Implementation is deferred.
+Records in Phase 7 started as planning-only foundation work; runtime implementation was completed in Phase 8.
 
 Future scope intent:
 
@@ -914,4 +914,4 @@ Guardrails:
 - preserve Phase 8 gameplay/system invariants
 - no combat value tuning or records schema expansion for equipment
 
-Next recommended task: **Phase 9-2: Phase 8 docs cleanup**.
+Next recommended task: **Phase 9-3: Equipment concept docs**.

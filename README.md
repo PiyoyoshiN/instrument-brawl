@@ -139,7 +139,7 @@ Completed in Phase 7:
 - Effects OFF hides nonessential extras only; Screen Shake OFF disables tiny shake only.
 - Gameplay values and logic remain unchanged.
 - Records foundation docs complete.
-- Records runtime implementation is in progress: storage utility, once-per-match result saving, RecordsScene shell, and Reset Records are implemented.
+- Records runtime implementation is complete: storage utility, once-per-match result saving, RecordsScene shell, and Reset Records are implemented.
 - Reset Preferences is implemented in OptionsScene.
 
 ## Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
+**Next recommended task:** Phase 9-3: Equipment concept docs.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -666,7 +666,7 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
+**Next recommended task:** Phase 9-3: Equipment concept docs.
 
 
 ## Phase 8 checkpoint
@@ -704,7 +704,7 @@ Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, at
 - ResultScene `R` / `C` / Home return does not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-1: Define Phase 9 scope and guardrails.
+**Next recommended task:** Phase 9-3: Equipment concept docs.
 
 
 
@@ -743,7 +743,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
+**Next recommended task:** Phase 9-3: Equipment concept docs.
 
 ## Play online
 

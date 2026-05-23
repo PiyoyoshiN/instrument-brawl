@@ -273,7 +273,7 @@ Current status: ModeSelectScene implementation is complete.
 - Minimal `OptionsScene` shell exists with local Effects ON/OFF and Screen Shake ON/OFF toggles.
 - Options preference toggles save to `preferences.effectsEnabled` and `preferences.screenShakeEnabled`.
 - Preferences are applied to BattleScene presentation only (visual extras + tiny shake gating).
-- Records remains planning-only.
+- Records planning notes were completed in Phase 7; runtime records were implemented in Phase 8.
 
 Home Start routes to ModeSelectScene. Options and Records remain future entries.
 
@@ -378,7 +378,7 @@ Phase 7 checkpoint is complete.
 - Options complete.
 - localStorage settings complete (`instrument-brawl:settings`).
 - Records foundation docs complete.
-- Records runtime is not implemented yet.
+- Records runtime is implemented in Phase 8 (separate records key, once-per-match save, RecordsScene, Reset Records).
 ## Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
 
 Phase 8 is not a major combat expansion phase.
@@ -786,7 +786,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
+**Next recommended task:** Phase 9-3: Equipment concept docs.
 
 ## Features to avoid for now
 
@@ -844,7 +844,7 @@ Out of scope:
 - no records/settings schema changes
 - no assets/audio/online/server work
 
-**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
+**Next recommended task:** Phase 9-3: Equipment concept docs.
 
 
 ### Phase 8-17: Phase 8 checkpoint docs
@@ -883,7 +883,7 @@ Manual verification reminder before next phase:
 - Match records count once and ResultScene exits do not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
+**Next recommended task:** Phase 9-3: Equipment concept docs.
 
 
 ## Phase 9: Equipment Shell & Attack Identity Foundation
@@ -908,7 +908,7 @@ Initial equipment candidates:
 ### Phase 9 task plan (9-1 .. 9-17)
 
 - 9-1 Phase 9 scope and guardrails docs (**docs-only**) — this task
-- 9-2 Phase 8 docs cleanup (**docs-only**) — next
+- 9-2 Phase 8 docs cleanup (**docs-only**) — complete (this task)
 - 9-3 Equipment concept docs (**docs-only**)
 - 9-4 Equipment data model docs (**docs-only**)
 - 9-5 Equipment registry implementation (**runtime**)
@@ -949,4 +949,4 @@ Gameplay/system guardrails remain unchanged:
 - ResultScene `R` / `C` / Home transitions
 - records schema
 
-**Next recommended task:** Phase 9-2: Phase 8 docs cleanup.
+**Next recommended task:** Phase 9-3: Equipment concept docs.
