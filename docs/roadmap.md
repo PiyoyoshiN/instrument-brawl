@@ -212,7 +212,7 @@ Implemented in Phase 6:
 
 These remain visual-only trial effects under Phase 6 guardrails; gameplay values/logic were not expanded.
 
-Next recommended direction: move to Phase 7 game shell direction (Home / Mode / Options) and localStorage planning, unless explicitly instructed otherwise.
+Next recommended direction: Phase 7 checkpoint is complete; move to Phase 8 planning starting with Phase 8-2 scope definition.
 
 Future hook note: later combat/effects work can introduce planned `impactClass` / `attackMethod` categories (`direct-heavy`, `direct-medium`, `direct-light`, `sonic`, `hybrid`) as implementation tasks.
 
@@ -273,7 +273,7 @@ Current status: ModeSelectScene implementation is complete.
 - Minimal `OptionsScene` shell exists with local Effects ON/OFF and Screen Shake ON/OFF toggles.
 - Options preference toggles save to `preferences.effectsEnabled` and `preferences.screenShakeEnabled`.
 - Preferences are applied to BattleScene presentation only (visual extras + tiny shake gating).
-- Records remains planning-only.
+- Records planning notes were completed in Phase 7; runtime records were implemented in Phase 8.
 
 Home Start routes to ModeSelectScene. Options and Records remain future entries.
 
@@ -368,13 +368,425 @@ Storage direction for later implementation:
 - include `version` for migration
 - sanitize invalid values and fallback to empty/default records when storage is unavailable/invalid
 
-## Phase 6-10+ direction
 
-- Phase 6: effects trial and presentation experiments.
-- Phase 7: game shell direction for Home / Mode / Options and localStorage-based save planning.
-- Phase 8: match rule expansion consideration such as Retire / Timer / rounds, without rushing rounds.
-- Phase 9: encyclopedia, records, and light worldbuilding.
-- Phase 10+: specials, items, new fighters, and larger content expansion.
+## Phase 7 checkpoint
+
+Phase 7 checkpoint is complete.
+
+- Game shell complete.
+- Mode Select complete.
+- Options complete.
+- localStorage settings complete (`instrument-brawl:settings`).
+- Records foundation docs complete.
+- Records runtime is implemented in Phase 8 (separate records key, once-per-match save, RecordsScene, Reset Records).
+## Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
+
+Phase 8 is not a major combat expansion phase.
+
+### Phase 8 task list (8-1 to 8-17)
+
+- 8-1 Phase 7 checkpoint docs — already complete
+- 8-2 Phase 8 scope docs — this task
+- 8-3 Reset preferences design docs — this task
+- 8-4 Reset preferences implementation — complete
+- 8-5 Records runtime design docs — this task
+- 8-6 Records storage utility
+- 8-7 Save match result once
+- 8-8 RecordsScene shell — complete
+- 8-9 Home Records entry — complete
+- 8-10 Reset Records design docs — complete
+- 8-11 Reset Records implementation — complete
+- 8-12 Retire / Forfeit design docs — complete
+- 8-13 Timer design docs — complete
+- 8-14 Equipment / Amp design docs — this task
+- 8-15 `attackMethod` / `impactClass` docs
+- 8-16 Playtest checklist update
+- 8-17 Phase 8 checkpoint docs
+
+### Phase 8 implementation targets
+
+- Reset Preferences
+- Records localStorage utility
+- Save match result once
+- RecordsScene shell
+- Home Records entry
+- Reset Records
+- Playtest checklist updates
+
+### Phase 8 docs/design-only targets
+
+- Retire / Forfeit
+- Timer
+- Equipment / Amp
+- `attackMethod` / `impactClass`
+- Critical rate / guard / just guard as future design topics only
+
+### Phase 8 immediate non-goals
+
+- No equipment implementation
+- No amp/ranged/sonic attack implementation
+- No critical damage/rate gameplay implementation
+- No guard or just guard implementation
+- No special moves
+- No rounds
+- No timer gameplay implementation
+- No new fighters
+- No encyclopedia implementation
+- No story
+- No online play
+- No server saving
+- No BGM/SE assets
+- No images, sprites, or 3D
+
+### Phase 8-3: Reset preferences design docs
+
+Design rules:
+
+- Reset Preferences resets settings only (`instrument-brawl:settings`)
+- Do not modify/delete/read `instrument-brawl:records`
+- Keep Reset Preferences separate from future Reset Records (no reset-all in this phase)
+
+Reset defaults:
+
+- P1 fighter: `electric-guitar`
+- P2 fighter: `bass`
+- P2 mode: `human`
+- Effects: `true`
+- Screen shake: `true`
+
+Future UI behavior (OptionsScene):
+
+- Separate Reset Preferences row/action
+- Two-step confirmation (`Press again to confirm`)
+- Escape or moving away cancels pending confirmation
+- Keep implementation minimal; no modal system design in this phase
+
+Expected post-reset behavior:
+
+- Settings storage returns to defaults
+- Mode Select restores default Human highlight
+- Character Select restores default fighters unless scene data overrides
+- Options restores Effects ON and Screen Shake ON
+- Gameplay logic/values remain unchanged
+
+Failure/fallback behavior:
+
+- localStorage unavailable -> fail safely without crash
+- remove/save failure -> fail safely without crash
+- existing sanitize/default fallback remains active
+
+
+### Phase 8-5: Records runtime design docs
+
+Records runtime constraints:
+
+- local-only data only (no server/account/cloud)
+- no online rank or matchmaking stats
+- separate key from settings: `instrument-brawl:records`
+- keep `instrument-brawl:settings` and records storage fully separate
+
+Initial payload (v1):
+
+- `version: 1`
+- `totalMatches: 0`
+- `p1Wins: 0`
+- `p2Wins: 0`
+- `draws: 0`
+- `cpuMatches: 0`
+- `local2pMatches: 0`
+- `lastPlayedAt: null`
+
+Counting rules for one completed match:
+
+- increment `totalMatches` once
+- increment winner bucket (`p1Wins` or `p2Wins`) or `draws`
+- increment `cpuMatches` or `local2pMatches` by `player2Mode`
+- set `lastPlayedAt` to ISO timestamp string
+- do not track per-hit/damage/replay/detailed analytics
+
+Double-count prevention (highest priority):
+
+- record exactly once per completed match
+- transitions/rematch/return-home/return-character-select must not add duplicates
+- use a small guard flag in future runtime implementation
+
+Preferred future save timing:
+
+- determine result in BattleScene as today
+- write records exactly once on first ResultScene entry
+- reason: centralized single write point with stable final result + mode context
+
+Sanitize/fallback behavior:
+
+- unavailable localStorage -> default empty records, no crash
+- parse failure -> default empty records
+- missing/invalid/negative/NaN/wrong-type fields -> sanitize to safe defaults
+- unknown `version` -> safe fallback for now
+- invalid records must not remove settings
+- Reset Preferences must not remove records
+
+Out of scope in this phase step:
+
+- achievements/trophies/unlocks
+- encyclopedia/story progress
+- online rank/account/matchmaking stats
+- replay/damage logs/per-fighter deep analytics
+- server/cloud save
+
+
+### Phase 8-10: Reset Records design docs
+
+Design rules:
+
+- Reset Records resets only `instrument-brawl:records`
+- Do not modify/delete/read `instrument-brawl:settings`
+- Keep Reset Records separate from Reset Preferences
+- No Reset All action in this phase
+
+Reset defaults:
+
+- `version: 1`
+- `totalMatches: 0`
+- `p1Wins: 0`
+- `p2Wins: 0`
+- `draws: 0`
+- `cpuMatches: 0`
+- `local2pMatches: 0`
+- `lastPlayedAt: null`
+
+Future UI behavior (RecordsScene):
+
+- Add dedicated `Reset Records` row/action
+- Two-step confirmation (`Reset Records: Press again to confirm`)
+- Escape or moving selection away cancels pending confirmation
+- Keep interaction simple (no modal/admin menu)
+
+Expected post-reset behavior:
+
+- RecordsScene shows 0 counters and `Last Played: Never`
+- `instrument-brawl:settings` remains unchanged
+- Effects/screen shake and last selected fighters/mode remain unchanged
+- Gameplay logic/values remain unchanged
+
+Failure/fallback behavior:
+
+- unavailable localStorage -> fail safely without crash
+- save/remove failure -> fail safely without crash
+- sanitize/default records fallback remains active
+- invalid records handling must not remove settings
+
+
+### Phase 8-12: Retire / Forfeit design docs
+
+Purpose:
+
+- voluntary early match-end escape hatch
+- keep compact and non-complex
+- no timer/round expansion coupling
+
+Winner/result rules:
+
+- P1 retires -> P2 wins
+- P2 Human retires -> P1 wins
+- P1 vs CPU: only P1 can retire (CPU does not retire)
+- retire does not produce draw
+- use existing ResultScene flow with result kind `p1`/`p2`
+
+Records behavior:
+
+- retire counts as normal completed match
+- increment `totalMatches` once
+- increment winner bucket as above
+- increment `cpuMatches` or `local2pMatches` by `player2Mode`
+- update `lastPlayedAt`
+- once-per-result guard must prevent duplicate counts
+- no retire-specific counters in Phase 8
+
+Future UI direction:
+
+- location: Pause / Quick Help overlay
+- two-step confirm (`Retire: Press again to confirm`)
+- cancel via `P` resume/cancel; selectable-overlay cancel path can use Escape/move-away
+- no full pause/admin menu
+
+Control/timing constraints:
+
+- do not steal current battle controls
+- do not use battle `R` for retire
+- retire available only after Fight/matchStarted
+- retire does nothing after `matchOver`
+- no breakage of Ready/Fight or pause behavior
+
+Result display direction:
+
+- keep text simple (`P1 Retired - P2 Wins`, `P2 Retired - P1 Wins`)
+- keep result bucket as `p1`/`p2` (no new result type now)
+
+Out of scope:
+
+- no retire implementation in this docs task
+- no pause implementation changes in this docs task
+- no timer/rounds/surrender stats/retire achievements/penalties
+- no online/disconnect behavior
+- no CPU retire AI
+- no server/cloud save
+
+
+### Phase 8-13: Timer design docs
+
+Purpose and role:
+
+- optional future pacing tool
+- prevents very long/stalled matches
+- keeps quick replayable tone
+- no rounds coupling in Phase 8
+
+Optional behavior direction:
+
+- not implemented in Phase 8
+- not default-enabled until later playtesting
+- current no-timer behavior stays baseline
+
+Duration direction (future candidates):
+
+- default candidate: 60 seconds
+- alternatives: 45 seconds, 90 seconds
+- no timer settings/custom durations in Phase 8
+
+Timeout result rules:
+
+- higher HP wins on timeout
+- equal HP -> draw
+- existing KO/draw combat-end rules remain valid
+- use existing ResultScene flow and `p1`/`p2`/`draw` result kinds
+- no timeout-specific result bucket now
+
+Timeout records behavior:
+
+- treated as normal completed match
+- increment `totalMatches` once
+- increment winner/draw bucket accordingly
+- increment `cpuMatches`/`local2pMatches` by mode
+- update `lastPlayedAt`
+- once-per-result rule still prevents double count
+- no timer-specific records fields in Phase 8
+
+Future UI/pause direction:
+
+- compact timer label in BattleScene top-center area
+- simple text (`Time: 60` style)
+- pause/help freezes timer
+- timer starts after Ready/Fight control start
+- timer stops after `matchOver`
+- no audio countdown or heavy animation
+
+Interaction with Retire:
+
+- retire and timer stay separate
+- retire-first -> retire result wins
+- timeout-first -> timeout result wins
+- no merged retire/timer logic in Phase 8 docs task
+
+Out of scope:
+
+- no timer implementation in this docs task
+- no timer UI/settings implementation
+- no rounds/sudden death/overtime/time bonus
+- no timer-specific records fields
+- no online/server timer sync
+- no competitive/tournament rules expansion
+
+
+### Phase 8-14: Equipment / Amp design docs
+
+Purpose and role:
+
+- future lightweight match-customization (not RPG/meta-progression)
+- keep silly/readable local-match variety
+- remain optional and easy to disable
+- not implemented in Phase 8
+
+Optional behavior baseline:
+
+- no-equipment baseline remains current standard
+- no equipment UI/storage/records integration in Phase 8
+
+Future structure direction:
+
+- 0 or 1 support equipment per player
+- selected near/after Character Select in future
+- match-local scope only
+- no account/server/progression dependency
+
+Amp candidate direction:
+
+- first support-equipment concept
+- flavor: boost/project instrument sound
+- may later support sonic/ranged-feeling behavior
+- Phase 8 stays design-only (no attacks/projectiles/assets)
+- no combat-value or hitbox/cooldown changes now
+
+Candidate options (not final):
+
+- visual-only sound-wave effect
+- attack presentation variation
+- future reach modifier experiment
+- future sonic/ranged attack-method experiment
+- possible future tradeoff if range is added
+
+Balance guardrails:
+
+- preserve fighter identity readability
+- no huge damage spikes
+- no critical/guard/just-guard/special systems in Phase 8
+- no rounds/timer dependency for equipment
+
+Future UI direction:
+
+- candidate: Character Select follow-up or tiny Equipment Select step
+- defaults: `Equipment: None`
+- candidate option: `Equipment: Amp`
+- simple left/right selection
+- same-equipment mirror matches allowed unless later playtesting changes this
+- do not expand Home flow in this docs task
+
+Records direction:
+
+- no equipment fields/analytics in records during Phase 8
+- keep normal records counters only
+
+Relation to attack categories:
+
+- equipment may later reference `attackMethod` / `impactClass`
+- detailed category definition deferred to Phase 8-15
+
+Out of scope:
+
+- no Equipment/Amp implementation
+- no equipment selection UI/storage
+- no equipment records fields
+- no ranged/sonic attacks
+- no damage/hitbox/cooldown/startup changes
+- no critical/guard/just-guard/specials
+- no rounds/timer dependency
+- no unlock/rarity/crafting/loot/currency/shop/progression
+- no assets/sprites/3D/BGM/SE
+- no online/server/account storage
+
+### Phase 8 guardrails for scope/docs tasks
+
+Do not change gameplay values/logic during Phase 8 scope/docs tasks:
+
+- HP
+- damage
+- knockback
+- attack cooldown
+- attack duration
+- hitbox
+- CPU behavior
+- one-hit-per-attack
+
+**Next recommended task:** Phase 9-4: Equipment data model docs.
 
 ## Features to avoid for now
 
@@ -393,3 +805,148 @@ Storage direction for later implementation:
 - Timer or rounds.
 - Retire button.
 - More fighters before Phase 4 solo play preparation and presentation/polish improve the completed core band roster.
+
+
+### Phase 8-15: attackMethod / impactClass docs
+
+Purpose:
+
+- Define future non-runtime category language for attack delivery (`attackMethod`) and hit-feel (`impactClass`).
+- Improve readability and planning vocabulary for effects/equipment/balance discussions.
+- Keep current gameplay unchanged.
+
+Category direction (docs only):
+
+- `attackMethod` candidates: `direct`, `sonic`, `ranged`, `hybrid`
+- `impactClass` candidates: `physical`, `sound`, `burst`, `technical`
+- Current runtime is conceptually `direct` baseline.
+- These are not TypeScript fields in Phase 8.
+
+Difference examples (non-binding):
+
+- `direct + physical`
+- `sonic + sound`
+- `ranged + burst`
+- `hybrid + technical`
+
+Guardrails:
+
+- no automatic buffs from categories
+- no combat tuning in this docs task
+- if later implemented, ranged/sonic likely needs tradeoffs and playtesting
+- preserve fighter identity readability
+
+Out of scope:
+
+- no runtime implementation/schema changes
+- no projectiles/sonic attacks
+- no damage/knockback/cooldown/duration/hitbox changes
+- no records/settings schema changes
+- no assets/audio/online/server work
+
+**Next recommended task:** Phase 9-4: Equipment data model docs.
+
+
+### Phase 8-17: Phase 8 checkpoint docs
+
+Phase 8 checkpoint is docs-complete and ready.
+
+Implemented runtime summary:
+
+- Options preferences (Effects / Screen Shake), Reset Preferences two-step settings-only reset.
+- Records runtime (`instrument-brawl:records`) with total/win/draw/mode counters and `lastPlayedAt`.
+- ResultScene once-per-completed-match recording.
+- RecordsScene display and Home -> Records -> Home flow.
+- Reset Records two-step records-only reset.
+- Settings and records remain separate keys.
+
+Design-only future summary (not implemented):
+
+- Retire / Forfeit
+- Timer
+- Equipment / Amp
+- `attackMethod` / `impactClass`
+
+Checkpoint guardrails unchanged:
+
+- HP, damage, knockback, cooldown, attack duration, hitboxes
+- CPU behavior, one-hit-per-attack
+- Ready/Fight timing, Pause/Quick Help behavior
+- ResultScene `R` / `C` / Home transitions
+
+Manual verification reminder before next phase:
+
+- Home -> Options -> Home
+- Home -> Records -> Home
+- Reset Preferences does not touch records
+- Reset Records does not touch settings
+- Match records count once and ResultScene exits do not double-count
+- Existing battle flow still works
+
+**Next recommended task:** Phase 9-4: Equipment data model docs.
+
+
+## Phase 9: Equipment Shell & Attack Identity Foundation
+
+Phase 9 is not a combat-buff phase. It prepares a lightweight equipment shell and attack-identity vocabulary while preserving current gameplay values.
+
+Core direction:
+
+- equipment selection shell
+- scene-to-scene equipment ID handoff
+- last-selected equipment persistence planning
+- compact equipment labels in Battle/Result UI
+- attack identity language foundation (`attackMethod` / `impactClass`)
+
+Initial equipment candidates:
+
+- `none` (No Accessory)
+- `amp` (Amp)
+- `pick` (Pick)
+- `case` (Case)
+
+### Phase 9 task plan (9-1 .. 9-17)
+
+- 9-1 Phase 9 scope and guardrails docs (**docs-only**) — this task
+- 9-2 Phase 8 docs cleanup (**docs-only**) — complete (this task)
+- 9-3 Equipment concept docs (**docs-only**) — complete (this task)
+- 9-4 Equipment data model docs (**docs-only**)
+- 9-5 Equipment registry implementation (**runtime**)
+- 9-6 EquipmentSelectScene design docs (**docs-only**)
+- 9-7 EquipmentSelectScene shell (**runtime**)
+- 9-8 P1/P2 equipment selection (**runtime**)
+- 9-9 Equipment data handoff (**runtime**)
+- 9-10 Rematch / return preservation (**runtime**)
+- 9-11 localStorage equipment persistence (**runtime**)
+- 9-12 Battle HUD equipment labels (**runtime**)
+- 9-13 Result equipment display (**runtime**)
+- 9-14 Amp visual-only accent trial (**runtime visual-only**)
+- 9-15 Future equipment effect docs (**docs-only**)
+- 9-16 Playtest checklist update (**docs-only**)
+- 9-17 Phase 9 checkpoint docs (**docs-only**)
+
+Phase 9 explicit non-goals:
+
+- no real damage/range/defense increase
+- no critical damage/rate
+- no guard/just guard
+- no special moves/combos
+- no timer gameplay/rounds/retire button
+- no new fighters/story/encyclopedia runtime
+- no online/server/cloud save
+- no BGM/SE assets/playback or image/sprite/3D assets
+- no equipment-specific records schema/analytics
+
+Gameplay/system guardrails remain unchanged:
+
+- HP, damage, knockback
+- attack cooldown, attack duration
+- hitbox size/hit detection
+- CPU behavior
+- one-hit-per-attack rule
+- Ready/Fight timing
+- Pause/Quick Help behavior
+- ResultScene `R` / `C` / Home transitions
+- records schema
+
+**Next recommended task:** Phase 9-4: Equipment data model docs.
