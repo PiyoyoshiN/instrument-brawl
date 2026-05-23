@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
+**Next recommended task:** Phase 9-7: EquipmentSelectScene shell.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -666,7 +666,7 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
+**Next recommended task:** Phase 9-7: EquipmentSelectScene shell.
 
 
 ## Phase 8 checkpoint
@@ -704,7 +704,7 @@ Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, at
 - ResultScene `R` / `C` / Home return does not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
+**Next recommended task:** Phase 9-7: EquipmentSelectScene shell.
 
 
 
@@ -797,6 +797,53 @@ Phase 9-5 equipment registry is implemented as metadata-only runtime foundation 
 
 Future runtime direction (not implemented here): later scene handoff (`player1EquipmentId`/`player2EquipmentId`), later persistence, later HUD/Result shortLabel display, and possible later Amp visual-only accent usage.
 
+### Phase 9-6 EquipmentSelectScene design (docs only)
+
+This step defines the future EquipmentSelectScene design only. No runtime scene or flow change is implemented in this PR.
+
+Planned future role:
+
+- insert Equipment Select between Character Select and Battle
+- target flow (future): Home -> Mode Select -> Character Select -> Equipment Select -> Battle -> Result
+- choose 0 or 1 support equipment per player (`none` / `amp` / `pick` / `case`)
+
+Planned scene goals:
+
+- show selected P1/P2 fighters
+- show P1/P2 equipment rows
+- default both players to `none`
+- allow same equipment on both players
+- keep equipment optional/lightweight and fighter-readable
+
+Planned controls:
+
+- Left/Right: cycle current row equipment
+- Up/Down: switch P1/P2 row focus
+- Enter/Space: confirm and continue
+- Esc: return to Character Select
+- optional future: `R` resets both rows to `none`
+
+Planned visual direction:
+
+- title: `Equipment Select`
+- P1 row + P2 row
+- `displayName`, `shortLabel`, and short description
+- compact hint: equipment is flavor-only for now
+- no sprites/assets/audio required
+
+Planned data direction (future):
+
+- receive fighter context (`player1FighterId`, `player2FighterId`, `player2Mode`)
+- later pass equipment IDs (`player1EquipmentId`, `player2EquipmentId`) with fighter context
+- invalid/missing equipment IDs should resolve to `none` via registry helper
+
+Boundaries for this phase-step:
+
+- no scene implementation yet
+- no gameplay buffs/systems (damage/range/defense/critical/speed/guard/special/projectile)
+- no inventory/unlocks/rarity/currency/progression/account/server
+- no equipment records analytics
+
 Phase 9 guardrails:
 
 - no damage/range/defense buffs
@@ -805,7 +852,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-6: EquipmentSelectScene design docs.
+**Next recommended task:** Phase 9-7: EquipmentSelectScene shell.
 
 ## Play online
 

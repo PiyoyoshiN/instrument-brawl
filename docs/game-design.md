@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 9-6: EquipmentSelectScene design docs**.
+Next recommended task: **Phase 9-7: EquipmentSelectScene shell**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -914,7 +914,7 @@ Guardrails:
 - preserve Phase 8 gameplay/system invariants
 - no combat value tuning or records schema expansion for equipment
 
-Next recommended task: **Phase 9-6: EquipmentSelectScene design docs**.
+Next recommended task: **Phase 9-7: EquipmentSelectScene shell**.
 
 
 ### Phase 9-3 Equipment concept (docs only)
@@ -945,7 +945,7 @@ Implementation boundary:
 - no runtime/schema changes (no registry, scene, handoff, persistence, HUD/result labels, or effect implementation)
 - `attackMethod` / `impactClass` remain planning language unless a later explicit runtime task implements them
 
-Next recommended task: **Phase 9-6: EquipmentSelectScene design docs**.
+Next recommended task: **Phase 9-7: EquipmentSelectScene shell**.
 
 
 ### Phase 9-4 Equipment data model (docs only)
@@ -999,4 +999,55 @@ Implementation boundary:
 - no runtime type/schema added to `src/main.ts`
 - Phase 9-5 is the first runtime step (equipment registry)
 
-Next recommended task: **Phase 9-6: EquipmentSelectScene design docs**.
+Next recommended task: **Phase 9-7: EquipmentSelectScene shell**.
+
+
+### Phase 9-6 EquipmentSelectScene design (docs only)
+
+Purpose:
+
+- design a small menu scene between Character Select and Battle
+- prepare equipment selection UX before runtime shell implementation
+
+Future flow target (not implemented in this step):
+
+- Home -> Mode Select -> Character Select -> Equipment Select -> Battle -> Result
+
+Scene goals:
+
+- show chosen P1/P2 fighter context
+- show P1/P2 equipment choice rows
+- support choices from `none`, `amp`, `pick`, `case`
+- default/fallback both players to `none`
+- allow same equipment on both players
+- keep equipment optional and identity/readability-focused
+
+Control plan (future):
+
+- Left/Right changes equipment on focused row
+- Up/Down switches focus between P1 and P2 rows
+- Enter/Space confirms and continues to Battle
+- Esc returns to Character Select
+- optional future: `R` resets choices to `none`
+
+Visual plan (future):
+
+- title `Equipment Select`
+- P1 row and P2 row
+- display `displayName`, `shortLabel`, and short description
+- include a compact guardrail note such as `Equipment is flavor-only for now`
+- continue rectangle/text style (no asset requirement)
+
+Data/handoff direction (future, not implemented):
+
+- scene may receive: `player1FighterId`, `player2FighterId`, `player2Mode`
+- scene may later pass: `player1FighterId`, `player2FighterId`, `player2Mode`, `player1EquipmentId`, `player2EquipmentId`
+- invalid/missing equipment IDs should resolve to `none` via `getEquipmentDefinition`
+
+Boundaries:
+
+- no runtime scene code in this task
+- no equipment buff/stat/system behavior
+- no persistence/records analytics/account/progression design expansion in this task
+
+Next recommended task: **Phase 9-7: EquipmentSelectScene shell**.
