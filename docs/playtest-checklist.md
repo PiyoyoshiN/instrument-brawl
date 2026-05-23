@@ -143,4 +143,32 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Confirm Records storage is not removed or modified.
 - [ ] Confirm gameplay values/logic are unchanged (HP/damage/knockback/cooldown/duration/hitbox/CPU/one-hit rule).
 
-**Next recommended task:** Phase 8-4: Reset preferences implementation.
+**Next recommended task:** Phase 8-6: Records storage utility.
+
+
+## Phase 8-5 Records runtime design checklist (docs)
+
+- [ ] Records are local-only (no server/account/cloud, no online rank/matchmaking stats).
+- [ ] Records key is explicitly `instrument-brawl:records` and separate from `instrument-brawl:settings`.
+- [ ] Initial records payload is versioned and includes: version, totalMatches, p1Wins, p2Wins, draws, cpuMatches, local2pMatches, lastPlayedAt.
+- [ ] Default values are explicit: version 1, all counters 0, lastPlayedAt null.
+- [ ] Counting rules define total/win/draw/mode increments and ISO `lastPlayedAt` update.
+- [ ] Docs explicitly forbid per-hit logs, damage history, replay data, and detailed analytics.
+- [ ] Double-count prevention is explicit: one completed match saved once.
+- [ ] Docs explicitly state no duplicate counts from Result transitions, R rematch, C return, or Home return.
+- [ ] Preferred future save timing is explicit and justified (save once on first ResultScene entry).
+- [ ] Sanitize/fallback behavior is explicit for unavailable storage, parse failure, invalid payload, and unknown version.
+- [ ] Docs state invalid records must not delete settings and Reset Preferences must not delete records.
+
+## Phase 8-5 future implementation verification checklist
+
+- [ ] Finish a P1 win and confirm `totalMatches` + `p1Wins` increment once.
+- [ ] Finish a P2 win and confirm `totalMatches` + `p2Wins` increment once.
+- [ ] Finish a draw and confirm `totalMatches` + `draws` increment once.
+- [ ] Finish a CPU match and confirm `cpuMatches` increments once.
+- [ ] Finish a Local 2P match and confirm `local2pMatches` increments once.
+- [ ] Use `R` rematch and confirm previous result is not double-counted.
+- [ ] Use `C` return-to-character-select and confirm previous result is not double-counted.
+- [ ] Return Home from Result and confirm previous result is not double-counted.
+- [ ] Confirm Reset Preferences does not delete records.
+- [ ] Confirm settings and records use separate keys.

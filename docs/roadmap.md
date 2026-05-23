@@ -388,8 +388,8 @@ Phase 8 is not a major combat expansion phase.
 - 8-1 Phase 7 checkpoint docs — already complete
 - 8-2 Phase 8 scope docs — this task
 - 8-3 Reset preferences design docs — this task
-- 8-4 Reset preferences implementation
-- 8-5 Records runtime design docs
+- 8-4 Reset preferences implementation — complete
+- 8-5 Records runtime design docs — this task
 - 8-6 Records storage utility
 - 8-7 Save match result once
 - 8-8 RecordsScene shell
@@ -475,6 +475,64 @@ Failure/fallback behavior:
 - remove/save failure -> fail safely without crash
 - existing sanitize/default fallback remains active
 
+
+### Phase 8-5: Records runtime design docs
+
+Records runtime constraints:
+
+- local-only data only (no server/account/cloud)
+- no online rank or matchmaking stats
+- separate key from settings: `instrument-brawl:records`
+- keep `instrument-brawl:settings` and records storage fully separate
+
+Initial payload (v1):
+
+- `version: 1`
+- `totalMatches: 0`
+- `p1Wins: 0`
+- `p2Wins: 0`
+- `draws: 0`
+- `cpuMatches: 0`
+- `local2pMatches: 0`
+- `lastPlayedAt: null`
+
+Counting rules for one completed match:
+
+- increment `totalMatches` once
+- increment winner bucket (`p1Wins` or `p2Wins`) or `draws`
+- increment `cpuMatches` or `local2pMatches` by `player2Mode`
+- set `lastPlayedAt` to ISO timestamp string
+- do not track per-hit/damage/replay/detailed analytics
+
+Double-count prevention (highest priority):
+
+- record exactly once per completed match
+- transitions/rematch/return-home/return-character-select must not add duplicates
+- use a small guard flag in future runtime implementation
+
+Preferred future save timing:
+
+- determine result in BattleScene as today
+- write records exactly once on first ResultScene entry
+- reason: centralized single write point with stable final result + mode context
+
+Sanitize/fallback behavior:
+
+- unavailable localStorage -> default empty records, no crash
+- parse failure -> default empty records
+- missing/invalid/negative/NaN/wrong-type fields -> sanitize to safe defaults
+- unknown `version` -> safe fallback for now
+- invalid records must not remove settings
+- Reset Preferences must not remove records
+
+Out of scope in this phase step:
+
+- achievements/trophies/unlocks
+- encyclopedia/story progress
+- online rank/account/matchmaking stats
+- replay/damage logs/per-fighter deep analytics
+- server/cloud save
+
 ### Phase 8 guardrails for scope/docs tasks
 
 Do not change gameplay values/logic during Phase 8 scope/docs tasks:
@@ -488,7 +546,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-4: Reset preferences implementation.
+**Next recommended task:** Phase 8-6: Records storage utility.
 
 ## Features to avoid for now
 

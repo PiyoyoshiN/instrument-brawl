@@ -353,7 +353,7 @@ Immediate non-goals:
 
 Phase 8 scope/docs guardrails (must not change in these tasks): HP, damage, knockback, attack cooldown, attack duration, hitbox, CPU behavior, and one-hit-per-attack.
 
-Next recommended task: **Phase 8-4: Reset preferences implementation**.
+Next recommended task: **Phase 8-6: Records storage utility**.
 
 ### Phase 8-3 Reset Preferences design (docs only)
 
@@ -394,6 +394,60 @@ Failure behavior:
 - localStorage unavailable/failure must fail safely
 - No gameplay crash on reset failure
 - Existing sanitize/default behavior remains fallback
+
+
+### Phase 8-5 Records runtime design (docs only)
+
+Records are local-only runtime counters.
+
+Storage separation:
+
+- settings: `instrument-brawl:settings`
+- records: `instrument-brawl:records`
+- both keys stay separate by design
+
+Initial records shape (`version: 1`):
+
+- `totalMatches`, `p1Wins`, `p2Wins`, `draws`
+- `cpuMatches`, `local2pMatches`
+- `lastPlayedAt` (nullable; default `null`)
+
+Default values start at zero (and `lastPlayedAt: null`).
+
+Counting rules:
+
+- completed match increments `totalMatches` once
+- increment one of `p1Wins` / `p2Wins` / `draws`
+- increment `cpuMatches` for CPU mode, `local2pMatches` for Human mode
+- set `lastPlayedAt` to ISO timestamp string
+- do not store per-hit, damage history, replay, or deep analytics
+
+Double-count prevention is the top rule:
+
+- each completed match is persisted once
+- rematch, return-to-character-select, and return-home from Result must not duplicate the previous match
+- future implementation should include a minimal once-only guard flag
+
+Preferred future save point:
+
+- save exactly once when ResultScene is first entered
+- keep BattleScene as result source only
+- this keeps write timing centralized and reduces duplicate-write risk
+
+Fallback/sanitize behavior:
+
+- no localStorage / parse error / invalid payload -> safe empty defaults without crash
+- unknown version -> safe fallback for now
+- invalid records handling must not delete settings
+- Reset Preferences must not delete records
+
+Out of scope:
+
+- achievements/trophies/unlocks
+- encyclopedia/story progress
+- online rank/matchmaking/account stats
+- replay data, damage logs, per-fighter deep analytics
+- server/cloud persistence
 
 ### Phase 7-7 localStorage save foundation (design only)
 

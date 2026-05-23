@@ -219,6 +219,78 @@ Failure/fallback behavior:
 - If remove/save fails, gameplay must not crash
 - Existing sanitize/default fallback behavior remains the safety net
 
+
+### Phase 8-5 Records runtime design (docs only)
+
+Records runtime is local-only.
+
+- No server save
+- No account sync
+- No online ranking
+- No matchmaking stats
+- No cloud persistence
+
+Storage separation:
+
+- Settings key remains `instrument-brawl:settings`
+- Records key is `instrument-brawl:records`
+- Records and settings must stay separate
+
+Initial records payload (versioned JSON):
+
+```json
+{
+  "version": 1,
+  "totalMatches": 0,
+  "p1Wins": 0,
+  "p2Wins": 0,
+  "draws": 0,
+  "cpuMatches": 0,
+  "local2pMatches": 0,
+  "lastPlayedAt": null
+}
+```
+
+Match counting rules (when a completed match is recorded):
+
+- Increment `totalMatches` once
+- Increment `p1Wins` for P1 win
+- Increment `p2Wins` for P2 win
+- Increment `draws` for draw
+- Increment `cpuMatches` when `player2Mode === "cpu"`
+- Increment `local2pMatches` when `player2Mode === "human"`
+- Update `lastPlayedAt` with an ISO timestamp string
+- Do not track per-hit data, damage history, replays, detailed logs, or analytics
+
+Most important rule: prevent double counting.
+
+- One completed match must be saved once only
+- Result transitions, `matchOver` timing, `R` rematch, `C` return-to-character-select, and Enter/Space return Home must not duplicate counts
+- Future implementation should use a small once-per-match guard flag
+
+Preferred future ownership/timing:
+
+- BattleScene continues deciding winner/draw
+- Persist records exactly once **when ResultScene is first entered**
+- Reason: one centralized entry point for P1/P2/draw + `player2Mode` context, lower risk of duplicate writes from battle update timing
+
+Sanitize/fallback rules:
+
+- If localStorage is unavailable, use default empty records and do not crash
+- If parse fails, fallback to default empty records
+- Missing/invalid/negative/NaN/wrong-type fields sanitize to safe defaults
+- Unknown `version` falls back safely for now
+- Invalid records must not delete settings
+- Reset Preferences must not delete records
+
+Records runtime out of scope:
+
+- achievements, trophies, unlocks
+- encyclopedia/story progress
+- online rank/account stats/matchmaking
+- replay data, damage logs, per-fighter detailed analytics
+- server/cloud save
+
 ### Phase 8 guardrails for scope/docs tasks
 
 During Phase 8 scope/docs tasks, do not change:
@@ -232,7 +304,7 @@ During Phase 8 scope/docs tasks, do not change:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 8-4: Reset preferences implementation.
+**Next recommended task:** Phase 8-6: Records storage utility.
 
 ## Play online
 
