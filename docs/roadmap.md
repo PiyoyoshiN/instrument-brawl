@@ -212,7 +212,7 @@ Implemented in Phase 6:
 
 These remain visual-only trial effects under Phase 6 guardrails; gameplay values/logic were not expanded.
 
-Next recommended direction: move to Phase 7 game shell direction (Home / Mode / Options) and localStorage planning, unless explicitly instructed otherwise.
+Next recommended direction: Phase 7 checkpoint is complete; move to Phase 8 planning starting with Phase 8-2 scope definition.
 
 Future hook note: later combat/effects work can introduce planned `impactClass` / `attackMethod` categories (`direct-heavy`, `direct-medium`, `direct-light`, `sonic`, `hybrid`) as implementation tasks.
 
@@ -368,13 +368,185 @@ Storage direction for later implementation:
 - include `version` for migration
 - sanitize invalid values and fallback to empty/default records when storage is unavailable/invalid
 
-## Phase 6-10+ direction
 
-- Phase 6: effects trial and presentation experiments.
-- Phase 7: game shell direction for Home / Mode / Options and localStorage-based save planning.
-- Phase 8: match rule expansion consideration such as Retire / Timer / rounds, without rushing rounds.
-- Phase 9: encyclopedia, records, and light worldbuilding.
-- Phase 10+: specials, items, new fighters, and larger content expansion.
+## Phase 7 checkpoint
+
+Phase 7 checkpoint is complete.
+
+- Game shell complete.
+- Mode Select complete.
+- Options complete.
+- localStorage settings complete (`instrument-brawl:settings`).
+- Records foundation docs complete.
+- Records runtime is not implemented yet.
+## Phase 8 scope: Records / Reset / Match Rule & Equipment Planning
+
+Phase 8 is not a major combat expansion phase.
+
+### Phase 8 task list (8-1 to 8-17)
+
+- 8-1 Phase 7 checkpoint docs — already complete
+- 8-2 Phase 8 scope docs — this task
+- 8-3 Reset preferences design docs — this task
+- 8-4 Reset preferences implementation — complete
+- 8-5 Records runtime design docs — this task
+- 8-6 Records storage utility
+- 8-7 Save match result once
+- 8-8 RecordsScene shell
+- 8-9 Home Records entry
+- 8-10 Reset Records design docs
+- 8-11 Reset Records implementation
+- 8-12 Retire / Forfeit design docs
+- 8-13 Timer design docs
+- 8-14 Equipment / Amp design docs
+- 8-15 `attackMethod` / `impactClass` docs
+- 8-16 Playtest checklist update
+- 8-17 Phase 8 checkpoint docs
+
+### Phase 8 implementation targets
+
+- Reset Preferences
+- Records localStorage utility
+- Save match result once
+- RecordsScene shell
+- Home Records entry
+- Reset Records
+- Playtest checklist updates
+
+### Phase 8 docs/design-only targets
+
+- Retire / Forfeit
+- Timer
+- Equipment / Amp
+- `attackMethod` / `impactClass`
+- Critical rate / guard / just guard as future design topics only
+
+### Phase 8 immediate non-goals
+
+- No equipment implementation
+- No amp/ranged/sonic attack implementation
+- No critical damage/rate gameplay implementation
+- No guard or just guard implementation
+- No special moves
+- No rounds
+- No timer gameplay implementation
+- No new fighters
+- No encyclopedia implementation
+- No story
+- No online play
+- No server saving
+- No BGM/SE assets
+- No images, sprites, or 3D
+
+### Phase 8-3: Reset preferences design docs
+
+Design rules:
+
+- Reset Preferences resets settings only (`instrument-brawl:settings`)
+- Do not modify/delete/read `instrument-brawl:records`
+- Keep Reset Preferences separate from future Reset Records (no reset-all in this phase)
+
+Reset defaults:
+
+- P1 fighter: `electric-guitar`
+- P2 fighter: `bass`
+- P2 mode: `human`
+- Effects: `true`
+- Screen shake: `true`
+
+Future UI behavior (OptionsScene):
+
+- Separate Reset Preferences row/action
+- Two-step confirmation (`Press again to confirm`)
+- Escape or moving away cancels pending confirmation
+- Keep implementation minimal; no modal system design in this phase
+
+Expected post-reset behavior:
+
+- Settings storage returns to defaults
+- Mode Select restores default Human highlight
+- Character Select restores default fighters unless scene data overrides
+- Options restores Effects ON and Screen Shake ON
+- Gameplay logic/values remain unchanged
+
+Failure/fallback behavior:
+
+- localStorage unavailable -> fail safely without crash
+- remove/save failure -> fail safely without crash
+- existing sanitize/default fallback remains active
+
+
+### Phase 8-5: Records runtime design docs
+
+Records runtime constraints:
+
+- local-only data only (no server/account/cloud)
+- no online rank or matchmaking stats
+- separate key from settings: `instrument-brawl:records`
+- keep `instrument-brawl:settings` and records storage fully separate
+
+Initial payload (v1):
+
+- `version: 1`
+- `totalMatches: 0`
+- `p1Wins: 0`
+- `p2Wins: 0`
+- `draws: 0`
+- `cpuMatches: 0`
+- `local2pMatches: 0`
+- `lastPlayedAt: null`
+
+Counting rules for one completed match:
+
+- increment `totalMatches` once
+- increment winner bucket (`p1Wins` or `p2Wins`) or `draws`
+- increment `cpuMatches` or `local2pMatches` by `player2Mode`
+- set `lastPlayedAt` to ISO timestamp string
+- do not track per-hit/damage/replay/detailed analytics
+
+Double-count prevention (highest priority):
+
+- record exactly once per completed match
+- transitions/rematch/return-home/return-character-select must not add duplicates
+- use a small guard flag in future runtime implementation
+
+Preferred future save timing:
+
+- determine result in BattleScene as today
+- write records exactly once on first ResultScene entry
+- reason: centralized single write point with stable final result + mode context
+
+Sanitize/fallback behavior:
+
+- unavailable localStorage -> default empty records, no crash
+- parse failure -> default empty records
+- missing/invalid/negative/NaN/wrong-type fields -> sanitize to safe defaults
+- unknown `version` -> safe fallback for now
+- invalid records must not remove settings
+- Reset Preferences must not remove records
+
+Out of scope in this phase step:
+
+- achievements/trophies/unlocks
+- encyclopedia/story progress
+- online rank/account/matchmaking stats
+- replay/damage logs/per-fighter deep analytics
+- server/cloud save
+
+### Phase 8 guardrails for scope/docs tasks
+
+Do not change gameplay values/logic during Phase 8 scope/docs tasks:
+
+- HP
+- damage
+- knockback
+- attack cooldown
+- attack duration
+- hitbox
+- CPU behavior
+- one-hit-per-attack
+
+**Next recommended task:** Phase 8-6: Records storage utility.
 
 ## Features to avoid for now
 
