@@ -1078,7 +1078,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-11 Drum Sticks critical prototype v1 (40% / 1.5x candidate) (**runtime**) — complete
 - 10-12 Drum Sticks + Case critical interaction rule (critical bypass + Case tradeoff) (**runtime**) — complete
 - 10-13 Critical behavior checklist update (**docs-only**) — complete
-- 10-14 Equipment interaction matrix docs (Amp/Case/Drum Sticks rules) (**docs-only**)
+- 10-14 Equipment interaction matrix docs (Amp/Case/Drum Sticks rules) (**docs-only**) — complete
 - 10-15 Japanese UI label plan docs (equipment/fighter naming policy) (**docs-only**)
 - 10-16 Pick “準備中” UI wording/docs preparation (**docs-only**)
 - 10-17 Prototype balancing pass #1 (small reversible tuning only) (**runtime**)
@@ -1294,4 +1294,15 @@ Implemented scope:
 - Checklist covers Drum Sticks + Case losing critical eligibility.
 - Checklist confirms no knockback / HP / guard / schema changes.
 
-**Next recommended task:** Phase 10-14: Equipment interaction matrix docs.
+### Phase 10-14 Equipment interaction matrix docs (docs-only)
+
+Implemented scope:
+
+- Added a clear Phase 10 equipment interaction matrix/reference section.
+- Matrix covers Amp compatibility and reach-only behavior.
+- Matrix covers Case normal damage reduction behavior and formula.
+- Matrix covers Drum Sticks critical behavior and Drum Sticks + Case tradeoff.
+- Matrix covers Pick as selectable/displayed no-effect (`準備中`) candidate.
+- No records/settings schema changes.
+
+**Next recommended task:** Phase 10-15: Japanese UI label plan docs.

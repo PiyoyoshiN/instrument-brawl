@@ -936,6 +936,79 @@ Phase 9 ended with display/identity foundation only: labels, handoff, persistenc
 
 Next recommended task: **Phase 10-1: Phase 10 scope docs**.
 
+### Phase 10 equipment interaction matrix (implemented reference)
+
+This section describes **currently implemented** Phase 10 prototype behavior only.
+Future ideas are out of scope unless explicitly listed below.
+
+#### Equipment baseline
+
+| Equipment | Compatibility | Implemented behavior |
+| --- | --- | --- |
+| `none` | All fighters | Baseline behavior with no equipment effect. |
+| `amp` | Electric Guitar / Bass / Keyboard | Small reach bonus only. No damage increase, no knockback/cooldown/duration/speed/HP/defense changes. Non-projectile, non-screen-wide, non-multi-hit. |
+| `amp` + Drum Sticks | Incompatible | Resolved to `none` before battle behavior. |
+| `case` | All fighters | Defender-side normal damage reduction: `floor(baseDamage * 0.8)`, then clamp minimum 1. Critical damage is not reduced. No knockback reduction, HP increase, or guard behavior. |
+| `pick` | All fighters | Selectable/displayed only. No Phase 10 gameplay effect (`準備中` candidate). |
+
+Additional Case attacker-side rule:
+
+- Drum Sticks + Case loses high-critical identity (does not critical).
+
+#### Fighter x equipment interaction rules
+
+- Electric Guitar:
+  - + `none`: baseline (normal 10 damage against non-Case).
+  - + `amp`: small reach bonus only; no damage increase.
+  - + `case`: receives Case defensive reduction when hit; own attack remains normal 10; no critical.
+  - + `pick`: no gameplay effect.
+- Bass:
+  - + `none`: baseline (normal 10 damage against non-Case).
+  - + `amp`: small reach bonus only; no damage increase.
+  - + `case`: receives Case defensive reduction when hit; own attack remains normal 10; no critical.
+  - + `pick`: no gameplay effect.
+- Keyboard:
+  - + `none`: baseline (normal 9 damage against non-Case).
+  - + `amp`: small reach bonus only; no damage increase.
+  - + `case`: receives Case defensive reduction when hit; own attack remains normal 9; no critical.
+  - + `pick`: no gameplay effect.
+- Drum Sticks:
+  - + `none`: base 8, can critical at 40%, critical damage 12, critical bypasses defender Case.
+  - + `amp`: incompatible, resolved to `none` before battle behavior.
+  - + `case`: no critical in this prototype; normal 8 vs non-Case, 6 vs Case defender; still receives defensive Case reduction when hit.
+  - + `pick`: Pick has no gameplay effect; Drum Sticks can still critical because Pick is not Case.
+
+#### Damage examples (expected)
+
+- Electric Guitar/Bass normal vs none: 10.
+- Electric Guitar/Bass normal vs Case: 8.
+- Keyboard normal vs none: 9.
+- Keyboard normal vs Case: 7.
+- Drum Sticks + none normal vs none: 8.
+- Drum Sticks + none critical vs none: 12.
+- Drum Sticks + none normal vs Case: 6.
+- Drum Sticks + none critical vs Case: 12.
+- Drum Sticks + Case vs none: 8.
+- Drum Sticks + Case vs Case: 6.
+- Drum Sticks + Pick normal vs Case: 6.
+- Drum Sticks + Pick critical vs Case: 12.
+
+#### Phase 10 guardrails still in effect
+
+- No Pick gameplay effect.
+- No Amp projectile or separate echo hitbox.
+- No screen-wide attack.
+- No multi-hit behavior.
+- No knockback reduction.
+- No HP increase.
+- No guard / just guard.
+- No special moves or combo system.
+- No equipment-specific records, critical-count records, or damage-dealt records.
+- No equipment win-rate analytics.
+- No `instrument-brawl:records` schema changes.
+- No `instrument-brawl:settings` schema changes.
+- No new assets/audio/images/3D for this ruleset.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 
