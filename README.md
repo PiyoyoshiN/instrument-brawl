@@ -856,7 +856,51 @@ Phase 9-11 persists last selected equipment IDs in `instrument-brawl:settings` (
 
 Phase 9-11 fix: CharacterSelectScene now uses stored equipment IDs when scene data does not provide them, while still giving priority to explicit scene-data equipment IDs.
 
-Phase 9-12 adds Battle HUD equipment labels (`P1 Equip` / `P2 Equip`) using resolved equipment short labels. Labels are display-only: no gameplay effect. Result equipment display and Amp visual accent are still not implemented.
+Phase 9-12 adds Battle HUD equipment labels (`P1 Equip` / `P2 Equip`) using resolved equipment short labels. Labels are display-only: no gameplay effect.
+
+Phase 9-13 adds ResultScene equipment labels (`P1 Equip` / `P2 Equip`) using already-resolved equipment short labels. This is display-only and equipment has no gameplay effect.
+
+Phase 9-14 adds a subtle Amp-only visual accent in BattleScene when the selected equipment is `amp`. This is visual-only, does not affect gameplay, and does not add Pick/Case effects. Future equipment gameplay effects are still not implemented.
+
+Phase 9-15 documents future equipment effect direction only:
+
+- Amp may later explore sonic / ranged / hybrid / signal-style identity.
+- Pick may later explore precision / close-range / timing-style identity.
+- Case may later explore protection / setup / stability-style identity.
+
+These are future design directions only and are not implemented runtime behavior.
+
+Future equipment effect rules:
+
+- Any equipment gameplay effect must be an explicit future phase task.
+- Introduce effects one at a time with isolated playtest checklist items.
+- Do not change settings/records schema unless a future explicit schema task requires it.
+- Equipment-specific records/analytics remain out of scope for now.
+- Inventory/unlocks/rarity/currency/progression remain out of scope for now.
+
+## Phase 9 checkpoint
+
+Phase 9 is complete.
+
+Completed Phase 9 runtime foundation:
+
+- Equipment metadata registry exists.
+- EquipmentSelectScene exists.
+- P1/P2 equipment selection exists.
+- Equipment IDs pass EquipmentSelectScene -> BattleScene -> ResultScene.
+- Rematch/return preserves equipment IDs.
+- Equipment selections persist in `instrument-brawl:settings`.
+- Battle HUD displays P1/P2 equipment labels.
+- ResultScene displays P1/P2 equipment labels.
+- Amp has a BattleScene-only visual accent.
+
+Guardrail confirmation:
+
+- Equipment remains gameplay-neutral.
+- Pick/Case effects are not implemented.
+- Future equipment gameplay effects are not implemented.
+- Records schema is unchanged.
+- Settings schema is unchanged in this phase closeout task.
 
 Phase 9 guardrails:
 
@@ -866,7 +910,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-13: Result equipment display.
+**Next recommended task:** Phase 10-1: Phase 10 scope docs.
 
 ## Play online
 
