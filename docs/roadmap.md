@@ -1070,7 +1070,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-3 Amp compatibility rules docs (Drum Sticks incompatibility) (**docs-only**) — complete
 - 10-4 Damage pipeline prep docs (normal/critical/equipment order) (**docs-only**) — complete
 - 10-5 Amp gameplay prototype v1 (short sonic reach/echo, non-projectile) (**runtime**) — complete
-- 10-6 Amp gameplay playtest checklist update (**docs-only**)
+- 10-6 Amp gameplay playtest checklist update (**docs-only**) — complete
 - 10-7 Amp gameplay sanity pass (**runtime**)
 - 10-8 Case reduction prototype v1 (~20% normal damage reduction) (**runtime**)
 - 10-9 Case reduction checklist update (**docs-only**)
@@ -1208,4 +1208,13 @@ Guardrails kept in 10-5:
 - No records schema change.
 - No settings schema change.
 
-**Next recommended task:** Phase 10-6: Amp gameplay playtest checklist update.
+### Phase 10-6 Amp gameplay playtest checklist update (docs-only)
+
+Implemented scope:
+
+- Added manual validation checklist for Amp reach prototype behavior.
+- Checklist covers compatible fighter reach behavior and Drum Sticks + Amp fallback safety.
+- Checklist confirms Amp remains reach-only (non-projectile, non-screen-wide, no multi-hit).
+- Checklist confirms no damage/knockback/cooldown/schema changes.
+
+**Next recommended task:** Phase 10-7: Amp gameplay sanity pass.

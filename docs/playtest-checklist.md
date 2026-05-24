@@ -734,4 +734,44 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] No assets/audio/images/3D are added.
 - [ ] Next recommended task is Phase 10-5: Amp gameplay prototype v1.
 
-**Next recommended task:** Phase 10-5: Amp gameplay prototype v1.
+## Phase 10-6 Amp gameplay playtest checklist update
+
+- [ ] Electric Guitar + Amp has slightly longer reach than Electric Guitar + none.
+- [ ] Bass + Amp has slightly longer reach than Bass + none.
+- [ ] Keyboard + Amp has slightly longer reach than Keyboard + none.
+- [ ] Amp reach difference is small/readable and not a full ranged attack.
+- [ ] Amp attack rectangle may appear slightly wider but still feels melee/sonic reach.
+- [ ] Amp does not create a projectile.
+- [ ] Amp does not create a screen-wide attack.
+- [ ] Amp does not create a separate damaging echo hitbox.
+- [ ] Amp does not create multi-hit behavior.
+- [ ] One attack can hit only once.
+- [ ] Drum Sticks + Amp does not gain Amp reach.
+- [ ] Drum Sticks + Amp resolves safely to `none` in Battle/Result display.
+- [ ] Drum Sticks does not show Amp accent when Amp was resolved to `none`.
+- [ ] Electric Guitar / Bass / Keyboard can still show Amp accent when Amp is selected and effects are enabled.
+- [ ] Invalid/stale equipment data does not crash.
+- [ ] Amp does not increase damage.
+- [ ] Amp does not change knockback.
+- [ ] Amp does not change attack cooldown.
+- [ ] Amp does not change attack duration.
+- [ ] Amp does not change movement speed.
+- [ ] Amp does not change HP.
+- [ ] Amp does not change defense.
+- [ ] Case reduction is still not implemented.
+- [ ] Critical hits are still not implemented.
+- [ ] Pick effect is still not implemented.
+- [ ] CPU using an Amp-compatible fighter with Amp can use slightly longer reach.
+- [ ] CPU mode does not crash.
+- [ ] ResultScene still opens normally.
+- [ ] ResultScene shows sanitized equipment labels.
+- [ ] `R` rematch still works.
+- [ ] `C` return still works.
+- [ ] Home return still works.
+- [ ] records schema is unchanged.
+- [ ] settings schema is unchanged.
+- [ ] no Amp usage records are added.
+- [ ] no equipment-specific win-rate analytics are added.
+- [ ] Reset Preferences still resets equipment to `none`.
+
+**Next recommended task:** Phase 10-7: Amp gameplay sanity pass.
