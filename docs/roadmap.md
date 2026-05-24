@@ -919,7 +919,7 @@ Initial equipment candidates:
 - 9-10 Rematch / return preservation (**runtime**) — complete (this task)
 - 9-11 localStorage equipment persistence (**runtime**) — complete (this task)
 - 9-12 Battle HUD equipment labels (**runtime**) — complete (this task)
-- 9-13 Result equipment display (**runtime**)
+- 9-13 Result equipment display (**runtime**) — complete
 - 9-14 Amp visual-only accent trial (**runtime visual-only**)
 - 9-15 Future equipment effect docs (**docs-only**)
 - 9-16 Playtest checklist update (**docs-only**)
@@ -949,4 +949,4 @@ Gameplay/system guardrails remain unchanged:
 - ResultScene `R` / `C` / Home transitions
 - records schema
 
-**Next recommended task:** Phase 9-13: Result equipment display.
+**Next recommended task:** Phase 9-14: Amp visual-only accent trial.
