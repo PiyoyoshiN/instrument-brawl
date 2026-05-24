@@ -1074,7 +1074,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-7 Amp gameplay sanity pass (**runtime**) — complete
 - 10-8 Case reduction prototype v1 (~20% normal damage reduction) (**runtime**) — complete
 - 10-9 Case reduction checklist update (**docs-only**) — complete
-- 10-10 Case reduction sanity pass (**runtime**)
+- 10-10 Case reduction sanity pass (**runtime**) — complete
 - 10-11 Drum Sticks critical prototype v1 (40% / 1.5x candidate) (**runtime**)
 - 10-12 Drum Sticks + Case critical interaction rule (critical bypass + Case tradeoff) (**runtime**)
 - 10-13 Critical behavior checklist update (**docs-only**)
@@ -1252,4 +1252,14 @@ Implemented scope:
 - Checklist confirms hit marker and HP reduction must match final reduced damage.
 - Checklist confirms no knockback / HP / guard / schema changes.
 
-**Next recommended task:** Phase 10-10: Case reduction sanity pass.
+### Phase 10-10 Case reduction sanity pass (runtime)
+
+Implemented scope:
+
+- Case reduction sanity pass is complete.
+- Case remains normal incoming damage reduction only.
+- HP reduction and hit marker use the same final damage number.
+- No knockback / HP / guard / cooldown / schema changes were introduced.
+- Critical hits are still not implemented.
+
+**Next recommended task:** Phase 10-11: Drum Sticks critical prototype v1.

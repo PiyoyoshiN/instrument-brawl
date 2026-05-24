@@ -25,6 +25,7 @@ const hpBarInset = 3;
 const cpuAttackDistancePadding = 18;
 // Phase 10 Amp prototype: small reach-only bonus (no projectile, no damage increase).
 const ampAttackReachBonusPx = 24;
+// Phase 10 Case prototype: normal incoming damage only (no knockback/HP/guard behavior changes).
 const caseNormalDamageMultiplier = 0.8;
 const cpuComfortDistance = 140;
 const cpuDecisionIntervalMs = 850;
@@ -2376,6 +2377,8 @@ class BattleScene extends Phaser.Scene {
   }
 
   private calculateNormalDamage(attacker: Fighter, defender: Fighter): number {
+    // Current runtime treats all hits as normal hits (critical is not implemented yet).
+    // Future critical bypass handling can be layered here or in a dedicated damage helper.
     const baseDamage = attacker.stats.attackDamage;
     const defenderEquipmentId = this.getFighterEquipmentId(defender);
     const reducedDamage =
