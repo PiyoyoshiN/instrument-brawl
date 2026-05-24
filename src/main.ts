@@ -2402,7 +2402,15 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 304, 'Press R to rematch', {
+      .text(400, 286, `P1 Equip: ${this.player1Equipment.shortLabel}   •   P2 Equip: ${this.player2Equipment.shortLabel}`, {
+        color: '#94a3b8',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 326, 'Press R to rematch', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '26px',
@@ -2410,7 +2418,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 352, 'Press C to change fighters (keeps picks)', {
+      .text(400, 372, 'Press C to change fighters (keeps picks)', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',
@@ -2418,7 +2426,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 400, 'Press Enter or Space to return to Home', {
+      .text(400, 414, 'Press Enter or Space to return to Home', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
