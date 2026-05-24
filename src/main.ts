@@ -27,7 +27,10 @@ const cpuAttackDistancePadding = 18;
 const ampAttackReachBonusPx = 24;
 // Phase 10 Case prototype: normal incoming damage only (no knockback/HP/guard behavior changes).
 const caseNormalDamageMultiplier = 0.8;
-const drumSticksCriticalRate = 0.4;
+// Phase 10 prototype balancing pass #1:
+// Drum Sticks keeps a high-variance critical identity, tuned to 35% / 1.5x
+// so expected damage stays below Electric Guitar/Bass baseline while preserving burst.
+const drumSticksCriticalRate = 0.35;
 const drumSticksCriticalMultiplier = 1.5;
 const cpuComfortDistance = 140;
 const cpuDecisionIntervalMs = 850;

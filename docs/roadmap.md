@@ -1081,7 +1081,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-14 Equipment interaction matrix docs (Amp/Case/Drum Sticks rules) (**docs-only**) — complete
 - 10-15 Japanese UI label plan docs (equipment/fighter naming policy) (**docs-only**) — complete
 - 10-16 Pick “準備中” UI wording/docs preparation (**docs-only**) — complete
-- 10-17 Prototype balancing pass #1 (small reversible tuning only) (**runtime**)
+- 10-17 Prototype balancing pass #1 (small reversible tuning only) (**runtime**) — complete
 - 10-18 Prototype balancing checklist update (**docs-only**)
 - 10-19 Phase 10 prototype checkpoint docs (**docs-only**)
 - 10-20 Post-prototype go/no-go notes for next phase (**docs-only**)
@@ -1325,4 +1325,16 @@ Implemented scope:
 - Documented recommended labels: `ピック（準備中）`, `ピック`, `準備中`.
 - No runtime/schema/gameplay changes.
 
-**Next recommended task:** Phase 10-17: Prototype balancing pass #1.
+### Phase 10-17 Prototype balancing pass #1 (runtime)
+
+Implemented scope:
+
+- Prototype balancing pass #1 completed.
+- Drum Sticks critical rate tuned from 40% to 35%.
+- Critical multiplier remains 1.5x.
+- Critical damage remains 12.
+- Amp +24px and Case 20% reduction remain unchanged.
+- Pick remains no-effect.
+- No records/settings schema changes.
+
+**Next recommended task:** Phase 10-18: Prototype balancing checklist update.

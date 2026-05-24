@@ -973,7 +973,7 @@ Additional Case attacker-side rule:
   - + `case`: receives Case defensive reduction when hit; own attack remains normal 9; no critical.
   - + `pick`: no gameplay effect.
 - Drum Sticks:
-  - + `none`: base 8, can critical at 40%, critical damage 12, critical bypasses defender Case.
+  - + `none`: base 8, can critical at 35%, critical damage 12, critical bypasses defender Case.
   - + `amp`: incompatible, resolved to `none` before battle behavior.
   - + `case`: no critical in this prototype; normal 8 vs non-Case, 6 vs Case defender; still receives defensive Case reduction when hit.
   - + `pick`: Pick has no gameplay effect; Drum Sticks can still critical because Pick is not Case.
