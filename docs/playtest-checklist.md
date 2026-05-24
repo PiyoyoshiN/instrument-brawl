@@ -774,4 +774,42 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] no equipment-specific win-rate analytics are added.
 - [ ] Reset Preferences still resets equipment to `none`.
 
-**Next recommended task:** Phase 10-7: Amp gameplay sanity pass.
+## Phase 10-9 Case reduction checklist update
+
+- [ ] Electric Guitar attacking a Case target deals 8 instead of 10.
+- [ ] Bass attacking a Case target deals 8 instead of 10.
+- [ ] Keyboard attacking a Case target deals 7 instead of 9.
+- [ ] Drum Sticks attacking a Case target deals 6 instead of 8.
+- [ ] Non-Case targets still take normal base damage.
+- [ ] Final damage is clamped to minimum 1.
+- [ ] Hit marker shows final reduced damage, not original base damage.
+- [ ] HP reduction and hit marker number match.
+- [ ] Case does not reduce knockback.
+- [ ] Case does not increase max HP.
+- [ ] Case does not change movement speed.
+- [ ] Case does not change attack cooldown.
+- [ ] Case does not change attack duration.
+- [ ] Case does not add guard / just guard.
+- [ ] Case does not add block / armor mechanics.
+- [ ] Case does not create new UI screens.
+- [ ] Critical hits are still not implemented.
+- [ ] Case critical bypass is still not implemented.
+- [ ] Pick effect is still not implemented.
+- [ ] Amp reach still works.
+- [ ] Amp still does not increase damage.
+- [ ] One attack can still hit only once.
+- [ ] Battle HUD still displays equipment labels.
+- [ ] ResultScene still opens normally.
+- [ ] ResultScene still displays equipment labels.
+- [ ] `R` rematch still works.
+- [ ] `C` return still works.
+- [ ] Home return still works.
+- [ ] CPU mode does not crash.
+- [ ] records schema is unchanged.
+- [ ] settings schema is unchanged.
+- [ ] no Case usage records are added.
+- [ ] no damage dealt records are added.
+- [ ] no equipment-specific win-rate analytics are added.
+- [ ] Reset Preferences still resets equipment to `none`.
+
+**Next recommended task:** Phase 10-10: Case reduction sanity pass.
