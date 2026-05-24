@@ -1075,7 +1075,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-8 Case reduction prototype v1 (~20% normal damage reduction) (**runtime**) — complete
 - 10-9 Case reduction checklist update (**docs-only**) — complete
 - 10-10 Case reduction sanity pass (**runtime**) — complete
-- 10-11 Drum Sticks critical prototype v1 (40% / 1.5x candidate) (**runtime**)
+- 10-11 Drum Sticks critical prototype v1 (40% / 1.5x candidate) (**runtime**) — complete
 - 10-12 Drum Sticks + Case critical interaction rule (critical bypass + Case tradeoff) (**runtime**)
 - 10-13 Critical behavior checklist update (**docs-only**)
 - 10-14 Equipment interaction matrix docs (Amp/Case/Drum Sticks rules) (**docs-only**)
@@ -1262,4 +1262,16 @@ Implemented scope:
 - No knockback / HP / guard / cooldown / schema changes were introduced.
 - Critical hits are still not implemented.
 
-**Next recommended task:** Phase 10-11: Drum Sticks critical prototype v1.
+### Phase 10-11 Drum Sticks critical prototype v1 (runtime)
+
+Implemented scope:
+
+- Drum Sticks now has critical prototype v1.
+- Critical rate is 40%.
+- Critical multiplier is 1.5x.
+- Drum Sticks base 8 becomes 12 on critical.
+- Critical bypasses defender Case reduction.
+- Electric Guitar / Bass / Keyboard do not critical in this step.
+- No records/settings schema changes.
+
+**Next recommended task:** Phase 10-12: Drum Sticks + Case critical interaction rule.

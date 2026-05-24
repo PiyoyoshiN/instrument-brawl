@@ -27,6 +27,8 @@ const cpuAttackDistancePadding = 18;
 const ampAttackReachBonusPx = 24;
 // Phase 10 Case prototype: normal incoming damage only (no knockback/HP/guard behavior changes).
 const caseNormalDamageMultiplier = 0.8;
+const drumSticksCriticalRate = 0.4;
+const drumSticksCriticalMultiplier = 1.5;
 const cpuComfortDistance = 140;
 const cpuDecisionIntervalMs = 850;
 const cpuRetreatDurationMs = 420;
@@ -608,6 +610,11 @@ type ActiveAttack = {
   hitbox: Phaser.GameObjects.Rectangle;
   hasHit: boolean;
   expiresAt: number;
+};
+
+type DamageCalculationResult = {
+  damage: number;
+  isCritical: boolean;
 };
 type BattleSceneData = {
   player1FighterId?: string;
@@ -2041,12 +2048,12 @@ class BattleScene extends Phaser.Scene {
 
       if (Phaser.Geom.Intersects.RectangleToRectangle(attack.hitbox.getBounds(), attack.defender.body.getBounds())) {
         attack.hasHit = true;
-        const finalDamage = this.calculateNormalDamage(attack.attacker, attack.defender);
-        this.applyDamage(attack.defenderHp, finalDamage);
+        const damageResult = this.calculateAttackDamage(attack.attacker, attack.defender);
+        this.applyDamage(attack.defenderHp, damageResult.damage);
         this.applyKnockback(attack.defender, attack.attacker.facing, attack.attacker.stats.knockbackSpeed);
         this.flashFighter(attack.defender);
         this.showHitSpark(attack.defender, attack.attacker);
-        this.showHitMarker(attack.defender, finalDamage);
+        this.showHitMarker(attack.defender, damageResult.damage, damageResult.isCritical);
         this.shakeCameraOnHit();
         this.checkMatchResult();
 
@@ -2107,7 +2114,7 @@ class BattleScene extends Phaser.Scene {
     this.hitSparkEvents.push(sparkEvent);
   }
 
-  private showHitMarker(fighter: Fighter, damage: number) {
+  private showHitMarker(fighter: Fighter, damage: number, isCritical = false) {
     if (this.matchOver) {
       return;
     }
@@ -2127,7 +2134,7 @@ class BattleScene extends Phaser.Scene {
 
     if (this.effectsEnabled) {
       this.hitMarkerSubLabel = this.add
-        .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, 'CLEAN HIT', {
+        .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, isCritical ? '会心！' : 'CLEAN HIT', {
           align: 'center',
           color: '#ffffff',
           fontFamily: 'system-ui, sans-serif',
@@ -2376,17 +2383,26 @@ class BattleScene extends Phaser.Scene {
     return fighter.stats.attackWidth + (this.hasAmpReach(fighter) ? ampAttackReachBonusPx : 0);
   }
 
-  private calculateNormalDamage(attacker: Fighter, defender: Fighter): number {
-    // Current runtime treats all hits as normal hits (critical is not implemented yet).
-    // Future critical bypass handling can be layered here or in a dedicated damage helper.
+  private calculateAttackDamage(attacker: Fighter, defender: Fighter): DamageCalculationResult {
     const baseDamage = attacker.stats.attackDamage;
-    const defenderEquipmentId = this.getFighterEquipmentId(defender);
-    const reducedDamage =
-      defenderEquipmentId === 'case'
-        ? Math.floor(baseDamage * caseNormalDamageMultiplier)
-        : baseDamage;
+    const isDrumSticksAttacker = attacker.definition.id === 'drum-sticks';
+    const isCritical = isDrumSticksAttacker && Math.random() < drumSticksCriticalRate;
 
-    return Math.max(1, reducedDamage);
+    let finalDamage = baseDamage;
+
+    if (isCritical) {
+      finalDamage = Math.floor(baseDamage * drumSticksCriticalMultiplier);
+    } else {
+      const defenderEquipmentId = this.getFighterEquipmentId(defender);
+      if (defenderEquipmentId === 'case') {
+        finalDamage = Math.floor(baseDamage * caseNormalDamageMultiplier);
+      }
+    }
+
+    return {
+      damage: Math.max(1, finalDamage),
+      isCritical,
+    };
   }
 
 
