@@ -1071,7 +1071,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-4 Damage pipeline prep docs (normal/critical/equipment order) (**docs-only**) — complete
 - 10-5 Amp gameplay prototype v1 (short sonic reach/echo, non-projectile) (**runtime**) — complete
 - 10-6 Amp gameplay playtest checklist update (**docs-only**) — complete
-- 10-7 Amp gameplay sanity pass (**runtime**)
+- 10-7 Amp gameplay sanity pass (**runtime**) — complete
 - 10-8 Case reduction prototype v1 (~20% normal damage reduction) (**runtime**)
 - 10-9 Case reduction checklist update (**docs-only**)
 - 10-10 Case reduction sanity pass (**runtime**)
@@ -1217,4 +1217,14 @@ Implemented scope:
 - Checklist confirms Amp remains reach-only (non-projectile, non-screen-wide, no multi-hit).
 - Checklist confirms no damage/knockback/cooldown/schema changes.
 
-**Next recommended task:** Phase 10-7: Amp gameplay sanity pass.
+### Phase 10-7 Amp gameplay sanity pass (runtime)
+
+Implemented scope:
+
+- Amp reach prototype sanity pass is complete.
+- Amp reach remains small and reach-only (non-projectile, non-screen-wide, non-multi-hit).
+- Drum Sticks + Amp battle-side fallback to `none` remains safe.
+- Amp reach still applies only to attack hitbox width and CPU attack-distance checks.
+- No damage / knockback / cooldown / duration / schema changes were introduced.
+
+**Next recommended task:** Phase 10-8: Case reduction prototype v1.

@@ -23,6 +23,7 @@ const hpBarWidth = 220;
 const hpBarHeight = 18;
 const hpBarInset = 3;
 const cpuAttackDistancePadding = 18;
+// Phase 10 Amp prototype: small reach-only bonus (no projectile, no damage increase).
 const ampAttackReachBonusPx = 24;
 const cpuComfortDistance = 140;
 const cpuDecisionIntervalMs = 850;
@@ -2352,6 +2353,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   private resolveBattleEquipmentIdForFighter(fighterId: string, equipmentId: EquipmentId): EquipmentId {
+    // Battle-side safety fallback: stale/incompatible saved selections must resolve safely.
     if (equipmentId === 'amp' && !this.isAmpCompatibleFighter(fighterId)) {
       return 'none';
     }
