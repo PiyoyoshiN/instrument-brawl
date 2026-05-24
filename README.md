@@ -858,7 +858,9 @@ Phase 9-11 fix: CharacterSelectScene now uses stored equipment IDs when scene da
 
 Phase 9-12 adds Battle HUD equipment labels (`P1 Equip` / `P2 Equip`) using resolved equipment short labels. Labels are display-only: no gameplay effect.
 
-Phase 9-13 adds ResultScene equipment labels (`P1 Equip` / `P2 Equip`) using already-resolved equipment short labels. This is display-only, equipment still has no gameplay effect, Amp visual-only accent trial is not implemented yet, and future equipment effects are still not implemented.
+Phase 9-13 adds ResultScene equipment labels (`P1 Equip` / `P2 Equip`) using already-resolved equipment short labels. This is display-only and equipment has no gameplay effect.
+
+Phase 9-14 adds a subtle Amp-only visual accent in BattleScene when the selected equipment is `amp`. This is visual-only, does not affect gameplay, and does not add Pick/Case effects. Future equipment gameplay effects are still not implemented.
 
 Phase 9 guardrails:
 
@@ -868,7 +870,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-14: Amp visual-only accent trial.
+**Next recommended task:** Phase 9-15: Future equipment effect docs.
 
 ## Play online
 

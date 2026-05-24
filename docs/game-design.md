@@ -904,6 +904,7 @@ Amp direction:
 - Phase 9 does not guarantee ranged implementation
 - no runtime ranged/sonic attack behavior in this docs step
 - ResultScene equipment labels are now visible (`P1 Equip` / `P2 Equip`) as display-only status text with no gameplay effect
+- Amp now has a subtle BattleScene-only visual accent when selected, and it remains gameplay-neutral
 
 Attack identity direction:
 
@@ -915,7 +916,7 @@ Guardrails:
 - preserve Phase 8 gameplay/system invariants
 - no combat value tuning or records schema expansion for equipment
 
-Next recommended task: **Phase 9-14: Amp visual-only accent trial**.
+Next recommended task: **Phase 9-15: Future equipment effect docs**.
 
 
 ### Phase 9-3 Equipment concept (docs only)

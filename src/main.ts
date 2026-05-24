@@ -1461,6 +1461,8 @@ class BattleScene extends Phaser.Scene {
   private screenShakeEnabled = true;
   private player1EquipmentHudText?: Phaser.GameObjects.Text;
   private player2EquipmentHudText?: Phaser.GameObjects.Text;
+  private player1AmpAccent?: Phaser.GameObjects.Arc;
+  private player2AmpAccent?: Phaser.GameObjects.Arc;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
@@ -1577,6 +1579,7 @@ class BattleScene extends Phaser.Scene {
     this.player1 = this.createFighter(player1StartX, 'P1', this.player1Definition);
     this.player2 = this.createFighter(player2StartX, 'P2', this.player2Definition);
     this.player2.facing = -1;
+    this.createAmpAccents();
     this.controls = this.createControls();
     this.showMatchStartPrompt();
   }
@@ -1603,9 +1606,44 @@ class BattleScene extends Phaser.Scene {
       this.moveFighter(this.player2, this.controls.player2, delta);
       this.tryAttack(this.player2, this.controls.player2, time);
     }
+    this.updateAmpAccents(time);
     this.updateActiveAttacks(time);
     this.updateKnockback(this.player1, delta);
     this.updateKnockback(this.player2, delta);
+  }
+
+  private createAmpAccents() {
+    if (!this.effectsEnabled) {
+      return;
+    }
+
+    if (this.player1EquipmentId === 'amp') {
+      this.player1AmpAccent = this.add
+        .circle(this.player1.body.x, this.player1.body.y + 74, 30, 0xf59e0b, 0.12)
+        .setStrokeStyle(2, 0xfbbf24, 0.38)
+        .setDepth(0);
+    }
+
+    if (this.player2EquipmentId === 'amp') {
+      this.player2AmpAccent = this.add
+        .circle(this.player2.body.x, this.player2.body.y + 74, 30, 0x38bdf8, 0.12)
+        .setStrokeStyle(2, 0x7dd3fc, 0.38)
+        .setDepth(0);
+    }
+  }
+
+  private updateAmpAccents(time: number) {
+    const pulse = 0.5 + Math.sin(time * 0.01) * 0.08;
+
+    if (this.player1AmpAccent) {
+      this.player1AmpAccent.setPosition(this.player1.body.x, this.player1.body.y + 74);
+      this.player1AmpAccent.setScale(pulse);
+    }
+
+    if (this.player2AmpAccent) {
+      this.player2AmpAccent.setPosition(this.player2.body.x, this.player2.body.y + 74);
+      this.player2AmpAccent.setScale(pulse);
+    }
   }
 
   private showMatchStartPrompt() {
@@ -2285,6 +2323,10 @@ class BattleScene extends Phaser.Scene {
     this.clearHitSparks();
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
+    this.player1AmpAccent?.destroy();
+    this.player2AmpAccent?.destroy();
+    this.player1AmpAccent = undefined;
+    this.player2AmpAccent = undefined;
 
     if (this.player1) {
       this.player1.knockbackVelocity = 0;
