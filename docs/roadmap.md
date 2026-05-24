@@ -786,7 +786,7 @@ Do not change gameplay values/logic during Phase 8 scope/docs tasks:
 - CPU behavior
 - one-hit-per-attack
 
-**Next recommended task:** Phase 9-11: localStorage equipment persistence.
+**Next recommended task:** Phase 9-12: Battle HUD equipment labels.
 
 ## Features to avoid for now
 
@@ -844,7 +844,7 @@ Out of scope:
 - no records/settings schema changes
 - no assets/audio/online/server work
 
-**Next recommended task:** Phase 9-11: localStorage equipment persistence.
+**Next recommended task:** Phase 9-12: Battle HUD equipment labels.
 
 
 ### Phase 8-17: Phase 8 checkpoint docs
@@ -883,7 +883,7 @@ Manual verification reminder before next phase:
 - Match records count once and ResultScene exits do not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-11: localStorage equipment persistence.
+**Next recommended task:** Phase 9-12: Battle HUD equipment labels.
 
 
 ## Phase 9: Equipment Shell & Attack Identity Foundation
@@ -917,7 +917,7 @@ Initial equipment candidates:
 - 9-8 P1/P2 equipment selection (**runtime**) — complete (this task)
 - 9-9 Equipment data handoff (**runtime**) — complete (this task)
 - 9-10 Rematch / return preservation (**runtime**) — complete (this task)
-- 9-11 localStorage equipment persistence (**runtime**)
+- 9-11 localStorage equipment persistence (**runtime**) — complete (this task)
 - 9-12 Battle HUD equipment labels (**runtime**)
 - 9-13 Result equipment display (**runtime**)
 - 9-14 Amp visual-only accent trial (**runtime visual-only**)
@@ -949,4 +949,4 @@ Gameplay/system guardrails remain unchanged:
 - ResultScene `R` / `C` / Home transitions
 - records schema
 
-**Next recommended task:** Phase 9-11: localStorage equipment persistence.
+**Next recommended task:** Phase 9-12: Battle HUD equipment labels.

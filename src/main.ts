@@ -238,6 +238,8 @@ type StoredSettings = {
     player1FighterId: string;
     player2FighterId: string;
     player2Mode: Player2Mode;
+    player1EquipmentId: EquipmentId;
+    player2EquipmentId: EquipmentId;
   };
   preferences: {
     effectsEnabled: boolean;
@@ -251,6 +253,8 @@ const defaultStoredSettings: StoredSettings = {
     player1FighterId: defaultPlayer1FighterId,
     player2FighterId: defaultPlayer2FighterId,
     player2Mode: defaultPlayer2Mode,
+    player1EquipmentId: 'none',
+    player2EquipmentId: 'none',
   },
   preferences: {
     effectsEnabled: true,
@@ -265,6 +269,8 @@ function sanitizeStoredSettings(value: unknown): StoredSettings {
       player1FighterId: defaultPlayer1FighterId,
       player2FighterId: defaultPlayer2FighterId,
       player2Mode: defaultPlayer2Mode,
+      player1EquipmentId: 'none',
+      player2EquipmentId: 'none',
     },
     preferences: {
       effectsEnabled: true,
@@ -303,6 +309,18 @@ function sanitizeStoredSettings(value: unknown): StoredSettings {
   if (modeCandidate === 'human' || modeCandidate === 'cpu') {
     base.lastSelected.player2Mode = modeCandidate;
   }
+
+  const player1EquipmentCandidate =
+    lastSelected && typeof lastSelected === 'object'
+      ? (lastSelected as Record<string, unknown>).player1EquipmentId
+      : undefined;
+  base.lastSelected.player1EquipmentId = getEquipmentDefinition(player1EquipmentCandidate).id;
+
+  const player2EquipmentCandidate =
+    lastSelected && typeof lastSelected === 'object'
+      ? (lastSelected as Record<string, unknown>).player2EquipmentId
+      : undefined;
+  base.lastSelected.player2EquipmentId = getEquipmentDefinition(player2EquipmentCandidate).id;
 
   const effectsEnabledCandidate =
     preferences && typeof preferences === 'object'
@@ -1345,6 +1363,8 @@ class CharacterSelectScene extends Phaser.Scene {
         player1FighterId,
         player2FighterId,
         player2Mode: this.player2Mode,
+        player1EquipmentId: this.player1EquipmentId,
+        player2EquipmentId: this.player2EquipmentId,
       });
 
       this.transitionStarted = true;
@@ -2725,6 +2745,14 @@ class EquipmentSelectScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      saveLastSelected({
+        player1FighterId: this.player1FighterId,
+        player2FighterId: this.player2FighterId,
+        player2Mode: this.player2Mode,
+        player1EquipmentId: this.player1EquipmentId,
+        player2EquipmentId: this.player2EquipmentId,
+      });
+
       this.scene.start('BattleScene', {
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
