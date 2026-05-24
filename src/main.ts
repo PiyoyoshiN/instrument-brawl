@@ -23,6 +23,7 @@ const hpBarWidth = 220;
 const hpBarHeight = 18;
 const hpBarInset = 3;
 const cpuAttackDistancePadding = 18;
+const ampAttackReachBonusPx = 24;
 const cpuComfortDistance = 140;
 const cpuDecisionIntervalMs = 850;
 const cpuRetreatDurationMs = 420;
@@ -1476,12 +1477,18 @@ class BattleScene extends Phaser.Scene {
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
-    this.player1Equipment = getEquipmentDefinition(data.player1EquipmentId);
-    this.player2Equipment = getEquipmentDefinition(data.player2EquipmentId);
-    this.player1EquipmentId = this.player1Equipment.id;
-    this.player2EquipmentId = this.player2Equipment.id;
     this.player1Definition = getFighterDefinition(this.player1FighterId);
     this.player2Definition = getFighterDefinition(this.player2FighterId);
+    this.player1EquipmentId = this.resolveBattleEquipmentIdForFighter(
+      this.player1FighterId,
+      getEquipmentDefinition(data.player1EquipmentId).id,
+    );
+    this.player2EquipmentId = this.resolveBattleEquipmentIdForFighter(
+      this.player2FighterId,
+      getEquipmentDefinition(data.player2EquipmentId).id,
+    );
+    this.player1Equipment = getEquipmentDefinition(this.player1EquipmentId);
+    this.player2Equipment = getEquipmentDefinition(this.player2EquipmentId);
   }
 
   create() {
@@ -1617,14 +1624,14 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
-    if (this.player1EquipmentId === 'amp') {
+    if (this.hasAmpReach(this.player1)) {
       this.player1AmpAccent = this.add
         .circle(this.player1.body.x, this.player1.body.y + 74, 30, 0xf59e0b, 0.12)
         .setStrokeStyle(2, 0xfbbf24, 0.38)
         .setDepth(0);
     }
 
-    if (this.player2EquipmentId === 'amp') {
+    if (this.hasAmpReach(this.player2)) {
       this.player2AmpAccent = this.add
         .circle(this.player2.body.x, this.player2.body.y + 74, 30, 0x38bdf8, 0.12)
         .setStrokeStyle(2, 0x7dd3fc, 0.38)
@@ -1955,7 +1962,7 @@ class BattleScene extends Phaser.Scene {
     const directionToPlayer1 = distanceToPlayer1 < 0 ? -1 : 1;
     const attackDistance = this.getFighterBodyHalfWidth(this.player1) +
       this.getFighterBodyHalfWidth(this.player2) +
-      this.player2.stats.attackWidth +
+      this.getEffectiveAttackWidth(this.player2) +
       cpuAttackDistancePadding;
 
     if (time >= this.nextCpuDecisionAt) {
@@ -1996,11 +2003,12 @@ class BattleScene extends Phaser.Scene {
   }
 
   private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
-    const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + fighter.stats.attackWidth / 2);
+    const effectiveAttackWidth = this.getEffectiveAttackWidth(fighter);
+    const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + effectiveAttackWidth / 2);
     const hitboxY = fighter.body.y + fighter.stats.attackYOffset;
     const attackVisualStyle = this.getAttackVisualStyle(fighter);
     const hitbox = this.add
-      .rectangle(hitboxX, hitboxY, fighter.stats.attackWidth, fighter.stats.attackHeight, attackVisualStyle.fillColor, 0.35)
+      .rectangle(hitboxX, hitboxY, effectiveAttackWidth, fighter.stats.attackHeight, attackVisualStyle.fillColor, 0.35)
       .setStrokeStyle(2, attackVisualStyle.strokeColor)
       .setDepth(1);
 
@@ -2337,6 +2345,30 @@ class BattleScene extends Phaser.Scene {
       this.player2.knockbackVelocity = 0;
       this.resetFighterColor(this.player2);
     }
+  }
+
+  private isAmpCompatibleFighter(fighterId: string): boolean {
+    return fighterId === 'electric-guitar' || fighterId === 'bass' || fighterId === 'keyboard';
+  }
+
+  private resolveBattleEquipmentIdForFighter(fighterId: string, equipmentId: EquipmentId): EquipmentId {
+    if (equipmentId === 'amp' && !this.isAmpCompatibleFighter(fighterId)) {
+      return 'none';
+    }
+
+    return equipmentId;
+  }
+
+  private getFighterEquipmentId(fighter: Fighter): EquipmentId {
+    return fighter === this.player1 ? this.player1EquipmentId : this.player2EquipmentId;
+  }
+
+  private hasAmpReach(fighter: Fighter): boolean {
+    return this.getFighterEquipmentId(fighter) === 'amp' && this.isAmpCompatibleFighter(fighter.definition.id);
+  }
+
+  private getEffectiveAttackWidth(fighter: Fighter): number {
+    return fighter.stats.attackWidth + (this.hasAmpReach(fighter) ? ampAttackReachBonusPx : 0);
   }
 
 

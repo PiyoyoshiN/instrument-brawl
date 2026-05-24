@@ -1069,7 +1069,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-2 Phase 9 docs cleanup (**docs-only**) — complete
 - 10-3 Amp compatibility rules docs (Drum Sticks incompatibility) (**docs-only**) — complete
 - 10-4 Damage pipeline prep docs (normal/critical/equipment order) (**docs-only**) — complete
-- 10-5 Amp gameplay prototype v1 (short sonic reach/echo, non-projectile) (**runtime**)
+- 10-5 Amp gameplay prototype v1 (short sonic reach/echo, non-projectile) (**runtime**) — complete
 - 10-6 Amp gameplay playtest checklist update (**docs-only**)
 - 10-7 Amp gameplay sanity pass (**runtime**)
 - 10-8 Case reduction prototype v1 (~20% normal damage reduction) (**runtime**)
@@ -1190,4 +1190,22 @@ Records/storage guardrails:
 - Do not change `instrument-brawl:records` schema.
 - Do not change `instrument-brawl:settings` schema in this docs step.
 
-**Next recommended task:** Phase 10-5: Amp gameplay prototype v1.
+### Phase 10-5 Amp gameplay prototype v1 (runtime)
+
+Implemented scope:
+
+- Amp-compatible fighters (Electric Guitar / Bass / Keyboard) gain a small attack-reach bonus.
+- Reach bonus is implemented as a small effective attack-width increase in BattleScene.
+- Amp gameplay remains non-projectile and non-screen-wide.
+- One attack can still hit only once.
+- Drum Sticks + Amp is safely resolved to `none` for battle-side behavior.
+
+Guardrails kept in 10-5:
+
+- No damage increase from Amp.
+- No knockback change.
+- No attack cooldown/duration change.
+- No records schema change.
+- No settings schema change.
+
+**Next recommended task:** Phase 10-6: Amp gameplay playtest checklist update.
