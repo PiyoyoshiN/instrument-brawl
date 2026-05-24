@@ -1068,7 +1068,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-1 Phase 10 scope docs (**docs-only**) — complete
 - 10-2 Phase 9 docs cleanup (**docs-only**) — complete
 - 10-3 Amp compatibility rules docs (Drum Sticks incompatibility) (**docs-only**) — complete
-- 10-4 Damage pipeline prep docs (normal/critical/equipment order) (**docs-only**)
+- 10-4 Damage pipeline prep docs (normal/critical/equipment order) (**docs-only**) — complete
 - 10-5 Amp gameplay prototype v1 (short sonic reach/echo, non-projectile) (**runtime**)
 - 10-6 Amp gameplay playtest checklist update (**docs-only**)
 - 10-7 Amp gameplay sanity pass (**runtime**)
@@ -1127,4 +1127,67 @@ Amp guardrails retained for later gameplay tasks:
 - Amp must not introduce equipment-specific records analytics.
 - Amp must not require BGM/SE/audio assets.
 
-**Next recommended task:** Phase 10-4: Damage pipeline prep docs.
+### Phase 10-4 Damage pipeline prep docs (docs-only)
+
+This step defines future damage resolution order and interaction rules only. No runtime implementation is included.
+
+Recommended future damage resolution order:
+
+1) Resolve attacker and defender.  
+2) Resolve attacker fighter ID and defender fighter ID.  
+3) Resolve attacker equipment ID and defender equipment ID.  
+4) Start from attacker fighter base `attackDamage`.  
+5) Determine whether the attack is a critical hit.  
+6) If critical: apply critical multiplier, and bypass defender Case reduction.  
+7) If not critical and defender equipment is Case: apply normal damage reduction.  
+8) Clamp final damage to minimum 1.  
+9) Subtract final damage from defender HP.  
+10) Show hit feedback: normal hit uses current HIT style; critical hit uses future label `会心！`.
+
+Critical rules (future implementation direction):
+
+- Critical is a Drum Sticks identity mechanic in Phase 10.
+- Only attacker fighter `drum-sticks` should have high critical in Phase 10.
+- Candidate critical rate: 40%.
+- Candidate critical multiplier: 1.5x.
+- Current Drum Sticks base damage is 8, so critical target is 12.
+- Other fighters should not gain critical rate in Phase 10.
+- Drum Sticks + Case should lose high critical identity (future direction: 0% or normal baseline critical rate).
+- Critical damage bypasses defender Case reduction.
+
+Case reduction rules (future implementation direction):
+
+- Case applies to all fighters.
+- Case reduces normal, non-critical damage only.
+- Candidate reduction: 20%.
+- Candidate examples: 10 -> 8, 9 -> 7, 8 -> 6.
+- Suggested rounding direction: floor after multiplying by 0.8, then clamp minimum 1.
+- Case should not reduce critical damage.
+- Case should not reduce knockback in Phase 10.
+- Case should not increase HP.
+- Case should not add guard / just guard behavior.
+
+Amp damage interaction rules (future direction):
+
+- Amp short sonic reach/echo should not increase damage.
+- Amp should not create multi-hit behavior.
+- Regular hitbox and future Amp echo/reach must still result in at most one hit per attack.
+- If future Amp echo uses separate hit detection, it must share the same one-hit-per-attack guard.
+- Amp remains non-projectile and non-screen-wide ranged.
+- Amp must not alter records schema or add equipment-specific analytics.
+
+Pick damage interaction rules (future direction):
+
+- Pick has no Phase 10 gameplay effect.
+- Pick should not change damage, critical rate, attack cooldown, hitbox, range, or defense in Phase 10.
+- Pick remains selectable/displayed as future `準備中` candidate.
+
+Records/storage guardrails:
+
+- Do not add equipment-specific match records.
+- Do not add critical count records.
+- Do not add damage dealt records.
+- Do not change `instrument-brawl:records` schema.
+- Do not change `instrument-brawl:settings` schema in this docs step.
+
+**Next recommended task:** Phase 10-5: Amp gameplay prototype v1.

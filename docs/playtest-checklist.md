@@ -716,4 +716,22 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] No assets/audio/images/3D are added.
 - [ ] Next recommended task is Phase 10-4: Damage pipeline prep docs.
 
-**Next recommended task:** Phase 10-4: Damage pipeline prep docs.
+## Phase 10-4 damage pipeline prep docs checklist
+
+- [ ] This PR is docs-only.
+- [ ] No runtime files are changed.
+- [ ] Damage resolution order is documented from attacker/defender resolution to final HP subtraction and feedback.
+- [ ] Drum Sticks critical candidate is documented (40% / 1.5x, 8 -> 12 target).
+- [ ] Case normal damage reduction candidate is documented (20%, floor then min-1 clamp direction).
+- [ ] Critical bypasses defender Case reduction is documented.
+- [ ] Drum Sticks + Case critical-identity loss direction is documented.
+- [ ] Amp damage interaction is documented as no damage increase and no multi-hit.
+- [ ] One attack can hit only once remains a documented guardrail.
+- [ ] Pick has no Phase 10 gameplay effect documented.
+- [ ] No records schema changes are introduced.
+- [ ] No settings schema changes are introduced.
+- [ ] No equipment-specific analytics/records are introduced.
+- [ ] No assets/audio/images/3D are added.
+- [ ] Next recommended task is Phase 10-5: Amp gameplay prototype v1.
+
+**Next recommended task:** Phase 10-5: Amp gameplay prototype v1.
