@@ -627,3 +627,49 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Next task is Phase 9-15: Future equipment effect docs.
 
 **Next recommended task:** Phase 9-15: Future equipment effect docs.
+
+
+## Phase 9-15 Future equipment effect docs checklist
+
+- [ ] Future equipment effects are documented as docs-only direction.
+- [ ] No runtime code is modified in this docs step.
+- [ ] Amp/Pick/Case future directions are clearly marked as future only.
+- [ ] No equipment gameplay effects are implemented.
+- [ ] No localStorage settings schema changes are introduced.
+- [ ] No records schema changes are introduced.
+- [ ] No assets/audio are added.
+- [ ] Equipment-specific records/analytics remain out of scope.
+- [ ] Inventory/unlocks/rarity/currency/progression remain out of scope.
+
+## Phase 9-16 Playtest checklist update checklist
+
+- [ ] Existing Phase 9 checklist sections are preserved.
+- [ ] Phase 9-15 checklist section is added.
+- [ ] Phase 9-16 checklist section is added/updated.
+- [ ] Phase 9-17 checkpoint checklist section is added.
+- [ ] Phase 9 implemented features are still listed accurately.
+- [ ] No runtime code is modified by this checklist update.
+- [ ] No schema changes are introduced by this checklist update.
+
+## Phase 9-17 Phase 9 checkpoint checklist
+
+- [ ] Docs mark Phase 9-15/9-16/9-17 as complete.
+- [ ] Docs clearly mark Phase 9 checkpoint as complete.
+- [ ] Equipment metadata registry is listed as implemented.
+- [ ] EquipmentSelectScene is listed as implemented.
+- [ ] P1/P2 equipment selection is listed as implemented.
+- [ ] Equipment IDs handoff to Battle/Result is listed as implemented.
+- [ ] Rematch/return equipment ID preservation is listed as implemented.
+- [ ] localStorage equipment persistence is listed as implemented.
+- [ ] Battle HUD equipment labels are listed as implemented.
+- [ ] ResultScene equipment labels are listed as implemented.
+- [ ] Amp BattleScene-only visual accent is listed as implemented.
+- [ ] Equipment is still marked gameplay-neutral.
+- [ ] Pick/Case effects are still marked not implemented.
+- [ ] Future equipment gameplay effects are still marked not implemented.
+- [ ] records schema is unchanged.
+- [ ] settings schema is unchanged in this closeout step.
+- [ ] No assets/audio are added.
+- [ ] Next recommended task is Phase 10-1: Phase 10 scope docs.
+
+**Next recommended task:** Phase 10-1: Phase 10 scope docs.

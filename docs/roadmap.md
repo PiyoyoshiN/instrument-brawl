@@ -921,9 +921,9 @@ Initial equipment candidates:
 - 9-12 Battle HUD equipment labels (**runtime**) — complete (this task)
 - 9-13 Result equipment display (**runtime**) — complete
 - 9-14 Amp visual-only accent trial (**runtime visual-only**) — complete
-- 9-15 Future equipment effect docs (**docs-only**)
-- 9-16 Playtest checklist update (**docs-only**)
-- 9-17 Phase 9 checkpoint docs (**docs-only**)
+- 9-15 Future equipment effect docs (**docs-only**) — complete
+- 9-16 Playtest checklist update (**docs-only**) — complete
+- 9-17 Phase 9 checkpoint docs (**docs-only**) — complete
 
 Phase 9 explicit non-goals:
 
@@ -949,4 +949,31 @@ Gameplay/system guardrails remain unchanged:
 - ResultScene `R` / `C` / Home transitions
 - records schema
 
-**Next recommended task:** Phase 9-15: Future equipment effect docs.
+## Phase 9 checkpoint
+
+Phase 9 is complete.
+
+Checkpoint summary:
+
+- Equipment metadata registry exists.
+- EquipmentSelectScene exists.
+- P1/P2 equipment selection exists.
+- Equipment IDs pass through EquipmentSelectScene -> BattleScene -> ResultScene.
+- Rematch/return preserves equipment IDs.
+- Equipment selections persist in localStorage settings.
+- Battle HUD displays P1/P2 equipment labels.
+- ResultScene displays P1/P2 equipment labels.
+- Amp has a BattleScene-only visual accent.
+- Equipment remains gameplay-neutral.
+- Pick/Case effects are not implemented.
+- Future equipment gameplay effects are not implemented.
+- Records schema is unchanged.
+- Settings schema is unchanged in this closeout step.
+
+## Phase 10 placeholder
+
+Phase 10 begins with docs-first planning.
+
+- 10-1 Phase 10 scope docs (**docs-only**) — next
+
+**Next recommended task:** Phase 10-1: Phase 10 scope docs.
