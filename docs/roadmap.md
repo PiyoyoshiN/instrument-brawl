@@ -1371,4 +1371,26 @@ Implemented scope:
 - Documented proposed Phase 11 direction/task sequence.
 - No runtime/schema/gameplay changes.
 
-**Next recommended task:** Phase 11-1: Centralized Japanese display-label helpers/maps.
+### Phase 10 Japanese UI addendum (10-JP)
+
+The previous Phase 10-20 conditional GO is now extended by a Phase 10 Japanese UI addendum path.
+This keeps work focused on UI clarity / playtest-readiness and still does **not** approve large new mechanics.
+
+- 10-JP-1 Japanese UI addendum scope docs + critical wording decision (**docs-only**) — complete
+- 10-JP-2 Centralized Japanese display-label helpers/maps (**runtime/ui**)
+- 10-JP-3 Equipment Select Japanese label runtime update (**runtime/ui**)
+- 10-JP-4 Battle HUD Japanese equipment labels (**runtime/ui**)
+- 10-JP-5 ResultScene Japanese labels (**runtime/ui**)
+- 10-JP-6 Character Select Japanese labels (**runtime/ui**)
+- 10-JP-7 Home / Mode Select / Options / Records low-risk Japanese labels (**runtime/ui**)
+- 10-JP-8 Pause / Quick Help Japanese labels (**runtime/ui**)
+- 10-JP-9 Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check (**docs+ui consistency**)
+- 10-JP-10 Japanese UI playtest checklist (**docs-only**)
+- 10-JP-11 Japanese UI checkpoint docs (**docs-only**)
+
+Notes:
+
+- Critical wording target for final runtime label is `クリティカル！` (not `会心！`).
+- No runtime/schema/gameplay changes are included in 10-JP-1.
+
+**Next recommended task:** Phase 10-JP-2: Centralized Japanese display-label helpers/maps.

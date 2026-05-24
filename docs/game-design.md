@@ -1374,6 +1374,128 @@ Phase 11 should prioritize UI clarity and playtest-readiness before new mechanic
 - Phase 11-5: UI wording playtest checklist.
 - Phase 11-6: Manual playtest notes / tuning candidates.
 
+### Phase 10 Japanese UI implementation addendum
+
+This section is a Phase 10 addendum that extends the prototype track with Japanese UI clarity work.
+It does not replace prior Phase 10 design/prototype docs, and does not add gameplay systems.
+
+#### Addendum scope and constraints
+
+- Phase 10 is extended to finish Japanese UI clarity work before moving to Phase 11.
+- This is an addendum after the Phase 10 prototype checkpoint.
+- Goal: improve player-facing clarity, not add new mechanics.
+- Internal IDs/types/storage keys remain English.
+- Player-facing labels should move toward Japanese.
+- `P1` / `P2` / `HP` / `CPU` / `Enter` / `Space` may remain English when compact/readable.
+- No gameplay values change during Japanese UI PRs.
+- No assets/audio/images/3D/font additions.
+- No records/settings schema changes.
+
+#### Critical wording decision (user override)
+
+- Final runtime critical label target: `クリティカル！`
+- `会心！` should **not** be used as the final runtime label.
+- Existing docs that still reference `会心！` should be updated through this addendum sequence for consistency.
+- This addendum PR itself is docs-only; no runtime wording switch is performed here.
+
+#### Japanese label baseline (target display text)
+
+Equipment:
+
+- `none` / No Accessory -> `装備なし`
+  - short: `なし`
+  - description: `追加装備なし。素の性能で戦う。`
+- `amp` / Amp -> `アンプ`
+  - short: `アンプ`
+  - description: `エレキギター・ベース・キーボード対応。攻撃の届く範囲が少し伸びる。`
+- `pick` / Pick -> `ピック（準備中）`
+  - short: `ピック`
+  - description: `Phase 10では効果なし。後のフェーズで検討。`
+- `case` / Case -> `ケース`
+  - short: `ケース`
+  - description: `通常ダメージを軽減する。クリティカルは軽減できない。`
+
+Fighters:
+
+- `electric-guitar` / Electric Guitar -> `エレキギター`
+- `bass` / Bass -> `ベース`
+- `drum-sticks` / Drum Sticks -> `ドラムスティック`
+  - description direction: `高クリティカルキャラ。ケース装備時は高クリティカルを失う。`
+- `keyboard` / Keyboard -> `キーボード`
+
+#### Screen wording priorities
+
+- Equipment Select (**highest priority**):
+  - `Equipment Select` -> `装備選択`
+  - `P1 Equipment` -> `P1装備`
+  - `P2 Equipment` -> `P2装備`
+  - `Continue` -> `決定`
+- Battle HUD (**highest priority**):
+  - `P1 Equip` -> `P1装備`
+  - `P2 Equip` -> `P2装備`
+  - Equipment short labels should be Japanese.
+- ResultScene:
+  - `Match Result` -> `試合結果`
+  - `Match finished` -> `試合終了`
+  - rematch -> `再戦`
+  - return Home -> `ホームへ戻る`
+- Character Select:
+  - `Character Select` -> `キャラ選択`
+  - `Fighter` -> `キャラ`
+  - `Speed` -> `移動速度`
+  - `Damage` -> `攻撃力`
+  - `Knockback` -> `ふっとばし`
+- Home:
+  - `Start` -> `はじめる`
+  - `Records` -> `記録`
+  - `Options` -> `設定`
+  - confirm -> `決定`
+- Mode Select:
+  - `VS HUMAN` -> `ふたりで対戦`
+  - `VS CPU` -> `CPU戦`
+  - `Choose your match mode` -> `対戦モードを選択`
+- Options:
+  - `Options` -> `設定`
+  - `Effects` -> `演出`
+  - `Screen Shake` -> `画面揺れ`
+  - `Reset Preferences` -> `設定リセット`
+- Records:
+  - `Records` -> `記録`
+  - `Total Matches` -> `試合数`
+  - `Wins` -> `勝利`
+  - `Draws` -> `引き分け`
+  - `Reset Records` -> `記録リセット`
+- Pause / Quick Help:
+  - `Paused / Quick Help` -> `一時停止 / 操作確認`
+  - Keep it short; do not turn it into a long tutorial.
+
+#### Implementation approach (for upcoming runtime UI PRs)
+
+- Prefer centralized display-label helpers/maps.
+- Do not scatter hardcoded Japanese strings across scenes.
+- Suggested helpers/maps:
+  - `fighterDisplayNameJaById`
+  - `equipmentDisplayTextById`
+  - `getFighterDisplayNameJa(...)`
+  - `getEquipmentDisplayTextJa(...)`
+  - `getPlayer2ModeLabelJa(...)`
+- Alternative acceptable approach: add `displayNameJa`, `shortLabelJa`, `descriptionJa` fields to definitions if safer.
+- Scene data/storage/records values must remain English IDs.
+
+#### Phase 10 Japanese UI addendum task sequence (proposed)
+
+- Phase 10-JP-1: Japanese UI addendum scope docs.
+- Phase 10-JP-2: Centralized Japanese display-label helpers/maps.
+- Phase 10-JP-3: Equipment Select Japanese label runtime update.
+- Phase 10-JP-4: Battle HUD Japanese equipment labels.
+- Phase 10-JP-5: ResultScene Japanese labels.
+- Phase 10-JP-6: Character Select Japanese labels.
+- Phase 10-JP-7: Home / Mode Select / Options / Records low-risk Japanese labels.
+- Phase 10-JP-8: Pause / Quick Help Japanese labels.
+- Phase 10-JP-9: Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check.
+- Phase 10-JP-10: Japanese UI playtest checklist.
+- Phase 10-JP-11: Japanese UI checkpoint docs.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 
