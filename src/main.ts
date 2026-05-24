@@ -23,6 +23,15 @@ const hpBarWidth = 220;
 const hpBarHeight = 18;
 const hpBarInset = 3;
 const cpuAttackDistancePadding = 18;
+// Phase 10 Amp prototype: small reach-only bonus (no projectile, no damage increase).
+const ampAttackReachBonusPx = 24;
+// Phase 10 Case prototype: normal incoming damage only (no knockback/HP/guard behavior changes).
+const caseNormalDamageMultiplier = 0.8;
+// Phase 10 prototype balancing pass #1:
+// Drum Sticks keeps a high-variance critical identity, tuned to 35% / 1.5x
+// so expected damage stays below Electric Guitar/Bass baseline while preserving burst.
+const drumSticksCriticalRate = 0.35;
+const drumSticksCriticalMultiplier = 1.5;
 const cpuComfortDistance = 140;
 const cpuDecisionIntervalMs = 850;
 const cpuRetreatDurationMs = 420;
@@ -604,6 +613,11 @@ type ActiveAttack = {
   hitbox: Phaser.GameObjects.Rectangle;
   hasHit: boolean;
   expiresAt: number;
+};
+
+type DamageCalculationResult = {
+  damage: number;
+  isCritical: boolean;
 };
 type BattleSceneData = {
   player1FighterId?: string;
@@ -1461,6 +1475,8 @@ class BattleScene extends Phaser.Scene {
   private screenShakeEnabled = true;
   private player1EquipmentHudText?: Phaser.GameObjects.Text;
   private player2EquipmentHudText?: Phaser.GameObjects.Text;
+  private player1AmpAccent?: Phaser.GameObjects.Arc;
+  private player2AmpAccent?: Phaser.GameObjects.Arc;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
@@ -1474,12 +1490,18 @@ class BattleScene extends Phaser.Scene {
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
-    this.player1Equipment = getEquipmentDefinition(data.player1EquipmentId);
-    this.player2Equipment = getEquipmentDefinition(data.player2EquipmentId);
-    this.player1EquipmentId = this.player1Equipment.id;
-    this.player2EquipmentId = this.player2Equipment.id;
     this.player1Definition = getFighterDefinition(this.player1FighterId);
     this.player2Definition = getFighterDefinition(this.player2FighterId);
+    this.player1EquipmentId = this.resolveBattleEquipmentIdForFighter(
+      this.player1FighterId,
+      getEquipmentDefinition(data.player1EquipmentId).id,
+    );
+    this.player2EquipmentId = this.resolveBattleEquipmentIdForFighter(
+      this.player2FighterId,
+      getEquipmentDefinition(data.player2EquipmentId).id,
+    );
+    this.player1Equipment = getEquipmentDefinition(this.player1EquipmentId);
+    this.player2Equipment = getEquipmentDefinition(this.player2EquipmentId);
   }
 
   create() {
@@ -1577,6 +1599,7 @@ class BattleScene extends Phaser.Scene {
     this.player1 = this.createFighter(player1StartX, 'P1', this.player1Definition);
     this.player2 = this.createFighter(player2StartX, 'P2', this.player2Definition);
     this.player2.facing = -1;
+    this.createAmpAccents();
     this.controls = this.createControls();
     this.showMatchStartPrompt();
   }
@@ -1603,9 +1626,44 @@ class BattleScene extends Phaser.Scene {
       this.moveFighter(this.player2, this.controls.player2, delta);
       this.tryAttack(this.player2, this.controls.player2, time);
     }
+    this.updateAmpAccents(time);
     this.updateActiveAttacks(time);
     this.updateKnockback(this.player1, delta);
     this.updateKnockback(this.player2, delta);
+  }
+
+  private createAmpAccents() {
+    if (!this.effectsEnabled) {
+      return;
+    }
+
+    if (this.hasAmpReach(this.player1)) {
+      this.player1AmpAccent = this.add
+        .circle(this.player1.body.x, this.player1.body.y + 74, 30, 0xf59e0b, 0.12)
+        .setStrokeStyle(2, 0xfbbf24, 0.38)
+        .setDepth(0);
+    }
+
+    if (this.hasAmpReach(this.player2)) {
+      this.player2AmpAccent = this.add
+        .circle(this.player2.body.x, this.player2.body.y + 74, 30, 0x38bdf8, 0.12)
+        .setStrokeStyle(2, 0x7dd3fc, 0.38)
+        .setDepth(0);
+    }
+  }
+
+  private updateAmpAccents(time: number) {
+    const pulse = 0.5 + Math.sin(time * 0.01) * 0.08;
+
+    if (this.player1AmpAccent) {
+      this.player1AmpAccent.setPosition(this.player1.body.x, this.player1.body.y + 74);
+      this.player1AmpAccent.setScale(pulse);
+    }
+
+    if (this.player2AmpAccent) {
+      this.player2AmpAccent.setPosition(this.player2.body.x, this.player2.body.y + 74);
+      this.player2AmpAccent.setScale(pulse);
+    }
   }
 
   private showMatchStartPrompt() {
@@ -1917,7 +1975,7 @@ class BattleScene extends Phaser.Scene {
     const directionToPlayer1 = distanceToPlayer1 < 0 ? -1 : 1;
     const attackDistance = this.getFighterBodyHalfWidth(this.player1) +
       this.getFighterBodyHalfWidth(this.player2) +
-      this.player2.stats.attackWidth +
+      this.getEffectiveAttackWidth(this.player2) +
       cpuAttackDistancePadding;
 
     if (time >= this.nextCpuDecisionAt) {
@@ -1958,11 +2016,12 @@ class BattleScene extends Phaser.Scene {
   }
 
   private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
-    const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + fighter.stats.attackWidth / 2);
+    const effectiveAttackWidth = this.getEffectiveAttackWidth(fighter);
+    const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + effectiveAttackWidth / 2);
     const hitboxY = fighter.body.y + fighter.stats.attackYOffset;
     const attackVisualStyle = this.getAttackVisualStyle(fighter);
     const hitbox = this.add
-      .rectangle(hitboxX, hitboxY, fighter.stats.attackWidth, fighter.stats.attackHeight, attackVisualStyle.fillColor, 0.35)
+      .rectangle(hitboxX, hitboxY, effectiveAttackWidth, fighter.stats.attackHeight, attackVisualStyle.fillColor, 0.35)
       .setStrokeStyle(2, attackVisualStyle.strokeColor)
       .setDepth(1);
 
@@ -1992,11 +2051,12 @@ class BattleScene extends Phaser.Scene {
 
       if (Phaser.Geom.Intersects.RectangleToRectangle(attack.hitbox.getBounds(), attack.defender.body.getBounds())) {
         attack.hasHit = true;
-        this.applyDamage(attack.defenderHp, attack.attacker.stats.attackDamage);
+        const damageResult = this.calculateAttackDamage(attack.attacker, attack.defender);
+        this.applyDamage(attack.defenderHp, damageResult.damage);
         this.applyKnockback(attack.defender, attack.attacker.facing, attack.attacker.stats.knockbackSpeed);
         this.flashFighter(attack.defender);
         this.showHitSpark(attack.defender, attack.attacker);
-        this.showHitMarker(attack.defender, attack.attacker.stats.attackDamage);
+        this.showHitMarker(attack.defender, damageResult.damage, damageResult.isCritical);
         this.shakeCameraOnHit();
         this.checkMatchResult();
 
@@ -2057,7 +2117,7 @@ class BattleScene extends Phaser.Scene {
     this.hitSparkEvents.push(sparkEvent);
   }
 
-  private showHitMarker(fighter: Fighter, damage: number) {
+  private showHitMarker(fighter: Fighter, damage: number, isCritical = false) {
     if (this.matchOver) {
       return;
     }
@@ -2077,7 +2137,7 @@ class BattleScene extends Phaser.Scene {
 
     if (this.effectsEnabled) {
       this.hitMarkerSubLabel = this.add
-        .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, 'CLEAN HIT', {
+        .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, isCritical ? '会心！' : 'CLEAN HIT', {
           align: 'center',
           color: '#ffffff',
           fontFamily: 'system-ui, sans-serif',
@@ -2285,6 +2345,10 @@ class BattleScene extends Phaser.Scene {
     this.clearHitSparks();
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
+    this.player1AmpAccent?.destroy();
+    this.player2AmpAccent?.destroy();
+    this.player1AmpAccent = undefined;
+    this.player2AmpAccent = undefined;
 
     if (this.player1) {
       this.player1.knockbackVelocity = 0;
@@ -2295,6 +2359,59 @@ class BattleScene extends Phaser.Scene {
       this.player2.knockbackVelocity = 0;
       this.resetFighterColor(this.player2);
     }
+  }
+
+  private isAmpCompatibleFighter(fighterId: string): boolean {
+    return fighterId === 'electric-guitar' || fighterId === 'bass' || fighterId === 'keyboard';
+  }
+
+  private resolveBattleEquipmentIdForFighter(fighterId: string, equipmentId: EquipmentId): EquipmentId {
+    // Battle-side safety fallback: stale/incompatible saved selections must resolve safely.
+    if (equipmentId === 'amp' && !this.isAmpCompatibleFighter(fighterId)) {
+      return 'none';
+    }
+
+    return equipmentId;
+  }
+
+  private getFighterEquipmentId(fighter: Fighter): EquipmentId {
+    return fighter === this.player1 ? this.player1EquipmentId : this.player2EquipmentId;
+  }
+
+  // Phase 10 tradeoff: Drum Sticks + Case gives up attacker-side high-critical identity.
+  // This does not change defender-side Case reduction behavior for non-critical hits.
+  private canUseDrumSticksCritical(attacker: Fighter): boolean {
+    return attacker.definition.id === 'drum-sticks' && this.getFighterEquipmentId(attacker) !== 'case';
+  }
+
+  private hasAmpReach(fighter: Fighter): boolean {
+    return this.getFighterEquipmentId(fighter) === 'amp' && this.isAmpCompatibleFighter(fighter.definition.id);
+  }
+
+  private getEffectiveAttackWidth(fighter: Fighter): number {
+    return fighter.stats.attackWidth + (this.hasAmpReach(fighter) ? ampAttackReachBonusPx : 0);
+  }
+
+  private calculateAttackDamage(attacker: Fighter, defender: Fighter): DamageCalculationResult {
+    const baseDamage = attacker.stats.attackDamage;
+    const canCritical = this.canUseDrumSticksCritical(attacker);
+    const isCritical = canCritical && Math.random() < drumSticksCriticalRate;
+
+    let finalDamage = baseDamage;
+
+    if (isCritical) {
+      finalDamage = Math.floor(baseDamage * drumSticksCriticalMultiplier);
+    } else {
+      const defenderEquipmentId = this.getFighterEquipmentId(defender);
+      if (defenderEquipmentId === 'case') {
+        finalDamage = Math.floor(baseDamage * caseNormalDamageMultiplier);
+      }
+    }
+
+    return {
+      damage: Math.max(1, finalDamage),
+      isCritical,
+    };
   }
 
 
@@ -2402,7 +2519,15 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 304, 'Press R to rematch', {
+      .text(400, 286, `P1 Equip: ${this.player1Equipment.shortLabel}   •   P2 Equip: ${this.player2Equipment.shortLabel}`, {
+        color: '#94a3b8',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 326, 'Press R to rematch', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '26px',
@@ -2410,7 +2535,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 352, 'Press C to change fighters (keeps picks)', {
+      .text(400, 372, 'Press C to change fighters (keeps picks)', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',
@@ -2418,7 +2543,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 400, 'Press Enter or Space to return to Home', {
+      .text(400, 414, 'Press Enter or Space to return to Home', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
