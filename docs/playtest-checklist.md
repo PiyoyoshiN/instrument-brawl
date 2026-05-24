@@ -697,4 +697,23 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Suggested 10-1..10-20 breakdown is documented.
 - [ ] Next recommended task is Phase 10-3: Amp compatibility rules docs.
 
-**Next recommended task:** Phase 10-3: Amp compatibility rules docs.
+## Phase 10-3 Amp compatibility rules docs checklist
+
+- [ ] This PR is docs-only.
+- [ ] No runtime files are changed.
+- [ ] Amp-compatible fighters are documented: Electric Guitar / Bass / Keyboard.
+- [ ] Drum Sticks + Amp incompatibility is documented.
+- [ ] `none` compatibility for all fighters is documented.
+- [ ] `case` compatibility for all fighters is documented.
+- [ ] `pick` treatment is documented as no gameplay effect in Phase 10 (`準備中` direction only).
+- [ ] Future stale Drum Sticks + Amp saved/scene data is documented to safely resolve to `none`.
+- [ ] Future invalid combinations are documented to fail safely without crash.
+- [ ] No Amp gameplay effects are implemented in this docs task.
+- [ ] No localStorage schema changes are introduced.
+- [ ] No records schema changes are introduced.
+- [ ] One attack can hit only once remains a documented guardrail.
+- [ ] No equipment-specific records analytics are introduced.
+- [ ] No assets/audio/images/3D are added.
+- [ ] Next recommended task is Phase 10-4: Damage pipeline prep docs.
+
+**Next recommended task:** Phase 10-4: Damage pipeline prep docs.

@@ -1067,7 +1067,7 @@ Current runtime baseline before Phase 10 gameplay work:
 
 - 10-1 Phase 10 scope docs (**docs-only**) — complete
 - 10-2 Phase 9 docs cleanup (**docs-only**) — complete
-- 10-3 Amp compatibility rules docs (Drum Sticks incompatibility) (**docs-only**)
+- 10-3 Amp compatibility rules docs (Drum Sticks incompatibility) (**docs-only**) — complete
 - 10-4 Damage pipeline prep docs (normal/critical/equipment order) (**docs-only**)
 - 10-5 Amp gameplay prototype v1 (short sonic reach/echo, non-projectile) (**runtime**)
 - 10-6 Amp gameplay playtest checklist update (**docs-only**)
@@ -1086,4 +1086,45 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-19 Phase 10 prototype checkpoint docs (**docs-only**)
 - 10-20 Post-prototype go/no-go notes for next phase (**docs-only**)
 
-**Next recommended task:** Phase 10-3: Amp compatibility rules docs.
+### Phase 10-3 Amp compatibility rules (docs-only)
+
+This step defines compatibility rules only. No runtime implementation is included.
+
+Compatibility matrix (Phase 10 planning baseline):
+
+- `none`: compatible with all fighters.
+- `amp`: compatible with Electric Guitar / Bass / Keyboard.
+- `amp`: not compatible with Drum Sticks.
+- `case`: compatible with all 4 fighters.
+- `pick`: remains selectable/displayed for now, but has no Phase 10 gameplay effect and is a future `準備中` treatment target.
+
+Identity direction:
+
+- Drum Sticks should not receive Amp sonic reach/echo behavior in Phase 10.
+- Drum Sticks identity stays fast / short reach / high-critical candidate, not sound-boosted Amp identity.
+- Amp identity belongs to sound-output style fighters: Electric Guitar / Bass / Keyboard.
+
+Future runtime behavior direction (not implemented in 10-3):
+
+- EquipmentSelectScene should later prevent or safely resolve invalid Drum Sticks + Amp selections.
+- If selected fighter is Drum Sticks, Amp should later be unavailable/skipped or clearly marked unavailable.
+- If stale saved/scene data contains Drum Sticks + Amp, resolve safely to `none` before battle.
+- Invalid combinations must never crash runtime.
+- Reset Preferences should continue resetting equipment to `none`.
+- Same equipment for both players remains allowed when compatible.
+- Same-fighter mirror matches remain allowed.
+- If both players use Amp-compatible fighters, both may select Amp.
+- If one player is Drum Sticks and the other is Amp-compatible, only the Amp-compatible side may use Amp.
+
+Amp guardrails retained for later gameplay tasks:
+
+- Amp future gameplay remains short sonic reach / echo direction.
+- Amp is not a full projectile.
+- Amp is not screen-wide ranged attack.
+- One attack can hit only once remains required.
+- Amp must not introduce multi-hit behavior.
+- Amp must not change records schema.
+- Amp must not introduce equipment-specific records analytics.
+- Amp must not require BGM/SE/audio assets.
+
+**Next recommended task:** Phase 10-4: Damage pipeline prep docs.
