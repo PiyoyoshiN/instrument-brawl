@@ -590,7 +590,7 @@ During Phase 8 scope/docs tasks, do not change:
 - Home Records entry is implemented (Home -> Records -> Home).
 - Reset Records — complete is implemented in RecordsScene with two-step confirmation and resets only `instrument-brawl:records`.
 
-**Next recommended task:** Phase 9-12: Battle HUD equipment labels.
+**Next recommended task:** Phase 9-13: Result equipment display.
 
 ### Phase 8-15 attackMethod / impactClass design (docs only)
 
@@ -666,7 +666,7 @@ Out of scope:
 - No records/settings schema changes.
 - No assets/sprites/3D/BGM/SE or online/server/account storage.
 
-**Next recommended task:** Phase 9-12: Battle HUD equipment labels.
+**Next recommended task:** Phase 9-13: Result equipment display.
 
 
 ## Phase 8 checkpoint
@@ -704,7 +704,7 @@ Phase 8 did not intentionally change: HP, damage, knockback, attack cooldown, at
 - ResultScene `R` / `C` / Home return does not double-count
 - Existing battle flow still works
 
-**Next recommended task:** Phase 9-12: Battle HUD equipment labels.
+**Next recommended task:** Phase 9-13: Result equipment display.
 
 
 
@@ -856,6 +856,8 @@ Phase 9-11 persists last selected equipment IDs in `instrument-brawl:settings` (
 
 Phase 9-11 fix: CharacterSelectScene now uses stored equipment IDs when scene data does not provide them, while still giving priority to explicit scene-data equipment IDs.
 
+Phase 9-12 adds Battle HUD equipment labels (`P1 Equip` / `P2 Equip`) using resolved equipment short labels. Labels are display-only: no gameplay effect. Result equipment display and Amp visual accent are still not implemented.
+
 Phase 9 guardrails:
 
 - no damage/range/defense buffs
@@ -864,7 +866,7 @@ Phase 9 guardrails:
 - no equipment-specific records schema/analytics
 - preserve existing Phase 8 gameplay/system guardrails
 
-**Next recommended task:** Phase 9-12: Battle HUD equipment labels.
+**Next recommended task:** Phase 9-13: Result equipment display.
 
 ## Play online
 

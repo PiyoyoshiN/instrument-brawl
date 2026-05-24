@@ -1459,6 +1459,8 @@ class BattleScene extends Phaser.Scene {
   private cpuRetreatUntil = 0;
   private effectsEnabled = true;
   private screenShakeEnabled = true;
+  private player1EquipmentHudText?: Phaser.GameObjects.Text;
+  private player2EquipmentHudText?: Phaser.GameObjects.Text;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
@@ -1531,6 +1533,22 @@ class BattleScene extends Phaser.Scene {
       0x38bdf8,
       1,
     );
+
+    this.player1EquipmentHudText = this.add
+      .text(32, 78, `P1 Equip: ${this.player1Equipment.shortLabel}`, {
+        color: '#86efac',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '16px',
+      })
+      .setOrigin(0, 0);
+
+    this.player2EquipmentHudText = this.add
+      .text(768, 78, `P2 Equip: ${this.player2Equipment.shortLabel}`, {
+        color: '#93c5fd',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '16px',
+      })
+      .setOrigin(1, 0);
 
     this.add
       .text(400, 64, 'Instrument Brawl', {
