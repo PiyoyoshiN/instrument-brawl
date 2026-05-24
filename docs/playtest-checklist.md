@@ -673,3 +673,28 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Next recommended task is Phase 10-1: Phase 10 scope docs.
 
 **Next recommended task:** Phase 10-1: Phase 10 scope docs.
+
+
+## Phase 10-1 scope docs checklist
+
+- [ ] This PR is docs-only.
+- [ ] No runtime files are changed.
+- [ ] Phase 10 name is documented as `Equipment Gameplay Prototype v1`.
+- [ ] Phase 10 is clearly described as prototype / fun-core validation, not final combat system.
+- [ ] Phase 10 scope explains small, readable, reversible per-PR changes.
+- [ ] Amp future gameplay direction is documented (short sonic reach/echo, non-projectile, non-screen-wide).
+- [ ] Amp compatibility direction is documented (Drum Sticks incompatibility in later implementation).
+- [ ] Case future gameplay direction is documented (normal damage reduction candidate around 20%).
+- [ ] Drum Sticks critical future direction is documented (40% / 1.5x candidate and Case interaction).
+- [ ] Pick treatment is documented as no gameplay effect in Phase 10 (`準備中` direction only).
+- [ ] Japanese UI policy is documented at high level as future work.
+- [ ] One attack can hit only once is preserved as a guardrail.
+- [ ] No equipment gameplay effects are implemented in this docs task.
+- [ ] No localStorage settings schema changes are introduced.
+- [ ] No records schema changes are introduced.
+- [ ] No equipment-specific records/analytics are introduced.
+- [ ] No assets/audio/images/3D are added.
+- [ ] Suggested 10-1..10-20 breakdown is documented.
+- [ ] Next recommended task is Phase 10-2: Phase 9 docs cleanup.
+
+**Next recommended task:** Phase 10-2: Phase 9 docs cleanup.
