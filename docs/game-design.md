@@ -903,6 +903,8 @@ Amp direction:
 - Amp may later reference sonic/ranged/hybrid language
 - Phase 9 does not guarantee ranged implementation
 - no runtime ranged/sonic attack behavior in this docs step
+- ResultScene equipment labels are now visible (`P1 Equip` / `P2 Equip`) as display-only status text with no gameplay effect
+- Amp now has a subtle BattleScene-only visual accent when selected, and it remains gameplay-neutral
 
 Attack identity direction:
 
@@ -914,7 +916,25 @@ Guardrails:
 - preserve Phase 8 gameplay/system invariants
 - no combat value tuning or records schema expansion for equipment
 
-Next recommended task: **Phase 9-13: Result equipment display**.
+### Phase 9-15 future equipment effect direction (docs only)
+
+Future direction only (not implemented):
+
+- Amp may later explore sonic / ranged / hybrid / signal-style identity.
+- Pick may later explore precision / close-range / timing-style identity.
+- Case may later explore protection / setup / stability-style identity.
+
+Rules for future equipment effect implementation:
+
+- Any equipment gameplay effect must be an explicit future phase task.
+- Introduce effects one at a time with isolated playtest checklist items.
+- Do not modify settings/records schema unless a future explicit schema task says so.
+- Equipment-specific records/analytics remain out of scope for now.
+- Inventory/unlocks/rarity/currency/progression remain out of scope for now.
+
+Phase 9 ended with display/identity foundation only: labels, handoff, persistence, and Amp visual-only accent. Equipment remains gameplay-neutral.
+
+Next recommended task: **Phase 10-1: Phase 10 scope docs**.
 
 
 ### Phase 9-3 Equipment concept (docs only)
