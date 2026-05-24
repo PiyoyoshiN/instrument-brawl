@@ -1079,7 +1079,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-12 Drum Sticks + Case critical interaction rule (critical bypass + Case tradeoff) (**runtime**) — complete
 - 10-13 Critical behavior checklist update (**docs-only**) — complete
 - 10-14 Equipment interaction matrix docs (Amp/Case/Drum Sticks rules) (**docs-only**) — complete
-- 10-15 Japanese UI label plan docs (equipment/fighter naming policy) (**docs-only**)
+- 10-15 Japanese UI label plan docs (equipment/fighter naming policy) (**docs-only**) — complete
 - 10-16 Pick “準備中” UI wording/docs preparation (**docs-only**)
 - 10-17 Prototype balancing pass #1 (small reversible tuning only) (**runtime**)
 - 10-18 Prototype balancing checklist update (**docs-only**)
@@ -1305,4 +1305,14 @@ Implemented scope:
 - Matrix covers Pick as selectable/displayed no-effect (`準備中`) candidate.
 - No records/settings schema changes.
 
-**Next recommended task:** Phase 10-15: Japanese UI label plan docs.
+### Phase 10-15 Japanese UI label plan docs (docs-only)
+
+Implemented scope:
+
+- Documented Japanese UI label policy for player-facing text surfaces.
+- Documented planned Japanese fighter/equipment display labels and short-label candidates.
+- Documented Pick direction as `ピック（準備中）` / `準備中` wording candidate while gameplay remains no-effect.
+- Clarified that internal IDs/types/storage keys remain English and unchanged.
+- No runtime/schema/gameplay changes.
+
+**Next recommended task:** Phase 10-16: Pick “準備中” UI wording/docs preparation.

@@ -1009,6 +1009,83 @@ Additional Case attacker-side rule:
 - No `instrument-brawl:settings` schema changes.
 - No new assets/audio/images/3D for this ruleset.
 
+### Japanese UI label policy / 日本語UIラベル方針 (docs-only plan)
+
+This section is a **documentation policy only** for future UI wording work.
+It does not implement runtime UI changes in this step.
+
+#### 1) General policy
+
+- Player-facing labels should gradually move toward Japanese.
+- Internal code identifiers, TypeScript types, fighter IDs, equipment IDs, and localStorage schema names can remain English.
+- Do not rename internal IDs just to change visible UI wording.
+- Apply Japanese wording at display/rendering boundaries (scene text, HUD text, result text, menu labels).
+- Future runtime UI label changes should be small and reversible (1 PR = 1 low-risk surface when possible).
+
+#### 2) Fighter label policy (planned display)
+
+| Internal fighter ID | Planned Japanese display | Short label candidate |
+| --- | --- | --- |
+| `electric-guitar` | `エレキギター` | `エレキ` |
+| `bass` | `ベース` | `ベース` |
+| `drum-sticks` | `ドラムスティック` | `ドラム` |
+| `keyboard` | `キーボード` | `キーボード` |
+
+#### 3) Equipment label policy (planned display)
+
+| Internal equipment ID | Planned Japanese display | Short label candidate | Notes |
+| --- | --- | --- | --- |
+| `none` | `装備なし` | `なし` | Baseline/no effect. |
+| `amp` | `アンプ` | `アンプ` | Reach-only prototype in current Phase 10 runtime. |
+| `case` | `ケース` | `ケース` | Defender-side normal damage reduction prototype. |
+| `pick` | `ピック（準備中）` | `ピック` | `準備中` wording candidate for future disabled/no-effect explanation; gameplay effect remains not implemented in Phase 10. |
+
+#### 4) Battle feedback label policy (planned display direction)
+
+- Normal hit:
+  - Current runtime can keep `HIT -X` for now.
+  - Japanese display candidate: `ヒット -X`.
+- Clean hit sublabel:
+  - Current runtime can keep `CLEAN HIT` for now.
+  - Japanese display candidate: `ヒット！`.
+- Critical hit:
+  - Keep `会心！` as the primary Japanese critical label.
+- Keep battle text short; avoid long sentences that reduce combat readability.
+
+#### 5) Scene/UI label policy (planned display direction)
+
+- Equipment Select:
+  - `Equipment Select` -> `装備選択`
+  - `P1 Equip` -> `P1 装備`
+  - `P2 Equip` -> `P2 装備`
+- Character Select:
+  - Candidate: `キャラクター選択` or `キャラ選択`
+- Result:
+  - Equipment display should eventually use Japanese equipment labels.
+- Settings / Records:
+  - Display wording can be Japanese.
+  - Storage keys/schema names must remain unchanged.
+
+#### 6) Guardrails for this policy step
+
+- No runtime changes in this PR.
+- No `instrument-brawl:settings` schema changes.
+- No `instrument-brawl:records` schema changes.
+- No ID/type renames.
+- No asset/font/image/audio/3D additions.
+- No gameplay or balance changes.
+- No equipment-effect behavior changes (including Pick effect).
+
+#### 7) Safe future implementation order
+
+1) Add centralized display-label maps/helpers first.  
+2) Switch low-risk UI labels in small PRs:
+   - EquipmentSelect visible labels
+   - Battle HUD equipment labels
+   - ResultScene equipment labels
+3) Review battle feedback wording (`会心！`, `ヒット`) in a dedicated small step.  
+4) Keep internal IDs/storage unchanged throughout.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 
