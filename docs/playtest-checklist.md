@@ -813,3 +813,58 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Reset Preferences still resets equipment to `none`.
 
 **Next recommended task:** Phase 10-10: Case reduction sanity pass.
+
+## Phase 10-13 Critical behavior checklist update
+
+- [ ] Drum Sticks + none sometimes deals 12 instead of 8.
+- [ ] Drum Sticks + none normal hit deals 8 against non-Case target.
+- [ ] Drum Sticks + none critical hit deals 12 against non-Case target.
+- [ ] Drum Sticks + none normal hit against Case target deals 6.
+- [ ] Drum Sticks + none critical hit against Case target deals 12.
+- [ ] Drum Sticks critical bypasses defender Case reduction.
+- [ ] Drum Sticks critical does not create a second hit.
+- [ ] One attack can still hit only once.
+- [ ] Critical hit shows final damage in the main hit marker.
+- [ ] With effects enabled, critical hit shows `会心！`.
+- [ ] With effects disabled, critical hit does not crash and final damage still applies.
+- [ ] Drum Sticks + Case does not critical.
+- [ ] Drum Sticks + Case against non-Case target deals 8.
+- [ ] Drum Sticks + Case against Case target deals 6.
+- [ ] Drum Sticks + Case still receives defensive Case reduction when hit by opponent.
+- [ ] Drum Sticks + Case tradeoff is attacker-side only.
+- [ ] Electric Guitar does not critical.
+- [ ] Bass does not critical.
+- [ ] Keyboard does not critical.
+- [ ] Electric Guitar/Bass against Case target still deals 8.
+- [ ] Keyboard against Case target still deals 7.
+- [ ] Amp reach still works.
+- [ ] Amp still does not increase damage.
+- [ ] Pick effect is still not implemented.
+- [ ] Critical does not change knockback.
+- [ ] Critical does not change movement speed.
+- [ ] Critical does not change max HP.
+- [ ] Critical does not change attack cooldown.
+- [ ] Critical does not change attack duration.
+- [ ] Critical does not change attack range.
+- [ ] Critical does not add guard / just guard.
+- [ ] Critical does not add block / armor mechanics.
+- [ ] Critical does not create multi-hit behavior.
+- [ ] Critical does not add new UI screens.
+- [ ] Case still does not reduce knockback.
+- [ ] Case still does not increase HP.
+- [ ] Case still does not add guard / just guard.
+- [ ] Battle HUD still displays equipment labels.
+- [ ] ResultScene still opens normally.
+- [ ] ResultScene still displays equipment labels.
+- [ ] `R` rematch still works.
+- [ ] `C` return still works.
+- [ ] Home return still works.
+- [ ] CPU mode does not crash.
+- [ ] records schema is unchanged.
+- [ ] settings schema is unchanged.
+- [ ] no critical count records are added.
+- [ ] no damage dealt records are added.
+- [ ] no equipment-specific win-rate analytics are added.
+- [ ] Reset Preferences still resets equipment to `none`.
+
+**Next recommended task:** Phase 10-14: Equipment interaction matrix docs.
