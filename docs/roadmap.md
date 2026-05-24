@@ -919,11 +919,11 @@ Initial equipment candidates:
 - 9-10 Rematch / return preservation (**runtime**) — complete (this task)
 - 9-11 localStorage equipment persistence (**runtime**) — complete (this task)
 - 9-12 Battle HUD equipment labels (**runtime**) — complete (this task)
-- 9-13 Result equipment display (**runtime**)
-- 9-14 Amp visual-only accent trial (**runtime visual-only**)
-- 9-15 Future equipment effect docs (**docs-only**)
-- 9-16 Playtest checklist update (**docs-only**)
-- 9-17 Phase 9 checkpoint docs (**docs-only**)
+- 9-13 Result equipment display (**runtime**) — complete
+- 9-14 Amp visual-only accent trial (**runtime visual-only**) — complete
+- 9-15 Future equipment effect docs (**docs-only**) — complete
+- 9-16 Playtest checklist update (**docs-only**) — complete
+- 9-17 Phase 9 checkpoint docs (**docs-only**) — complete
 
 Phase 9 explicit non-goals:
 
@@ -949,4 +949,141 @@ Gameplay/system guardrails remain unchanged:
 - ResultScene `R` / `C` / Home transitions
 - records schema
 
-**Next recommended task:** Phase 9-13: Result equipment display.
+## Phase 9 checkpoint
+
+Phase 9 is complete.
+
+Checkpoint summary:
+
+- Equipment metadata registry exists.
+- EquipmentSelectScene exists.
+- P1/P2 equipment selection exists.
+- Equipment IDs pass through EquipmentSelectScene -> BattleScene -> ResultScene.
+- Rematch/return preserves equipment IDs.
+- Equipment selections persist in localStorage settings.
+- Battle HUD displays P1/P2 equipment labels.
+- ResultScene displays P1/P2 equipment labels.
+- Amp has a BattleScene-only visual accent.
+- Equipment remains gameplay-neutral.
+- Pick/Case effects are not implemented.
+- Future equipment gameplay effects are not implemented.
+- Records schema is unchanged.
+- Settings schema is unchanged in this closeout step.
+
+## Phase 10: Equipment Gameplay Prototype v1
+
+Phase 10 is a prototype/fun-core validation phase, not a final combat-system phase.
+
+Purpose:
+
+- Move equipment from display-only identity toward small gameplay differences.
+- Validate whether tiny equipment differences improve movement, spacing, and win-condition variety.
+- Keep every change small, readable, and reversible per PR.
+- Keep 1 PR = 1 feature.
+- A longer task list (around 20 PRs) is acceptable if each PR remains meaningful and non-padding.
+
+### Phase 10-1 scope and guardrails (docs-only)
+
+This task is documentation only. No runtime gameplay change is included in 10-1.
+
+Current runtime baseline before Phase 10 gameplay work:
+
+- Flow: Home -> Mode Select -> Character Select -> Equipment Select -> Battle -> Result (+ Home -> Records -> Home, Home -> Options -> Home).
+- Equipment IDs: `none` / `amp` / `pick` / `case`.
+- Equipment handoff and persistence are implemented.
+- Battle/Result equipment labels are implemented.
+- Amp BattleScene accent is visual-only.
+- Equipment is still gameplay-neutral.
+
+### Planned gameplay axes (future implementation directions only)
+
+1) Amp (future direction):
+- short sonic reach / echo style direction
+- not a full projectile
+- not a screen-wide ranged attack
+- target fighters: Electric Guitar / Bass / Keyboard
+- Drum Sticks should later be incompatible with Amp
+- one attack can hit only once must remain true
+
+2) Case (future direction):
+- normal damage reduction direction (candidate around 20%)
+- applies to all 4 fighters
+- does not reduce critical damage
+- no HP increase, no knockback reduction, no guard behavior in Phase 10
+
+3) Drum Sticks critical identity (future direction):
+- Drum Sticks becomes the high-critical fighter
+- candidate critical rate: 40%
+- candidate multiplier: 1.5x
+- example target math: 8 -> 12 critical damage
+- critical damage bypasses Case reduction
+- Drum Sticks + Case loses the high critical rate
+- other fighters do not gain critical rate in Phase 10
+
+4) Pick treatment in Phase 10:
+- keep Pick in registry/UI as candidate
+- no Pick gameplay effect in Phase 10
+- later UI can mark Pick as `準備中` / effect not implemented
+- no damage/critical/cooldown/hitbox/range effect for Pick in Phase 10
+
+### Japanese UI policy (high-level, future UI tasks)
+
+- Game-facing labels should gradually move toward Japanese.
+- Internal IDs/types/function names/code identifiers may remain English.
+- Example mapping direction:
+  - `none` -> `装備なし` / `なし`
+  - `amp` -> `アンプ`
+  - `pick` -> `ピック（準備中）`
+  - `case` -> `ケース`
+  - `electric-guitar` -> `エレキギター`
+  - `bass` -> `ベース`
+  - `drum-sticks` -> `ドラムスティック`
+  - `keyboard` -> `キーボード`
+- Japanese label runtime implementation is out of scope in 10-1.
+
+### Phase 10 explicit non-goals
+
+- No runtime gameplay implementation in 10-1.
+- No damage/range/defense/critical implementation in 10-1.
+- No full projectile or screen-wide ranged attack.
+- No Pick gameplay effect.
+- No equipment-specific records or win-rate analytics.
+- No records schema changes.
+- No guard / just guard.
+- No special moves.
+- No combo system.
+- No multi-hit behavior.
+- No round system.
+- No timer gameplay implementation.
+- No new fighters.
+- No encyclopedia runtime.
+- No story.
+- No online play.
+- No server/cloud save.
+- No BGM/SE assets.
+- No image/sprite/3D assets.
+
+### Suggested Phase 10 task breakdown (10-1 .. 10-20)
+
+- 10-1 Phase 10 scope docs (**docs-only**) — complete
+- 10-2 Phase 9 docs cleanup (**docs-only**) — complete
+- 10-3 Amp compatibility rules docs (Drum Sticks incompatibility) (**docs-only**)
+- 10-4 Damage pipeline prep docs (normal/critical/equipment order) (**docs-only**)
+- 10-5 Amp gameplay prototype v1 (short sonic reach/echo, non-projectile) (**runtime**)
+- 10-6 Amp gameplay playtest checklist update (**docs-only**)
+- 10-7 Amp gameplay sanity pass (**runtime**)
+- 10-8 Case reduction prototype v1 (~20% normal damage reduction) (**runtime**)
+- 10-9 Case reduction checklist update (**docs-only**)
+- 10-10 Case reduction sanity pass (**runtime**)
+- 10-11 Drum Sticks critical prototype v1 (40% / 1.5x candidate) (**runtime**)
+- 10-12 Drum Sticks + Case critical interaction rule (critical bypass + Case tradeoff) (**runtime**)
+- 10-13 Critical behavior checklist update (**docs-only**)
+- 10-14 Equipment interaction matrix docs (Amp/Case/Drum Sticks rules) (**docs-only**)
+- 10-15 Japanese UI label plan docs (equipment/fighter naming policy) (**docs-only**)
+- 10-16 Pick “準備中” UI wording/docs preparation (**docs-only**)
+- 10-17 Prototype balancing pass #1 (small reversible tuning only) (**runtime**)
+- 10-18 Prototype balancing checklist update (**docs-only**)
+- 10-19 Phase 10 prototype checkpoint docs (**docs-only**)
+- 10-20 Post-prototype go/no-go notes for next phase (**docs-only**)
+
+**Next recommended task:** Phase 10-3: Amp compatibility rules docs.
