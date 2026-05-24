@@ -1082,7 +1082,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-15 Japanese UI label plan docs (equipment/fighter naming policy) (**docs-only**) — complete
 - 10-16 Pick “準備中” UI wording/docs preparation (**docs-only**) — complete
 - 10-17 Prototype balancing pass #1 (small reversible tuning only) (**runtime**) — complete
-- 10-18 Prototype balancing checklist update (**docs-only**)
+- 10-18 Prototype balancing checklist update (**docs-only**) — complete
 - 10-19 Phase 10 prototype checkpoint docs (**docs-only**)
 - 10-20 Post-prototype go/no-go notes for next phase (**docs-only**)
 
@@ -1337,4 +1337,16 @@ Implemented scope:
 - Pick remains no-effect.
 - No records/settings schema changes.
 
-**Next recommended task:** Phase 10-18: Prototype balancing checklist update.
+### Phase 10-18 Prototype balancing checklist update (docs-only)
+
+Implemented scope:
+
+- Added checklist coverage for Prototype balancing pass #1.
+- Checklist covers Drum Sticks 35% critical-rate target behavior.
+- Checklist confirms Drum Sticks critical damage remains 12.
+- Checklist confirms Amp +24px reach bonus remains unchanged.
+- Checklist confirms Case 20% normal damage reduction remains unchanged.
+- Checklist confirms Pick remains selectable/displayed with no gameplay effect.
+- Checklist confirms no records/settings schema changes.
+
+**Next recommended task:** Phase 10-19: Phase 10 prototype checkpoint docs.

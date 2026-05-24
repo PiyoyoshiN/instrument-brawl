@@ -868,3 +868,77 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Reset Preferences still resets equipment to `none`.
 
 **Next recommended task:** Phase 10-14: Equipment interaction matrix docs.
+
+## Phase 10-18 Prototype balancing checklist update
+
+### Drum Sticks balance check
+
+- [ ] Drum Sticks + none still sometimes deals 12.
+- [ ] Drum Sticks + none critical appears less often than the old 40% prototype.
+- [ ] Drum Sticks + none critical rate target is now 35%.
+- [ ] Drum Sticks + none normal hit remains 8.
+- [ ] Drum Sticks + none critical hit remains 12.
+- [ ] Drum Sticks + none critical still bypasses defender Case.
+- [ ] Drum Sticks + Case still does not critical.
+- [ ] Drum Sticks + Case against non-Case target still deals 8.
+- [ ] Drum Sticks + Case against Case target still deals 6.
+- [ ] Drum Sticks + Pick can still critical because Pick is not Case.
+
+### Case balance check
+
+- [ ] Case still reduces normal incoming damage by 20%.
+- [ ] Electric Guitar/Bass normal hit against Case target still deals 8.
+- [ ] Keyboard normal hit against Case target still deals 7.
+- [ ] Drum Sticks normal hit against Case target still deals 6.
+- [ ] Critical damage is still not reduced by defender Case.
+- [ ] Case still does not reduce knockback.
+- [ ] Case still does not increase HP.
+- [ ] Case still does not add guard / just guard.
+
+### Amp balance check
+
+- [ ] Amp-compatible fighters still get small reach bonus.
+- [ ] Amp reach bonus remains +24px.
+- [ ] Amp still does not increase damage.
+- [ ] Amp still does not change knockback.
+- [ ] Amp still does not change cooldown.
+- [ ] Amp still does not change movement speed.
+- [ ] Amp still does not create projectile.
+- [ ] Amp still does not create multi-hit.
+- [ ] Drum Sticks + Amp still resolves safely to none before battle behavior.
+
+### Pick check
+
+- [ ] Pick remains selectable/displayed.
+- [ ] Pick still has no gameplay effect.
+- [ ] Pick does not change damage.
+- [ ] Pick does not change range.
+- [ ] Pick does not change critical rate.
+- [ ] Pick does not change defense.
+- [ ] Pick does not trigger fallback to none.
+- [ ] Pick does not add records/analytics.
+
+### Flow / UI check
+
+- [ ] Equipment Select still opens.
+- [ ] Battle HUD still displays equipment labels.
+- [ ] ResultScene still opens.
+- [ ] ResultScene still displays equipment labels.
+- [ ] `R` rematch still works.
+- [ ] `C` return still works.
+- [ ] CPU mode still works.
+- [ ] One attack can still hit only once.
+- [ ] Critical hit still shows `会心！` when effects are enabled.
+- [ ] With effects disabled, critical damage still applies without crash.
+
+### Records / storage check
+
+- [ ] records schema is unchanged.
+- [ ] settings schema is unchanged.
+- [ ] no critical count records are added.
+- [ ] no damage dealt records are added.
+- [ ] no equipment usage analytics are added.
+- [ ] no equipment win-rate analytics are added.
+- [ ] Reset Preferences still resets equipment to `none`.
+
+**Next recommended task:** Phase 10-19: Phase 10 prototype checkpoint docs.
