@@ -584,3 +584,22 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Next recommended task is Phase 9-13: Result equipment display.
 
 **Next recommended task:** Phase 9-13: Result equipment display.
+
+
+## Phase 9-13 Result equipment display checklist
+
+- [ ] ResultScene shows P1 equipment label.
+- [ ] ResultScene shows P2 equipment label.
+- [ ] `None` displays clearly when no equipment is selected.
+- [ ] `Amp` / `Pick` / `Case` short labels display correctly.
+- [ ] Missing/invalid equipment IDs fall back to `None` safely.
+- [ ] Result display uses already-resolved equipment definitions.
+- [ ] Result display does not affect rematch / return behavior.
+- [ ] Equipment still has no gameplay effect.
+- [ ] Battle HUD equipment labels remain unchanged.
+- [ ] localStorage settings schema is unchanged.
+- [ ] records schema is unchanged.
+- [ ] Amp visual effect is not added.
+- [ ] Next recommended task is Phase 9-14: Amp visual-only accent trial.
+
+**Next recommended task:** Phase 9-14: Amp visual-only accent trial.
