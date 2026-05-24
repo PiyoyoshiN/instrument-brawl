@@ -2375,6 +2375,12 @@ class BattleScene extends Phaser.Scene {
     return fighter === this.player1 ? this.player1EquipmentId : this.player2EquipmentId;
   }
 
+  // Phase 10 tradeoff: Drum Sticks + Case gives up attacker-side high-critical identity.
+  // This does not change defender-side Case reduction behavior for non-critical hits.
+  private canUseDrumSticksCritical(attacker: Fighter): boolean {
+    return attacker.definition.id === 'drum-sticks' && this.getFighterEquipmentId(attacker) !== 'case';
+  }
+
   private hasAmpReach(fighter: Fighter): boolean {
     return this.getFighterEquipmentId(fighter) === 'amp' && this.isAmpCompatibleFighter(fighter.definition.id);
   }
@@ -2385,8 +2391,8 @@ class BattleScene extends Phaser.Scene {
 
   private calculateAttackDamage(attacker: Fighter, defender: Fighter): DamageCalculationResult {
     const baseDamage = attacker.stats.attackDamage;
-    const isDrumSticksAttacker = attacker.definition.id === 'drum-sticks';
-    const isCritical = isDrumSticksAttacker && Math.random() < drumSticksCriticalRate;
+    const canCritical = this.canUseDrumSticksCritical(attacker);
+    const isCritical = canCritical && Math.random() < drumSticksCriticalRate;
 
     let finalDamage = baseDamage;
 

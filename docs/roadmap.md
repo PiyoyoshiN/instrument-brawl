@@ -1076,7 +1076,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-9 Case reduction checklist update (**docs-only**) — complete
 - 10-10 Case reduction sanity pass (**runtime**) — complete
 - 10-11 Drum Sticks critical prototype v1 (40% / 1.5x candidate) (**runtime**) — complete
-- 10-12 Drum Sticks + Case critical interaction rule (critical bypass + Case tradeoff) (**runtime**)
+- 10-12 Drum Sticks + Case critical interaction rule (critical bypass + Case tradeoff) (**runtime**) — complete
 - 10-13 Critical behavior checklist update (**docs-only**)
 - 10-14 Equipment interaction matrix docs (Amp/Case/Drum Sticks rules) (**docs-only**)
 - 10-15 Japanese UI label plan docs (equipment/fighter naming policy) (**docs-only**)
@@ -1274,4 +1274,14 @@ Implemented scope:
 - Electric Guitar / Bass / Keyboard do not critical in this step.
 - No records/settings schema changes.
 
-**Next recommended task:** Phase 10-12: Drum Sticks + Case critical interaction rule.
+### Phase 10-12 Drum Sticks + Case critical interaction rule (runtime)
+
+Implemented scope:
+
+- Drum Sticks + Case now loses high-critical identity in this prototype.
+- Drum Sticks + Case does not critical in this step.
+- Drum Sticks critical still bypasses defender Case when attacker is not using Case.
+- Defender Case still reduces non-critical hits by 20%.
+- No records/settings schema changes.
+
+**Next recommended task:** Phase 10-13: Critical behavior checklist update.
