@@ -25,6 +25,7 @@ const hpBarInset = 3;
 const cpuAttackDistancePadding = 18;
 // Phase 10 Amp prototype: small reach-only bonus (no projectile, no damage increase).
 const ampAttackReachBonusPx = 24;
+const caseNormalDamageMultiplier = 0.8;
 const cpuComfortDistance = 140;
 const cpuDecisionIntervalMs = 850;
 const cpuRetreatDurationMs = 420;
@@ -2039,11 +2040,12 @@ class BattleScene extends Phaser.Scene {
 
       if (Phaser.Geom.Intersects.RectangleToRectangle(attack.hitbox.getBounds(), attack.defender.body.getBounds())) {
         attack.hasHit = true;
-        this.applyDamage(attack.defenderHp, attack.attacker.stats.attackDamage);
+        const finalDamage = this.calculateNormalDamage(attack.attacker, attack.defender);
+        this.applyDamage(attack.defenderHp, finalDamage);
         this.applyKnockback(attack.defender, attack.attacker.facing, attack.attacker.stats.knockbackSpeed);
         this.flashFighter(attack.defender);
         this.showHitSpark(attack.defender, attack.attacker);
-        this.showHitMarker(attack.defender, attack.attacker.stats.attackDamage);
+        this.showHitMarker(attack.defender, finalDamage);
         this.shakeCameraOnHit();
         this.checkMatchResult();
 
@@ -2371,6 +2373,17 @@ class BattleScene extends Phaser.Scene {
 
   private getEffectiveAttackWidth(fighter: Fighter): number {
     return fighter.stats.attackWidth + (this.hasAmpReach(fighter) ? ampAttackReachBonusPx : 0);
+  }
+
+  private calculateNormalDamage(attacker: Fighter, defender: Fighter): number {
+    const baseDamage = attacker.stats.attackDamage;
+    const defenderEquipmentId = this.getFighterEquipmentId(defender);
+    const reducedDamage =
+      defenderEquipmentId === 'case'
+        ? Math.floor(baseDamage * caseNormalDamageMultiplier)
+        : baseDamage;
+
+    return Math.max(1, reducedDamage);
   }
 
 

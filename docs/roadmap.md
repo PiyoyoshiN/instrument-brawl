@@ -1072,7 +1072,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-5 Amp gameplay prototype v1 (short sonic reach/echo, non-projectile) (**runtime**) — complete
 - 10-6 Amp gameplay playtest checklist update (**docs-only**) — complete
 - 10-7 Amp gameplay sanity pass (**runtime**) — complete
-- 10-8 Case reduction prototype v1 (~20% normal damage reduction) (**runtime**)
+- 10-8 Case reduction prototype v1 (~20% normal damage reduction) (**runtime**) — complete
 - 10-9 Case reduction checklist update (**docs-only**)
 - 10-10 Case reduction sanity pass (**runtime**)
 - 10-11 Drum Sticks critical prototype v1 (40% / 1.5x candidate) (**runtime**)
@@ -1227,4 +1227,20 @@ Implemented scope:
 - Amp reach still applies only to attack hitbox width and CPU attack-distance checks.
 - No damage / knockback / cooldown / duration / schema changes were introduced.
 
-**Next recommended task:** Phase 10-8: Case reduction prototype v1.
+### Phase 10-8 Case reduction prototype v1 (runtime)
+
+Implemented scope:
+
+- Case now reduces normal incoming damage by 20%.
+- Current examples: 10 -> 8, 9 -> 7, 8 -> 6.
+- Final damage is clamped to minimum 1.
+
+Guardrails kept in 10-8:
+
+- No knockback reduction.
+- No HP increase.
+- No guard / just guard behavior.
+- Critical hits are still not implemented.
+- No records/settings schema changes.
+
+**Next recommended task:** Phase 10-9: Case reduction checklist update.
