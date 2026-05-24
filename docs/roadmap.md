@@ -1080,7 +1080,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-13 Critical behavior checklist update (**docs-only**) — complete
 - 10-14 Equipment interaction matrix docs (Amp/Case/Drum Sticks rules) (**docs-only**) — complete
 - 10-15 Japanese UI label plan docs (equipment/fighter naming policy) (**docs-only**) — complete
-- 10-16 Pick “準備中” UI wording/docs preparation (**docs-only**)
+- 10-16 Pick “準備中” UI wording/docs preparation (**docs-only**) — complete
 - 10-17 Prototype balancing pass #1 (small reversible tuning only) (**runtime**)
 - 10-18 Prototype balancing checklist update (**docs-only**)
 - 10-19 Phase 10 prototype checkpoint docs (**docs-only**)
@@ -1315,4 +1315,14 @@ Implemented scope:
 - Clarified that internal IDs/types/storage keys remain English and unchanged.
 - No runtime/schema/gameplay changes.
 
-**Next recommended task:** Phase 10-16: Pick “準備中” UI wording/docs preparation.
+### Phase 10-16 Pick “準備中” UI wording/docs preparation (docs-only)
+
+Implemented scope:
+
+- Documented Pick `準備中` wording plan for player-facing UI.
+- Confirmed Pick remains selectable/displayed in Phase 10.
+- Confirmed Pick remains no-effect in Phase 10 gameplay.
+- Documented recommended labels: `ピック（準備中）`, `ピック`, `準備中`.
+- No runtime/schema/gameplay changes.
+
+**Next recommended task:** Phase 10-17: Prototype balancing pass #1.

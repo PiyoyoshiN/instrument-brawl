@@ -1086,6 +1086,80 @@ It does not implement runtime UI changes in this step.
 3) Review battle feedback wording (`会心！`, `ヒット`) in a dedicated small step.  
 4) Keep internal IDs/storage unchanged throughout.
 
+### Pick「準備中」UI wording plan / Pick no-effect wording plan (docs-only plan)
+
+This section defines future UI wording policy for Pick in Phase 10.
+It is documentation-only and does not change runtime behavior in this step.
+
+#### 1) Pick current rule (implemented runtime baseline)
+
+- `pick` remains selectable/displayed in Phase 10.
+- `pick` has no gameplay effect in Phase 10.
+- `pick` does not change damage.
+- `pick` does not change range.
+- `pick` does not change critical rate.
+- `pick` does not change defense.
+- `pick` does not change cooldown.
+- `pick` does not change movement speed.
+- `pick` does not change HP.
+- `pick` does not add records/analytics.
+
+#### 2) Player-facing wording goal
+
+- UI wording should avoid implying that Pick already has an active gameplay effect.
+- Wording should communicate “not implemented yet” without sounding like an error state.
+- Wording should stay short enough for Equipment Select / HUD / Result surfaces.
+- Avoid long explanatory text in battle HUD to preserve readability.
+
+#### 3) Planned Japanese labels
+
+- Full equipment label: `ピック（準備中）`
+- Short label: `ピック`
+- Status label: `準備中`
+- Description/help text candidates:
+  - `効果はまだありません`
+  - `今後追加予定`
+  - `このフェーズでは効果なし`
+- Recommended default for Equipment Select:
+  - show `ピック（準備中）` or `ピック` + small `準備中`
+- Recommended default for Battle HUD / Result:
+  - use compact `ピック`
+  - avoid long status text during battle
+- Recommended default for details/help text:
+  - use `このフェーズでは効果なし`
+
+#### 4) Selection behavior policy
+
+- Pick should remain selectable.
+- Selecting Pick should not crash.
+- Selecting Pick should not silently become another equipment.
+- Pick should not be treated as invalid.
+- Pick should not trigger fallback to `none`.
+- Pick should be displayed honestly as selected, while described as no-effect/`準備中`.
+- Reset Preferences should continue resetting equipment to `none`.
+
+#### 5) Safe future implementation order
+
+1) Add centralized Japanese equipment display-label helper/map.  
+2) Add optional equipment description/help text surface.  
+3) Update EquipmentSelect visible wording for Pick first.  
+4) Optionally update Battle/Result to compact Japanese labels.  
+5) Keep Pick gameplay no-effect until a dedicated future gameplay task.  
+6) Add checklist coverage after runtime UI wording changes.
+
+#### 6) Guardrails for this policy step
+
+- No runtime changes in this PR.
+- No Pick gameplay effect.
+- No damage/range/critical/defense/cooldown/speed/HP changes.
+- No fallback behavior changes.
+- No internal ID renames.
+- No storage key/schema changes.
+- No records schema changes.
+- No equipment analytics additions.
+- No assets/audio/images/3D or font additions.
+- No gameplay/balance changes.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 
