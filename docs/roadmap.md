@@ -919,11 +919,11 @@ Initial equipment candidates:
 - 9-10 Rematch / return preservation (**runtime**) — complete (this task)
 - 9-11 localStorage equipment persistence (**runtime**) — complete (this task)
 - 9-12 Battle HUD equipment labels (**runtime**) — complete (this task)
-- 9-13 Result equipment display (**runtime**)
-- 9-14 Amp visual-only accent trial (**runtime visual-only**)
-- 9-15 Future equipment effect docs (**docs-only**)
-- 9-16 Playtest checklist update (**docs-only**)
-- 9-17 Phase 9 checkpoint docs (**docs-only**)
+- 9-13 Result equipment display (**runtime**) — complete
+- 9-14 Amp visual-only accent trial (**runtime visual-only**) — complete
+- 9-15 Future equipment effect docs (**docs-only**) — complete
+- 9-16 Playtest checklist update (**docs-only**) — complete
+- 9-17 Phase 9 checkpoint docs (**docs-only**) — complete
 
 Phase 9 explicit non-goals:
 
@@ -949,4 +949,404 @@ Gameplay/system guardrails remain unchanged:
 - ResultScene `R` / `C` / Home transitions
 - records schema
 
-**Next recommended task:** Phase 9-13: Result equipment display.
+## Phase 9 checkpoint
+
+Phase 9 is complete.
+
+Checkpoint summary:
+
+- Equipment metadata registry exists.
+- EquipmentSelectScene exists.
+- P1/P2 equipment selection exists.
+- Equipment IDs pass through EquipmentSelectScene -> BattleScene -> ResultScene.
+- Rematch/return preserves equipment IDs.
+- Equipment selections persist in localStorage settings.
+- Battle HUD displays P1/P2 equipment labels.
+- ResultScene displays P1/P2 equipment labels.
+- Amp has a BattleScene-only visual accent.
+- Equipment remains gameplay-neutral.
+- Pick/Case effects are not implemented.
+- Future equipment gameplay effects are not implemented.
+- Records schema is unchanged.
+- Settings schema is unchanged in this closeout step.
+
+## Phase 10: Equipment Gameplay Prototype v1
+
+Phase 10 is a prototype/fun-core validation phase, not a final combat-system phase.
+
+Purpose:
+
+- Move equipment from display-only identity toward small gameplay differences.
+- Validate whether tiny equipment differences improve movement, spacing, and win-condition variety.
+- Keep every change small, readable, and reversible per PR.
+- Keep 1 PR = 1 feature.
+- A longer task list (around 20 PRs) is acceptable if each PR remains meaningful and non-padding.
+
+### Phase 10-1 scope and guardrails (docs-only)
+
+This task is documentation only. No runtime gameplay change is included in 10-1.
+
+Current runtime baseline before Phase 10 gameplay work:
+
+- Flow: Home -> Mode Select -> Character Select -> Equipment Select -> Battle -> Result (+ Home -> Records -> Home, Home -> Options -> Home).
+- Equipment IDs: `none` / `amp` / `pick` / `case`.
+- Equipment handoff and persistence are implemented.
+- Battle/Result equipment labels are implemented.
+- Amp BattleScene accent is visual-only.
+- Equipment is still gameplay-neutral.
+
+### Planned gameplay axes (future implementation directions only)
+
+1) Amp (future direction):
+- short sonic reach / echo style direction
+- not a full projectile
+- not a screen-wide ranged attack
+- target fighters: Electric Guitar / Bass / Keyboard
+- Drum Sticks should later be incompatible with Amp
+- one attack can hit only once must remain true
+
+2) Case (future direction):
+- normal damage reduction direction (candidate around 20%)
+- applies to all 4 fighters
+- does not reduce critical damage
+- no HP increase, no knockback reduction, no guard behavior in Phase 10
+
+3) Drum Sticks critical identity (future direction):
+- Drum Sticks becomes the high-critical fighter
+- candidate critical rate: 40%
+- candidate multiplier: 1.5x
+- example target math: 8 -> 12 critical damage
+- critical damage bypasses Case reduction
+- Drum Sticks + Case loses the high critical rate
+- other fighters do not gain critical rate in Phase 10
+
+4) Pick treatment in Phase 10:
+- keep Pick in registry/UI as candidate
+- no Pick gameplay effect in Phase 10
+- later UI can mark Pick as `準備中` / effect not implemented
+- no damage/critical/cooldown/hitbox/range effect for Pick in Phase 10
+
+### Japanese UI policy (high-level, future UI tasks)
+
+- Game-facing labels should gradually move toward Japanese.
+- Internal IDs/types/function names/code identifiers may remain English.
+- Example mapping direction:
+  - `none` -> `装備なし` / `なし`
+  - `amp` -> `アンプ`
+  - `pick` -> `ピック（準備中）`
+  - `case` -> `ケース`
+  - `electric-guitar` -> `エレキギター`
+  - `bass` -> `ベース`
+  - `drum-sticks` -> `ドラムスティック`
+  - `keyboard` -> `キーボード`
+- Japanese label runtime implementation is out of scope in 10-1.
+
+### Phase 10 explicit non-goals
+
+- No runtime gameplay implementation in 10-1.
+- No damage/range/defense/critical implementation in 10-1.
+- No full projectile or screen-wide ranged attack.
+- No Pick gameplay effect.
+- No equipment-specific records or win-rate analytics.
+- No records schema changes.
+- No guard / just guard.
+- No special moves.
+- No combo system.
+- No multi-hit behavior.
+- No round system.
+- No timer gameplay implementation.
+- No new fighters.
+- No encyclopedia runtime.
+- No story.
+- No online play.
+- No server/cloud save.
+- No BGM/SE assets.
+- No image/sprite/3D assets.
+
+### Suggested Phase 10 task breakdown (10-1 .. 10-20)
+
+- 10-1 Phase 10 scope docs (**docs-only**) — complete
+- 10-2 Phase 9 docs cleanup (**docs-only**) — complete
+- 10-3 Amp compatibility rules docs (Drum Sticks incompatibility) (**docs-only**) — complete
+- 10-4 Damage pipeline prep docs (normal/critical/equipment order) (**docs-only**) — complete
+- 10-5 Amp gameplay prototype v1 (short sonic reach/echo, non-projectile) (**runtime**) — complete
+- 10-6 Amp gameplay playtest checklist update (**docs-only**) — complete
+- 10-7 Amp gameplay sanity pass (**runtime**) — complete
+- 10-8 Case reduction prototype v1 (~20% normal damage reduction) (**runtime**) — complete
+- 10-9 Case reduction checklist update (**docs-only**) — complete
+- 10-10 Case reduction sanity pass (**runtime**) — complete
+- 10-11 Drum Sticks critical prototype v1 (40% / 1.5x candidate) (**runtime**) — complete
+- 10-12 Drum Sticks + Case critical interaction rule (critical bypass + Case tradeoff) (**runtime**) — complete
+- 10-13 Critical behavior checklist update (**docs-only**) — complete
+- 10-14 Equipment interaction matrix docs (Amp/Case/Drum Sticks rules) (**docs-only**) — complete
+- 10-15 Japanese UI label plan docs (equipment/fighter naming policy) (**docs-only**) — complete
+- 10-16 Pick “準備中” UI wording/docs preparation (**docs-only**) — complete
+- 10-17 Prototype balancing pass #1 (small reversible tuning only) (**runtime**) — complete
+- 10-18 Prototype balancing checklist update (**docs-only**) — complete
+- 10-19 Phase 10 prototype checkpoint docs (**docs-only**)
+- 10-20 Post-prototype go/no-go notes for next phase (**docs-only**)
+
+### Phase 10-3 Amp compatibility rules (docs-only)
+
+This step defines compatibility rules only. No runtime implementation is included.
+
+Compatibility matrix (Phase 10 planning baseline):
+
+- `none`: compatible with all fighters.
+- `amp`: compatible with Electric Guitar / Bass / Keyboard.
+- `amp`: not compatible with Drum Sticks.
+- `case`: compatible with all 4 fighters.
+- `pick`: remains selectable/displayed for now, but has no Phase 10 gameplay effect and is a future `準備中` treatment target.
+
+Identity direction:
+
+- Drum Sticks should not receive Amp sonic reach/echo behavior in Phase 10.
+- Drum Sticks identity stays fast / short reach / high-critical candidate, not sound-boosted Amp identity.
+- Amp identity belongs to sound-output style fighters: Electric Guitar / Bass / Keyboard.
+
+Future runtime behavior direction (not implemented in 10-3):
+
+- EquipmentSelectScene should later prevent or safely resolve invalid Drum Sticks + Amp selections.
+- If selected fighter is Drum Sticks, Amp should later be unavailable/skipped or clearly marked unavailable.
+- If stale saved/scene data contains Drum Sticks + Amp, resolve safely to `none` before battle.
+- Invalid combinations must never crash runtime.
+- Reset Preferences should continue resetting equipment to `none`.
+- Same equipment for both players remains allowed when compatible.
+- Same-fighter mirror matches remain allowed.
+- If both players use Amp-compatible fighters, both may select Amp.
+- If one player is Drum Sticks and the other is Amp-compatible, only the Amp-compatible side may use Amp.
+
+Amp guardrails retained for later gameplay tasks:
+
+- Amp future gameplay remains short sonic reach / echo direction.
+- Amp is not a full projectile.
+- Amp is not screen-wide ranged attack.
+- One attack can hit only once remains required.
+- Amp must not introduce multi-hit behavior.
+- Amp must not change records schema.
+- Amp must not introduce equipment-specific records analytics.
+- Amp must not require BGM/SE/audio assets.
+
+### Phase 10-4 Damage pipeline prep docs (docs-only)
+
+This step defines future damage resolution order and interaction rules only. No runtime implementation is included.
+
+Recommended future damage resolution order:
+
+1) Resolve attacker and defender.  
+2) Resolve attacker fighter ID and defender fighter ID.  
+3) Resolve attacker equipment ID and defender equipment ID.  
+4) Start from attacker fighter base `attackDamage`.  
+5) Determine whether the attack is a critical hit.  
+6) If critical: apply critical multiplier, and bypass defender Case reduction.  
+7) If not critical and defender equipment is Case: apply normal damage reduction.  
+8) Clamp final damage to minimum 1.  
+9) Subtract final damage from defender HP.  
+10) Show hit feedback: normal hit uses current HIT style; critical hit uses future label `会心！`.
+
+Critical rules (future implementation direction):
+
+- Critical is a Drum Sticks identity mechanic in Phase 10.
+- Only attacker fighter `drum-sticks` should have high critical in Phase 10.
+- Candidate critical rate: 40%.
+- Candidate critical multiplier: 1.5x.
+- Current Drum Sticks base damage is 8, so critical target is 12.
+- Other fighters should not gain critical rate in Phase 10.
+- Drum Sticks + Case should lose high critical identity (future direction: 0% or normal baseline critical rate).
+- Critical damage bypasses defender Case reduction.
+
+Case reduction rules (future implementation direction):
+
+- Case applies to all fighters.
+- Case reduces normal, non-critical damage only.
+- Candidate reduction: 20%.
+- Candidate examples: 10 -> 8, 9 -> 7, 8 -> 6.
+- Suggested rounding direction: floor after multiplying by 0.8, then clamp minimum 1.
+- Case should not reduce critical damage.
+- Case should not reduce knockback in Phase 10.
+- Case should not increase HP.
+- Case should not add guard / just guard behavior.
+
+Amp damage interaction rules (future direction):
+
+- Amp short sonic reach/echo should not increase damage.
+- Amp should not create multi-hit behavior.
+- Regular hitbox and future Amp echo/reach must still result in at most one hit per attack.
+- If future Amp echo uses separate hit detection, it must share the same one-hit-per-attack guard.
+- Amp remains non-projectile and non-screen-wide ranged.
+- Amp must not alter records schema or add equipment-specific analytics.
+
+Pick damage interaction rules (future direction):
+
+- Pick has no Phase 10 gameplay effect.
+- Pick should not change damage, critical rate, attack cooldown, hitbox, range, or defense in Phase 10.
+- Pick remains selectable/displayed as future `準備中` candidate.
+
+Records/storage guardrails:
+
+- Do not add equipment-specific match records.
+- Do not add critical count records.
+- Do not add damage dealt records.
+- Do not change `instrument-brawl:records` schema.
+- Do not change `instrument-brawl:settings` schema in this docs step.
+
+### Phase 10-5 Amp gameplay prototype v1 (runtime)
+
+Implemented scope:
+
+- Amp-compatible fighters (Electric Guitar / Bass / Keyboard) gain a small attack-reach bonus.
+- Reach bonus is implemented as a small effective attack-width increase in BattleScene.
+- Amp gameplay remains non-projectile and non-screen-wide.
+- One attack can still hit only once.
+- Drum Sticks + Amp is safely resolved to `none` for battle-side behavior.
+
+Guardrails kept in 10-5:
+
+- No damage increase from Amp.
+- No knockback change.
+- No attack cooldown/duration change.
+- No records schema change.
+- No settings schema change.
+
+### Phase 10-6 Amp gameplay playtest checklist update (docs-only)
+
+Implemented scope:
+
+- Added manual validation checklist for Amp reach prototype behavior.
+- Checklist covers compatible fighter reach behavior and Drum Sticks + Amp fallback safety.
+- Checklist confirms Amp remains reach-only (non-projectile, non-screen-wide, no multi-hit).
+- Checklist confirms no damage/knockback/cooldown/schema changes.
+
+### Phase 10-7 Amp gameplay sanity pass (runtime)
+
+Implemented scope:
+
+- Amp reach prototype sanity pass is complete.
+- Amp reach remains small and reach-only (non-projectile, non-screen-wide, non-multi-hit).
+- Drum Sticks + Amp battle-side fallback to `none` remains safe.
+- Amp reach still applies only to attack hitbox width and CPU attack-distance checks.
+- No damage / knockback / cooldown / duration / schema changes were introduced.
+
+### Phase 10-8 Case reduction prototype v1 (runtime)
+
+Implemented scope:
+
+- Case now reduces normal incoming damage by 20%.
+- Current examples: 10 -> 8, 9 -> 7, 8 -> 6.
+- Final damage is clamped to minimum 1.
+
+Guardrails kept in 10-8:
+
+- No knockback reduction.
+- No HP increase.
+- No guard / just guard behavior.
+- Critical hits are still not implemented.
+- No records/settings schema changes.
+
+### Phase 10-9 Case reduction checklist update (docs-only)
+
+Implemented scope:
+
+- Added manual validation checklist for Case reduction prototype v1.
+- Checklist confirms 20% normal damage reduction behavior.
+- Checklist confirms hit marker and HP reduction must match final reduced damage.
+- Checklist confirms no knockback / HP / guard / schema changes.
+
+### Phase 10-10 Case reduction sanity pass (runtime)
+
+Implemented scope:
+
+- Case reduction sanity pass is complete.
+- Case remains normal incoming damage reduction only.
+- HP reduction and hit marker use the same final damage number.
+- No knockback / HP / guard / cooldown / schema changes were introduced.
+- Critical hits are still not implemented.
+
+### Phase 10-11 Drum Sticks critical prototype v1 (runtime)
+
+Implemented scope:
+
+- Drum Sticks now has critical prototype v1.
+- Critical rate is 40%.
+- Critical multiplier is 1.5x.
+- Drum Sticks base 8 becomes 12 on critical.
+- Critical bypasses defender Case reduction.
+- Electric Guitar / Bass / Keyboard do not critical in this step.
+- No records/settings schema changes.
+
+### Phase 10-12 Drum Sticks + Case critical interaction rule (runtime)
+
+Implemented scope:
+
+- Drum Sticks + Case now loses high-critical identity in this prototype.
+- Drum Sticks + Case does not critical in this step.
+- Drum Sticks critical still bypasses defender Case when attacker is not using Case.
+- Defender Case still reduces non-critical hits by 20%.
+- No records/settings schema changes.
+
+### Phase 10-13 Critical behavior checklist update (docs-only)
+
+Implemented scope:
+
+- Added manual checklist coverage for Drum Sticks critical behavior.
+- Checklist covers 40% / 1.5x / 8 -> 12 behavior expectations.
+- Checklist covers defender Case bypass on critical hits.
+- Checklist covers Drum Sticks + Case losing critical eligibility.
+- Checklist confirms no knockback / HP / guard / schema changes.
+
+### Phase 10-14 Equipment interaction matrix docs (docs-only)
+
+Implemented scope:
+
+- Added a clear Phase 10 equipment interaction matrix/reference section.
+- Matrix covers Amp compatibility and reach-only behavior.
+- Matrix covers Case normal damage reduction behavior and formula.
+- Matrix covers Drum Sticks critical behavior and Drum Sticks + Case tradeoff.
+- Matrix covers Pick as selectable/displayed no-effect (`準備中`) candidate.
+- No records/settings schema changes.
+
+### Phase 10-15 Japanese UI label plan docs (docs-only)
+
+Implemented scope:
+
+- Documented Japanese UI label policy for player-facing text surfaces.
+- Documented planned Japanese fighter/equipment display labels and short-label candidates.
+- Documented Pick direction as `ピック（準備中）` / `準備中` wording candidate while gameplay remains no-effect.
+- Clarified that internal IDs/types/storage keys remain English and unchanged.
+- No runtime/schema/gameplay changes.
+
+### Phase 10-16 Pick “準備中” UI wording/docs preparation (docs-only)
+
+Implemented scope:
+
+- Documented Pick `準備中` wording plan for player-facing UI.
+- Confirmed Pick remains selectable/displayed in Phase 10.
+- Confirmed Pick remains no-effect in Phase 10 gameplay.
+- Documented recommended labels: `ピック（準備中）`, `ピック`, `準備中`.
+- No runtime/schema/gameplay changes.
+
+### Phase 10-17 Prototype balancing pass #1 (runtime)
+
+Implemented scope:
+
+- Prototype balancing pass #1 completed.
+- Drum Sticks critical rate tuned from 40% to 35%.
+- Critical multiplier remains 1.5x.
+- Critical damage remains 12.
+- Amp +24px and Case 20% reduction remain unchanged.
+- Pick remains no-effect.
+- No records/settings schema changes.
+
+### Phase 10-18 Prototype balancing checklist update (docs-only)
+
+Implemented scope:
+
+- Added checklist coverage for Prototype balancing pass #1.
+- Checklist covers Drum Sticks 35% critical-rate target behavior.
+- Checklist confirms Drum Sticks critical damage remains 12.
+- Checklist confirms Amp +24px reach bonus remains unchanged.
+- Checklist confirms Case 20% normal damage reduction remains unchanged.
+- Checklist confirms Pick remains selectable/displayed with no gameplay effect.
+- Checklist confirms no records/settings schema changes.
+
+**Next recommended task:** Phase 10-19: Phase 10 prototype checkpoint docs.
