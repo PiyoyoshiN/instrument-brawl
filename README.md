@@ -854,6 +854,8 @@ Phase 9-10 preserves selected equipment IDs through match-end navigation (Battle
 
 Phase 9-11 persists last selected equipment IDs in `instrument-brawl:settings` (`lastSelected.player1EquipmentId` / `lastSelected.player2EquipmentId`). Old or invalid settings values safely fall back to `none`. Records schema remains unchanged. Equipment is still gameplay-neutral, and Battle HUD labels / Result display / effects are still not implemented.
 
+Phase 9-11 fix: CharacterSelectScene now uses stored equipment IDs when scene data does not provide them, while still giving priority to explicit scene-data equipment IDs.
+
 Phase 9 guardrails:
 
 - no damage/range/defense buffs

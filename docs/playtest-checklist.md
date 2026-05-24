@@ -556,6 +556,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Old settings without equipment fields load safely.
 - [ ] Invalid stored equipment IDs fall back to `none`.
 - [ ] CharacterSelectScene forwards stored equipment IDs to EquipmentSelectScene.
+- [ ] Stored equipment restores through Home -> Mode Select -> Character Select -> Equipment Select.
 - [ ] EquipmentSelectScene confirm saves selected equipment IDs.
 - [ ] Reset Preferences resets persisted equipment selections to `none`.
 - [ ] Records schema and `instrument-brawl:records` behavior are unchanged.

@@ -1138,8 +1138,12 @@ class CharacterSelectScene extends Phaser.Scene {
     this.player1FighterId = data.player1FighterId ?? stored.lastSelected.player1FighterId;
     this.player2FighterId = data.player2FighterId ?? stored.lastSelected.player2FighterId;
     this.player2Mode = data.player2Mode ?? stored.lastSelected.player2Mode;
-    this.player1EquipmentId = getEquipmentDefinition(data.player1EquipmentId).id;
-    this.player2EquipmentId = getEquipmentDefinition(data.player2EquipmentId).id;
+    this.player1EquipmentId = getEquipmentDefinition(
+      data.player1EquipmentId ?? stored.lastSelected.player1EquipmentId,
+    ).id;
+    this.player2EquipmentId = getEquipmentDefinition(
+      data.player2EquipmentId ?? stored.lastSelected.player2EquipmentId,
+    ).id;
   }
 
   create() {
