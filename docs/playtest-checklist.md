@@ -695,6 +695,6 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] No equipment-specific records/analytics are introduced.
 - [ ] No assets/audio/images/3D are added.
 - [ ] Suggested 10-1..10-20 breakdown is documented.
-- [ ] Next recommended task is Phase 10-2: Phase 9 docs cleanup.
+- [ ] Next recommended task is Phase 10-3: Amp compatibility rules docs.
 
-**Next recommended task:** Phase 10-2: Phase 9 docs cleanup.
+**Next recommended task:** Phase 10-3: Amp compatibility rules docs.

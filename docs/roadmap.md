@@ -1066,7 +1066,7 @@ Current runtime baseline before Phase 10 gameplay work:
 ### Suggested Phase 10 task breakdown (10-1 .. 10-20)
 
 - 10-1 Phase 10 scope docs (**docs-only**) — complete
-- 10-2 Phase 9 docs cleanup (**docs-only**)
+- 10-2 Phase 9 docs cleanup (**docs-only**) — complete
 - 10-3 Amp compatibility rules docs (Drum Sticks incompatibility) (**docs-only**)
 - 10-4 Damage pipeline prep docs (normal/critical/equipment order) (**docs-only**)
 - 10-5 Amp gameplay prototype v1 (short sonic reach/echo, non-projectile) (**runtime**)
@@ -1086,4 +1086,4 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-19 Phase 10 prototype checkpoint docs (**docs-only**)
 - 10-20 Post-prototype go/no-go notes for next phase (**docs-only**)
 
-**Next recommended task:** Phase 10-2: Phase 9 docs cleanup.
+**Next recommended task:** Phase 10-3: Amp compatibility rules docs.

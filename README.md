@@ -8,18 +8,21 @@
 ## Current status
 
 - Browser-playable Phaser + Vite + TypeScript game.
-- Local 1v1 battle with Home -> Mode Select -> Character Select -> Battle -> Result scene flow.
+- Local 1v1 battle with Home -> Mode Select -> Character Select -> Equipment Select -> Battle -> Result scene flow.
 
-Current scene flow: `Home -> Mode Select -> Character Select -> Battle -> Result` (+ `Home -> Records -> Home` + `Home -> Options -> Home`).
+Current scene flow: `Home -> Mode Select -> Character Select -> Equipment Select -> Battle -> Result` (+ `Home -> Records -> Home` + `Home -> Options -> Home`).
 
-Phase 7 checkpoint flow: `Home -> Mode Select -> Character Select -> Battle -> Result` (+ `Home -> Options -> Home`).
+Historical note (Phase 7 checkpoint flow): `Home -> Mode Select -> Character Select -> Battle -> Result` (+ `Home -> Options -> Home`).
 
 Mode Select behavior:
 
 - Two vertically stacked large choices are shown: VS HUMAN (Local 2P) and VS CPU (P1 vs CPU).
 - Local 2P maps to `player2Mode: "human"`.
 - P1 vs CPU maps to `player2Mode: "cpu"`.
-- Home Start now goes Home -> Mode Select -> Character Select.
+- Home Start now goes Home -> Mode Select.
+- Mode Select confirm opens Character Select.
+- Character Select confirm opens Equipment Select.
+- Equipment Select confirm opens Battle.
 - Home Records now opens RecordsScene for local records display.
 - CharacterSelectScene uses the fighter registry and currently offers Electric Guitar, Bass, Drum Sticks, and Keyboard.
 - P2 defaults to Human for local 2-player, with an optional simple CPU mode available from Character Select.
