@@ -1160,6 +1160,135 @@ It is documentation-only and does not change runtime behavior in this step.
 - No assets/audio/images/3D or font additions.
 - No gameplay/balance changes.
 
+### Phase 10 prototype checkpoint / current implemented state
+
+This section is a concise snapshot of the **currently implemented** Phase 10 prototype state after Phase 10-18.
+It is not a go/no-go decision and does not introduce runtime changes in this step.
+
+#### 1) Current scene flow
+
+- Home
+- Mode Select
+- Character Select
+- Equipment Select
+- Battle
+- Result
+
+Notes:
+
+- Equipment selection is now part of the normal gameplay flow.
+- Equipment labels are visible on Battle HUD and Result surfaces.
+- Internal IDs/types/storage keys remain unchanged.
+
+#### 2) Current equipment state
+
+- `none`
+  - Compatible with all fighters.
+  - No gameplay effect.
+- `amp`
+  - Compatible with Electric Guitar / Bass / Keyboard.
+  - Incompatible with Drum Sticks.
+  - Drum Sticks + Amp resolves safely to `none` before battle behavior.
+  - Current effect is +24px reach bonus only.
+  - No damage increase, no projectile, no multi-hit.
+  - No knockback/cooldown/speed/HP changes.
+- `case`
+  - Compatible with all fighters.
+  - Reduces normal incoming damage by 20%.
+  - Formula: `floor(baseDamage * 0.8)`, then clamp minimum 1.
+  - Does not reduce critical damage.
+  - Does not reduce knockback.
+  - Does not increase HP.
+  - Does not add guard / just guard.
+- `pick`
+  - Selectable/displayed.
+  - No Phase 10 gameplay effect.
+  - Not invalid.
+  - No fallback to `none`.
+  - Wording direction is documented as `ピック（準備中）` / `準備中`.
+
+#### 3) Current fighter/equipment identity
+
+- Electric Guitar:
+  - Baseline 10 damage.
+  - No critical.
+  - Amp gives reach only.
+  - Case gives defensive reduction only.
+- Bass:
+  - Baseline 10 damage.
+  - No critical.
+  - Amp gives reach only.
+  - Case gives defensive reduction only.
+- Keyboard:
+  - Baseline 9 damage.
+  - No critical.
+  - Amp gives reach only.
+  - Case gives defensive reduction only.
+- Drum Sticks:
+  - Baseline 8 damage.
+  - Critical rate is 35%.
+  - Critical multiplier is 1.5x.
+  - Critical damage is 12.
+  - Critical bypasses defender Case reduction.
+  - Drum Sticks + Case loses high-critical identity and does not critical.
+  - Drum Sticks + Pick can still critical because Pick is no-effect.
+
+#### 4) Current damage examples
+
+- Electric Guitar/Bass vs none: 10.
+- Electric Guitar/Bass vs Case: 8.
+- Keyboard vs none: 9.
+- Keyboard vs Case: 7.
+- Drum Sticks + none normal vs none: 8.
+- Drum Sticks + none critical vs none: 12.
+- Drum Sticks + none normal vs Case: 6.
+- Drum Sticks + none critical vs Case: 12.
+- Drum Sticks + Case vs none: 8.
+- Drum Sticks + Case vs Case: 6.
+- Drum Sticks + Pick normal vs Case: 6.
+- Drum Sticks + Pick critical vs Case: 12.
+
+#### 5) Current UI/docs state
+
+- Japanese UI label policy is documented.
+- Runtime UI is not fully converted to Japanese yet.
+- Internal IDs/types/localStorage keys remain English.
+- Pick `準備中` wording is documented but not yet implemented as runtime UI wording.
+- Battle feedback includes `会心！` for critical hits when effects are enabled.
+
+#### 6) Current guardrails
+
+- No Pick gameplay effect.
+- No Amp projectile.
+- No Amp echo hitbox.
+- No screen-wide attack.
+- No multi-hit.
+- No knockback reduction.
+- No HP increase.
+- No guard / just guard.
+- No special moves.
+- No combo system.
+- No records schema changes.
+- No settings schema changes.
+- No critical count records.
+- No damage dealt records.
+- No equipment usage analytics.
+- No equipment win-rate analytics.
+- No assets/audio/images/3D additions.
+- No font additions.
+
+#### 7) Known next decision area
+
+Phase 10 is now close to a prototype checkpoint.
+The next step (Phase 10-20) should decide whether to:
+
+- keep values as-is for more playtesting,
+- adjust one number at a time,
+- improve UI clarity,
+- or postpone larger mechanics to a later phase.
+
+This document does not make the go/no-go decision.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 

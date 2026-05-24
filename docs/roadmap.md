@@ -1083,7 +1083,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-16 Pick “準備中” UI wording/docs preparation (**docs-only**) — complete
 - 10-17 Prototype balancing pass #1 (small reversible tuning only) (**runtime**) — complete
 - 10-18 Prototype balancing checklist update (**docs-only**) — complete
-- 10-19 Phase 10 prototype checkpoint docs (**docs-only**)
+- 10-19 Phase 10 prototype checkpoint docs (**docs-only**) — complete
 - 10-20 Post-prototype go/no-go notes for next phase (**docs-only**)
 
 ### Phase 10-3 Amp compatibility rules (docs-only)
@@ -1349,4 +1349,15 @@ Implemented scope:
 - Checklist confirms Pick remains selectable/displayed with no gameplay effect.
 - Checklist confirms no records/settings schema changes.
 
-**Next recommended task:** Phase 10-19: Phase 10 prototype checkpoint docs.
+### Phase 10-19 Phase 10 prototype checkpoint docs (docs-only)
+
+Implemented scope:
+
+- Added Phase 10 prototype checkpoint docs section.
+- Summarized the current scene flow including Equipment Select in normal flow.
+- Summarized current equipment behavior (Amp/Case/Drum Sticks/Pick/none).
+- Summarized current implemented damage examples.
+- Summarized current guardrails and schema constraints.
+- No runtime/schema/gameplay changes.
+
+**Next recommended task:** Phase 10-20: Post-prototype go/no-go notes for next phase.
