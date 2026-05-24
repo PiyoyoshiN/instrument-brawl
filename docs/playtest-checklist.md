@@ -584,3 +584,287 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Next recommended task is Phase 9-13: Result equipment display.
 
 **Next recommended task:** Phase 9-13: Result equipment display.
+
+
+## Phase 9-13 Result equipment display checklist
+
+- [ ] ResultScene shows P1 equipment label.
+- [ ] ResultScene shows P2 equipment label.
+- [ ] `None` displays clearly when no equipment is selected.
+- [ ] `Amp` / `Pick` / `Case` short labels display correctly.
+- [ ] Missing/invalid equipment IDs fall back to `None` safely.
+- [ ] Result display uses already-resolved equipment definitions.
+- [ ] Result display does not affect rematch / return behavior.
+- [ ] Equipment still has no gameplay effect.
+- [ ] Battle HUD equipment labels remain unchanged.
+- [ ] localStorage settings schema is unchanged.
+- [ ] records schema is unchanged.
+- [ ] Amp visual effect is not added.
+- [ ] Next recommended task is Phase 9-14: Amp visual-only accent trial.
+
+**Next recommended task:** Phase 9-14: Amp visual-only accent trial.
+
+
+## Phase 9-14 Amp visual-only accent trial checklist
+
+- [ ] Amp-selected P1 shows the visual accent in BattleScene.
+- [ ] Amp-selected P2 shows the visual accent in BattleScene.
+- [ ] `none` / `pick` / `case` do not show the Amp accent.
+- [ ] Amp accent is visual-only.
+- [ ] Amp does not change HP.
+- [ ] Amp does not change damage.
+- [ ] Amp does not change knockback.
+- [ ] Amp does not change attack cooldown or duration.
+- [ ] Amp does not change range or hitboxes.
+- [ ] Amp does not change speed or defense.
+- [ ] Amp does not change CPU behavior.
+- [ ] Amp does not change Ready/Fight/Pause/Quick Help behavior.
+- [ ] Battle HUD equipment labels remain unchanged.
+- [ ] ResultScene equipment labels remain unchanged.
+- [ ] localStorage settings schema is unchanged.
+- [ ] records schema is unchanged.
+- [ ] no assets/audio are added.
+- [ ] Next task is Phase 9-15: Future equipment effect docs.
+
+**Next recommended task:** Phase 9-15: Future equipment effect docs.
+
+
+## Phase 9-15 Future equipment effect docs checklist
+
+- [ ] Future equipment effects are documented as docs-only direction.
+- [ ] No runtime code is modified in this docs step.
+- [ ] Amp/Pick/Case future directions are clearly marked as future only.
+- [ ] No equipment gameplay effects are implemented.
+- [ ] No localStorage settings schema changes are introduced.
+- [ ] No records schema changes are introduced.
+- [ ] No assets/audio are added.
+- [ ] Equipment-specific records/analytics remain out of scope.
+- [ ] Inventory/unlocks/rarity/currency/progression remain out of scope.
+
+## Phase 9-16 Playtest checklist update checklist
+
+- [ ] Existing Phase 9 checklist sections are preserved.
+- [ ] Phase 9-15 checklist section is added.
+- [ ] Phase 9-16 checklist section is added/updated.
+- [ ] Phase 9-17 checkpoint checklist section is added.
+- [ ] Phase 9 implemented features are still listed accurately.
+- [ ] No runtime code is modified by this checklist update.
+- [ ] No schema changes are introduced by this checklist update.
+
+## Phase 9-17 Phase 9 checkpoint checklist
+
+- [ ] Docs mark Phase 9-15/9-16/9-17 as complete.
+- [ ] Docs clearly mark Phase 9 checkpoint as complete.
+- [ ] Equipment metadata registry is listed as implemented.
+- [ ] EquipmentSelectScene is listed as implemented.
+- [ ] P1/P2 equipment selection is listed as implemented.
+- [ ] Equipment IDs handoff to Battle/Result is listed as implemented.
+- [ ] Rematch/return equipment ID preservation is listed as implemented.
+- [ ] localStorage equipment persistence is listed as implemented.
+- [ ] Battle HUD equipment labels are listed as implemented.
+- [ ] ResultScene equipment labels are listed as implemented.
+- [ ] Amp BattleScene-only visual accent is listed as implemented.
+- [ ] Equipment is still marked gameplay-neutral.
+- [ ] Pick/Case effects are still marked not implemented.
+- [ ] Future equipment gameplay effects are still marked not implemented.
+- [ ] records schema is unchanged.
+- [ ] settings schema is unchanged in this closeout step.
+- [ ] No assets/audio are added.
+- [ ] Next recommended task is Phase 10-1: Phase 10 scope docs.
+
+**Next recommended task:** Phase 10-1: Phase 10 scope docs.
+
+
+## Phase 10-1 scope docs checklist
+
+- [ ] This PR is docs-only.
+- [ ] No runtime files are changed.
+- [ ] Phase 10 name is documented as `Equipment Gameplay Prototype v1`.
+- [ ] Phase 10 is clearly described as prototype / fun-core validation, not final combat system.
+- [ ] Phase 10 scope explains small, readable, reversible per-PR changes.
+- [ ] Amp future gameplay direction is documented (short sonic reach/echo, non-projectile, non-screen-wide).
+- [ ] Amp compatibility direction is documented (Drum Sticks incompatibility in later implementation).
+- [ ] Case future gameplay direction is documented (normal damage reduction candidate around 20%).
+- [ ] Drum Sticks critical future direction is documented (40% / 1.5x candidate and Case interaction).
+- [ ] Pick treatment is documented as no gameplay effect in Phase 10 (`準備中` direction only).
+- [ ] Japanese UI policy is documented at high level as future work.
+- [ ] One attack can hit only once is preserved as a guardrail.
+- [ ] No equipment gameplay effects are implemented in this docs task.
+- [ ] No localStorage settings schema changes are introduced.
+- [ ] No records schema changes are introduced.
+- [ ] No equipment-specific records/analytics are introduced.
+- [ ] No assets/audio/images/3D are added.
+- [ ] Suggested 10-1..10-20 breakdown is documented.
+- [ ] Next recommended task is Phase 10-3: Amp compatibility rules docs.
+
+## Phase 10-3 Amp compatibility rules docs checklist
+
+- [ ] This PR is docs-only.
+- [ ] No runtime files are changed.
+- [ ] Amp-compatible fighters are documented: Electric Guitar / Bass / Keyboard.
+- [ ] Drum Sticks + Amp incompatibility is documented.
+- [ ] `none` compatibility for all fighters is documented.
+- [ ] `case` compatibility for all fighters is documented.
+- [ ] `pick` treatment is documented as no gameplay effect in Phase 10 (`準備中` direction only).
+- [ ] Future stale Drum Sticks + Amp saved/scene data is documented to safely resolve to `none`.
+- [ ] Future invalid combinations are documented to fail safely without crash.
+- [ ] No Amp gameplay effects are implemented in this docs task.
+- [ ] No localStorage schema changes are introduced.
+- [ ] No records schema changes are introduced.
+- [ ] One attack can hit only once remains a documented guardrail.
+- [ ] No equipment-specific records analytics are introduced.
+- [ ] No assets/audio/images/3D are added.
+- [ ] Next recommended task is Phase 10-4: Damage pipeline prep docs.
+
+## Phase 10-4 damage pipeline prep docs checklist
+
+- [ ] This PR is docs-only.
+- [ ] No runtime files are changed.
+- [ ] Damage resolution order is documented from attacker/defender resolution to final HP subtraction and feedback.
+- [ ] Drum Sticks critical candidate is documented (40% / 1.5x, 8 -> 12 target).
+- [ ] Case normal damage reduction candidate is documented (20%, floor then min-1 clamp direction).
+- [ ] Critical bypasses defender Case reduction is documented.
+- [ ] Drum Sticks + Case critical-identity loss direction is documented.
+- [ ] Amp damage interaction is documented as no damage increase and no multi-hit.
+- [ ] One attack can hit only once remains a documented guardrail.
+- [ ] Pick has no Phase 10 gameplay effect documented.
+- [ ] No records schema changes are introduced.
+- [ ] No settings schema changes are introduced.
+- [ ] No equipment-specific analytics/records are introduced.
+- [ ] No assets/audio/images/3D are added.
+- [ ] Next recommended task is Phase 10-5: Amp gameplay prototype v1.
+
+## Phase 10-6 Amp gameplay playtest checklist update
+
+- [ ] Electric Guitar + Amp has slightly longer reach than Electric Guitar + none.
+- [ ] Bass + Amp has slightly longer reach than Bass + none.
+- [ ] Keyboard + Amp has slightly longer reach than Keyboard + none.
+- [ ] Amp reach difference is small/readable and not a full ranged attack.
+- [ ] Amp attack rectangle may appear slightly wider but still feels melee/sonic reach.
+- [ ] Amp does not create a projectile.
+- [ ] Amp does not create a screen-wide attack.
+- [ ] Amp does not create a separate damaging echo hitbox.
+- [ ] Amp does not create multi-hit behavior.
+- [ ] One attack can hit only once.
+- [ ] Drum Sticks + Amp does not gain Amp reach.
+- [ ] Drum Sticks + Amp resolves safely to `none` in Battle/Result display.
+- [ ] Drum Sticks does not show Amp accent when Amp was resolved to `none`.
+- [ ] Electric Guitar / Bass / Keyboard can still show Amp accent when Amp is selected and effects are enabled.
+- [ ] Invalid/stale equipment data does not crash.
+- [ ] Amp does not increase damage.
+- [ ] Amp does not change knockback.
+- [ ] Amp does not change attack cooldown.
+- [ ] Amp does not change attack duration.
+- [ ] Amp does not change movement speed.
+- [ ] Amp does not change HP.
+- [ ] Amp does not change defense.
+- [ ] Case reduction is still not implemented.
+- [ ] Critical hits are still not implemented.
+- [ ] Pick effect is still not implemented.
+- [ ] CPU using an Amp-compatible fighter with Amp can use slightly longer reach.
+- [ ] CPU mode does not crash.
+- [ ] ResultScene still opens normally.
+- [ ] ResultScene shows sanitized equipment labels.
+- [ ] `R` rematch still works.
+- [ ] `C` return still works.
+- [ ] Home return still works.
+- [ ] records schema is unchanged.
+- [ ] settings schema is unchanged.
+- [ ] no Amp usage records are added.
+- [ ] no equipment-specific win-rate analytics are added.
+- [ ] Reset Preferences still resets equipment to `none`.
+
+## Phase 10-9 Case reduction checklist update
+
+- [ ] Electric Guitar attacking a Case target deals 8 instead of 10.
+- [ ] Bass attacking a Case target deals 8 instead of 10.
+- [ ] Keyboard attacking a Case target deals 7 instead of 9.
+- [ ] Drum Sticks attacking a Case target deals 6 instead of 8.
+- [ ] Non-Case targets still take normal base damage.
+- [ ] Final damage is clamped to minimum 1.
+- [ ] Hit marker shows final reduced damage, not original base damage.
+- [ ] HP reduction and hit marker number match.
+- [ ] Case does not reduce knockback.
+- [ ] Case does not increase max HP.
+- [ ] Case does not change movement speed.
+- [ ] Case does not change attack cooldown.
+- [ ] Case does not change attack duration.
+- [ ] Case does not add guard / just guard.
+- [ ] Case does not add block / armor mechanics.
+- [ ] Case does not create new UI screens.
+- [ ] Critical hits are still not implemented.
+- [ ] Case critical bypass is still not implemented.
+- [ ] Pick effect is still not implemented.
+- [ ] Amp reach still works.
+- [ ] Amp still does not increase damage.
+- [ ] One attack can still hit only once.
+- [ ] Battle HUD still displays equipment labels.
+- [ ] ResultScene still opens normally.
+- [ ] ResultScene still displays equipment labels.
+- [ ] `R` rematch still works.
+- [ ] `C` return still works.
+- [ ] Home return still works.
+- [ ] CPU mode does not crash.
+- [ ] records schema is unchanged.
+- [ ] settings schema is unchanged.
+- [ ] no Case usage records are added.
+- [ ] no damage dealt records are added.
+- [ ] no equipment-specific win-rate analytics are added.
+- [ ] Reset Preferences still resets equipment to `none`.
+
+**Next recommended task:** Phase 10-10: Case reduction sanity pass.
+
+## Phase 10-13 Critical behavior checklist update
+
+- [ ] Drum Sticks + none sometimes deals 12 instead of 8.
+- [ ] Drum Sticks + none normal hit deals 8 against non-Case target.
+- [ ] Drum Sticks + none critical hit deals 12 against non-Case target.
+- [ ] Drum Sticks + none normal hit against Case target deals 6.
+- [ ] Drum Sticks + none critical hit against Case target deals 12.
+- [ ] Drum Sticks critical bypasses defender Case reduction.
+- [ ] Drum Sticks critical does not create a second hit.
+- [ ] One attack can still hit only once.
+- [ ] Critical hit shows final damage in the main hit marker.
+- [ ] With effects enabled, critical hit shows `会心！`.
+- [ ] With effects disabled, critical hit does not crash and final damage still applies.
+- [ ] Drum Sticks + Case does not critical.
+- [ ] Drum Sticks + Case against non-Case target deals 8.
+- [ ] Drum Sticks + Case against Case target deals 6.
+- [ ] Drum Sticks + Case still receives defensive Case reduction when hit by opponent.
+- [ ] Drum Sticks + Case tradeoff is attacker-side only.
+- [ ] Electric Guitar does not critical.
+- [ ] Bass does not critical.
+- [ ] Keyboard does not critical.
+- [ ] Electric Guitar/Bass against Case target still deals 8.
+- [ ] Keyboard against Case target still deals 7.
+- [ ] Amp reach still works.
+- [ ] Amp still does not increase damage.
+- [ ] Pick effect is still not implemented.
+- [ ] Critical does not change knockback.
+- [ ] Critical does not change movement speed.
+- [ ] Critical does not change max HP.
+- [ ] Critical does not change attack cooldown.
+- [ ] Critical does not change attack duration.
+- [ ] Critical does not change attack range.
+- [ ] Critical does not add guard / just guard.
+- [ ] Critical does not add block / armor mechanics.
+- [ ] Critical does not create multi-hit behavior.
+- [ ] Critical does not add new UI screens.
+- [ ] Case still does not reduce knockback.
+- [ ] Case still does not increase HP.
+- [ ] Case still does not add guard / just guard.
+- [ ] Battle HUD still displays equipment labels.
+- [ ] ResultScene still opens normally.
+- [ ] ResultScene still displays equipment labels.
+- [ ] `R` rematch still works.
+- [ ] `C` return still works.
+- [ ] Home return still works.
+- [ ] CPU mode does not crash.
+- [ ] records schema is unchanged.
+- [ ] settings schema is unchanged.
+- [ ] no critical count records are added.
+- [ ] no damage dealt records are added.
+- [ ] no equipment-specific win-rate analytics are added.
+- [ ] Reset Preferences still resets equipment to `none`.
+
+**Next recommended task:** Phase 10-14: Equipment interaction matrix docs.
