@@ -1289,6 +1289,91 @@ The next step (Phase 10-20) should decide whether to:
 
 This document does not make the go/no-go decision.
 
+### Phase 10 post-prototype go/no-go notes
+
+This section is a docs-only decision note after the Phase 10 prototype checkpoint.
+It does not add runtime gameplay/UI changes by itself.
+
+#### 1) Overall decision
+
+- Decision: **Conditional GO to next-phase UI clarity / playtest-readiness work.**
+- The current equipment prototype is stable enough to proceed to next-phase planning.
+- **Not a GO for large new mechanics yet.**
+- Keep current values as the baseline for additional playtesting.
+- Future changes should remain small, reversible, and one-topic-per-PR.
+
+#### 2) What is considered working enough
+
+- Equipment Select is integrated into the normal flow.
+- Equipment labels are visible in Battle/Result surfaces.
+- Amp has a small reach-only identity.
+- Case has a simple defensive identity.
+- Drum Sticks has a high-variance critical identity.
+- Drum Sticks + Case has a clear defensive tradeoff.
+- Pick is documented honestly as no-effect / `準備中`.
+- One attack still hits only once.
+- records/settings schema remain unchanged.
+
+#### 3) What should remain unchanged for now
+
+- Amp reach remains +24px for now.
+- Case normal damage reduction remains 20% for now.
+- Drum Sticks critical rate remains 35% for now.
+- Drum Sticks critical multiplier remains 1.5x for now.
+- Pick remains no-effect for now.
+- No new records/analytics are added yet.
+- No large UI rewrite should happen in one PR.
+
+#### 4) Risks / watch points
+
+- Amp reach could feel too subtle or too safe depending on playtest outcomes.
+- Case could become too generally useful if defensive value dominates.
+- Drum Sticks critical may still feel streaky due to randomness.
+- Drum Sticks + Case tradeoff may be unclear without explicit UI explanation.
+- Pick may confuse players if selectable while no-effect.
+- Mixed English/Japanese UI wording may reduce clarity.
+- Manual playtesting is still needed before larger mechanic expansion.
+
+#### 5) Recommended next-phase direction
+
+Phase 11 should prioritize UI clarity and playtest-readiness before new mechanics:
+
+- Start with centralized display-label helpers/maps.
+- Apply Japanese labels to low-risk UI surfaces:
+  - Equipment Select visible equipment names
+  - Battle HUD equipment labels
+  - ResultScene equipment labels
+- Show Pick as `ピック（準備中）` or `ピック` + `準備中` in Equipment Select.
+- Keep Battle HUD compact.
+- Do not add Pick gameplay yet.
+- Do not add new equipment mechanics until the current prototype is easier to understand and test.
+
+#### 6) Explicit no-go items for now
+
+- No projectile Amp.
+- No Amp echo hitbox.
+- No multi-hit equipment behavior.
+- No guard / just guard.
+- No HP-boosting Case.
+- No knockback-reducing Case.
+- No Pick gameplay effect yet.
+- No special moves.
+- No combo system.
+- No equipment-specific win-rate analytics.
+- No damage dealt records.
+- No critical count records.
+- No records/settings schema changes.
+- No assets/audio/images/3D/font additions.
+
+#### 7) Suggested next tasks (proposed, not implemented here)
+
+- Phase 11-1: Centralized Japanese display-label helpers/maps.
+- Phase 11-2: Equipment Select Japanese label runtime update.
+- Phase 11-3: Battle/Result equipment label Japanese runtime update.
+- Phase 11-4: Pick `準備中` UI wording runtime update.
+- Phase 11-5: UI wording playtest checklist.
+- Phase 11-6: Manual playtest notes / tuning candidates.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 

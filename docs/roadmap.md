@@ -1084,7 +1084,7 @@ Current runtime baseline before Phase 10 gameplay work:
 - 10-17 Prototype balancing pass #1 (small reversible tuning only) (**runtime**) — complete
 - 10-18 Prototype balancing checklist update (**docs-only**) — complete
 - 10-19 Phase 10 prototype checkpoint docs (**docs-only**) — complete
-- 10-20 Post-prototype go/no-go notes for next phase (**docs-only**)
+- 10-20 Post-prototype go/no-go notes for next phase (**docs-only**) — complete
 
 ### Phase 10-3 Amp compatibility rules (docs-only)
 
@@ -1360,4 +1360,15 @@ Implemented scope:
 - Summarized current guardrails and schema constraints.
 - No runtime/schema/gameplay changes.
 
-**Next recommended task:** Phase 10-20: Post-prototype go/no-go notes for next phase.
+### Phase 10-20 Post-prototype go/no-go notes for next phase (docs-only)
+
+Implemented scope:
+
+- Added post-prototype go/no-go notes for Phase 10.
+- Recorded a conditional GO to next-phase UI clarity / playtest-readiness work.
+- Clarified that large new mechanics are not approved yet.
+- Kept current Amp/Case/Drum Sticks/Pick values as baseline guidance.
+- Documented proposed Phase 11 direction/task sequence.
+- No runtime/schema/gameplay changes.
+
+**Next recommended task:** Phase 11-1: Centralized Japanese display-label helpers/maps.
