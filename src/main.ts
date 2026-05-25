@@ -3017,15 +3017,20 @@ class EquipmentSelectScene extends Phaser.Scene {
     const p1Equipment = getEquipmentDefinition(this.player1EquipmentId);
     const p2Equipment = getEquipmentDefinition(this.player2EquipmentId);
     const focusedEquipment = this.selectedEquipmentRow === 0 ? p1Equipment : p2Equipment;
+    const focusedFighterId = this.selectedEquipmentRow === 0 ? this.player1FighterId : this.player2FighterId;
     const p1Prefix = this.selectedEquipmentRow === 0 ? '> ' : '  ';
     const p2Prefix = this.selectedEquipmentRow === 1 ? '> ' : '  ';
+    const ampIncompatibleNote =
+      focusedEquipment.id === 'amp' && focusedFighterId === 'drum-sticks'
+        ? '\nドラムスティックはアンプ非対応。バトルでは装備なし扱い。'
+        : '';
 
     this.equipmentRowsText?.setText(
       `${p1Prefix}P1装備: ${getEquipmentShortLabelJa(p1Equipment.id)}
 ${p2Prefix}P2装備: ${getEquipmentShortLabelJa(p2Equipment.id)}`,
     );
     this.equipmentDescriptionText?.setText(
-      `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}`,
+      `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}${ampIncompatibleNote}`,
     );
   }
 }

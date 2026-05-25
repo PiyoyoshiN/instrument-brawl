@@ -1142,7 +1142,7 @@ Recommended future damage resolution order:
 7) If not critical and defender equipment is Case: apply normal damage reduction.  
 8) Clamp final damage to minimum 1.  
 9) Subtract final damage from defender HP.  
-10) Show hit feedback: normal hit uses current HIT style; critical hit uses future label `会心！`.
+10) Show hit feedback: normal hit uses current HIT style; critical hit uses future label `クリティカル！`.
 
 Critical rules (future implementation direction):
 
@@ -1384,7 +1384,7 @@ This keeps work focused on UI clarity / playtest-readiness and still does **not*
 - 10-JP-6 Character Select Japanese labels (**runtime/ui**) — complete
 - 10-JP-7 Home / Mode Select / Options / Records low-risk Japanese labels (**runtime/ui**) — complete
 - 10-JP-8 Pause / Quick Help Japanese labels (**runtime/ui**) — complete
-- 10-JP-9 Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check (**docs+ui consistency**)
+- 10-JP-9 Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check (**docs+ui consistency**) — complete
 - 10-JP-10 Japanese UI playtest checklist (**docs-only**)
 - 10-JP-11 Japanese UI checkpoint docs (**docs-only**)
 
@@ -1455,4 +1455,13 @@ Implemented scope:
 - Pause/resume behavior remains unchanged.
 - No gameplay/balance/schema changes.
 
-**Next recommended task:** Phase 10-JP-9: Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check.
+### Phase 10-JP-9 Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check (docs+ui consistency)
+
+Implemented scope:
+
+- Pick / Amp / Case / Drum Sticks critical wording consistency is checked and aligned.
+- Stale `会心` wording is updated to `クリティカル！` where it was acting as final player-facing expectation.
+- Equipment Select now includes a compact Drum Sticks + Amp incompatibility explanation note (behavior unchanged).
+- No gameplay/balance/schema changes.
+
+**Next recommended task:** Phase 10-JP-10: Japanese UI playtest checklist.

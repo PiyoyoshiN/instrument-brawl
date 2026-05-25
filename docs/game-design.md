@@ -1049,7 +1049,7 @@ It does not implement runtime UI changes in this step.
   - Current runtime can keep `CLEAN HIT` for now.
   - Japanese display candidate: `ヒット！`.
 - Critical hit:
-  - Keep `会心！` as the primary Japanese critical label.
+  - Keep `クリティカル！` as the primary Japanese critical label.
 - Keep battle text short; avoid long sentences that reduce combat readability.
 
 #### 5) Scene/UI label policy (planned display direction)
@@ -1083,7 +1083,7 @@ It does not implement runtime UI changes in this step.
    - EquipmentSelect visible labels
    - Battle HUD equipment labels
    - ResultScene equipment labels
-3) Review battle feedback wording (`会心！`, `ヒット`) in a dedicated small step.  
+3) Review battle feedback wording (`クリティカル！`, `ヒット`) in a dedicated small step.  
 4) Keep internal IDs/storage unchanged throughout.
 
 ### Pick「準備中」UI wording plan / Pick no-effect wording plan (docs-only plan)
@@ -1254,7 +1254,7 @@ Notes:
 - Runtime UI is not fully converted to Japanese yet.
 - Internal IDs/types/localStorage keys remain English.
 - Pick `準備中` wording is documented but not yet implemented as runtime UI wording.
-- Battle feedback includes `会心！` for critical hits when effects are enabled.
+- Battle feedback includes `クリティカル！` for critical hits when effects are enabled.
 
 #### 6) Current guardrails
 
@@ -1543,6 +1543,15 @@ Fighters:
 
 - Pause / Quick Help overlay labels are updated to Japanese.
 - Pause behavior and timer/pause-resume behavior remain unchanged.
+- No gameplay/balance/schema changes were introduced in this step.
+
+#### Phase 10-JP-9 implemented note
+
+- Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル wording consistency is updated.
+- Final runtime/player-facing critical label is `クリティカル！`.
+- Pick remains selectable with no gameplay effect (`ピック（準備中）` / no-effect description).
+- Amp incompatibility with Drum Sticks is explained in Equipment Select without changing behavior.
+- Case wording is aligned to normal-damage-only reduction (`クリティカル`は軽減しない) with no formula changes.
 - No gameplay/balance/schema changes were introduced in this step.
 
 

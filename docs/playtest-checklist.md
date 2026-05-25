@@ -825,7 +825,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Drum Sticks critical does not create a second hit.
 - [ ] One attack can still hit only once.
 - [ ] Critical hit shows final damage in the main hit marker.
-- [ ] With effects enabled, critical hit shows `会心！`.
+- [ ] With effects enabled, critical hit shows `クリティカル！`.
 - [ ] With effects disabled, critical hit does not crash and final damage still applies.
 - [ ] Drum Sticks + Case does not critical.
 - [ ] Drum Sticks + Case against non-Case target deals 8.
@@ -910,6 +910,8 @@ Use this short checklist before merging gameplay-adjacent PRs.
 ### Pick check
 
 - [ ] Pick remains selectable/displayed.
+- [ ] Pick full label is `ピック（準備中）` where full equipment display text is shown.
+- [ ] Pick short label is `ピック` in compact HUD/list rows.
 - [ ] Pick still has no gameplay effect.
 - [ ] Pick does not change damage.
 - [ ] Pick does not change range.
@@ -921,6 +923,8 @@ Use this short checklist before merging gameplay-adjacent PRs.
 ### Flow / UI check
 
 - [ ] Equipment Select still opens.
+- [ ] Drum Sticks + Amp can still be selected in Equipment Select.
+- [ ] Drum Sticks + Amp incompatibility note is shown (`ドラムスティックはアンプ非対応。バトルでは装備なし扱い。`) when relevant.
 - [ ] Battle HUD still displays equipment labels.
 - [ ] ResultScene still opens.
 - [ ] ResultScene still displays equipment labels.
@@ -928,7 +932,7 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] `C` return still works.
 - [ ] CPU mode still works.
 - [ ] One attack can still hit only once.
-- [ ] Critical hit still shows `会心！` when effects are enabled.
+- [ ] Critical hit still shows `クリティカル！` when effects are enabled.
 - [ ] With effects disabled, critical damage still applies without crash.
 
 ### Records / storage check
