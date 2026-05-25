@@ -23,6 +23,15 @@ const hpBarWidth = 220;
 const hpBarHeight = 18;
 const hpBarInset = 3;
 const cpuAttackDistancePadding = 18;
+// Phase 10 Amp prototype: small reach-only bonus (no projectile, no damage increase).
+const ampAttackReachBonusPx = 24;
+// Phase 10 Case prototype: normal incoming damage only (no knockback/HP/guard behavior changes).
+const caseNormalDamageMultiplier = 0.8;
+// Phase 10 prototype balancing pass #1:
+// Drum Sticks keeps a high-variance critical identity, tuned to 35% / 1.5x
+// so expected damage stays below Electric Guitar/Bass baseline while preserving burst.
+const drumSticksCriticalRate = 0.35;
+const drumSticksCriticalMultiplier = 1.5;
 const cpuComfortDistance = 140;
 const cpuDecisionIntervalMs = 850;
 const cpuRetreatDurationMs = 420;
@@ -39,6 +48,12 @@ type EquipmentDefinition = {
   shortLabel: string;
   description: string;
   conceptRole: string;
+};
+
+type EquipmentDisplayJa = {
+  displayNameJa: string;
+  shortLabelJa: string;
+  descriptionJa: string;
 };
 
 const noneEquipmentDefinition: EquipmentDefinition = {
@@ -84,6 +99,29 @@ const equipmentDefinitionById = new Map<EquipmentId, EquipmentDefinition>(
   equipmentDefinitions.map((definition) => [definition.id, definition]),
 );
 
+const equipmentDisplayJaById: Record<EquipmentId, EquipmentDisplayJa> = {
+  none: {
+    displayNameJa: '装備なし',
+    shortLabelJa: 'なし',
+    descriptionJa: '追加装備なし。素の性能で戦う。',
+  },
+  amp: {
+    displayNameJa: 'アンプ',
+    shortLabelJa: 'アンプ',
+    descriptionJa: 'エレキギター・ベース・キーボード対応。攻撃の届く範囲が少し伸びる。',
+  },
+  pick: {
+    displayNameJa: 'ピック（準備中）',
+    shortLabelJa: 'ピック',
+    descriptionJa: 'Phase 10では効果なし。後のフェーズで検討。',
+  },
+  case: {
+    displayNameJa: 'ケース',
+    shortLabelJa: 'ケース',
+    descriptionJa: '通常ダメージを軽減する。クリティカルは軽減できない。',
+  },
+};
+
 function getAllEquipmentDefinitions(): EquipmentDefinition[] {
   return [...equipmentDefinitions];
 }
@@ -98,6 +136,24 @@ function getEquipmentDefinition(id: unknown): EquipmentDefinition {
   }
 
   return equipmentDefinitionById.get(id) ?? noneEquipmentDefinition;
+}
+
+function getEquipmentDisplayNameJa(id: unknown): string {
+  return equipmentDisplayJaById[getEquipmentDefinition(id).id].displayNameJa;
+}
+
+function getEquipmentShortLabelJa(id: unknown): string {
+  return equipmentDisplayJaById[getEquipmentDefinition(id).id].shortLabelJa;
+}
+
+function getEquipmentDescriptionJa(id: unknown): string {
+  return equipmentDisplayJaById[getEquipmentDefinition(id).id].descriptionJa;
+}
+
+function getEquipmentDisplayTextJa(id: unknown): string {
+  const equipmentId = getEquipmentDefinition(id).id;
+  const display = equipmentDisplayJaById[equipmentId];
+  return `${display.displayNameJa} / ${display.shortLabelJa}`;
 }
 
 type FighterStats = {
@@ -213,6 +269,36 @@ const keyboardDefinition: FighterDefinition = {
 
 const fighterDefinitions = [electricGuitarDefinition, bassDefinition, drumSticksDefinition, keyboardDefinition];
 const fighterDefinitionById = new Map(fighterDefinitions.map((definition) => [definition.id, definition]));
+
+const fighterDisplayNameJaById: Record<string, { displayNameJa: string; shortLabelJa: string }> = {
+  'electric-guitar': { displayNameJa: 'エレキギター', shortLabelJa: 'エレキ' },
+  bass: { displayNameJa: 'ベース', shortLabelJa: 'ベース' },
+  'drum-sticks': { displayNameJa: 'ドラムスティック', shortLabelJa: 'ドラム' },
+  keyboard: { displayNameJa: 'キーボード', shortLabelJa: 'キーボード' },
+};
+
+const fighterDescriptionJaById: Record<string, string> = {
+  'electric-guitar': '標準的で扱いやすい。横に強い攻撃。',
+  bass: '重めでふっとばしが強い。縦に広い攻撃。',
+  'drum-sticks': '素早い短射程。高クリティカル。ケース装備時は高クリティカルなし。',
+  keyboard: '広い攻撃範囲で場を取りやすい。',
+};
+
+function getFighterDisplayNameJa(id: string): string {
+  return fighterDisplayNameJaById[id]?.displayNameJa ?? getFighterDefinition(id).displayName;
+}
+
+function getFighterShortLabelJa(id: string): string {
+  return fighterDisplayNameJaById[id]?.shortLabelJa ?? getFighterDefinition(id).displayName;
+}
+
+function getFighterDescriptionJa(id: string): string {
+  return fighterDescriptionJaById[id] ?? getFighterDefinition(id).role;
+}
+
+function getCriticalHitLabelJa(): string {
+  return 'クリティカル！';
+}
 
 function getFighterDefinition(id: string) {
   const definition = fighterDefinitionById.get(id);
@@ -604,6 +690,11 @@ type ActiveAttack = {
   hitbox: Phaser.GameObjects.Rectangle;
   hasHit: boolean;
   expiresAt: number;
+};
+
+type DamageCalculationResult = {
+  damage: number;
+  isCritical: boolean;
 };
 type BattleSceneData = {
   player1FighterId?: string;
@@ -1156,7 +1247,7 @@ class CharacterSelectScene extends Phaser.Scene {
     this.add.rectangle(400, 300, 700, 460, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(400, 92, 'Character Select', {
+      .text(400, 92, 'キャラ選択', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '44px',
@@ -1164,7 +1255,7 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 128, `${fighterDefinitions.length} fighters available • same fighter OK`, {
+      .text(400, 128, `${fighterDefinitions.length}キャラから選択 • 同キャラOK`, {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -1190,14 +1281,14 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(230, 206, 'Selected', {
+      .text(230, 206, '選択中', {
         color: '#fed7aa',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
       })
       .setOrigin(0.5);
     this.add
-      .text(570, 206, 'Selected', {
+      .text(570, 206, '選択中', {
         color: '#bae6fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
@@ -1282,14 +1373,14 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 474, 'P1: A / D choose    P2: ← / → choose    P2 ↓ toggles Human / CPU', {
+      .text(400, 474, 'P1: A/Dで選択   P2: ←/→で選択   P2↓: 2P/CPU切替', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
       })
       .setOrigin(0.5);
     this.add
-      .text(400, 520, 'Enter / Space: start battle    Esc: return Home', {
+      .text(400, 520, 'Enter/Space: 装備選択へ   Esc: ホームへ戻る', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -1402,26 +1493,26 @@ class CharacterSelectScene extends Phaser.Scene {
     const player1Definition = fighterDefinitions[this.player1Index];
     const player2Definition = fighterDefinitions[this.player2Index];
 
-    this.player1NameText?.setText(`< ${player1Definition.displayName} >`);
-    this.player1IndexText?.setText(`Fighter ${this.player1Index + 1} / ${fighterDefinitions.length}`);
-    this.player1RoleText?.setText(player1Definition.role);
+    this.player1NameText?.setText(`< ${getFighterDisplayNameJa(player1Definition.id)} >`);
+    this.player1IndexText?.setText(`キャラ ${this.player1Index + 1} / ${fighterDefinitions.length}`);
+    this.player1RoleText?.setText(getFighterDescriptionJa(player1Definition.id));
     this.player1StatsText?.setText(this.getStatsText(player1Definition));
-    this.player2NameText?.setText(`< ${player2Definition.displayName} >`);
-    this.player2IndexText?.setText(`Fighter ${this.player2Index + 1} / ${fighterDefinitions.length}`);
-    this.player2ModeText?.setText(`P2 Mode: ${this.getPlayer2ModeLabel()} (↓)`);
-    this.player2RoleText?.setText(player2Definition.role);
+    this.player2NameText?.setText(`< ${getFighterDisplayNameJa(player2Definition.id)} >`);
+    this.player2IndexText?.setText(`キャラ ${this.player2Index + 1} / ${fighterDefinitions.length}`);
+    this.player2ModeText?.setText(`P2操作: ${this.getPlayer2ModeLabel()} (↓)`);
+    this.player2RoleText?.setText(getFighterDescriptionJa(player2Definition.id));
     this.player2StatsText?.setText(this.getStatsText(player2Definition));
   }
 
   private getPlayer2ModeLabel() {
-    return this.player2Mode === 'cpu' ? 'CPU' : 'Human';
+    return this.player2Mode === 'cpu' ? 'CPU' : '2P';
   }
 
   private getStatsText(definition: FighterDefinition) {
     return `HP: ${definition.stats.maxHp}
-Speed: ${definition.stats.moveSpeed}
-Damage: ${definition.stats.attackDamage}
-Knockback: ${definition.stats.knockbackSpeed}`;
+移動速度: ${definition.stats.moveSpeed}
+攻撃力: ${definition.stats.attackDamage}
+ふっとばし: ${definition.stats.knockbackSpeed}`;
   }
 }
 
@@ -1461,6 +1552,8 @@ class BattleScene extends Phaser.Scene {
   private screenShakeEnabled = true;
   private player1EquipmentHudText?: Phaser.GameObjects.Text;
   private player2EquipmentHudText?: Phaser.GameObjects.Text;
+  private player1AmpAccent?: Phaser.GameObjects.Arc;
+  private player2AmpAccent?: Phaser.GameObjects.Arc;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
@@ -1474,12 +1567,18 @@ class BattleScene extends Phaser.Scene {
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
-    this.player1Equipment = getEquipmentDefinition(data.player1EquipmentId);
-    this.player2Equipment = getEquipmentDefinition(data.player2EquipmentId);
-    this.player1EquipmentId = this.player1Equipment.id;
-    this.player2EquipmentId = this.player2Equipment.id;
     this.player1Definition = getFighterDefinition(this.player1FighterId);
     this.player2Definition = getFighterDefinition(this.player2FighterId);
+    this.player1EquipmentId = this.resolveBattleEquipmentIdForFighter(
+      this.player1FighterId,
+      getEquipmentDefinition(data.player1EquipmentId).id,
+    );
+    this.player2EquipmentId = this.resolveBattleEquipmentIdForFighter(
+      this.player2FighterId,
+      getEquipmentDefinition(data.player2EquipmentId).id,
+    );
+    this.player1Equipment = getEquipmentDefinition(this.player1EquipmentId);
+    this.player2Equipment = getEquipmentDefinition(this.player2EquipmentId);
   }
 
   create() {
@@ -1535,7 +1634,7 @@ class BattleScene extends Phaser.Scene {
     );
 
     this.player1EquipmentHudText = this.add
-      .text(32, 78, `P1 Equip: ${this.player1Equipment.shortLabel}`, {
+      .text(32, 78, `P1装備: ${getEquipmentShortLabelJa(this.player1Equipment.id)}`, {
         color: '#86efac',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
@@ -1543,7 +1642,7 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0, 0);
 
     this.player2EquipmentHudText = this.add
-      .text(768, 78, `P2 Equip: ${this.player2Equipment.shortLabel}`, {
+      .text(768, 78, `P2装備: ${getEquipmentShortLabelJa(this.player2Equipment.id)}`, {
         color: '#93c5fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
@@ -1577,6 +1676,7 @@ class BattleScene extends Phaser.Scene {
     this.player1 = this.createFighter(player1StartX, 'P1', this.player1Definition);
     this.player2 = this.createFighter(player2StartX, 'P2', this.player2Definition);
     this.player2.facing = -1;
+    this.createAmpAccents();
     this.controls = this.createControls();
     this.showMatchStartPrompt();
   }
@@ -1603,9 +1703,44 @@ class BattleScene extends Phaser.Scene {
       this.moveFighter(this.player2, this.controls.player2, delta);
       this.tryAttack(this.player2, this.controls.player2, time);
     }
+    this.updateAmpAccents(time);
     this.updateActiveAttacks(time);
     this.updateKnockback(this.player1, delta);
     this.updateKnockback(this.player2, delta);
+  }
+
+  private createAmpAccents() {
+    if (!this.effectsEnabled) {
+      return;
+    }
+
+    if (this.hasAmpReach(this.player1)) {
+      this.player1AmpAccent = this.add
+        .circle(this.player1.body.x, this.player1.body.y + 74, 30, 0xf59e0b, 0.12)
+        .setStrokeStyle(2, 0xfbbf24, 0.38)
+        .setDepth(0);
+    }
+
+    if (this.hasAmpReach(this.player2)) {
+      this.player2AmpAccent = this.add
+        .circle(this.player2.body.x, this.player2.body.y + 74, 30, 0x38bdf8, 0.12)
+        .setStrokeStyle(2, 0x7dd3fc, 0.38)
+        .setDepth(0);
+    }
+  }
+
+  private updateAmpAccents(time: number) {
+    const pulse = 0.5 + Math.sin(time * 0.01) * 0.08;
+
+    if (this.player1AmpAccent) {
+      this.player1AmpAccent.setPosition(this.player1.body.x, this.player1.body.y + 74);
+      this.player1AmpAccent.setScale(pulse);
+    }
+
+    if (this.player2AmpAccent) {
+      this.player2AmpAccent.setPosition(this.player2.body.x, this.player2.body.y + 74);
+      this.player2AmpAccent.setScale(pulse);
+    }
   }
 
   private showMatchStartPrompt() {
@@ -1917,7 +2052,7 @@ class BattleScene extends Phaser.Scene {
     const directionToPlayer1 = distanceToPlayer1 < 0 ? -1 : 1;
     const attackDistance = this.getFighterBodyHalfWidth(this.player1) +
       this.getFighterBodyHalfWidth(this.player2) +
-      this.player2.stats.attackWidth +
+      this.getEffectiveAttackWidth(this.player2) +
       cpuAttackDistancePadding;
 
     if (time >= this.nextCpuDecisionAt) {
@@ -1958,11 +2093,12 @@ class BattleScene extends Phaser.Scene {
   }
 
   private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
-    const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + fighter.stats.attackWidth / 2);
+    const effectiveAttackWidth = this.getEffectiveAttackWidth(fighter);
+    const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + effectiveAttackWidth / 2);
     const hitboxY = fighter.body.y + fighter.stats.attackYOffset;
     const attackVisualStyle = this.getAttackVisualStyle(fighter);
     const hitbox = this.add
-      .rectangle(hitboxX, hitboxY, fighter.stats.attackWidth, fighter.stats.attackHeight, attackVisualStyle.fillColor, 0.35)
+      .rectangle(hitboxX, hitboxY, effectiveAttackWidth, fighter.stats.attackHeight, attackVisualStyle.fillColor, 0.35)
       .setStrokeStyle(2, attackVisualStyle.strokeColor)
       .setDepth(1);
 
@@ -1992,11 +2128,12 @@ class BattleScene extends Phaser.Scene {
 
       if (Phaser.Geom.Intersects.RectangleToRectangle(attack.hitbox.getBounds(), attack.defender.body.getBounds())) {
         attack.hasHit = true;
-        this.applyDamage(attack.defenderHp, attack.attacker.stats.attackDamage);
+        const damageResult = this.calculateAttackDamage(attack.attacker, attack.defender);
+        this.applyDamage(attack.defenderHp, damageResult.damage);
         this.applyKnockback(attack.defender, attack.attacker.facing, attack.attacker.stats.knockbackSpeed);
         this.flashFighter(attack.defender);
         this.showHitSpark(attack.defender, attack.attacker);
-        this.showHitMarker(attack.defender, attack.attacker.stats.attackDamage);
+        this.showHitMarker(attack.defender, damageResult.damage, damageResult.isCritical);
         this.shakeCameraOnHit();
         this.checkMatchResult();
 
@@ -2057,7 +2194,7 @@ class BattleScene extends Phaser.Scene {
     this.hitSparkEvents.push(sparkEvent);
   }
 
-  private showHitMarker(fighter: Fighter, damage: number) {
+  private showHitMarker(fighter: Fighter, damage: number, isCritical = false) {
     if (this.matchOver) {
       return;
     }
@@ -2077,7 +2214,7 @@ class BattleScene extends Phaser.Scene {
 
     if (this.effectsEnabled) {
       this.hitMarkerSubLabel = this.add
-        .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, 'CLEAN HIT', {
+        .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, isCritical ? getCriticalHitLabelJa() : 'CLEAN HIT', {
           align: 'center',
           color: '#ffffff',
           fontFamily: 'system-ui, sans-serif',
@@ -2285,6 +2422,10 @@ class BattleScene extends Phaser.Scene {
     this.clearHitSparks();
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
+    this.player1AmpAccent?.destroy();
+    this.player2AmpAccent?.destroy();
+    this.player1AmpAccent = undefined;
+    this.player2AmpAccent = undefined;
 
     if (this.player1) {
       this.player1.knockbackVelocity = 0;
@@ -2295,6 +2436,59 @@ class BattleScene extends Phaser.Scene {
       this.player2.knockbackVelocity = 0;
       this.resetFighterColor(this.player2);
     }
+  }
+
+  private isAmpCompatibleFighter(fighterId: string): boolean {
+    return fighterId === 'electric-guitar' || fighterId === 'bass' || fighterId === 'keyboard';
+  }
+
+  private resolveBattleEquipmentIdForFighter(fighterId: string, equipmentId: EquipmentId): EquipmentId {
+    // Battle-side safety fallback: stale/incompatible saved selections must resolve safely.
+    if (equipmentId === 'amp' && !this.isAmpCompatibleFighter(fighterId)) {
+      return 'none';
+    }
+
+    return equipmentId;
+  }
+
+  private getFighterEquipmentId(fighter: Fighter): EquipmentId {
+    return fighter === this.player1 ? this.player1EquipmentId : this.player2EquipmentId;
+  }
+
+  // Phase 10 tradeoff: Drum Sticks + Case gives up attacker-side high-critical identity.
+  // This does not change defender-side Case reduction behavior for non-critical hits.
+  private canUseDrumSticksCritical(attacker: Fighter): boolean {
+    return attacker.definition.id === 'drum-sticks' && this.getFighterEquipmentId(attacker) !== 'case';
+  }
+
+  private hasAmpReach(fighter: Fighter): boolean {
+    return this.getFighterEquipmentId(fighter) === 'amp' && this.isAmpCompatibleFighter(fighter.definition.id);
+  }
+
+  private getEffectiveAttackWidth(fighter: Fighter): number {
+    return fighter.stats.attackWidth + (this.hasAmpReach(fighter) ? ampAttackReachBonusPx : 0);
+  }
+
+  private calculateAttackDamage(attacker: Fighter, defender: Fighter): DamageCalculationResult {
+    const baseDamage = attacker.stats.attackDamage;
+    const canCritical = this.canUseDrumSticksCritical(attacker);
+    const isCritical = canCritical && Math.random() < drumSticksCriticalRate;
+
+    let finalDamage = baseDamage;
+
+    if (isCritical) {
+      finalDamage = Math.floor(baseDamage * drumSticksCriticalMultiplier);
+    } else {
+      const defenderEquipmentId = this.getFighterEquipmentId(defender);
+      if (defenderEquipmentId === 'case') {
+        finalDamage = Math.floor(baseDamage * caseNormalDamageMultiplier);
+      }
+    }
+
+    return {
+      damage: Math.max(1, finalDamage),
+      isCritical,
+    };
   }
 
 
@@ -2369,7 +2563,7 @@ class ResultScene extends Phaser.Scene {
     this.add.rectangle(400, 300, 620, 360, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(400, 132, 'Match Result', {
+      .text(400, 132, '試合結果', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',
@@ -2377,7 +2571,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 174, 'Match finished', {
+      .text(400, 174, '試合終了', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -2394,7 +2588,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 262, `${this.player1Definition.displayName} vs ${this.player2Definition.displayName} • P2 ${this.player2Mode === 'cpu' ? 'CPU' : 'Human'}`, {
+      .text(400, 262, `${getFighterDisplayNameJa(this.player1FighterId)} vs ${getFighterDisplayNameJa(this.player2FighterId)} • P2 ${this.player2Mode === 'cpu' ? 'CPU' : '2P'}`, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -2402,7 +2596,15 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 304, 'Press R to rematch', {
+      .text(400, 286, `P1装備: ${getEquipmentShortLabelJa(this.player1Equipment.id)}   •   P2装備: ${getEquipmentShortLabelJa(this.player2Equipment.id)}`, {
+        color: '#94a3b8',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 326, 'R: 再戦', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '26px',
@@ -2410,7 +2612,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 352, 'Press C to change fighters (keeps picks)', {
+      .text(400, 372, 'C: キャラ変更（装備は維持）', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',
@@ -2418,7 +2620,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 400, 'Press Enter or Space to return to Home', {
+      .text(400, 414, 'Enter/Space: ホームへ戻る', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -2478,13 +2680,13 @@ class ResultScene extends Phaser.Scene {
   private getDisplayTitle(result?: ResultSceneData['result']) {
     switch (result) {
       case 'p1':
-        return this.player1Definition.resultWinText;
+        return `P1 ${getFighterDisplayNameJa(this.player1FighterId)} 勝利`;
       case 'p2':
-        return this.player2Definition.resultWinText;
+        return `P2 ${getFighterDisplayNameJa(this.player2FighterId)} 勝利`;
       case 'draw':
-        return 'Draw';
+        return '引き分け';
       default:
-        return 'Match Over';
+        return '試合終了';
     }
   }
 
@@ -2683,25 +2885,25 @@ class EquipmentSelectScene extends Phaser.Scene {
   }
 
   create() {
-    const p1Label = this.player1FighterId ? getFighterDefinition(this.player1FighterId).displayName : 'Not selected';
-    const p2Label = this.player2FighterId ? getFighterDefinition(this.player2FighterId).displayName : 'Not selected';
+    const p1Label = this.player1FighterId ? getFighterDisplayNameJa(this.player1FighterId) : '未選択';
+    const p2Label = this.player2FighterId ? getFighterDisplayNameJa(this.player2FighterId) : '未選択';
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 300, 720, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
 
-    this.add.text(400, 96, 'Equipment Select', {
+    this.add.text(400, 96, '装備選択', {
       color: '#ffffff',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '44px',
     }).setOrigin(0.5);
 
-    this.add.text(400, 156, `P1 Fighter: ${p1Label}`, {
+    this.add.text(400, 156, `P1キャラ: ${p1Label}`, {
       color: '#f8fafc',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '24px',
     }).setOrigin(0.5);
 
-    this.add.text(400, 190, `P2 Fighter: ${p2Label} (${this.player2Mode === 'cpu' ? 'CPU' : 'Human'})`, {
+    this.add.text(400, 190, `P2キャラ: ${p2Label} (${this.player2Mode === 'cpu' ? 'CPU' : 'Human'})`, {
       color: '#e2e8f0',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '22px',
@@ -2722,14 +2924,14 @@ class EquipmentSelectScene extends Phaser.Scene {
       align: 'center',
     }).setOrigin(0.5);
 
-    this.statusText = this.add.text(400, 394, 'Equipment handoff is coming next.', {
+    this.statusText = this.add.text(400, 394, '装備を選んで決定', {
       color: '#94a3b8',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '18px',
       align: 'center',
     }).setOrigin(0.5);
 
-    this.add.text(400, 500, 'Up/Down: Row   Left/Right: Equipment   Enter/Space: Continue   Esc: Back', {
+    this.add.text(400, 500, '↑/↓: P1/P2切替   ←/→: 装備変更   Enter/Space: 決定   Esc: 戻る', {
       color: '#facc15',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '18px',
@@ -2819,11 +3021,11 @@ class EquipmentSelectScene extends Phaser.Scene {
     const p2Prefix = this.selectedEquipmentRow === 1 ? '> ' : '  ';
 
     this.equipmentRowsText?.setText(
-      `${p1Prefix}P1 Equipment: ${p1Equipment.shortLabel}
-${p2Prefix}P2 Equipment: ${p2Equipment.shortLabel}`,
+      `${p1Prefix}P1装備: ${getEquipmentShortLabelJa(p1Equipment.id)}
+${p2Prefix}P2装備: ${getEquipmentShortLabelJa(p2Equipment.id)}`,
     );
     this.equipmentDescriptionText?.setText(
-      `${focusedEquipment.displayName}: ${focusedEquipment.description}`,
+      `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}`,
     );
   }
 }

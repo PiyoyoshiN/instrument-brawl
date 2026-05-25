@@ -903,6 +903,8 @@ Amp direction:
 - Amp may later reference sonic/ranged/hybrid language
 - Phase 9 does not guarantee ranged implementation
 - no runtime ranged/sonic attack behavior in this docs step
+- ResultScene equipment labels are now visible (`P1 Equip` / `P2 Equip`) as display-only status text with no gameplay effect
+- Amp now has a subtle BattleScene-only visual accent when selected, and it remains gameplay-neutral
 
 Attack identity direction:
 
@@ -914,7 +916,621 @@ Guardrails:
 - preserve Phase 8 gameplay/system invariants
 - no combat value tuning or records schema expansion for equipment
 
-Next recommended task: **Phase 9-13: Result equipment display**.
+### Phase 9-15 future equipment effect direction (docs only)
+
+Future direction only (not implemented):
+
+- Amp may later explore sonic / ranged / hybrid / signal-style identity.
+- Pick may later explore precision / close-range / timing-style identity.
+- Case may later explore protection / setup / stability-style identity.
+
+Rules for future equipment effect implementation:
+
+- Any equipment gameplay effect must be an explicit future phase task.
+- Introduce effects one at a time with isolated playtest checklist items.
+- Do not modify settings/records schema unless a future explicit schema task says so.
+- Equipment-specific records/analytics remain out of scope for now.
+- Inventory/unlocks/rarity/currency/progression remain out of scope for now.
+
+Phase 9 ended with display/identity foundation only: labels, handoff, persistence, and Amp visual-only accent. Equipment remains gameplay-neutral.
+
+Next recommended task: **Phase 10-1: Phase 10 scope docs**.
+
+### Phase 10 equipment interaction matrix (implemented reference)
+
+This section describes **currently implemented** Phase 10 prototype behavior only.
+Future ideas are out of scope unless explicitly listed below.
+
+#### Equipment baseline
+
+| Equipment | Compatibility | Implemented behavior |
+| --- | --- | --- |
+| `none` | All fighters | Baseline behavior with no equipment effect. |
+| `amp` | Electric Guitar / Bass / Keyboard | Small reach bonus only. No damage increase, no knockback/cooldown/duration/speed/HP/defense changes. Non-projectile, non-screen-wide, non-multi-hit. |
+| `amp` + Drum Sticks | Incompatible | Resolved to `none` before battle behavior. |
+| `case` | All fighters | Defender-side normal damage reduction: `floor(baseDamage * 0.8)`, then clamp minimum 1. Critical damage is not reduced. No knockback reduction, HP increase, or guard behavior. |
+| `pick` | All fighters | Selectable/displayed only. No Phase 10 gameplay effect (`準備中` candidate). |
+
+Additional Case attacker-side rule:
+
+- Drum Sticks + Case loses high-critical identity (does not critical).
+
+#### Fighter x equipment interaction rules
+
+- Electric Guitar:
+  - + `none`: baseline (normal 10 damage against non-Case).
+  - + `amp`: small reach bonus only; no damage increase.
+  - + `case`: receives Case defensive reduction when hit; own attack remains normal 10; no critical.
+  - + `pick`: no gameplay effect.
+- Bass:
+  - + `none`: baseline (normal 10 damage against non-Case).
+  - + `amp`: small reach bonus only; no damage increase.
+  - + `case`: receives Case defensive reduction when hit; own attack remains normal 10; no critical.
+  - + `pick`: no gameplay effect.
+- Keyboard:
+  - + `none`: baseline (normal 9 damage against non-Case).
+  - + `amp`: small reach bonus only; no damage increase.
+  - + `case`: receives Case defensive reduction when hit; own attack remains normal 9; no critical.
+  - + `pick`: no gameplay effect.
+- Drum Sticks:
+  - + `none`: base 8, can critical at 35%, critical damage 12, critical bypasses defender Case.
+  - + `amp`: incompatible, resolved to `none` before battle behavior.
+  - + `case`: no critical in this prototype; normal 8 vs non-Case, 6 vs Case defender; still receives defensive Case reduction when hit.
+  - + `pick`: Pick has no gameplay effect; Drum Sticks can still critical because Pick is not Case.
+
+#### Damage examples (expected)
+
+- Electric Guitar/Bass normal vs none: 10.
+- Electric Guitar/Bass normal vs Case: 8.
+- Keyboard normal vs none: 9.
+- Keyboard normal vs Case: 7.
+- Drum Sticks + none normal vs none: 8.
+- Drum Sticks + none critical vs none: 12.
+- Drum Sticks + none normal vs Case: 6.
+- Drum Sticks + none critical vs Case: 12.
+- Drum Sticks + Case vs none: 8.
+- Drum Sticks + Case vs Case: 6.
+- Drum Sticks + Pick normal vs Case: 6.
+- Drum Sticks + Pick critical vs Case: 12.
+
+#### Phase 10 guardrails still in effect
+
+- No Pick gameplay effect.
+- No Amp projectile or separate echo hitbox.
+- No screen-wide attack.
+- No multi-hit behavior.
+- No knockback reduction.
+- No HP increase.
+- No guard / just guard.
+- No special moves or combo system.
+- No equipment-specific records, critical-count records, or damage-dealt records.
+- No equipment win-rate analytics.
+- No `instrument-brawl:records` schema changes.
+- No `instrument-brawl:settings` schema changes.
+- No new assets/audio/images/3D for this ruleset.
+
+### Japanese UI label policy / 日本語UIラベル方針 (docs-only plan)
+
+This section is a **documentation policy only** for future UI wording work.
+It does not implement runtime UI changes in this step.
+
+#### 1) General policy
+
+- Player-facing labels should gradually move toward Japanese.
+- Internal code identifiers, TypeScript types, fighter IDs, equipment IDs, and localStorage schema names can remain English.
+- Do not rename internal IDs just to change visible UI wording.
+- Apply Japanese wording at display/rendering boundaries (scene text, HUD text, result text, menu labels).
+- Future runtime UI label changes should be small and reversible (1 PR = 1 low-risk surface when possible).
+
+#### 2) Fighter label policy (planned display)
+
+| Internal fighter ID | Planned Japanese display | Short label candidate |
+| --- | --- | --- |
+| `electric-guitar` | `エレキギター` | `エレキ` |
+| `bass` | `ベース` | `ベース` |
+| `drum-sticks` | `ドラムスティック` | `ドラム` |
+| `keyboard` | `キーボード` | `キーボード` |
+
+#### 3) Equipment label policy (planned display)
+
+| Internal equipment ID | Planned Japanese display | Short label candidate | Notes |
+| --- | --- | --- | --- |
+| `none` | `装備なし` | `なし` | Baseline/no effect. |
+| `amp` | `アンプ` | `アンプ` | Reach-only prototype in current Phase 10 runtime. |
+| `case` | `ケース` | `ケース` | Defender-side normal damage reduction prototype. |
+| `pick` | `ピック（準備中）` | `ピック` | `準備中` wording candidate for future disabled/no-effect explanation; gameplay effect remains not implemented in Phase 10. |
+
+#### 4) Battle feedback label policy (planned display direction)
+
+- Normal hit:
+  - Current runtime can keep `HIT -X` for now.
+  - Japanese display candidate: `ヒット -X`.
+- Clean hit sublabel:
+  - Current runtime can keep `CLEAN HIT` for now.
+  - Japanese display candidate: `ヒット！`.
+- Critical hit:
+  - Keep `会心！` as the primary Japanese critical label.
+- Keep battle text short; avoid long sentences that reduce combat readability.
+
+#### 5) Scene/UI label policy (planned display direction)
+
+- Equipment Select:
+  - `Equipment Select` -> `装備選択`
+  - `P1 Equip` -> `P1 装備`
+  - `P2 Equip` -> `P2 装備`
+- Character Select:
+  - Candidate: `キャラクター選択` or `キャラ選択`
+- Result:
+  - Equipment display should eventually use Japanese equipment labels.
+- Settings / Records:
+  - Display wording can be Japanese.
+  - Storage keys/schema names must remain unchanged.
+
+#### 6) Guardrails for this policy step
+
+- No runtime changes in this PR.
+- No `instrument-brawl:settings` schema changes.
+- No `instrument-brawl:records` schema changes.
+- No ID/type renames.
+- No asset/font/image/audio/3D additions.
+- No gameplay or balance changes.
+- No equipment-effect behavior changes (including Pick effect).
+
+#### 7) Safe future implementation order
+
+1) Add centralized display-label maps/helpers first.  
+2) Switch low-risk UI labels in small PRs:
+   - EquipmentSelect visible labels
+   - Battle HUD equipment labels
+   - ResultScene equipment labels
+3) Review battle feedback wording (`会心！`, `ヒット`) in a dedicated small step.  
+4) Keep internal IDs/storage unchanged throughout.
+
+### Pick「準備中」UI wording plan / Pick no-effect wording plan (docs-only plan)
+
+This section defines future UI wording policy for Pick in Phase 10.
+It is documentation-only and does not change runtime behavior in this step.
+
+#### 1) Pick current rule (implemented runtime baseline)
+
+- `pick` remains selectable/displayed in Phase 10.
+- `pick` has no gameplay effect in Phase 10.
+- `pick` does not change damage.
+- `pick` does not change range.
+- `pick` does not change critical rate.
+- `pick` does not change defense.
+- `pick` does not change cooldown.
+- `pick` does not change movement speed.
+- `pick` does not change HP.
+- `pick` does not add records/analytics.
+
+#### 2) Player-facing wording goal
+
+- UI wording should avoid implying that Pick already has an active gameplay effect.
+- Wording should communicate “not implemented yet” without sounding like an error state.
+- Wording should stay short enough for Equipment Select / HUD / Result surfaces.
+- Avoid long explanatory text in battle HUD to preserve readability.
+
+#### 3) Planned Japanese labels
+
+- Full equipment label: `ピック（準備中）`
+- Short label: `ピック`
+- Status label: `準備中`
+- Description/help text candidates:
+  - `効果はまだありません`
+  - `今後追加予定`
+  - `このフェーズでは効果なし`
+- Recommended default for Equipment Select:
+  - show `ピック（準備中）` or `ピック` + small `準備中`
+- Recommended default for Battle HUD / Result:
+  - use compact `ピック`
+  - avoid long status text during battle
+- Recommended default for details/help text:
+  - use `このフェーズでは効果なし`
+
+#### 4) Selection behavior policy
+
+- Pick should remain selectable.
+- Selecting Pick should not crash.
+- Selecting Pick should not silently become another equipment.
+- Pick should not be treated as invalid.
+- Pick should not trigger fallback to `none`.
+- Pick should be displayed honestly as selected, while described as no-effect/`準備中`.
+- Reset Preferences should continue resetting equipment to `none`.
+
+#### 5) Safe future implementation order
+
+1) Add centralized Japanese equipment display-label helper/map.  
+2) Add optional equipment description/help text surface.  
+3) Update EquipmentSelect visible wording for Pick first.  
+4) Optionally update Battle/Result to compact Japanese labels.  
+5) Keep Pick gameplay no-effect until a dedicated future gameplay task.  
+6) Add checklist coverage after runtime UI wording changes.
+
+#### 6) Guardrails for this policy step
+
+- No runtime changes in this PR.
+- No Pick gameplay effect.
+- No damage/range/critical/defense/cooldown/speed/HP changes.
+- No fallback behavior changes.
+- No internal ID renames.
+- No storage key/schema changes.
+- No records schema changes.
+- No equipment analytics additions.
+- No assets/audio/images/3D or font additions.
+- No gameplay/balance changes.
+
+### Phase 10 prototype checkpoint / current implemented state
+
+This section is a concise snapshot of the **currently implemented** Phase 10 prototype state after Phase 10-18.
+It is not a go/no-go decision and does not introduce runtime changes in this step.
+
+#### 1) Current scene flow
+
+- Home
+- Mode Select
+- Character Select
+- Equipment Select
+- Battle
+- Result
+
+Notes:
+
+- Equipment selection is now part of the normal gameplay flow.
+- Equipment labels are visible on Battle HUD and Result surfaces.
+- Internal IDs/types/storage keys remain unchanged.
+
+#### 2) Current equipment state
+
+- `none`
+  - Compatible with all fighters.
+  - No gameplay effect.
+- `amp`
+  - Compatible with Electric Guitar / Bass / Keyboard.
+  - Incompatible with Drum Sticks.
+  - Drum Sticks + Amp resolves safely to `none` before battle behavior.
+  - Current effect is +24px reach bonus only.
+  - No damage increase, no projectile, no multi-hit.
+  - No knockback/cooldown/speed/HP changes.
+- `case`
+  - Compatible with all fighters.
+  - Reduces normal incoming damage by 20%.
+  - Formula: `floor(baseDamage * 0.8)`, then clamp minimum 1.
+  - Does not reduce critical damage.
+  - Does not reduce knockback.
+  - Does not increase HP.
+  - Does not add guard / just guard.
+- `pick`
+  - Selectable/displayed.
+  - No Phase 10 gameplay effect.
+  - Not invalid.
+  - No fallback to `none`.
+  - Wording direction is documented as `ピック（準備中）` / `準備中`.
+
+#### 3) Current fighter/equipment identity
+
+- Electric Guitar:
+  - Baseline 10 damage.
+  - No critical.
+  - Amp gives reach only.
+  - Case gives defensive reduction only.
+- Bass:
+  - Baseline 10 damage.
+  - No critical.
+  - Amp gives reach only.
+  - Case gives defensive reduction only.
+- Keyboard:
+  - Baseline 9 damage.
+  - No critical.
+  - Amp gives reach only.
+  - Case gives defensive reduction only.
+- Drum Sticks:
+  - Baseline 8 damage.
+  - Critical rate is 35%.
+  - Critical multiplier is 1.5x.
+  - Critical damage is 12.
+  - Critical bypasses defender Case reduction.
+  - Drum Sticks + Case loses high-critical identity and does not critical.
+  - Drum Sticks + Pick can still critical because Pick is no-effect.
+
+#### 4) Current damage examples
+
+- Electric Guitar/Bass vs none: 10.
+- Electric Guitar/Bass vs Case: 8.
+- Keyboard vs none: 9.
+- Keyboard vs Case: 7.
+- Drum Sticks + none normal vs none: 8.
+- Drum Sticks + none critical vs none: 12.
+- Drum Sticks + none normal vs Case: 6.
+- Drum Sticks + none critical vs Case: 12.
+- Drum Sticks + Case vs none: 8.
+- Drum Sticks + Case vs Case: 6.
+- Drum Sticks + Pick normal vs Case: 6.
+- Drum Sticks + Pick critical vs Case: 12.
+
+#### 5) Current UI/docs state
+
+- Japanese UI label policy is documented.
+- Runtime UI is not fully converted to Japanese yet.
+- Internal IDs/types/localStorage keys remain English.
+- Pick `準備中` wording is documented but not yet implemented as runtime UI wording.
+- Battle feedback includes `会心！` for critical hits when effects are enabled.
+
+#### 6) Current guardrails
+
+- No Pick gameplay effect.
+- No Amp projectile.
+- No Amp echo hitbox.
+- No screen-wide attack.
+- No multi-hit.
+- No knockback reduction.
+- No HP increase.
+- No guard / just guard.
+- No special moves.
+- No combo system.
+- No records schema changes.
+- No settings schema changes.
+- No critical count records.
+- No damage dealt records.
+- No equipment usage analytics.
+- No equipment win-rate analytics.
+- No assets/audio/images/3D additions.
+- No font additions.
+
+#### 7) Known next decision area
+
+Phase 10 is now close to a prototype checkpoint.
+The next step (Phase 10-20) should decide whether to:
+
+- keep values as-is for more playtesting,
+- adjust one number at a time,
+- improve UI clarity,
+- or postpone larger mechanics to a later phase.
+
+This document does not make the go/no-go decision.
+
+### Phase 10 post-prototype go/no-go notes
+
+This section is a docs-only decision note after the Phase 10 prototype checkpoint.
+It does not add runtime gameplay/UI changes by itself.
+
+#### 1) Overall decision
+
+- Decision: **Conditional GO to next-phase UI clarity / playtest-readiness work.**
+- The current equipment prototype is stable enough to proceed to next-phase planning.
+- **Not a GO for large new mechanics yet.**
+- Keep current values as the baseline for additional playtesting.
+- Future changes should remain small, reversible, and one-topic-per-PR.
+
+#### 2) What is considered working enough
+
+- Equipment Select is integrated into the normal flow.
+- Equipment labels are visible in Battle/Result surfaces.
+- Amp has a small reach-only identity.
+- Case has a simple defensive identity.
+- Drum Sticks has a high-variance critical identity.
+- Drum Sticks + Case has a clear defensive tradeoff.
+- Pick is documented honestly as no-effect / `準備中`.
+- One attack still hits only once.
+- records/settings schema remain unchanged.
+
+#### 3) What should remain unchanged for now
+
+- Amp reach remains +24px for now.
+- Case normal damage reduction remains 20% for now.
+- Drum Sticks critical rate remains 35% for now.
+- Drum Sticks critical multiplier remains 1.5x for now.
+- Pick remains no-effect for now.
+- No new records/analytics are added yet.
+- No large UI rewrite should happen in one PR.
+
+#### 4) Risks / watch points
+
+- Amp reach could feel too subtle or too safe depending on playtest outcomes.
+- Case could become too generally useful if defensive value dominates.
+- Drum Sticks critical may still feel streaky due to randomness.
+- Drum Sticks + Case tradeoff may be unclear without explicit UI explanation.
+- Pick may confuse players if selectable while no-effect.
+- Mixed English/Japanese UI wording may reduce clarity.
+- Manual playtesting is still needed before larger mechanic expansion.
+
+#### 5) Recommended next-phase direction
+
+Phase 11 should prioritize UI clarity and playtest-readiness before new mechanics:
+
+- Start with centralized display-label helpers/maps.
+- Apply Japanese labels to low-risk UI surfaces:
+  - Equipment Select visible equipment names
+  - Battle HUD equipment labels
+  - ResultScene equipment labels
+- Show Pick as `ピック（準備中）` or `ピック` + `準備中` in Equipment Select.
+- Keep Battle HUD compact.
+- Do not add Pick gameplay yet.
+- Do not add new equipment mechanics until the current prototype is easier to understand and test.
+
+#### 6) Explicit no-go items for now
+
+- No projectile Amp.
+- No Amp echo hitbox.
+- No multi-hit equipment behavior.
+- No guard / just guard.
+- No HP-boosting Case.
+- No knockback-reducing Case.
+- No Pick gameplay effect yet.
+- No special moves.
+- No combo system.
+- No equipment-specific win-rate analytics.
+- No damage dealt records.
+- No critical count records.
+- No records/settings schema changes.
+- No assets/audio/images/3D/font additions.
+
+#### 7) Suggested next tasks (proposed, not implemented here)
+
+- Phase 11-1: Centralized Japanese display-label helpers/maps.
+- Phase 11-2: Equipment Select Japanese label runtime update.
+- Phase 11-3: Battle/Result equipment label Japanese runtime update.
+- Phase 11-4: Pick `準備中` UI wording runtime update.
+- Phase 11-5: UI wording playtest checklist.
+- Phase 11-6: Manual playtest notes / tuning candidates.
+
+### Phase 10 Japanese UI implementation addendum
+
+This section is a Phase 10 addendum that extends the prototype track with Japanese UI clarity work.
+It does not replace prior Phase 10 design/prototype docs, and does not add gameplay systems.
+
+#### Addendum scope and constraints
+
+- Phase 10 is extended to finish Japanese UI clarity work before moving to Phase 11.
+- This is an addendum after the Phase 10 prototype checkpoint.
+- Goal: improve player-facing clarity, not add new mechanics.
+- Internal IDs/types/storage keys remain English.
+- Player-facing labels should move toward Japanese.
+- `P1` / `P2` / `HP` / `CPU` / `Enter` / `Space` may remain English when compact/readable.
+- No gameplay values change during Japanese UI PRs.
+- No assets/audio/images/3D/font additions.
+- No records/settings schema changes.
+
+#### Critical wording decision (user override)
+
+- Final runtime critical label target: `クリティカル！`
+- `会心！` should **not** be used as the final runtime label.
+- Existing docs that still reference `会心！` should be updated through this addendum sequence for consistency.
+- This addendum PR itself is docs-only; no runtime wording switch is performed here.
+
+#### Japanese label baseline (target display text)
+
+Equipment:
+
+- `none` / No Accessory -> `装備なし`
+  - short: `なし`
+  - description: `追加装備なし。素の性能で戦う。`
+- `amp` / Amp -> `アンプ`
+  - short: `アンプ`
+  - description: `エレキギター・ベース・キーボード対応。攻撃の届く範囲が少し伸びる。`
+- `pick` / Pick -> `ピック（準備中）`
+  - short: `ピック`
+  - description: `Phase 10では効果なし。後のフェーズで検討。`
+- `case` / Case -> `ケース`
+  - short: `ケース`
+  - description: `通常ダメージを軽減する。クリティカルは軽減できない。`
+
+Fighters:
+
+- `electric-guitar` / Electric Guitar -> `エレキギター`
+- `bass` / Bass -> `ベース`
+- `drum-sticks` / Drum Sticks -> `ドラムスティック`
+  - description direction: `高クリティカルキャラ。ケース装備時は高クリティカルを失う。`
+- `keyboard` / Keyboard -> `キーボード`
+
+#### Screen wording priorities
+
+- Equipment Select (**highest priority**):
+  - `Equipment Select` -> `装備選択`
+  - `P1 Equipment` -> `P1装備`
+  - `P2 Equipment` -> `P2装備`
+  - `Continue` -> `決定`
+- Battle HUD (**highest priority**):
+  - `P1 Equip` -> `P1装備`
+  - `P2 Equip` -> `P2装備`
+  - Equipment short labels should be Japanese.
+- ResultScene:
+  - `Match Result` -> `試合結果`
+  - `Match finished` -> `試合終了`
+  - rematch -> `再戦`
+  - return Home -> `ホームへ戻る`
+- Character Select:
+  - `Character Select` -> `キャラ選択`
+  - `Fighter` -> `キャラ`
+  - `Speed` -> `移動速度`
+  - `Damage` -> `攻撃力`
+  - `Knockback` -> `ふっとばし`
+- Home:
+  - `Start` -> `はじめる`
+  - `Records` -> `記録`
+  - `Options` -> `設定`
+  - confirm -> `決定`
+- Mode Select:
+  - `VS HUMAN` -> `ふたりで対戦`
+  - `VS CPU` -> `CPU戦`
+  - `Choose your match mode` -> `対戦モードを選択`
+- Options:
+  - `Options` -> `設定`
+  - `Effects` -> `演出`
+  - `Screen Shake` -> `画面揺れ`
+  - `Reset Preferences` -> `設定リセット`
+- Records:
+  - `Records` -> `記録`
+  - `Total Matches` -> `試合数`
+  - `Wins` -> `勝利`
+  - `Draws` -> `引き分け`
+  - `Reset Records` -> `記録リセット`
+- Pause / Quick Help:
+  - `Paused / Quick Help` -> `一時停止 / 操作確認`
+  - Keep it short; do not turn it into a long tutorial.
+
+#### Implementation approach (for upcoming runtime UI PRs)
+
+- Prefer centralized display-label helpers/maps.
+- Do not scatter hardcoded Japanese strings across scenes.
+- Suggested helpers/maps:
+  - `fighterDisplayNameJaById`
+  - `equipmentDisplayTextById`
+  - `getFighterDisplayNameJa(...)`
+  - `getEquipmentDisplayTextJa(...)`
+  - `getPlayer2ModeLabelJa(...)`
+- Alternative acceptable approach: add `displayNameJa`, `shortLabelJa`, `descriptionJa` fields to definitions if safer.
+- Scene data/storage/records values must remain English IDs.
+
+#### Phase 10 Japanese UI addendum task sequence (proposed)
+
+- Phase 10-JP-1: Japanese UI addendum scope docs.
+- Phase 10-JP-2: Centralized Japanese display-label helpers/maps.
+- Phase 10-JP-3: Equipment Select Japanese label runtime update.
+- Phase 10-JP-4: Battle HUD Japanese equipment labels.
+- Phase 10-JP-5: ResultScene Japanese labels.
+- Phase 10-JP-6: Character Select Japanese labels.
+- Phase 10-JP-7: Home / Mode Select / Options / Records low-risk Japanese labels.
+- Phase 10-JP-8: Pause / Quick Help Japanese labels.
+- Phase 10-JP-9: Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check.
+- Phase 10-JP-10: Japanese UI playtest checklist.
+- Phase 10-JP-11: Japanese UI checkpoint docs.
+
+#### Phase 10-JP-2 implemented note
+
+- Centralized Japanese display-label helpers/maps are added in runtime infrastructure.
+- Equipment/fighter Japanese labels are now centralized for safer reuse in later UI tasks.
+- Critical label target is centralized as `クリティカル！`.
+- Broad screen-by-screen Japanese UI conversion is still pending for follow-up tasks.
+- No gameplay/balance/schema changes were introduced in this step.
+
+#### Phase 10-JP-3 implemented note
+
+- Equipment Select visible UI labels are updated to Japanese.
+- Equipment Select now uses centralized Japanese equipment/fighter label helpers.
+- Pick is shown as no-effect / `準備中` in the Equipment Select description.
+- No gameplay/balance/schema changes were introduced in this step.
+
+#### Phase 10-JP-4 implemented note
+
+- Battle HUD equipment labels are updated to Japanese (`P1装備` / `P2装備`).
+- Battle HUD equipment short labels now use the centralized Japanese short-label helper.
+- Broader Battle text translation is still pending for follow-up tasks.
+- No gameplay/balance/schema changes were introduced in this step.
+
+#### Phase 10-JP-5 implemented note
+
+- ResultScene labels are updated to Japanese.
+- ResultScene now uses centralized Japanese fighter/equipment label helpers.
+- Result title / rematch / home-return related visible text is Japanese.
+- No gameplay/balance/schema changes were introduced in this step.
+
+#### Phase 10-JP-6 implemented note
+
+- Character Select labels are updated to Japanese.
+- Character Select now uses centralized Japanese fighter label helpers.
+- Fighter stats/description text is Japanese.
+- No gameplay/balance/schema changes were introduced in this step.
 
 
 ### Phase 9-3 Equipment concept (docs only)
