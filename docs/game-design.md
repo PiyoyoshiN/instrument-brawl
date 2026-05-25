@@ -1496,6 +1496,14 @@ Fighters:
 - Phase 10-JP-10: Japanese UI playtest checklist.
 - Phase 10-JP-11: Japanese UI checkpoint docs.
 
+#### Phase 10-JP-2 implemented note
+
+- Centralized Japanese display-label helpers/maps are added in runtime infrastructure.
+- Equipment/fighter Japanese labels are now centralized for safer reuse in later UI tasks.
+- Critical label target is centralized as `クリティカル！`.
+- Broad screen-by-screen Japanese UI conversion is still pending for follow-up tasks.
+- No gameplay/balance/schema changes were introduced in this step.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 

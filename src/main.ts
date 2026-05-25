@@ -50,6 +50,12 @@ type EquipmentDefinition = {
   conceptRole: string;
 };
 
+type EquipmentDisplayJa = {
+  displayNameJa: string;
+  shortLabelJa: string;
+  descriptionJa: string;
+};
+
 const noneEquipmentDefinition: EquipmentDefinition = {
   id: 'none',
   displayName: 'No Accessory',
@@ -93,6 +99,29 @@ const equipmentDefinitionById = new Map<EquipmentId, EquipmentDefinition>(
   equipmentDefinitions.map((definition) => [definition.id, definition]),
 );
 
+const equipmentDisplayJaById: Record<EquipmentId, EquipmentDisplayJa> = {
+  none: {
+    displayNameJa: '装備なし',
+    shortLabelJa: 'なし',
+    descriptionJa: '追加装備なし。素の性能で戦う。',
+  },
+  amp: {
+    displayNameJa: 'アンプ',
+    shortLabelJa: 'アンプ',
+    descriptionJa: 'エレキギター・ベース・キーボード対応。攻撃の届く範囲が少し伸びる。',
+  },
+  pick: {
+    displayNameJa: 'ピック（準備中）',
+    shortLabelJa: 'ピック',
+    descriptionJa: 'Phase 10では効果なし。後のフェーズで検討。',
+  },
+  case: {
+    displayNameJa: 'ケース',
+    shortLabelJa: 'ケース',
+    descriptionJa: '通常ダメージを軽減する。クリティカルは軽減できない。',
+  },
+};
+
 function getAllEquipmentDefinitions(): EquipmentDefinition[] {
   return [...equipmentDefinitions];
 }
@@ -107,6 +136,24 @@ function getEquipmentDefinition(id: unknown): EquipmentDefinition {
   }
 
   return equipmentDefinitionById.get(id) ?? noneEquipmentDefinition;
+}
+
+function getEquipmentDisplayNameJa(id: unknown): string {
+  return equipmentDisplayJaById[getEquipmentDefinition(id).id].displayNameJa;
+}
+
+function getEquipmentShortLabelJa(id: unknown): string {
+  return equipmentDisplayJaById[getEquipmentDefinition(id).id].shortLabelJa;
+}
+
+function getEquipmentDescriptionJa(id: unknown): string {
+  return equipmentDisplayJaById[getEquipmentDefinition(id).id].descriptionJa;
+}
+
+function getEquipmentDisplayTextJa(id: unknown): string {
+  const equipmentId = getEquipmentDefinition(id).id;
+  const display = equipmentDisplayJaById[equipmentId];
+  return `${display.displayNameJa} / ${display.shortLabelJa}`;
 }
 
 type FighterStats = {
@@ -222,6 +269,25 @@ const keyboardDefinition: FighterDefinition = {
 
 const fighterDefinitions = [electricGuitarDefinition, bassDefinition, drumSticksDefinition, keyboardDefinition];
 const fighterDefinitionById = new Map(fighterDefinitions.map((definition) => [definition.id, definition]));
+
+const fighterDisplayNameJaById: Record<string, { displayNameJa: string; shortLabelJa: string }> = {
+  'electric-guitar': { displayNameJa: 'エレキギター', shortLabelJa: 'エレキ' },
+  bass: { displayNameJa: 'ベース', shortLabelJa: 'ベース' },
+  'drum-sticks': { displayNameJa: 'ドラムスティック', shortLabelJa: 'ドラム' },
+  keyboard: { displayNameJa: 'キーボード', shortLabelJa: 'キーボード' },
+};
+
+function getFighterDisplayNameJa(id: string): string {
+  return fighterDisplayNameJaById[id]?.displayNameJa ?? getFighterDefinition(id).displayName;
+}
+
+function getFighterShortLabelJa(id: string): string {
+  return fighterDisplayNameJaById[id]?.shortLabelJa ?? getFighterDefinition(id).displayName;
+}
+
+function getCriticalHitLabelJa(): string {
+  return 'クリティカル！';
+}
 
 function getFighterDefinition(id: string) {
   const definition = fighterDefinitionById.get(id);
@@ -2137,7 +2203,7 @@ class BattleScene extends Phaser.Scene {
 
     if (this.effectsEnabled) {
       this.hitMarkerSubLabel = this.add
-        .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, isCritical ? '会心！' : 'CLEAN HIT', {
+        .text(fighter.body.x, fighter.body.y - fighter.body.height / 2 - 48, isCritical ? getCriticalHitLabelJa() : 'CLEAN HIT', {
           align: 'center',
           color: '#ffffff',
           fontFamily: 'system-ui, sans-serif',
