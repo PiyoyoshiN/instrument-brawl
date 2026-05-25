@@ -1943,26 +1943,26 @@ class BattleScene extends Phaser.Scene {
     this.destroyPauseOverlay();
 
     const overlay = this.add.container(400, 300).setDepth(20);
-    const currentMode = this.player2Mode === 'cpu' ? 'CPU' : 'Human';
+    const currentMode = this.player2Mode === 'cpu' ? 'CPU' : '2P';
 
     overlay.add([
       this.add.rectangle(0, 0, gameWidth, gameHeight, 0x020617, 0.7),
       this.add.rectangle(0, 0, 620, 380, 0x111827, 0.95).setStrokeStyle(4, 0xfacc15),
-      this.add.text(0, -156, 'Paused / Quick Help', {
+      this.add.text(0, -156, '一時停止 / 操作確認', {
         align: 'center',
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '32px',
       }).setOrigin(0.5),
       this.add.text(-260, -104, [
-        'Resume: P',
-        'P1: A / D move, W / Space attack',
-        'P2 Human: Left / Right move, Up / Enter attack',
-        'P2 CPU: controlled automatically',
-        `Current P2 mode: ${currentMode}`,
-        'Rule: one attack can hit only once',
-        'Ready / Fight: controls start after Fight',
-        'Result: R rematch, C character select, Enter / Space Home',
+        '再開: P',
+        'P1: A/D移動、W/Space攻撃',
+        'P2 2P: ←/→移動、↑/Enter攻撃',
+        'P2 CPU: 自動操作',
+        `現在のP2操作: ${currentMode}`,
+        'ルール: 1回の攻撃で当たるのは1回だけ',
+        'Ready/Fight: Fight表示後に操作開始',
+        '結果画面: R再戦、Cキャラ選択、Enter/Spaceホーム',
       ], {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',

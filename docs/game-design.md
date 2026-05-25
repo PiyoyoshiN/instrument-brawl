@@ -1539,6 +1539,12 @@ Fighters:
 - Menu behavior and reset-confirmation behavior remain unchanged.
 - No gameplay/balance/schema changes were introduced in this step.
 
+#### Phase 10-JP-8 implemented note
+
+- Pause / Quick Help overlay labels are updated to Japanese.
+- Pause behavior and timer/pause-resume behavior remain unchanged.
+- No gameplay/balance/schema changes were introduced in this step.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 

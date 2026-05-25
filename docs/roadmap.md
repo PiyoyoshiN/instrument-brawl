@@ -1383,7 +1383,7 @@ This keeps work focused on UI clarity / playtest-readiness and still does **not*
 - 10-JP-5 ResultScene Japanese labels (**runtime/ui**) — complete
 - 10-JP-6 Character Select Japanese labels (**runtime/ui**) — complete
 - 10-JP-7 Home / Mode Select / Options / Records low-risk Japanese labels (**runtime/ui**) — complete
-- 10-JP-8 Pause / Quick Help Japanese labels (**runtime/ui**)
+- 10-JP-8 Pause / Quick Help Japanese labels (**runtime/ui**) — complete
 - 10-JP-9 Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check (**docs+ui consistency**)
 - 10-JP-10 Japanese UI playtest checklist (**docs-only**)
 - 10-JP-11 Japanese UI checkpoint docs (**docs-only**)
@@ -1446,4 +1446,13 @@ Implemented scope:
 - Menu behavior remains unchanged.
 - No gameplay/balance/schema changes.
 
-**Next recommended task:** Phase 10-JP-8: Pause / Quick Help Japanese labels.
+### Phase 10-JP-8 Pause / Quick Help Japanese labels (runtime/ui)
+
+Implemented scope:
+
+- Pause / Quick Help overlay labels are converted to Japanese.
+- Compact English terms (`P1`, `P2`, `CPU`, `Ready`, `Fight`) remain where useful.
+- Pause/resume behavior remains unchanged.
+- No gameplay/balance/schema changes.
+
+**Next recommended task:** Phase 10-JP-9: Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check.
