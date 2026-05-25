@@ -946,3 +946,84 @@ Use this short checklist before merging gameplay-adjacent PRs.
 - [ ] Reset Preferences still resets equipment to `none`.
 
 **Next recommended task:** Phase 10-19: Phase 10 prototype checkpoint docs.
+
+## Phase 10-JP Japanese UI playtest checklist
+
+### 1) Main flow check
+
+- [ ] Home opens normally.
+- [ ] Home shows `はじめる` / `記録` / `設定`.
+- [ ] Mode Select opens from Home.
+- [ ] Mode Select shows `対戦モード選択`.
+- [ ] Character Select opens from Mode Select.
+- [ ] Character Select shows `キャラ選択`.
+- [ ] Equipment Select opens from Character Select.
+- [ ] Equipment Select shows `装備選択`.
+- [ ] Battle starts from Equipment Select.
+- [ ] Battle HUD shows `P1装備` / `P2装備`.
+- [ ] ResultScene opens after match end.
+- [ ] ResultScene shows `試合結果`.
+- [ ] ResultScene can rematch with `R`.
+- [ ] ResultScene can return to Character Select with `C`.
+- [ ] ResultScene can return Home with `Enter/Space`.
+
+### 2) Japanese label consistency check
+
+- [ ] Fighter names are Japanese: `エレキギター` / `ベース` / `ドラムスティック` / `キーボード`.
+- [ ] Equipment names are Japanese: `装備なし` / `アンプ` / `ピック（準備中）` / `ケース`.
+- [ ] Compact equipment labels are Japanese: `なし` / `アンプ` / `ピック` / `ケース`.
+- [ ] Character Select stats show `移動速度` / `攻撃力` / `ふっとばし`.
+- [ ] Options shows `設定` / `演出` / `画面揺れ` / `設定リセット`.
+- [ ] Records shows `記録` / `試合数` / `P1勝利` / `P2勝利` / `引き分け` / `記録リセット`.
+- [ ] Pause overlay shows `一時停止 / 操作確認`.
+
+### 3) Equipment explanation check
+
+- [ ] Pick full display says `ピック（準備中）`.
+- [ ] Pick description says it has no Phase 10 effect.
+- [ ] Pick remains selectable.
+- [ ] Pick still has no gameplay effect.
+- [ ] Amp description says it supports Electric Guitar / Bass / Keyboard and extends reach slightly.
+- [ ] Drum Sticks + Amp shows `ドラムスティックはアンプ非対応。バトルでは装備なし扱い。`.
+- [ ] Drum Sticks + Amp still resolves safely in battle.
+- [ ] Case description says normal damage is reduced.
+- [ ] Case description says critical is not reduced.
+- [ ] Drum Sticks description mentions high critical.
+- [ ] Drum Sticks + Case description/tradeoff is understandable.
+
+### 4) Battle behavior guardrail check
+
+- [ ] One attack can still hit only once.
+- [ ] Amp still only changes reach.
+- [ ] Amp does not change damage.
+- [ ] Amp does not add projectile or multi-hit.
+- [ ] Case still reduces normal incoming damage.
+- [ ] Case does not reduce critical damage.
+- [ ] Drum Sticks critical still displays `クリティカル！`.
+- [ ] `会心！` is not used as final runtime/player-facing critical wording.
+- [ ] Pick still has no gameplay effect.
+- [ ] No new records/settings fields are created.
+
+### 5) Mode / menu behavior check
+
+- [ ] Home navigation still works.
+- [ ] Mode Select still switches 2P / CPU correctly.
+- [ ] Character Select P1 `A/D` still works.
+- [ ] Character Select P2 `←/→` still works.
+- [ ] Character Select P2`↓` still toggles 2P / CPU.
+- [ ] Equipment Select `↑/↓` still switches P1/P2 row.
+- [ ] Equipment Select `←/→` still changes equipment.
+- [ ] Options toggles still work.
+- [ ] Options reset confirmation still works.
+- [ ] Records reset confirmation still works.
+- [ ] Pause `P` toggles pause/resume.
+- [ ] CPU mode still plays.
+
+### 6) Storage/schema check
+
+- [ ] Existing settings load without crash.
+- [ ] Existing records load without crash.
+- [ ] Reset settings still works.
+- [ ] Reset records still works.
+- [ ] No records/settings schema changes.
+- [ ] Internal IDs remain English: `none` / `amp` / `pick` / `case` / `electric-guitar` / `bass` / `drum-sticks` / `keyboard` / `human` / `cpu`.

@@ -1554,6 +1554,12 @@ Fighters:
 - Case wording is aligned to normal-damage-only reduction (`クリティカル`は軽減しない) with no formula changes.
 - No gameplay/balance/schema changes were introduced in this step.
 
+#### Phase 10-JP-10 implemented note
+
+- Added the Japanese UI playtest checklist for completed Phase 10-JP runtime UI work.
+- Checklist covers main flow, Japanese labels, equipment explanations, battle guardrails, menu behavior, and storage/schema checks.
+- No runtime/gameplay/balance/schema changes were introduced in this step.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 

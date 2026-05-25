@@ -1385,7 +1385,7 @@ This keeps work focused on UI clarity / playtest-readiness and still does **not*
 - 10-JP-7 Home / Mode Select / Options / Records low-risk Japanese labels (**runtime/ui**) — complete
 - 10-JP-8 Pause / Quick Help Japanese labels (**runtime/ui**) — complete
 - 10-JP-9 Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check (**docs+ui consistency**) — complete
-- 10-JP-10 Japanese UI playtest checklist (**docs-only**)
+- 10-JP-10 Japanese UI playtest checklist (**docs-only**) — complete
 - 10-JP-11 Japanese UI checkpoint docs (**docs-only**)
 
 Notes:
@@ -1464,4 +1464,12 @@ Implemented scope:
 - Equipment Select now includes a compact Drum Sticks + Amp incompatibility explanation note (behavior unchanged).
 - No gameplay/balance/schema changes.
 
-**Next recommended task:** Phase 10-JP-10: Japanese UI playtest checklist.
+### Phase 10-JP-10 Japanese UI playtest checklist (docs-only)
+
+Implemented scope:
+
+- Added/updated the Japanese UI playtest checklist for the completed Phase 10-JP runtime UI work.
+- Checklist covers main flow, Japanese labels, equipment explanations, battle guardrails, menu behavior, and storage/schema checks.
+- No runtime/gameplay/balance/schema changes.
+
+**Next recommended task:** Phase 10-JP-11: Japanese UI checkpoint docs.
