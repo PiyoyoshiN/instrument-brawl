@@ -1560,6 +1560,36 @@ Fighters:
 - Checklist covers main flow, Japanese labels, equipment explanations, battle guardrails, menu behavior, and storage/schema checks.
 - No runtime/gameplay/balance/schema changes were introduced in this step.
 
+#### Phase 10-JP-11 checkpoint / Japanese UI checkpoint
+
+- Phase 10-JP Japanese UI addendum is complete.
+- Completed screens:
+  - Home
+  - Mode Select
+  - Character Select
+  - Equipment Select
+  - Battle HUD equipment labels
+  - ResultScene
+  - Options
+  - Records
+  - Pause / Quick Help
+- Centralized Japanese display helpers are in place for fighter names, fighter descriptions, equipment names, equipment short labels, equipment descriptions, and the critical label.
+- Final runtime/player-facing critical wording is `クリティカル！`.
+- `会心！` is not the final runtime/player-facing target.
+- Pick remains selectable as `ピック（準備中）` and still has no Phase 10 gameplay effect.
+- Amp remains reach-only and incompatible with Drum Sticks; Drum Sticks + Amp still resolves safely to `none` in battle behavior.
+- Case remains normal-damage reduction only; critical is not reduced.
+- Internal IDs and storage keys remain English.
+- No runtime/gameplay/balance/schema changes were introduced by 10-JP-11.
+- Phase 10-JP is ready for manual playtest using the Phase 10-JP checklist.
+
+Known intentionally unchanged:
+
+- `Instrument Brawl` title remains English.
+- Compact terms like `P1`, `P2`, `CPU`, `HP`, `Ready`, `Fight`, `Enter`, `Space`, `ON`, `OFF` may remain English for readability.
+- Full Battle feedback wording beyond the critical label can be revisited later if needed.
+- Major new mechanics should wait for later phases.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 

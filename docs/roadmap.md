@@ -1386,7 +1386,7 @@ This keeps work focused on UI clarity / playtest-readiness and still does **not*
 - 10-JP-8 Pause / Quick Help Japanese labels (**runtime/ui**) — complete
 - 10-JP-9 Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check (**docs+ui consistency**) — complete
 - 10-JP-10 Japanese UI playtest checklist (**docs-only**) — complete
-- 10-JP-11 Japanese UI checkpoint docs (**docs-only**)
+- 10-JP-11 Japanese UI checkpoint docs (**docs-only**) — complete
 
 Notes:
 
@@ -1472,4 +1472,13 @@ Implemented scope:
 - Checklist covers main flow, Japanese labels, equipment explanations, battle guardrails, menu behavior, and storage/schema checks.
 - No runtime/gameplay/balance/schema changes.
 
-**Next recommended task:** Phase 10-JP-11: Japanese UI checkpoint docs.
+### Phase 10-JP-11 Japanese UI checkpoint docs (docs-only)
+
+Implemented scope:
+
+- Added final Japanese UI checkpoint documentation for the Phase 10-JP addendum.
+- Confirmed Phase 10-JP completion status, completed screens, helper coverage, and wording decisions.
+- Confirmed no runtime/gameplay/balance/schema changes.
+- Confirmed readiness for manual playtest using the Phase 10-JP checklist.
+
+**Next recommended task:** Phase 11-1: Manual Japanese UI playtest + issue triage.

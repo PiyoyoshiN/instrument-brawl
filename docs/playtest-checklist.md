@@ -949,6 +949,12 @@ Use this short checklist before merging gameplay-adjacent PRs.
 
 ## Phase 10-JP Japanese UI playtest checklist
 
+Checkpoint note:
+
+- This checklist is the primary manual verification checklist for the Phase 10-JP checkpoint.
+- Use this checklist before starting Phase 11 polish tasks.
+- If a check fails, create a small follow-up issue/PR instead of mixing fixes into checkpoint docs.
+
 ### 1) Main flow check
 
 - [ ] Home opens normally.
