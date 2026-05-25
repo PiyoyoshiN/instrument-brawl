@@ -1504,6 +1504,13 @@ Fighters:
 - Broad screen-by-screen Japanese UI conversion is still pending for follow-up tasks.
 - No gameplay/balance/schema changes were introduced in this step.
 
+#### Phase 10-JP-3 implemented note
+
+- Equipment Select visible UI labels are updated to Japanese.
+- Equipment Select now uses centralized Japanese equipment/fighter label helpers.
+- Pick is shown as no-effect / `準備中` in the Equipment Select description.
+- No gameplay/balance/schema changes were introduced in this step.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 

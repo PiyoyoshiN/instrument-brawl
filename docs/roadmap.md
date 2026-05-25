@@ -1378,7 +1378,7 @@ This keeps work focused on UI clarity / playtest-readiness and still does **not*
 
 - 10-JP-1 Japanese UI addendum scope docs + critical wording decision (**docs-only**) — complete
 - 10-JP-2 Centralized Japanese display-label helpers/maps (**runtime/ui**) — complete
-- 10-JP-3 Equipment Select Japanese label runtime update (**runtime/ui**)
+- 10-JP-3 Equipment Select Japanese label runtime update (**runtime/ui**) — complete
 - 10-JP-4 Battle HUD Japanese equipment labels (**runtime/ui**)
 - 10-JP-5 ResultScene Japanese labels (**runtime/ui**)
 - 10-JP-6 Character Select Japanese labels (**runtime/ui**)
@@ -1402,4 +1402,13 @@ Implemented scope:
 - Broad screen-by-screen Japanese UI translation is still pending for follow-up tasks.
 - No gameplay/balance/schema changes.
 
-**Next recommended task:** Phase 10-JP-3: Equipment Select Japanese label runtime update.
+### Phase 10-JP-3 Equipment Select Japanese label runtime update (runtime/ui)
+
+Implemented scope:
+
+- Converted Equipment Select title/row labels/instructions to Japanese.
+- Equipment/fighter display text now uses centralized Japanese helpers.
+- Pick `準備中` description appears in Equipment Select.
+- No gameplay/balance/schema changes.
+
+**Next recommended task:** Phase 10-JP-4: Battle HUD Japanese equipment labels.

@@ -2874,25 +2874,25 @@ class EquipmentSelectScene extends Phaser.Scene {
   }
 
   create() {
-    const p1Label = this.player1FighterId ? getFighterDefinition(this.player1FighterId).displayName : 'Not selected';
-    const p2Label = this.player2FighterId ? getFighterDefinition(this.player2FighterId).displayName : 'Not selected';
+    const p1Label = this.player1FighterId ? getFighterDisplayNameJa(this.player1FighterId) : '未選択';
+    const p2Label = this.player2FighterId ? getFighterDisplayNameJa(this.player2FighterId) : '未選択';
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 300, 720, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
 
-    this.add.text(400, 96, 'Equipment Select', {
+    this.add.text(400, 96, '装備選択', {
       color: '#ffffff',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '44px',
     }).setOrigin(0.5);
 
-    this.add.text(400, 156, `P1 Fighter: ${p1Label}`, {
+    this.add.text(400, 156, `P1キャラ: ${p1Label}`, {
       color: '#f8fafc',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '24px',
     }).setOrigin(0.5);
 
-    this.add.text(400, 190, `P2 Fighter: ${p2Label} (${this.player2Mode === 'cpu' ? 'CPU' : 'Human'})`, {
+    this.add.text(400, 190, `P2キャラ: ${p2Label} (${this.player2Mode === 'cpu' ? 'CPU' : 'Human'})`, {
       color: '#e2e8f0',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '22px',
@@ -2913,14 +2913,14 @@ class EquipmentSelectScene extends Phaser.Scene {
       align: 'center',
     }).setOrigin(0.5);
 
-    this.statusText = this.add.text(400, 394, 'Equipment handoff is coming next.', {
+    this.statusText = this.add.text(400, 394, '装備を選んで決定', {
       color: '#94a3b8',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '18px',
       align: 'center',
     }).setOrigin(0.5);
 
-    this.add.text(400, 500, 'Up/Down: Row   Left/Right: Equipment   Enter/Space: Continue   Esc: Back', {
+    this.add.text(400, 500, '↑/↓: P1/P2切替   ←/→: 装備変更   Enter/Space: 決定   Esc: 戻る', {
       color: '#facc15',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '18px',
@@ -3010,11 +3010,11 @@ class EquipmentSelectScene extends Phaser.Scene {
     const p2Prefix = this.selectedEquipmentRow === 1 ? '> ' : '  ';
 
     this.equipmentRowsText?.setText(
-      `${p1Prefix}P1 Equipment: ${p1Equipment.shortLabel}
-${p2Prefix}P2 Equipment: ${p2Equipment.shortLabel}`,
+      `${p1Prefix}P1装備: ${getEquipmentShortLabelJa(p1Equipment.id)}
+${p2Prefix}P2装備: ${getEquipmentShortLabelJa(p2Equipment.id)}`,
     );
     this.equipmentDescriptionText?.setText(
-      `${focusedEquipment.displayName}: ${focusedEquipment.description}`,
+      `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}`,
     );
   }
 }
