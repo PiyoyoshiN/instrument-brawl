@@ -1381,7 +1381,7 @@ This keeps work focused on UI clarity / playtest-readiness and still does **not*
 - 10-JP-3 Equipment Select Japanese label runtime update (**runtime/ui**) — complete
 - 10-JP-4 Battle HUD Japanese equipment labels (**runtime/ui**) — complete
 - 10-JP-5 ResultScene Japanese labels (**runtime/ui**) — complete
-- 10-JP-6 Character Select Japanese labels (**runtime/ui**)
+- 10-JP-6 Character Select Japanese labels (**runtime/ui**) — complete
 - 10-JP-7 Home / Mode Select / Options / Records low-risk Japanese labels (**runtime/ui**)
 - 10-JP-8 Pause / Quick Help Japanese labels (**runtime/ui**)
 - 10-JP-9 Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check (**docs+ui consistency**)
@@ -1428,4 +1428,13 @@ Implemented scope:
 - Result flow behavior remains unchanged.
 - No gameplay/balance/schema changes.
 
-**Next recommended task:** Phase 10-JP-6: Character Select Japanese labels.
+### Phase 10-JP-6 Character Select Japanese labels (runtime/ui)
+
+Implemented scope:
+
+- Character Select title/status/instructions are converted to Japanese.
+- Character Select fighter names/descriptions/stats use Japanese display text.
+- Character Select flow behavior remains unchanged.
+- No gameplay/balance/schema changes.
+
+**Next recommended task:** Phase 10-JP-7: Home / Mode Select / Options / Records low-risk Japanese labels.

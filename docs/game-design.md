@@ -1525,6 +1525,13 @@ Fighters:
 - Result title / rematch / home-return related visible text is Japanese.
 - No gameplay/balance/schema changes were introduced in this step.
 
+#### Phase 10-JP-6 implemented note
+
+- Character Select labels are updated to Japanese.
+- Character Select now uses centralized Japanese fighter label helpers.
+- Fighter stats/description text is Japanese.
+- No gameplay/balance/schema changes were introduced in this step.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 

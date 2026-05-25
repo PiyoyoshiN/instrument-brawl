@@ -277,12 +277,23 @@ const fighterDisplayNameJaById: Record<string, { displayNameJa: string; shortLab
   keyboard: { displayNameJa: 'キーボード', shortLabelJa: 'キーボード' },
 };
 
+const fighterDescriptionJaById: Record<string, string> = {
+  'electric-guitar': '標準的で扱いやすい。横に強い攻撃。',
+  bass: '重めでふっとばしが強い。縦に広い攻撃。',
+  'drum-sticks': '素早い短射程。高クリティカル。ケース装備時は高クリティカルなし。',
+  keyboard: '広い攻撃範囲で場を取りやすい。',
+};
+
 function getFighterDisplayNameJa(id: string): string {
   return fighterDisplayNameJaById[id]?.displayNameJa ?? getFighterDefinition(id).displayName;
 }
 
 function getFighterShortLabelJa(id: string): string {
   return fighterDisplayNameJaById[id]?.shortLabelJa ?? getFighterDefinition(id).displayName;
+}
+
+function getFighterDescriptionJa(id: string): string {
+  return fighterDescriptionJaById[id] ?? getFighterDefinition(id).role;
 }
 
 function getCriticalHitLabelJa(): string {
@@ -1236,7 +1247,7 @@ class CharacterSelectScene extends Phaser.Scene {
     this.add.rectangle(400, 300, 700, 460, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(400, 92, 'Character Select', {
+      .text(400, 92, 'キャラ選択', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '44px',
@@ -1244,7 +1255,7 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 128, `${fighterDefinitions.length} fighters available • same fighter OK`, {
+      .text(400, 128, `${fighterDefinitions.length}キャラから選択 • 同キャラOK`, {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -1270,14 +1281,14 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(230, 206, 'Selected', {
+      .text(230, 206, '選択中', {
         color: '#fed7aa',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
       })
       .setOrigin(0.5);
     this.add
-      .text(570, 206, 'Selected', {
+      .text(570, 206, '選択中', {
         color: '#bae6fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
@@ -1362,14 +1373,14 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 474, 'P1: A / D choose    P2: ← / → choose    P2 ↓ toggles Human / CPU', {
+      .text(400, 474, 'P1: A/Dで選択   P2: ←/→で選択   P2↓: 2P/CPU切替', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
       })
       .setOrigin(0.5);
     this.add
-      .text(400, 520, 'Enter / Space: start battle    Esc: return Home', {
+      .text(400, 520, 'Enter/Space: 装備選択へ   Esc: ホームへ戻る', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -1482,26 +1493,26 @@ class CharacterSelectScene extends Phaser.Scene {
     const player1Definition = fighterDefinitions[this.player1Index];
     const player2Definition = fighterDefinitions[this.player2Index];
 
-    this.player1NameText?.setText(`< ${player1Definition.displayName} >`);
-    this.player1IndexText?.setText(`Fighter ${this.player1Index + 1} / ${fighterDefinitions.length}`);
-    this.player1RoleText?.setText(player1Definition.role);
+    this.player1NameText?.setText(`< ${getFighterDisplayNameJa(player1Definition.id)} >`);
+    this.player1IndexText?.setText(`キャラ ${this.player1Index + 1} / ${fighterDefinitions.length}`);
+    this.player1RoleText?.setText(getFighterDescriptionJa(player1Definition.id));
     this.player1StatsText?.setText(this.getStatsText(player1Definition));
-    this.player2NameText?.setText(`< ${player2Definition.displayName} >`);
-    this.player2IndexText?.setText(`Fighter ${this.player2Index + 1} / ${fighterDefinitions.length}`);
-    this.player2ModeText?.setText(`P2 Mode: ${this.getPlayer2ModeLabel()} (↓)`);
-    this.player2RoleText?.setText(player2Definition.role);
+    this.player2NameText?.setText(`< ${getFighterDisplayNameJa(player2Definition.id)} >`);
+    this.player2IndexText?.setText(`キャラ ${this.player2Index + 1} / ${fighterDefinitions.length}`);
+    this.player2ModeText?.setText(`P2操作: ${this.getPlayer2ModeLabel()} (↓)`);
+    this.player2RoleText?.setText(getFighterDescriptionJa(player2Definition.id));
     this.player2StatsText?.setText(this.getStatsText(player2Definition));
   }
 
   private getPlayer2ModeLabel() {
-    return this.player2Mode === 'cpu' ? 'CPU' : 'Human';
+    return this.player2Mode === 'cpu' ? 'CPU' : '2P';
   }
 
   private getStatsText(definition: FighterDefinition) {
     return `HP: ${definition.stats.maxHp}
-Speed: ${definition.stats.moveSpeed}
-Damage: ${definition.stats.attackDamage}
-Knockback: ${definition.stats.knockbackSpeed}`;
+移動速度: ${definition.stats.moveSpeed}
+攻撃力: ${definition.stats.attackDamage}
+ふっとばし: ${definition.stats.knockbackSpeed}`;
   }
 }
 
