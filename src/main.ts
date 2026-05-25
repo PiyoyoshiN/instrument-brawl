@@ -774,7 +774,7 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 178, 'Local 2P or P1 vs CPU instrument battles', {
+      .text(400, 178, 'ふたり対戦 / CPU戦の楽器バトル', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -782,7 +782,7 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 220, '4 fighters • Local 2P default • Optional P2 CPU', {
+      .text(400, 220, '4キャラ • ふたり対戦対応 • CPU戦も可能', {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -793,8 +793,8 @@ class HomeScene extends Phaser.Scene {
       .text(
         400,
         292,
-        `P1 ${defaultPlayer1FighterDefinition.displayName}: A / D move, W / Space attack
-P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter attack`,
+        `P1 ${getFighterDisplayNameJa(defaultPlayer1FighterId)}: A/D移動、W/Space攻撃
+P2 ${getFighterDisplayNameJa(defaultPlayer2FighterId)}: ←/→移動、↑/Enter攻撃`,
         {
           align: 'center',
           color: '#e2e8f0',
@@ -806,7 +806,7 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       .setOrigin(0.5);
 
     this.add
-      .text(400, 392, '← / → / ↑ / ↓ : choose', {
+      .text(400, 392, '←/→/↑/↓: 選択', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -817,21 +817,21 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
     this.recordsCard = this.add.rectangle(400, 442, 180, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
     this.optionsCard = this.add.rectangle(580, 442, 180, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
     this.add
-      .text(220, 442, 'Start', {
+      .text(220, 442, 'はじめる', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
       })
       .setOrigin(0.5);
     this.add
-      .text(400, 442, 'Records', {
+      .text(400, 442, '記録', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
       })
       .setOrigin(0.5);
     this.add
-      .text(580, 442, 'Options', {
+      .text(580, 442, '設定', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
@@ -839,7 +839,7 @@ P2 ${defaultPlayer2FighterDefinition.displayName}: ← / → move, ↑ / Enter a
       .setOrigin(0.5);
 
     this.add
-      .text(400, 500, 'Enter / Space: confirm', {
+      .text(400, 500, 'Enter/Space: 決定', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -936,15 +936,15 @@ class OptionsScene extends Phaser.Scene {
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
     this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
 
-    this.add.text(400, 120, 'Options', { color: '#ffffff', fontFamily: 'system-ui, sans-serif', fontSize: '44px' }).setOrigin(0.5);
-    this.add.text(400, 176, 'Lightweight local preferences', { color: '#cbd5e1', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
+    this.add.text(400, 120, '設定', { color: '#ffffff', fontFamily: 'system-ui, sans-serif', fontSize: '44px' }).setOrigin(0.5);
+    this.add.text(400, 176, 'ローカル設定', { color: '#cbd5e1', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
 
     this.effectsText = this.add.text(400, 260, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
     this.screenShakeText = this.add.text(400, 320, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
     this.resetPreferencesText = this.add.text(400, 380, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
 
-    this.add.text(400, 438, '↑ / ↓: choose    ← / → or Enter / Space: toggle/confirm', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
-    this.add.text(400, 470, 'Esc: return Home', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
+    this.add.text(400, 438, '↑/↓: 選択   ←/→ または Enter/Space: 切替/決定', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
+    this.add.text(400, 470, 'Esc: ホームへ戻る', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
 
     this.updateTexts();
 
@@ -1008,9 +1008,9 @@ class OptionsScene extends Phaser.Scene {
     const prefixA = this.selectedIndex === 0 ? '> ' : '  ';
     const prefixB = this.selectedIndex === 1 ? '> ' : '  ';
     const prefixC = this.selectedIndex === 2 ? '> ' : '  ';
-    const resetText = this.isResetArmed ? 'Reset Preferences: Press again to confirm' : 'Reset Preferences';
-    this.effectsText?.setText(`${prefixA}Effects: ${this.effectsEnabled ? 'ON' : 'OFF'}`);
-    this.screenShakeText?.setText(`${prefixB}Screen Shake: ${this.screenShakeEnabled ? 'ON' : 'OFF'}`);
+    const resetText = this.isResetArmed ? '設定リセット: もう一度押すと実行' : '設定リセット';
+    this.effectsText?.setText(`${prefixA}演出: ${this.effectsEnabled ? 'ON' : 'OFF'}`);
+    this.screenShakeText?.setText(`${prefixB}画面揺れ: ${this.screenShakeEnabled ? 'ON' : 'OFF'}`);
     this.resetPreferencesText?.setText(`${prefixC}${resetText}`);
   }
 }
@@ -1042,7 +1042,7 @@ class ModeSelectScene extends Phaser.Scene {
     this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(400, 120, 'Mode Select', {
+      .text(400, 120, '対戦モード選択', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '44px',
@@ -1050,7 +1050,7 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 176, 'Choose your match mode', {
+      .text(400, 176, '対戦モードを選択', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -1061,7 +1061,7 @@ class ModeSelectScene extends Phaser.Scene {
     this.cpuButton = this.add.rectangle(400, 432, 440, 118, 0x0f172a).setStrokeStyle(3, 0x475569);
 
     this.add
-      .text(400, 266, 'VS HUMAN', {
+      .text(400, 266, 'ふたりで対戦', {
         align: 'center',
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
@@ -1070,7 +1070,7 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 312, 'Local 2P', {
+      .text(400, 312, 'ローカル2P', {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
@@ -1079,7 +1079,7 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 412, 'VS CPU', {
+      .text(400, 412, 'CPU戦', {
         align: 'center',
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
@@ -1097,7 +1097,7 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 528, '↑ / ↓ : choose mode', {
+      .text(400, 528, '↑/↓: モード選択', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '19px',
@@ -1105,7 +1105,7 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 558, 'Enter / Space: confirm    Esc: return Home', {
+      .text(400, 558, 'Enter/Space: 決定   Esc: ホームへ戻る', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -2733,7 +2733,7 @@ class RecordsScene extends Phaser.Scene {
     this.add.rectangle(400, 300, 700, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(400, 96, 'Records', {
+      .text(400, 96, '記録', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '44px',
@@ -2759,7 +2759,7 @@ class RecordsScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 476, '↑ / ↓: choose    Enter / Space: confirm', {
+      .text(400, 476, '↑/↓: 選択   Enter/Space: 決定', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -2767,7 +2767,7 @@ class RecordsScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 506, 'Esc: return Home', {
+      .text(400, 506, 'Esc: ホームへ戻る', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -2832,19 +2832,19 @@ class RecordsScene extends Phaser.Scene {
   }
 
   private updateTexts() {
-    const lastPlayedLabel = this.records.lastPlayedAt ?? 'Never';
-    this.recordsText?.setText(`Total Matches: ${this.records.totalMatches}
-P1 Wins: ${this.records.p1Wins}
-P2 Wins: ${this.records.p2Wins}
-Draws: ${this.records.draws}
-VS CPU Matches: ${this.records.cpuMatches}
-Local 2P Matches: ${this.records.local2pMatches}
-Last Played: ${lastPlayedLabel}`);
+    const lastPlayedLabel = this.records.lastPlayedAt ?? '未プレイ';
+    this.recordsText?.setText(`試合数: ${this.records.totalMatches}
+P1勝利: ${this.records.p1Wins}
+P2勝利: ${this.records.p2Wins}
+引き分け: ${this.records.draws}
+CPU戦: ${this.records.cpuMatches}
+ふたり対戦: ${this.records.local2pMatches}
+最終プレイ: ${lastPlayedLabel}`);
 
     const prefixHome = this.selectedIndex === 0 ? '> ' : '  ';
     const prefixReset = this.selectedIndex === 1 ? '> ' : '  ';
-    const resetLabel = this.isResetArmed ? 'Reset Records: Press again to confirm' : 'Reset Records';
-    this.resetRecordsText?.setText(`${prefixHome}Return Home\n${prefixReset}${resetLabel}`);
+    const resetLabel = this.isResetArmed ? '記録リセット: もう一度押すと実行' : '記録リセット';
+    this.resetRecordsText?.setText(`${prefixHome}ホームへ戻る\n${prefixReset}${resetLabel}`);
   }
 }
 

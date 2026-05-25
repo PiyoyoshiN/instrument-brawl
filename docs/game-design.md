@@ -1532,6 +1532,13 @@ Fighters:
 - Fighter stats/description text is Japanese.
 - No gameplay/balance/schema changes were introduced in this step.
 
+#### Phase 10-JP-7 implemented note
+
+- Home / Mode Select / Options / Records low-risk labels are updated to Japanese.
+- Internal IDs/storage/records values remain unchanged.
+- Menu behavior and reset-confirmation behavior remain unchanged.
+- No gameplay/balance/schema changes were introduced in this step.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 

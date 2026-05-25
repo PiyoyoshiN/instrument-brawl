@@ -1382,7 +1382,7 @@ This keeps work focused on UI clarity / playtest-readiness and still does **not*
 - 10-JP-4 Battle HUD Japanese equipment labels (**runtime/ui**) — complete
 - 10-JP-5 ResultScene Japanese labels (**runtime/ui**) — complete
 - 10-JP-6 Character Select Japanese labels (**runtime/ui**) — complete
-- 10-JP-7 Home / Mode Select / Options / Records low-risk Japanese labels (**runtime/ui**)
+- 10-JP-7 Home / Mode Select / Options / Records low-risk Japanese labels (**runtime/ui**) — complete
 - 10-JP-8 Pause / Quick Help Japanese labels (**runtime/ui**)
 - 10-JP-9 Pick準備中 / Amp非対応 / Case軽減 / Drum Sticksクリティカル explanation consistency check (**docs+ui consistency**)
 - 10-JP-10 Japanese UI playtest checklist (**docs-only**)
@@ -1437,4 +1437,13 @@ Implemented scope:
 - Character Select flow behavior remains unchanged.
 - No gameplay/balance/schema changes.
 
-**Next recommended task:** Phase 10-JP-7: Home / Mode Select / Options / Records low-risk Japanese labels.
+### Phase 10-JP-7 Home / Mode Select / Options / Records low-risk Japanese labels (runtime/ui)
+
+Implemented scope:
+
+- Home / Mode Select / Options / Records fixed labels are converted to Japanese.
+- Game title and compact English terms (`CPU`, `ON`, `OFF`) remain English where useful.
+- Menu behavior remains unchanged.
+- No gameplay/balance/schema changes.
+
+**Next recommended task:** Phase 10-JP-8: Pause / Quick Help Japanese labels.
