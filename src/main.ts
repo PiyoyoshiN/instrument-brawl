@@ -1623,7 +1623,7 @@ class BattleScene extends Phaser.Scene {
     );
 
     this.player1EquipmentHudText = this.add
-      .text(32, 78, `P1 Equip: ${this.player1Equipment.shortLabel}`, {
+      .text(32, 78, `P1装備: ${getEquipmentShortLabelJa(this.player1Equipment.id)}`, {
         color: '#86efac',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
@@ -1631,7 +1631,7 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0, 0);
 
     this.player2EquipmentHudText = this.add
-      .text(768, 78, `P2 Equip: ${this.player2Equipment.shortLabel}`, {
+      .text(768, 78, `P2装備: ${getEquipmentShortLabelJa(this.player2Equipment.id)}`, {
         color: '#93c5fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',

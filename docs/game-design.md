@@ -1511,6 +1511,13 @@ Fighters:
 - Pick is shown as no-effect / `準備中` in the Equipment Select description.
 - No gameplay/balance/schema changes were introduced in this step.
 
+#### Phase 10-JP-4 implemented note
+
+- Battle HUD equipment labels are updated to Japanese (`P1装備` / `P2装備`).
+- Battle HUD equipment short labels now use the centralized Japanese short-label helper.
+- Broader Battle text translation is still pending for follow-up tasks.
+- No gameplay/balance/schema changes were introduced in this step.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 
