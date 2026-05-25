@@ -1518,6 +1518,13 @@ Fighters:
 - Broader Battle text translation is still pending for follow-up tasks.
 - No gameplay/balance/schema changes were introduced in this step.
 
+#### Phase 10-JP-5 implemented note
+
+- ResultScene labels are updated to Japanese.
+- ResultScene now uses centralized Japanese fighter/equipment label helpers.
+- Result title / rematch / home-return related visible text is Japanese.
+- No gameplay/balance/schema changes were introduced in this step.
+
 
 ### Phase 9-3 Equipment concept (docs only)
 

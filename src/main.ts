@@ -2552,7 +2552,7 @@ class ResultScene extends Phaser.Scene {
     this.add.rectangle(400, 300, 620, 360, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(400, 132, 'Match Result', {
+      .text(400, 132, '試合結果', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',
@@ -2560,7 +2560,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 174, 'Match finished', {
+      .text(400, 174, '試合終了', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -2577,7 +2577,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 262, `${this.player1Definition.displayName} vs ${this.player2Definition.displayName} • P2 ${this.player2Mode === 'cpu' ? 'CPU' : 'Human'}`, {
+      .text(400, 262, `${getFighterDisplayNameJa(this.player1FighterId)} vs ${getFighterDisplayNameJa(this.player2FighterId)} • P2 ${this.player2Mode === 'cpu' ? 'CPU' : '2P'}`, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -2585,7 +2585,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 286, `P1 Equip: ${this.player1Equipment.shortLabel}   •   P2 Equip: ${this.player2Equipment.shortLabel}`, {
+      .text(400, 286, `P1装備: ${getEquipmentShortLabelJa(this.player1Equipment.id)}   •   P2装備: ${getEquipmentShortLabelJa(this.player2Equipment.id)}`, {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
@@ -2593,7 +2593,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 326, 'Press R to rematch', {
+      .text(400, 326, 'R: 再戦', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '26px',
@@ -2601,7 +2601,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 372, 'Press C to change fighters (keeps picks)', {
+      .text(400, 372, 'C: キャラ変更（装備は維持）', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',
@@ -2609,7 +2609,7 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 414, 'Press Enter or Space to return to Home', {
+      .text(400, 414, 'Enter/Space: ホームへ戻る', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -2669,13 +2669,13 @@ class ResultScene extends Phaser.Scene {
   private getDisplayTitle(result?: ResultSceneData['result']) {
     switch (result) {
       case 'p1':
-        return this.player1Definition.resultWinText;
+        return `P1 ${getFighterDisplayNameJa(this.player1FighterId)} 勝利`;
       case 'p2':
-        return this.player2Definition.resultWinText;
+        return `P2 ${getFighterDisplayNameJa(this.player2FighterId)} 勝利`;
       case 'draw':
-        return 'Draw';
+        return '引き分け';
       default:
-        return 'Match Over';
+        return '試合終了';
     }
   }
 

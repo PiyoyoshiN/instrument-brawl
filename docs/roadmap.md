@@ -1380,7 +1380,7 @@ This keeps work focused on UI clarity / playtest-readiness and still does **not*
 - 10-JP-2 Centralized Japanese display-label helpers/maps (**runtime/ui**) — complete
 - 10-JP-3 Equipment Select Japanese label runtime update (**runtime/ui**) — complete
 - 10-JP-4 Battle HUD Japanese equipment labels (**runtime/ui**) — complete
-- 10-JP-5 ResultScene Japanese labels (**runtime/ui**)
+- 10-JP-5 ResultScene Japanese labels (**runtime/ui**) — complete
 - 10-JP-6 Character Select Japanese labels (**runtime/ui**)
 - 10-JP-7 Home / Mode Select / Options / Records low-risk Japanese labels (**runtime/ui**)
 - 10-JP-8 Pause / Quick Help Japanese labels (**runtime/ui**)
@@ -1419,4 +1419,13 @@ Implemented scope:
 - Battle HUD equipment names now use centralized Japanese short-label helpers.
 - No gameplay/balance/schema changes.
 
-**Next recommended task:** Phase 10-JP-5: ResultScene Japanese labels.
+### Phase 10-JP-5 ResultScene Japanese labels (runtime/ui)
+
+Implemented scope:
+
+- ResultScene title/status/action labels are converted to Japanese.
+- ResultScene fighter/equipment display now uses centralized Japanese helpers.
+- Result flow behavior remains unchanged.
+- No gameplay/balance/schema changes.
+
+**Next recommended task:** Phase 10-JP-6: Character Select Japanese labels.
