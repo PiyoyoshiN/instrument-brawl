@@ -1347,9 +1347,12 @@ class CharacterSelectScene extends Phaser.Scene {
     const cardCenterY = cardTop + cardHeight / 2;
     const player1CardX = safeArea.left + cardWidth / 2;
     const player2CardX = safeArea.right - cardWidth / 2;
-    const roleWrapWidth = Math.max(250, cardWidth - 72);
-    const statsTextOffsetX = cardWidth / 2 - 48;
-    const statsY = Math.min(cardTop + 228, cardTop + cardHeight - 84);
+    const cardTextWidth = Math.max(264, cardWidth - 56);
+    const nameWrapWidth = Math.max(270, cardWidth - 64);
+    const roleWrapWidth = cardTextWidth;
+    const roleY = cardTop + 174;
+    const statsY = Math.min(cardTop + 238, cardTop + cardHeight - 62);
+    const statsPanelWidth = cardTextWidth;
 
     this.add.rectangle(centerX, cardCenterY, safeArea.width, cardHeight + 28, 0x1e293b, 0.72).setStrokeStyle(4, 0x475569);
     this.add.rectangle(centerX, footerControlsY + 22, safeArea.width, 74, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
@@ -1372,6 +1375,8 @@ class CharacterSelectScene extends Phaser.Scene {
 
     this.add.rectangle(player1CardX, cardCenterY, cardWidth, cardHeight, 0x0f172a).setStrokeStyle(4, 0xf97316);
     this.add.rectangle(player2CardX, cardCenterY, cardWidth, cardHeight, 0x0f172a).setStrokeStyle(4, 0x38bdf8);
+    this.add.rectangle(player1CardX, statsY + 22, statsPanelWidth, 58, 0x1e293b, 0.58).setStrokeStyle(2, 0x334155);
+    this.add.rectangle(player2CardX, statsY + 22, statsPanelWidth, 58, 0x1e293b, 0.58).setStrokeStyle(2, 0x334155);
 
     this.add
       .text(player1CardX, cardTop + 28, 'P1', {
@@ -1409,6 +1414,7 @@ class CharacterSelectScene extends Phaser.Scene {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '26px',
+        wordWrap: { width: nameWrapWidth, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
     this.player1IndexText = this.add
@@ -1420,29 +1426,32 @@ class CharacterSelectScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     this.player1RoleText = this.add
-      .text(player1CardX, cardTop + 184, '', {
+      .text(player1CardX, roleY, '', {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '15px',
-        wordWrap: { width: roleWrapWidth },
+        lineSpacing: 4,
+        wordWrap: { width: roleWrapWidth, useAdvancedWrap: true },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0);
     this.player1StatsText = this.add
-      .text(player1CardX - statsTextOffsetX, statsY, '', {
-        align: 'left',
+      .text(player1CardX, statsY, '', {
+        align: 'center',
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
-        lineSpacing: 4,
+        lineSpacing: 6,
+        wordWrap: { width: cardTextWidth, useAdvancedWrap: true },
       })
-      .setOrigin(0, 0);
+      .setOrigin(0.5, 0);
     this.player2NameText = this.add
       .text(player2CardX, cardTop + 104, '', {
         align: 'center',
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '26px',
+        wordWrap: { width: nameWrapWidth, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
     this.player2IndexText = this.add
@@ -1462,23 +1471,25 @@ class CharacterSelectScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     this.player2RoleText = this.add
-      .text(player2CardX, cardTop + 184, '', {
+      .text(player2CardX, roleY, '', {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '15px',
-        wordWrap: { width: roleWrapWidth },
+        lineSpacing: 4,
+        wordWrap: { width: roleWrapWidth, useAdvancedWrap: true },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0);
     this.player2StatsText = this.add
-      .text(player2CardX - statsTextOffsetX, statsY, '', {
-        align: 'left',
+      .text(player2CardX, statsY, '', {
+        align: 'center',
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
-        lineSpacing: 4,
+        lineSpacing: 6,
+        wordWrap: { width: cardTextWidth, useAdvancedWrap: true },
       })
-      .setOrigin(0, 0);
+      .setOrigin(0.5, 0);
 
     this.add
       .text(centerX, footerControlsY, 'P1: A/Dで選択   P2: ←/→で選択   P2↓: 2P/CPU切替', {
@@ -1617,10 +1628,8 @@ class CharacterSelectScene extends Phaser.Scene {
   }
 
   private getStatsText(definition: FighterDefinition) {
-    return `HP: ${definition.stats.maxHp}
-移動速度: ${definition.stats.moveSpeed}
-攻撃力: ${definition.stats.attackDamage}
-ふっとばし: ${definition.stats.knockbackSpeed}`;
+    return `HP ${definition.stats.maxHp} / 攻撃力 ${definition.stats.attackDamage}
+速度 ${definition.stats.moveSpeed} / ふっとばし ${definition.stats.knockbackSpeed}`;
   }
 }
 
