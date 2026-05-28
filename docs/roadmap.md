@@ -1481,4 +1481,13 @@ Implemented scope:
 - Confirmed no runtime/gameplay/balance/schema changes.
 - Confirmed readiness for manual playtest using the Phase 10-JP checklist.
 
-**Next recommended task:** Phase 11-1: Manual Japanese UI playtest + issue triage.
+**Next recommended task:** Phase 11-1: Create Phase 11 scope/checklist documentation before runtime UI layout PRs.
+
+
+## Phase 11: UI Layout Rework (in progress)
+
+- Phase 10 / Phase 10-JP is complete.
+- Phase 11 starts with docs-first scope alignment in `docs/phase-11-ui-layout-rework.md`.
+- Primary focus is Japanese UI layout overflow/overlap/cramped hierarchy fixes, starting with RecordsScene, CharacterSelectScene, and BattleScene HUD.
+- Phase 11-4A adds a small viewport-aware layout foundation before CharacterSelectScene card/layout rework.
+- Phase 11 is not a gameplay/balance phase.
