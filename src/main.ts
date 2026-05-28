@@ -1331,22 +1331,32 @@ class CharacterSelectScene extends Phaser.Scene {
     this.player1Index = this.getFighterIndex(this.player1FighterId, defaultPlayer1FighterId);
     this.player2Index = this.getFighterIndex(this.player2FighterId, defaultPlayer2FighterId);
 
-    addViewportBackground(this);
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const safeMargin = 40;
+    const safeTop = safeMargin;
+    const safeBottom = layoutHeight - safeMargin;
+    const safeWidth = layoutWidth - safeMargin * 2;
+    const centerX = layoutWidth / 2;
 
-    const safeArea = getSafeArea(this);
-    const centerX = getLayoutCenterX(this);
-    const titleY = safeArea.top + 52;
+    this.cameras.main.setBackgroundColor(0x111827);
+    this.cameras.main.setScroll(0, 0);
+    this.add.rectangle(centerX, layoutHeight / 2, layoutWidth, layoutHeight, 0x111827);
+
+    const titleY = safeTop + 52;
     const subtitleY = titleY + 38;
-    const footerControlsY = safeArea.bottom - 64;
-    const footerActionY = safeArea.bottom - 28;
-    const cardGap = Phaser.Math.Clamp(safeArea.width * 0.045, 36, 72);
-    const cardWidth = Math.max(320, (safeArea.width - cardGap) / 2);
+    const footerControlsY = safeBottom - 64;
+    const footerActionY = safeBottom - 28;
+    const cardGap = Phaser.Math.Clamp(safeWidth * 0.045, 36, 72);
+    const availableCardWidth = (safeWidth - cardGap) / 2;
+    const cardWidth = Math.min(640, Math.max(320, availableCardWidth));
+    const totalCardsWidth = cardWidth * 2 + cardGap;
     const cardTop = subtitleY + 38;
     const cardBottom = footerControlsY - 30;
-    const cardHeight = Math.max(286, cardBottom - cardTop);
+    const cardHeight = Phaser.Math.Clamp(cardBottom - cardTop, 286, 440);
     const cardCenterY = cardTop + cardHeight / 2;
-    const player1CardX = safeArea.left + cardWidth / 2;
-    const player2CardX = safeArea.right - cardWidth / 2;
+    const player1CardX = centerX - totalCardsWidth / 2 + cardWidth / 2;
+    const player2CardX = centerX + totalCardsWidth / 2 - cardWidth / 2;
     const cardTextWidth = Math.max(264, cardWidth - 56);
     const nameWrapWidth = Math.max(270, cardWidth - 64);
     const roleWrapWidth = cardTextWidth;
@@ -1354,8 +1364,8 @@ class CharacterSelectScene extends Phaser.Scene {
     const statsY = Math.min(cardTop + 238, cardTop + cardHeight - 62);
     const statsPanelWidth = cardTextWidth;
 
-    this.add.rectangle(centerX, cardCenterY, safeArea.width, cardHeight + 28, 0x1e293b, 0.72).setStrokeStyle(4, 0x475569);
-    this.add.rectangle(centerX, footerControlsY + 22, safeArea.width, 74, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
+    this.add.rectangle(centerX, cardCenterY, safeWidth, cardHeight + 28, 0x1e293b, 0.72).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(centerX, footerControlsY + 22, safeWidth, 74, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
 
     this.add
       .text(centerX, titleY, 'キャラ選択', {
