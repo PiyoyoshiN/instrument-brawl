@@ -2,6 +2,94 @@ import Phaser from 'phaser';
 
 const gameWidth = 800;
 const gameHeight = 600;
+const layoutSafeMargin = 40;
+
+type LayoutSafeArea = {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  width: number;
+  height: number;
+  centerX: number;
+  centerY: number;
+};
+
+function getInitialLayoutWidth() {
+  return Math.max(gameWidth, window.innerWidth);
+}
+
+function getInitialLayoutHeight() {
+  return Math.max(gameHeight, window.innerHeight);
+}
+
+function getLayoutWidth(scene: Phaser.Scene) {
+  return Math.max(gameWidth, scene.scale.width);
+}
+
+function getLayoutHeight(scene: Phaser.Scene) {
+  return Math.max(gameHeight, scene.scale.height);
+}
+
+function getLayoutCenterX(scene: Phaser.Scene) {
+  return scene.cameras.main.worldView.centerX;
+}
+
+function getLayoutCenterY(scene: Phaser.Scene) {
+  return scene.cameras.main.worldView.centerY;
+}
+
+function getSafeArea(scene: Phaser.Scene, margin = layoutSafeMargin): LayoutSafeArea {
+  const width = getLayoutWidth(scene);
+  const height = getLayoutHeight(scene);
+  const centerX = getLayoutCenterX(scene);
+  const centerY = getLayoutCenterY(scene);
+  const left = centerX - width / 2 + margin;
+  const right = centerX + width / 2 - margin;
+  const top = centerY - height / 2 + margin;
+  const bottom = centerY + height / 2 - margin;
+
+  return {
+    left,
+    right,
+    top,
+    bottom,
+    width: right - left,
+    height: bottom - top,
+    centerX,
+    centerY,
+  };
+}
+
+function applyViewportLayout(scene: Phaser.Scene, backgroundColor = 0x111827) {
+  const layoutWidth = getLayoutWidth(scene);
+  const layoutHeight = getLayoutHeight(scene);
+  const scrollX = (gameWidth - layoutWidth) / 2;
+  const scrollY = (gameHeight - layoutHeight) / 2;
+
+  scene.cameras.main.setBackgroundColor(backgroundColor);
+  scene.cameras.main.setScroll(scrollX, scrollY);
+}
+
+function addViewportBackground(scene: Phaser.Scene, color = 0x111827) {
+  applyViewportLayout(scene, color);
+
+  const safeArea = getSafeArea(scene, 0);
+  const background = scene.add.rectangle(safeArea.centerX, safeArea.centerY, getLayoutWidth(scene), getLayoutHeight(scene), color);
+  const resizeHandler = () => {
+    applyViewportLayout(scene, color);
+    const nextSafeArea = getSafeArea(scene, 0);
+    background.setPosition(nextSafeArea.centerX, nextSafeArea.centerY);
+    background.setSize(getLayoutWidth(scene), getLayoutHeight(scene));
+  };
+
+  scene.scale.on('resize', resizeHandler);
+  scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+    scene.scale.off('resize', resizeHandler);
+  });
+
+  return background;
+}
 const defaultFighterBodyWidth = 72;
 const defaultFighterBodyHeight = 120;
 const player1StartX = 240;
@@ -762,7 +850,7 @@ class HomeScene extends Phaser.Scene {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
@@ -933,7 +1021,7 @@ class OptionsScene extends Phaser.Scene {
     this.effectsEnabled = stored.preferences.effectsEnabled;
     this.screenShakeEnabled = stored.preferences.screenShakeEnabled;
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add.text(400, 120, '設定', { color: '#ffffff', fontFamily: 'system-ui, sans-serif', fontSize: '44px' }).setOrigin(0.5);
@@ -1038,7 +1126,7 @@ class ModeSelectScene extends Phaser.Scene {
     this.transitionStarted = false;
     this.mode = loadStoredSettings().lastSelected.player2Mode;
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
@@ -1243,7 +1331,7 @@ class CharacterSelectScene extends Phaser.Scene {
     this.player1Index = this.getFighterIndex(this.player1FighterId, defaultPlayer1FighterId);
     this.player2Index = this.getFighterIndex(this.player2FighterId, defaultPlayer2FighterId);
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 700, 460, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
@@ -1603,7 +1691,7 @@ class BattleScene extends Phaser.Scene {
     this.clearHitSparks();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanupBattleScene, this);
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 286, 660, 4, 0x334155, 0.7);
     this.add.rectangle(400, 392, 660, 4, 0x334155, 0.45);
@@ -2559,7 +2647,7 @@ class ResultScene extends Phaser.Scene {
     this.transitionStarted = false;
     this.recordResultOnce();
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 620, 360, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
@@ -2708,6 +2796,7 @@ class RecordsScene extends Phaser.Scene {
   private selectedIndex = 0;
   private records = getDefaultStoredRecords();
   private recordsText?: Phaser.GameObjects.Text;
+  private recordsLastPlayedText?: Phaser.GameObjects.Text;
   private resetRecordsText?: Phaser.GameObjects.Text;
   private upKey?: Phaser.Input.Keyboard.Key;
   private downKey?: Phaser.Input.Keyboard.Key;
@@ -2729,48 +2818,77 @@ class RecordsScene extends Phaser.Scene {
     this.isResetArmed = false;
     this.records = loadStoredRecords();
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
-    this.add.rectangle(400, 300, 700, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
+    addViewportBackground(this);
+    this.add.rectangle(400, 300, 700, 520, 0x1e293b).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(400, 244, 640, 280, 0x0f172a).setStrokeStyle(2, 0x334155);
+    this.add.rectangle(400, 474, 640, 170, 0x0f172a).setStrokeStyle(2, 0x334155);
 
     this.add
-      .text(400, 96, '記録', {
+      .text(400, 72, '記録', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '44px',
       })
       .setOrigin(0.5);
 
-    this.recordsText = this.add
-      .text(400, 168, '', {
-        align: 'left',
-        color: '#e2e8f0',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '28px',
-        lineSpacing: 12,
-      })
-      .setOrigin(0.5, 0);
-
-    this.resetRecordsText = this.add
-      .text(400, 428, '', {
-        color: '#f8fafc',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '30px',
-      })
-      .setOrigin(0.5);
-
     this.add
-      .text(400, 476, '↑/↓: 選択   Enter/Space: 決定', {
-        color: '#e2e8f0',
+      .text(100, 98, 'サマリー', {
+        color: '#93c5fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
-      .setOrigin(0.5);
+      .setOrigin(0, 0);
+
+    this.recordsText = this.add
+      .text(100, 122, '', {
+        align: 'left',
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '30px',
+        lineSpacing: 11,
+      })
+      .setOrigin(0, 0);
 
     this.add
-      .text(400, 506, 'Esc: ホームへ戻る', {
-        color: '#facc15',
+      .text(100, 340, '最終プレイ', {
+        color: '#93c5fd',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
+        fontSize: '18px',
+      })
+      .setOrigin(0, 0);
+
+    this.recordsLastPlayedText = this.add
+      .text(100, 364, '', {
+        align: 'left',
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+        wordWrap: { width: 600, useAdvancedWrap: true },
+      })
+      .setOrigin(0, 0);
+
+    this.add
+      .text(100, 404, '操作', {
+        color: '#93c5fd',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0, 0);
+
+    this.resetRecordsText = this.add
+      .text(100, 428, '', {
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '28px',
+        lineSpacing: 8,
+      })
+      .setOrigin(0, 0);
+
+    this.add
+      .text(400, 542, '↑/↓: 選択   Enter/Space: 決定   Esc: ホームへ戻る', {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
       })
       .setOrigin(0.5);
 
@@ -2832,18 +2950,20 @@ class RecordsScene extends Phaser.Scene {
   }
 
   private updateTexts() {
-    const lastPlayedLabel = this.records.lastPlayedAt ?? '未プレイ';
+    const lastPlayedRaw = this.records.lastPlayedAt ?? '未プレイ';
+    const lastPlayedSafe = lastPlayedRaw.length > 56 ? `${lastPlayedRaw.slice(0, 56)}…` : lastPlayedRaw;
     this.recordsText?.setText(`試合数: ${this.records.totalMatches}
 P1勝利: ${this.records.p1Wins}
 P2勝利: ${this.records.p2Wins}
 引き分け: ${this.records.draws}
 CPU戦: ${this.records.cpuMatches}
-ふたり対戦: ${this.records.local2pMatches}
-最終プレイ: ${lastPlayedLabel}`);
+ふたり対戦: ${this.records.local2pMatches}`);
+
+    this.recordsLastPlayedText?.setText(lastPlayedSafe);
 
     const prefixHome = this.selectedIndex === 0 ? '> ' : '  ';
-    const prefixReset = this.selectedIndex === 1 ? '> ' : '  ';
-    const resetLabel = this.isResetArmed ? '記録リセット: もう一度押すと実行' : '記録リセット';
+    const prefixReset = this.selectedIndex === 1 ? (this.isResetArmed ? '▶ ' : '> ') : '  ';
+    const resetLabel = this.isResetArmed ? '記録リセット（確認中: もう一度押すと実行）' : '記録リセット';
     this.resetRecordsText?.setText(`${prefixHome}ホームへ戻る\n${prefixReset}${resetLabel}`);
   }
 }
@@ -2888,7 +3008,7 @@ class EquipmentSelectScene extends Phaser.Scene {
     const p1Label = this.player1FighterId ? getFighterDisplayNameJa(this.player1FighterId) : '未選択';
     const p2Label = this.player2FighterId ? getFighterDisplayNameJa(this.player2FighterId) : '未選択';
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 720, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add.text(400, 96, '装備選択', {
@@ -3038,8 +3158,15 @@ ${p2Prefix}P2装備: ${getEquipmentShortLabelJa(p2Equipment.id)}`,
 new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
-  width: gameWidth,
-  height: gameHeight,
+  width: getInitialLayoutWidth(),
+  height: getInitialLayoutHeight(),
   backgroundColor: '#111827',
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    min: {
+      width: gameWidth,
+      height: gameHeight,
+    },
+  },
   scene: [HomeScene, OptionsScene, RecordsScene, ModeSelectScene, CharacterSelectScene, EquipmentSelectScene, BattleScene, ResultScene],
 });
