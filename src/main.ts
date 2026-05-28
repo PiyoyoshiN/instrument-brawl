@@ -2743,18 +2743,34 @@ class RecordsScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
+    this.add
+      .text(100, 98, 'サマリー', {
+        color: '#93c5fd',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0, 0);
+
     this.recordsText = this.add
       .text(100, 122, '', {
         align: 'left',
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '31px',
-        lineSpacing: 10,
+        fontSize: '30px',
+        lineSpacing: 11,
+      })
+      .setOrigin(0, 0);
+
+    this.add
+      .text(100, 340, '最終プレイ', {
+        color: '#93c5fd',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
       })
       .setOrigin(0, 0);
 
     this.recordsLastPlayedText = this.add
-      .text(100, 366, '', {
+      .text(100, 364, '', {
         align: 'left',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
@@ -2763,11 +2779,19 @@ class RecordsScene extends Phaser.Scene {
       })
       .setOrigin(0, 0);
 
+    this.add
+      .text(100, 404, '操作', {
+        color: '#93c5fd',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0, 0);
+
     this.resetRecordsText = this.add
-      .text(100, 430, '', {
+      .text(100, 428, '', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '30px',
+        fontSize: '28px',
         lineSpacing: 8,
       })
       .setOrigin(0, 0);
@@ -2847,11 +2871,11 @@ P2勝利: ${this.records.p2Wins}
 CPU戦: ${this.records.cpuMatches}
 ふたり対戦: ${this.records.local2pMatches}`);
 
-    this.recordsLastPlayedText?.setText(`最終プレイ: ${lastPlayedSafe}`);
+    this.recordsLastPlayedText?.setText(lastPlayedSafe);
 
     const prefixHome = this.selectedIndex === 0 ? '> ' : '  ';
-    const prefixReset = this.selectedIndex === 1 ? '> ' : '  ';
-    const resetLabel = this.isResetArmed ? '記録リセット: もう一度押すと実行' : '記録リセット';
+    const prefixReset = this.selectedIndex === 1 ? (this.isResetArmed ? '▶ ' : '> ') : '  ';
+    const resetLabel = this.isResetArmed ? '記録リセット（確認中: もう一度押すと実行）' : '記録リセット';
     this.resetRecordsText?.setText(`${prefixHome}ホームへ戻る\n${prefixReset}${resetLabel}`);
   }
 }
