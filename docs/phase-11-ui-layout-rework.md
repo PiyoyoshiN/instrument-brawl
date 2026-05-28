@@ -47,19 +47,20 @@ These issues should be handled in small, focused PRs with manual play checks.
 1. **11-1** Phase 11 scope docs / known UI issues and non-goals
 2. **11-2** `RecordsScene` overlap fix
 3. **11-3** `RecordsScene` hierarchy cleanup
-4. **11-4** Character Select card width/layout rework
-5. **11-5** Character Select text wrap/status overflow fix
-6. **11-6** Character Select information hierarchy cleanup
-7. **11-7** Battle HUD layout rework
-8. **11-8** Battle instruction reduction
-9. **11-9** Pause / Quick Help Japanese layout fix
-10. **11-10** Equipment Select layout review
-11. **11-11** ResultScene layout review
-12. **11-12** OptionsScene layout review
-13. **11-13** Home / Mode Select final layout pass
-14. **11-14** Shared UI spacing constants review (only if useful)
-15. **11-15** Japanese UI manual playtest checklist update
-16. **11-16** Phase 11 checkpoint docs
+4. **11-4A** Viewport-aware layout foundation before Character Select layout work
+5. **11-4** Character Select card width/layout rework
+6. **11-5** Character Select text wrap/status overflow fix
+7. **11-6** Character Select information hierarchy cleanup
+8. **11-7** Battle HUD layout rework
+9. **11-8** Battle instruction reduction
+10. **11-9** Pause / Quick Help Japanese layout fix
+11. **11-10** Equipment Select layout review
+12. **11-11** ResultScene layout review
+13. **11-12** OptionsScene layout review
+14. **11-13** Home / Mode Select final layout pass
+15. **11-14** Shared UI spacing constants review (only if useful)
+16. **11-15** Japanese UI manual playtest checklist update
+17. **11-16** Phase 11 checkpoint docs
 
 ## Strict non-goals
 
