@@ -2708,6 +2708,7 @@ class RecordsScene extends Phaser.Scene {
   private selectedIndex = 0;
   private records = getDefaultStoredRecords();
   private recordsText?: Phaser.GameObjects.Text;
+  private recordsLastPlayedText?: Phaser.GameObjects.Text;
   private resetRecordsText?: Phaser.GameObjects.Text;
   private upKey?: Phaser.Input.Keyboard.Key;
   private downKey?: Phaser.Input.Keyboard.Key;
@@ -2730,10 +2731,12 @@ class RecordsScene extends Phaser.Scene {
     this.records = loadStoredRecords();
 
     this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
-    this.add.rectangle(400, 300, 700, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(400, 300, 700, 520, 0x1e293b).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(400, 244, 640, 280, 0x0f172a).setStrokeStyle(2, 0x334155);
+    this.add.rectangle(400, 474, 640, 170, 0x0f172a).setStrokeStyle(2, 0x334155);
 
     this.add
-      .text(400, 96, '記録', {
+      .text(400, 72, '記録', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '44px',
@@ -2741,36 +2744,39 @@ class RecordsScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.recordsText = this.add
-      .text(400, 168, '', {
+      .text(100, 122, '', {
         align: 'left',
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '28px',
-        lineSpacing: 12,
+        fontSize: '31px',
+        lineSpacing: 10,
       })
-      .setOrigin(0.5, 0);
+      .setOrigin(0, 0);
+
+    this.recordsLastPlayedText = this.add
+      .text(100, 366, '', {
+        align: 'left',
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+        wordWrap: { width: 600, useAdvancedWrap: true },
+      })
+      .setOrigin(0, 0);
 
     this.resetRecordsText = this.add
-      .text(400, 428, '', {
+      .text(100, 430, '', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
+        lineSpacing: 8,
       })
-      .setOrigin(0.5);
+      .setOrigin(0, 0);
 
     this.add
-      .text(400, 476, '↑/↓: 選択   Enter/Space: 決定', {
+      .text(400, 542, '↑/↓: 選択   Enter/Space: 決定   Esc: ホームへ戻る', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(400, 506, 'Esc: ホームへ戻る', {
-        color: '#facc15',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
       })
       .setOrigin(0.5);
 
@@ -2832,14 +2838,16 @@ class RecordsScene extends Phaser.Scene {
   }
 
   private updateTexts() {
-    const lastPlayedLabel = this.records.lastPlayedAt ?? '未プレイ';
+    const lastPlayedRaw = this.records.lastPlayedAt ?? '未プレイ';
+    const lastPlayedSafe = lastPlayedRaw.length > 56 ? `${lastPlayedRaw.slice(0, 56)}…` : lastPlayedRaw;
     this.recordsText?.setText(`試合数: ${this.records.totalMatches}
 P1勝利: ${this.records.p1Wins}
 P2勝利: ${this.records.p2Wins}
 引き分け: ${this.records.draws}
 CPU戦: ${this.records.cpuMatches}
-ふたり対戦: ${this.records.local2pMatches}
-最終プレイ: ${lastPlayedLabel}`);
+ふたり対戦: ${this.records.local2pMatches}`);
+
+    this.recordsLastPlayedText?.setText(`最終プレイ: ${lastPlayedSafe}`);
 
     const prefixHome = this.selectedIndex === 0 ? '> ' : '  ';
     const prefixReset = this.selectedIndex === 1 ? '> ' : '  ';
