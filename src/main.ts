@@ -1360,8 +1360,9 @@ class CharacterSelectScene extends Phaser.Scene {
     const cardTextWidth = Math.max(264, cardWidth - 56);
     const nameWrapWidth = Math.max(270, cardWidth - 64);
     const roleWrapWidth = cardTextWidth;
-    const roleY = cardTop + 174;
-    const statsY = Math.min(cardTop + 238, cardTop + cardHeight - 62);
+    const roleLabelY = cardTop + 176;
+    const roleY = roleLabelY + 22;
+    const statsY = Math.min(cardTop + 246, cardTop + cardHeight - 58);
     const statsPanelWidth = cardTextWidth;
 
     this.add.rectangle(centerX, cardCenterY, safeWidth, cardHeight + 28, 0x1e293b, 0.72).setStrokeStyle(4, 0x475569);
@@ -1385,6 +1386,8 @@ class CharacterSelectScene extends Phaser.Scene {
 
     this.add.rectangle(player1CardX, cardCenterY, cardWidth, cardHeight, 0x0f172a).setStrokeStyle(4, 0xf97316);
     this.add.rectangle(player2CardX, cardCenterY, cardWidth, cardHeight, 0x0f172a).setStrokeStyle(4, 0x38bdf8);
+    this.add.rectangle(player1CardX, cardTop + 104, cardTextWidth, 48, 0x1e293b, 0.54);
+    this.add.rectangle(player2CardX, cardTop + 104, cardTextWidth, 48, 0x1e293b, 0.54);
     this.add.rectangle(player1CardX, statsY + 22, statsPanelWidth, 58, 0x1e293b, 0.58).setStrokeStyle(2, 0x334155);
     this.add.rectangle(player2CardX, statsY + 22, statsPanelWidth, 58, 0x1e293b, 0.58).setStrokeStyle(2, 0x334155);
 
@@ -1418,19 +1421,36 @@ class CharacterSelectScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
+    this.add
+      .text(player1CardX, roleLabelY, '特徴', {
+        align: 'center',
+        color: '#fdba74',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '14px',
+      })
+      .setOrigin(0.5);
+    this.add
+      .text(player2CardX, roleLabelY, '特徴', {
+        align: 'center',
+        color: '#7dd3fc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '14px',
+      })
+      .setOrigin(0.5);
+
     this.player1NameText = this.add
       .text(player1CardX, cardTop + 104, '', {
         align: 'center',
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '26px',
+        fontSize: '28px',
         wordWrap: { width: nameWrapWidth, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
     this.player1IndexText = this.add
       .text(player1CardX, cardTop + 136, '', {
         align: 'center',
-        color: '#fed7aa',
+        color: '#fcd9bd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
       })
@@ -1460,14 +1480,14 @@ class CharacterSelectScene extends Phaser.Scene {
         align: 'center',
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '26px',
+        fontSize: '28px',
         wordWrap: { width: nameWrapWidth, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
     this.player2IndexText = this.add
       .text(player2CardX, cardTop + 136, '', {
         align: 'center',
-        color: '#bae6fd',
+        color: '#d4f1ff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
       })
