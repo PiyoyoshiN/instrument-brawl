@@ -1751,6 +1751,22 @@ class BattleScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanupBattleScene, this);
 
     addViewportBackground(this);
+
+    const hudSafeArea = getSafeArea(this);
+    const hudPanelWidth = Math.min(360, Math.max(260, (hudSafeArea.width - 260) / 2));
+    const hudPanelHeight = 112;
+    const hudPanelY = hudSafeArea.top + hudPanelHeight / 2;
+    const p1HudLeft = hudSafeArea.left;
+    const p2HudRight = hudSafeArea.right;
+    const p2HudLeft = p2HudRight - hudPanelWidth;
+    const p1HudX = p1HudLeft + 16;
+    const p2HudX = p2HudRight - 16;
+    const hudTextY = hudSafeArea.top + 18;
+    const equipmentY = hudSafeArea.top + 76;
+    const instructionText = this.player2Mode === 'cpu'
+      ? 'P1: A/D移動・W/Space攻撃   P2: CPU   P: 操作確認'
+      : 'P1: A/D移動・W/Space攻撃   P2: ←/→移動・↑/Enter攻撃   P: 操作確認';
+
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 286, 660, 4, 0x334155, 0.7);
     this.add.rectangle(400, 392, 660, 4, 0x334155, 0.45);
@@ -1761,19 +1777,28 @@ class BattleScene extends Phaser.Scene {
     this.add.rectangle(player1StartX, 516, 132, 10, 0x0f172a, 0.42);
     this.add.rectangle(player2StartX, 516, 132, 10, 0x0f172a, 0.42);
 
+    this.add.rectangle(p1HudLeft + hudPanelWidth / 2, hudPanelY, hudPanelWidth, hudPanelHeight, 0x0f172a, 0.82).setStrokeStyle(3, 0xf97316);
+    this.add.rectangle(p2HudLeft + hudPanelWidth / 2, hudPanelY, hudPanelWidth, hudPanelHeight, 0x0f172a, 0.82).setStrokeStyle(3, 0x38bdf8);
+    this.add.rectangle(hudSafeArea.centerX, hudSafeArea.top + 42, 150, 46, 0x020617, 0.42).setStrokeStyle(2, 0x334155);
+    this.add.text(hudSafeArea.centerX, hudSafeArea.top + 42, 'VS', {
+      color: '#e2e8f0',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '24px',
+    }).setOrigin(0.5);
+
     this.player1Hp = this.createHpUi(
-      32,
-      24,
-      'P1',
+      p1HudX,
+      hudTextY,
+      `P1 ${getFighterShortLabelJa(this.player1FighterId)}`,
       this.player1Definition.stats.maxHp,
       this.player1Definition.labelColor,
       0x22c55e,
       0,
     );
     this.player2Hp = this.createHpUi(
-      768,
-      24,
-      this.player2Mode === 'cpu' ? 'P2 CPU' : 'P2',
+      p2HudX,
+      hudTextY,
+      `${this.player2Mode === 'cpu' ? 'P2 CPU' : 'P2'} ${getFighterShortLabelJa(this.player2FighterId)}`,
       this.player2Definition.stats.maxHp,
       this.player2Definition.labelColor,
       0x38bdf8,
@@ -1781,7 +1806,7 @@ class BattleScene extends Phaser.Scene {
     );
 
     this.player1EquipmentHudText = this.add
-      .text(32, 78, `P1装備: ${getEquipmentShortLabelJa(this.player1Equipment.id)}`, {
+      .text(p1HudX, equipmentY, `装備: ${getEquipmentShortLabelJa(this.player1Equipment.id)}`, {
         color: '#86efac',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
@@ -1789,34 +1814,19 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0, 0);
 
     this.player2EquipmentHudText = this.add
-      .text(768, 78, `P2装備: ${getEquipmentShortLabelJa(this.player2Equipment.id)}`, {
+      .text(p2HudX, equipmentY, `装備: ${getEquipmentShortLabelJa(this.player2Equipment.id)}`, {
         color: '#93c5fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
       })
       .setOrigin(1, 0);
 
+    this.add.rectangle(hudSafeArea.centerX, hudSafeArea.bottom - 22, Math.min(720, hudSafeArea.width), 34, 0x020617, 0.58).setStrokeStyle(2, 0x334155);
     this.add
-      .text(400, 64, 'Instrument Brawl', {
-        color: '#ffffff',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '40px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(400, 112, `${this.player1Definition.displayName} vs ${this.player2Definition.displayName}${this.player2Mode === 'cpu' ? ' (CPU)' : ''}`, {
+      .text(hudSafeArea.centerX, hudSafeArea.bottom - 22, instructionText, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(400, 150, this.player2Mode === 'cpu' ? 'P1: A / D move, W / Space attack    P2: CPU    P: pause/help' : 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack    P: pause/help', {
-        color: '#94a3b8',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '18px',
+        fontSize: '16px',
       })
       .setOrigin(0.5);
 
