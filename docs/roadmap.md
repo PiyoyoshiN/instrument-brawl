@@ -1481,4 +1481,19 @@ Implemented scope:
 - Confirmed no runtime/gameplay/balance/schema changes.
 - Confirmed readiness for manual playtest using the Phase 10-JP checklist.
 
-**Next recommended task:** Phase 11-1: Manual Japanese UI playtest + issue triage.
+**Next recommended task:** Phase 11-1: Create Phase 11 scope/checklist documentation before runtime UI layout PRs.
+
+
+## Phase 11: UI Layout Rework (checkpoint-ready after manual playtest)
+
+- Phase 10 / Phase 10-JP is complete.
+- Phase 11 started with docs-first scope alignment in `docs/phase-11-ui-layout-rework.md`.
+- Primary focus was Japanese UI layout overflow/overlap/cramped hierarchy fixes, starting with RecordsScene, CharacterSelectScene, and BattleScene HUD.
+- Phase 11-4A added a small viewport-aware layout foundation before CharacterSelectScene card/layout rework.
+- Phase 11 completed focused layout/readability passes for Records, Character Select, Battle HUD/instructions, Pause / Quick Help, Equipment Select, Result, Options, Home, and Mode Select.
+- Important regression guardrails are documented for the fixed CharacterSelectScene upper-left/clipped issue and the fixed BattleScene HP/HUD disappearance issue.
+- Manual verification is tracked in `docs/playtest-checklist.md` under `Phase 11-15 Japanese UI layout playtest checklist`.
+- Known deferred issue: a ResultScene visual bug remains intentionally deferred for later full-screen/global layout cleanup; Battle HUD visual polish may also be revisited later.
+- Phase 11 remains a UI layout/readability phase and does not approve gameplay/balance/schema changes.
+
+**Next recommended task:** Run the Phase 11-15 manual Japanese UI playtest checklist, then either checkpoint Phase 11 as complete or open a focused deferred full-screen/global layout cleanup follow-up before moving to the next planned gameplay/system phase.
