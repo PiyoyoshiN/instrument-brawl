@@ -91,6 +91,11 @@ Phase 11 must **not** change gameplay/balance systems.
   - runtime behavior.
 - Keep each PR focused and easy to verify manually.
 
+## Manual playtest checklist
+
+- Phase 11 Japanese UI layout playtest coverage is tracked in `docs/playtest-checklist.md` under `Phase 11-15 Japanese UI layout playtest checklist`.
+- Use that checklist before the Phase 11 checkpoint docs and for follow-up manual Japanese readability passes.
+
 ## Verification expectations
 
 For each Phase 11 task PR:
