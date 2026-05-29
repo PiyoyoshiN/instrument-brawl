@@ -2107,32 +2107,74 @@ class BattleScene extends Phaser.Scene {
   private showPauseOverlay() {
     this.destroyPauseOverlay();
 
-    const overlay = this.add.container(400, 300).setDepth(20);
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const camera = this.cameras.main;
+    const centerX = camera.scrollX + layoutWidth / 2;
+    const centerY = camera.scrollY + layoutHeight / 2;
+    const panelWidth = Math.min(720, layoutWidth - 80);
+    const panelHeight = Math.min(480, layoutHeight - 80);
+    const panelTop = -panelHeight / 2;
+    const panelLeft = -panelWidth / 2;
+    const columnGap = 28;
+    const columnWidth = (panelWidth - 96 - columnGap) / 2;
     const currentMode = this.player2Mode === 'cpu' ? 'CPU' : '2P';
+    const player2Lines = this.player2Mode === 'cpu'
+      ? ['CPUが自動操作', 'P2手動操作は不要']
+      : ['← / →: 移動', '↑ / Enter: 攻撃'];
+
+    const overlay = this.add.container(centerX, centerY).setDepth(20);
 
     overlay.add([
-      this.add.rectangle(0, 0, gameWidth, gameHeight, 0x020617, 0.7),
-      this.add.rectangle(0, 0, 620, 380, 0x111827, 0.95).setStrokeStyle(4, 0xfacc15),
-      this.add.text(0, -156, '一時停止 / 操作確認', {
+      this.add.rectangle(0, 0, layoutWidth, layoutHeight, 0x020617, 0.72),
+      this.add.rectangle(0, 0, panelWidth, panelHeight, 0x111827, 0.96).setStrokeStyle(4, 0xfacc15),
+      this.add.text(0, panelTop + 40, '一時停止 / 操作確認', {
         align: 'center',
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '32px',
       }).setOrigin(0.5),
-      this.add.text(-260, -104, [
-        '再開: P',
-        'P1: A/D移動、W/Space攻撃',
-        'P2 2P: ←/→移動、↑/Enter攻撃',
-        'P2 CPU: 自動操作',
-        `現在のP2操作: ${currentMode}`,
-        'ルール: 1回の攻撃で当たるのは1回だけ',
-        'Ready/Fight: Fight表示後に操作開始',
-        '結果画面: R再戦、Cキャラ選択、Enter/Spaceホーム',
-      ], {
+      this.add.text(0, panelTop + 78, `現在のP2操作: ${currentMode}`, {
+        align: 'center',
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      }).setOrigin(0.5),
+      this.add.rectangle(panelLeft + 48 + columnWidth / 2, panelTop + 188, columnWidth, 178, 0x0f172a, 0.86).setStrokeStyle(2, 0xf97316),
+      this.add.rectangle(panelLeft + 48 + columnWidth + columnGap + columnWidth / 2, panelTop + 188, columnWidth, 178, 0x0f172a, 0.86).setStrokeStyle(2, 0x38bdf8),
+      this.add.text(panelLeft + 72, panelTop + 118, 'P1 操作', {
+        color: '#fed7aa',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      }).setOrigin(0, 0),
+      this.add.text(panelLeft + 72, panelTop + 154, ['A / D: 移動', 'W / Space: 攻撃'], {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
         lineSpacing: 10,
+      }).setOrigin(0, 0),
+      this.add.text(panelLeft + 72 + columnWidth + columnGap, panelTop + 118, this.player2Mode === 'cpu' ? 'P2 CPU' : 'P2 操作', {
+        color: '#bae6fd',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+      }).setOrigin(0, 0),
+      this.add.text(panelLeft + 72 + columnWidth + columnGap, panelTop + 154, player2Lines, {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '20px',
+        lineSpacing: 10,
+      }).setOrigin(0, 0),
+      this.add.rectangle(0, panelTop + panelHeight - 102, panelWidth - 96, 82, 0x1e293b, 0.72).setStrokeStyle(2, 0x334155),
+      this.add.text(panelLeft + 72, panelTop + panelHeight - 132, '基本ルール', {
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      }).setOrigin(0, 0),
+      this.add.text(panelLeft + 72, panelTop + panelHeight - 96, ['P: 再開', '1回の攻撃で当たるのは1回だけ', '結果画面: R再戦 / Cキャラ選択 / Enter・Spaceホーム'], {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+        lineSpacing: 8,
       }).setOrigin(0, 0),
     ]);
 
