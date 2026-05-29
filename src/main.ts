@@ -1772,8 +1772,8 @@ class BattleScene extends Phaser.Scene {
     const hudTextY = hudTop + 18;
     const equipmentY = hudTop + 76;
     const instructionText = this.player2Mode === 'cpu'
-      ? 'P1: A/D移動・W/Space攻撃   P2: CPU   P: 操作確認'
-      : 'P1: A/D移動・W/Space攻撃   P2: ←/→移動・↑/Enter攻撃   P: 操作確認';
+      ? 'P1 A/D + W/Space   P2 CPU   P: 操作確認'
+      : 'P1 A/D + W/Space   P2 ←/→ + ↑/Enter   P: 操作確認';
 
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 286, 660, 4, 0x334155, 0.7);
