@@ -1752,17 +1752,25 @@ class BattleScene extends Phaser.Scene {
 
     addViewportBackground(this);
 
-    const hudSafeArea = getSafeArea(this);
-    const hudPanelWidth = Math.min(360, Math.max(260, (hudSafeArea.width - 260) / 2));
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const camera = this.cameras.main;
+    const hudSafeMargin = 32;
+    const hudLeft = camera.scrollX + hudSafeMargin;
+    const hudRight = camera.scrollX + layoutWidth - hudSafeMargin;
+    const hudTop = camera.scrollY + hudSafeMargin;
+    const hudBottom = camera.scrollY + layoutHeight - hudSafeMargin;
+    const hudCenterX = camera.scrollX + layoutWidth / 2;
+    const hudPanelWidth = Math.min(360, Math.max(260, (layoutWidth - hudSafeMargin * 2 - 260) / 2));
     const hudPanelHeight = 112;
-    const hudPanelY = hudSafeArea.top + hudPanelHeight / 2;
-    const p1HudLeft = hudSafeArea.left;
-    const p2HudRight = hudSafeArea.right;
+    const hudPanelY = hudTop + hudPanelHeight / 2;
+    const p1HudLeft = hudLeft;
+    const p2HudRight = hudRight;
     const p2HudLeft = p2HudRight - hudPanelWidth;
     const p1HudX = p1HudLeft + 16;
     const p2HudX = p2HudRight - 16;
-    const hudTextY = hudSafeArea.top + 18;
-    const equipmentY = hudSafeArea.top + 76;
+    const hudTextY = hudTop + 18;
+    const equipmentY = hudTop + 76;
     const instructionText = this.player2Mode === 'cpu'
       ? 'P1: A/D移動・W/Space攻撃   P2: CPU   P: 操作確認'
       : 'P1: A/D移動・W/Space攻撃   P2: ←/→移動・↑/Enter攻撃   P: 操作確認';
@@ -1779,8 +1787,8 @@ class BattleScene extends Phaser.Scene {
 
     this.add.rectangle(p1HudLeft + hudPanelWidth / 2, hudPanelY, hudPanelWidth, hudPanelHeight, 0x0f172a, 0.82).setStrokeStyle(3, 0xf97316);
     this.add.rectangle(p2HudLeft + hudPanelWidth / 2, hudPanelY, hudPanelWidth, hudPanelHeight, 0x0f172a, 0.82).setStrokeStyle(3, 0x38bdf8);
-    this.add.rectangle(hudSafeArea.centerX, hudSafeArea.top + 42, 150, 46, 0x020617, 0.42).setStrokeStyle(2, 0x334155);
-    this.add.text(hudSafeArea.centerX, hudSafeArea.top + 42, 'VS', {
+    this.add.rectangle(hudCenterX, hudTop + 42, 150, 46, 0x020617, 0.42).setStrokeStyle(2, 0x334155);
+    this.add.text(hudCenterX, hudTop + 42, 'VS', {
       color: '#e2e8f0',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '24px',
@@ -1821,9 +1829,9 @@ class BattleScene extends Phaser.Scene {
       })
       .setOrigin(1, 0);
 
-    this.add.rectangle(hudSafeArea.centerX, hudSafeArea.bottom - 22, Math.min(720, hudSafeArea.width), 34, 0x020617, 0.58).setStrokeStyle(2, 0x334155);
+    this.add.rectangle(hudCenterX, hudBottom - 22, Math.min(720, layoutWidth - hudSafeMargin * 2), 34, 0x020617, 0.58).setStrokeStyle(2, 0x334155);
     this.add
-      .text(hudSafeArea.centerX, hudSafeArea.bottom - 22, instructionText, {
+      .text(hudCenterX, hudBottom - 22, instructionText, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
