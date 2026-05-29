@@ -3128,53 +3128,72 @@ class EquipmentSelectScene extends Phaser.Scene {
     const p2Label = this.player2FighterId ? getFighterDisplayNameJa(this.player2FighterId) : '未選択';
 
     addViewportBackground(this);
-    this.add.rectangle(400, 300, 720, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
 
-    this.add.text(400, 96, '装備選択', {
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const camera = this.cameras.main;
+    const centerX = camera.scrollX + layoutWidth / 2;
+    const centerY = camera.scrollY + layoutHeight / 2;
+    const safeTop = camera.scrollY + 40;
+    const safeBottom = camera.scrollY + layoutHeight - 40;
+    const panelWidth = Math.min(760, layoutWidth - 80);
+    const contentLeft = centerX - panelWidth / 2 + 48;
+    const contentWidth = panelWidth - 96;
+    const descriptionY = safeTop + 316;
+
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(520, layoutHeight - 80), 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    this.add.text(centerX, safeTop + 46, '装備選択', {
       color: '#ffffff',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '44px',
     }).setOrigin(0.5);
 
-    this.add.text(400, 156, `P1キャラ: ${p1Label}`, {
+    this.add.rectangle(centerX, safeTop + 126, contentWidth, 74, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
+    this.add.text(contentLeft, safeTop + 102, `P1: ${p1Label}`, {
       color: '#f8fafc',
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '24px',
-    }).setOrigin(0.5);
-
-    this.add.text(400, 190, `P2キャラ: ${p2Label} (${this.player2Mode === 'cpu' ? 'CPU' : 'Human'})`, {
-      color: '#e2e8f0',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '22px',
-    }).setOrigin(0.5);
+    }).setOrigin(0, 0);
 
-    this.equipmentRowsText = this.add.text(400, 258, '', {
+    this.add.text(contentLeft, safeTop + 136, `P2: ${p2Label} (${this.player2Mode === 'cpu' ? 'CPU' : '2P'})`, {
+      color: '#e2e8f0',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '20px',
+    }).setOrigin(0, 0);
+
+    this.add.rectangle(centerX, safeTop + 232, contentWidth, 100, 0x0f172a, 0.78).setStrokeStyle(2, 0x475569);
+    this.equipmentRowsText = this.add.text(contentLeft, safeTop + 198, '', {
       color: '#f8fafc',
       fontFamily: 'system-ui, sans-serif',
-      fontSize: '30px',
+      fontSize: '28px',
       lineSpacing: 14,
       align: 'left',
-    }).setOrigin(0.5, 0);
+    }).setOrigin(0, 0);
 
-    this.equipmentDescriptionText = this.add.text(400, 360, '', {
+    this.add.rectangle(centerX, descriptionY + 32, contentWidth, 112, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
+    this.equipmentDescriptionText = this.add.text(centerX, descriptionY, '', {
       color: '#e2e8f0',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '20px',
       align: 'center',
-    }).setOrigin(0.5);
+      lineSpacing: 6,
+      wordWrap: { width: contentWidth - 40, useAdvancedWrap: true },
+    }).setOrigin(0.5, 0);
 
-    this.statusText = this.add.text(400, 394, '装備を選んで決定', {
+    this.statusText = this.add.text(centerX, safeTop + 422, '', {
       color: '#94a3b8',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '18px',
       align: 'center',
     }).setOrigin(0.5);
 
-    this.add.text(400, 500, '↑/↓: P1/P2切替   ←/→: 装備変更   Enter/Space: 決定   Esc: 戻る', {
+    this.add.text(centerX, safeBottom - 34, ['↑/↓: P1/P2切替   ←/→: 装備変更', 'Enter/Space: 決定   Esc: 戻る'], {
       color: '#facc15',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '18px',
       align: 'center',
+      lineSpacing: 6,
     }).setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
@@ -3271,6 +3290,7 @@ ${p2Prefix}P2装備: ${getEquipmentShortLabelJa(p2Equipment.id)}`,
     this.equipmentDescriptionText?.setText(
       `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}${ampIncompatibleNote}`,
     );
+    this.statusText?.setText(`${this.selectedEquipmentRow === 0 ? 'P1' : 'P2'}の装備を選択中`);
   }
 }
 
