@@ -110,6 +110,57 @@ For each Phase 11 task PR:
    - guardrails.
 4. For runtime UI tasks, do manual Japanese readability checks at practical play resolution.
 
+
+## Phase 11 checkpoint summary
+
+Phase 11 can be treated as checkpoint-ready after the Phase 11 Japanese UI manual playtest checklist has been run.
+
+Completed checkpoint scope:
+
+- `RecordsScene` layout/readability improvements for records summary, last played text, reset confirmation, and lower controls.
+- Viewport-aware layout foundation so later UI screens can use actual canvas/layout width and height instead of staying trapped in an 800x600-centered island.
+- `CharacterSelectScene` card width/layout rework, text wrapping/status overflow fixes, and information hierarchy cleanup.
+- `CharacterSelectScene` regression fix after the UI rendered huge near the upper-left and clipped offscreen.
+- `BattleScene` HUD layout work, HUD visibility regression fix, and battle instruction reduction.
+- Pause / Quick Help Japanese layout fix so detailed controls are readable in the overlay instead of always visible in the battle HUD.
+- `EquipmentSelectScene`, `ResultScene`, `OptionsScene`, `HomeScene`, and `ModeSelectScene` layout/readability reviews.
+- Shared UI spacing constants review to lightly centralize obvious repeated spacing values.
+- Phase 11 Japanese UI manual playtest checklist update.
+
+Important regression guardrails for future viewport/layout work:
+
+- `CharacterSelectScene` previously had an upper-left huge/clipped display regression. Future layout work must confirm title, P1/P2 cards, descriptions, stats, and footer remain inside the visible canvas.
+- `BattleScene` HUD / HP bars previously disappeared after HUD layout work. Future HUD or viewport work must confirm P1/P2 HP bars, equipment labels, and bottom instructions remain visible.
+
+Known deferred issues:
+
+- `ResultScene` has a visual bug noticed by the user and is intentionally deferred for later full-screen/global layout cleanup.
+- Battle HUD visual style is visible and functional for now, but polish may be revisited later after Timer/Round/Guard or other systems clarify HUD needs.
+- Any future full-screen/global layout cleanup should consider `ResultScene` and Battle HUD polish together rather than mixing them into unrelated UI PRs.
+
+Non-goals confirmed at checkpoint:
+
+- No Guard or Just Guard.
+- No Timer, Round rules, or Retire.
+- No Pick effects.
+- No attack tempo changes or hitbox tuning.
+- No fighter stat changes.
+- No equipment effect or compatibility changes.
+- No records/settings schema changes.
+- No new fighters, online play, 3D, audio, images, or external assets.
+
+Manual verification reminder:
+
+- Use `docs/playtest-checklist.md` under `Phase 11-15 Japanese UI layout playtest checklist`.
+- Check at 800x600, a laptop-sized viewport, and a large desktop viewport.
+- Cover Home, Mode Select, Character Select, Equipment Select, Battle HUD, Pause / Quick Help, Result, Records, and Options.
+
+Recommended next direction:
+
+- If manual playtest is acceptable, Phase 11 can be checkpointed and the project can proceed to the next planned gameplay/system phase.
+- If UI instability remains, address deferred global/full-screen layout cleanup in a focused follow-up before starting new gameplay work.
+- Do not start new gameplay features inside Phase 11 checkpoint documentation PRs.
+
 ## v1.0 alignment
 
 - Phase 20 remains the target for v1.0.
