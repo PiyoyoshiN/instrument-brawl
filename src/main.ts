@@ -2,7 +2,12 @@ import Phaser from 'phaser';
 
 const gameWidth = 800;
 const gameHeight = 600;
-const layoutSafeMargin = 40;
+const uiSafeMargin = 40;
+const uiPanelOuterMargin = uiSafeMargin * 2;
+const uiPanelHorizontalPadding = 48;
+const uiPanelContentInset = uiPanelHorizontalPadding * 2;
+const uiFooterPrimaryOffset = 28;
+const uiFooterSecondaryOffset = 60;
 
 type LayoutSafeArea = {
   left: number;
@@ -39,7 +44,7 @@ function getLayoutCenterY(scene: Phaser.Scene) {
   return scene.cameras.main.worldView.centerY;
 }
 
-function getSafeArea(scene: Phaser.Scene, margin = layoutSafeMargin): LayoutSafeArea {
+function getSafeArea(scene: Phaser.Scene, margin = uiSafeMargin): LayoutSafeArea {
   const width = getLayoutWidth(scene);
   const height = getLayoutHeight(scene);
   const centerX = getLayoutCenterX(scene);
@@ -857,15 +862,15 @@ class HomeScene extends Phaser.Scene {
     const camera = this.cameras.main;
     const centerX = camera.scrollX + layoutWidth / 2;
     const centerY = camera.scrollY + layoutHeight / 2;
-    const safeTop = camera.scrollY + 40;
-    const safeBottom = camera.scrollY + layoutHeight - 40;
-    const panelWidth = Math.min(760, layoutWidth - 80);
+    const safeTop = camera.scrollY + uiSafeMargin;
+    const safeBottom = camera.scrollY + layoutHeight - uiSafeMargin;
+    const panelWidth = Math.min(760, layoutWidth - uiPanelOuterMargin);
     const cardGap = 24;
-    const cardWidth = Math.min(210, (panelWidth - 96 - cardGap * 2) / 3);
+    const cardWidth = Math.min(210, (panelWidth - uiPanelContentInset - cardGap * 2) / 3);
     const cardY = safeTop + 392;
     const firstCardX = centerX - cardWidth - cardGap;
 
-    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - 80), 0x1e293b).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - uiPanelOuterMargin), 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
       .text(centerX, safeTop + 68, 'Instrument Brawl', {
@@ -891,7 +896,7 @@ class HomeScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add.rectangle(centerX, safeTop + 244, panelWidth - 96, 82, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
+    this.add.rectangle(centerX, safeTop + 244, panelWidth - uiPanelContentInset, 82, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
     this.add
       .text(
         centerX,
@@ -941,7 +946,7 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(centerX, safeBottom - 28, 'Enter/Space: 決定', {
+      .text(centerX, safeBottom - uiFooterPrimaryOffset, 'Enter/Space: 決定', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -1042,14 +1047,14 @@ class OptionsScene extends Phaser.Scene {
     const camera = this.cameras.main;
     const centerX = camera.scrollX + layoutWidth / 2;
     const centerY = camera.scrollY + layoutHeight / 2;
-    const safeTop = camera.scrollY + 40;
-    const safeBottom = camera.scrollY + layoutHeight - 40;
-    const panelWidth = Math.min(700, layoutWidth - 80);
-    const rowWidth = panelWidth - 96;
+    const safeTop = camera.scrollY + uiSafeMargin;
+    const safeBottom = camera.scrollY + layoutHeight - uiSafeMargin;
+    const panelWidth = Math.min(700, layoutWidth - uiPanelOuterMargin);
+    const rowWidth = panelWidth - uiPanelContentInset;
     const rowLeft = centerX - rowWidth / 2;
     const rowYs = [safeTop + 198, safeTop + 278, safeTop + 358];
 
-    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - 80), 0x1e293b).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - uiPanelOuterMargin), 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add.text(centerX, safeTop + 52, '設定', { color: '#ffffff', fontFamily: 'system-ui, sans-serif', fontSize: '44px' }).setOrigin(0.5);
     this.add.text(centerX, safeTop + 96, 'ローカル設定', { color: '#cbd5e1', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
@@ -1066,8 +1071,8 @@ class OptionsScene extends Phaser.Scene {
 
     this.resetPreferencesText = this.add.text(rowLeft + 24, rowYs[2] - 4, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '26px' }).setOrigin(0, 0.5);
 
-    this.add.text(centerX, safeBottom - 60, '↑/↓: 選択   ←/→・Enter/Space: 切替/決定', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
-    this.add.text(centerX, safeBottom - 28, 'Esc: ホームへ戻る', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
+    this.add.text(centerX, safeBottom - uiFooterSecondaryOffset, '↑/↓: 選択   ←/→・Enter/Space: 切替/決定', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
+    this.add.text(centerX, safeBottom - uiFooterPrimaryOffset, 'Esc: ホームへ戻る', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
 
     this.updateTexts();
 
@@ -1168,17 +1173,17 @@ class ModeSelectScene extends Phaser.Scene {
     const camera = this.cameras.main;
     const centerX = camera.scrollX + layoutWidth / 2;
     const centerY = camera.scrollY + layoutHeight / 2;
-    const safeTop = camera.scrollY + 40;
-    const safeBottom = camera.scrollY + layoutHeight - 40;
-    const panelWidth = Math.min(740, layoutWidth - 80);
+    const safeTop = camera.scrollY + uiSafeMargin;
+    const safeBottom = camera.scrollY + layoutHeight - uiSafeMargin;
+    const panelWidth = Math.min(740, layoutWidth - uiPanelOuterMargin);
     const buttonGap = 32;
-    const buttonWidth = Math.min(320, (panelWidth - 96 - buttonGap) / 2);
+    const buttonWidth = Math.min(320, (panelWidth - uiPanelContentInset - buttonGap) / 2);
     const buttonHeight = 160;
     const buttonY = safeTop + 292;
     const local2pX = centerX - buttonWidth / 2 - buttonGap / 2;
     const cpuX = centerX + buttonWidth / 2 + buttonGap / 2;
 
-    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - 80), 0x1e293b).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - uiPanelOuterMargin), 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
       .text(centerX, safeTop + 64, '対戦モード選択', {
@@ -1238,7 +1243,7 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(centerX, safeBottom - 60, '↑/↓/←/→: モード選択', {
+      .text(centerX, safeBottom - uiFooterSecondaryOffset, '↑/↓/←/→: モード選択', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '19px',
@@ -1246,7 +1251,7 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(centerX, safeBottom - 28, 'Enter/Space: 決定   Esc: ホームへ戻る', {
+      .text(centerX, safeBottom - uiFooterPrimaryOffset, 'Enter/Space: 決定   Esc: ホームへ戻る', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -1386,7 +1391,7 @@ class CharacterSelectScene extends Phaser.Scene {
 
     const layoutWidth = getLayoutWidth(this);
     const layoutHeight = getLayoutHeight(this);
-    const safeMargin = 40;
+    const safeMargin = uiSafeMargin;
     const safeTop = safeMargin;
     const safeBottom = layoutHeight - safeMargin;
     const safeWidth = layoutWidth - safeMargin * 2;
@@ -1399,7 +1404,7 @@ class CharacterSelectScene extends Phaser.Scene {
     const titleY = safeTop + 52;
     const subtitleY = titleY + 38;
     const footerControlsY = safeBottom - 64;
-    const footerActionY = safeBottom - 28;
+    const footerActionY = safeBottom - uiFooterPrimaryOffset;
     const cardGap = Phaser.Math.Clamp(safeWidth * 0.045, 36, 72);
     const availableCardWidth = (safeWidth - cardGap) / 2;
     const cardWidth = Math.min(640, Math.max(320, availableCardWidth));
@@ -2165,12 +2170,12 @@ class BattleScene extends Phaser.Scene {
     const camera = this.cameras.main;
     const centerX = camera.scrollX + layoutWidth / 2;
     const centerY = camera.scrollY + layoutHeight / 2;
-    const panelWidth = Math.min(720, layoutWidth - 80);
-    const panelHeight = Math.min(480, layoutHeight - 80);
+    const panelWidth = Math.min(720, layoutWidth - uiPanelOuterMargin);
+    const panelHeight = Math.min(480, layoutHeight - uiPanelOuterMargin);
     const panelTop = -panelHeight / 2;
     const panelLeft = -panelWidth / 2;
     const columnGap = 28;
-    const columnWidth = (panelWidth - 96 - columnGap) / 2;
+    const columnWidth = (panelWidth - uiPanelContentInset - columnGap) / 2;
     const currentMode = this.player2Mode === 'cpu' ? 'CPU' : '2P';
     const player2Lines = this.player2Mode === 'cpu'
       ? ['CPUが自動操作', 'P2手動操作は不要']
@@ -2217,7 +2222,7 @@ class BattleScene extends Phaser.Scene {
         fontSize: '20px',
         lineSpacing: 10,
       }).setOrigin(0, 0),
-      this.add.rectangle(0, panelTop + panelHeight - 102, panelWidth - 96, 82, 0x1e293b, 0.72).setStrokeStyle(2, 0x334155),
+      this.add.rectangle(0, panelTop + panelHeight - 102, panelWidth - uiPanelContentInset, 82, 0x1e293b, 0.72).setStrokeStyle(2, 0x334155),
       this.add.text(panelLeft + 72, panelTop + panelHeight - 132, '基本ルール', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
@@ -2826,11 +2831,11 @@ class ResultScene extends Phaser.Scene {
     const camera = this.cameras.main;
     const centerX = camera.scrollX + layoutWidth / 2;
     const centerY = camera.scrollY + layoutHeight / 2;
-    const safeTop = camera.scrollY + 40;
-    const panelWidth = Math.min(720, layoutWidth - 80);
-    const contentWidth = panelWidth - 96;
+    const safeTop = camera.scrollY + uiSafeMargin;
+    const panelWidth = Math.min(720, layoutWidth - uiPanelOuterMargin);
+    const contentWidth = panelWidth - uiPanelContentInset;
 
-    this.add.rectangle(centerX, centerY, panelWidth, Math.min(440, layoutHeight - 80), 0x1e293b).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(440, layoutHeight - uiPanelOuterMargin), 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
       .text(centerX, safeTop + 48, '試合結果', {
@@ -3189,14 +3194,14 @@ class EquipmentSelectScene extends Phaser.Scene {
     const camera = this.cameras.main;
     const centerX = camera.scrollX + layoutWidth / 2;
     const centerY = camera.scrollY + layoutHeight / 2;
-    const safeTop = camera.scrollY + 40;
-    const safeBottom = camera.scrollY + layoutHeight - 40;
-    const panelWidth = Math.min(760, layoutWidth - 80);
-    const contentLeft = centerX - panelWidth / 2 + 48;
-    const contentWidth = panelWidth - 96;
+    const safeTop = camera.scrollY + uiSafeMargin;
+    const safeBottom = camera.scrollY + layoutHeight - uiSafeMargin;
+    const panelWidth = Math.min(760, layoutWidth - uiPanelOuterMargin);
+    const contentLeft = centerX - panelWidth / 2 + uiPanelHorizontalPadding;
+    const contentWidth = panelWidth - uiPanelContentInset;
     const descriptionY = safeTop + 316;
 
-    this.add.rectangle(centerX, centerY, panelWidth, Math.min(520, layoutHeight - 80), 0x1e293b).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(520, layoutHeight - uiPanelOuterMargin), 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add.text(centerX, safeTop + 46, '装備選択', {
       color: '#ffffff',
