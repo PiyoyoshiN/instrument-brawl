@@ -1022,17 +1022,38 @@ class OptionsScene extends Phaser.Scene {
     this.screenShakeEnabled = stored.preferences.screenShakeEnabled;
 
     addViewportBackground(this);
-    this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
 
-    this.add.text(400, 120, '設定', { color: '#ffffff', fontFamily: 'system-ui, sans-serif', fontSize: '44px' }).setOrigin(0.5);
-    this.add.text(400, 176, 'ローカル設定', { color: '#cbd5e1', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const camera = this.cameras.main;
+    const centerX = camera.scrollX + layoutWidth / 2;
+    const centerY = camera.scrollY + layoutHeight / 2;
+    const safeTop = camera.scrollY + 40;
+    const safeBottom = camera.scrollY + layoutHeight - 40;
+    const panelWidth = Math.min(700, layoutWidth - 80);
+    const rowWidth = panelWidth - 96;
+    const rowLeft = centerX - rowWidth / 2;
+    const rowYs = [safeTop + 198, safeTop + 278, safeTop + 358];
 
-    this.effectsText = this.add.text(400, 260, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
-    this.screenShakeText = this.add.text(400, 320, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
-    this.resetPreferencesText = this.add.text(400, 380, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '30px' }).setOrigin(0.5);
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - 80), 0x1e293b).setStrokeStyle(4, 0x475569);
 
-    this.add.text(400, 438, '↑/↓: 選択   ←/→ または Enter/Space: 切替/決定', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
-    this.add.text(400, 470, 'Esc: ホームへ戻る', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
+    this.add.text(centerX, safeTop + 52, '設定', { color: '#ffffff', fontFamily: 'system-ui, sans-serif', fontSize: '44px' }).setOrigin(0.5);
+    this.add.text(centerX, safeTop + 96, 'ローカル設定', { color: '#cbd5e1', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
+
+    for (const rowY of rowYs) {
+      this.add.rectangle(centerX, rowY, rowWidth, 64, 0x0f172a, 0.78).setStrokeStyle(2, 0x334155);
+    }
+
+    this.effectsText = this.add.text(rowLeft + 24, rowYs[0] - 12, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '26px' }).setOrigin(0, 0.5);
+    this.add.text(rowLeft + 24, rowYs[0] + 18, 'ヒット演出などの表示', { color: '#94a3b8', fontFamily: 'system-ui, sans-serif', fontSize: '16px' }).setOrigin(0, 0.5);
+
+    this.screenShakeText = this.add.text(rowLeft + 24, rowYs[1] - 12, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '26px' }).setOrigin(0, 0.5);
+    this.add.text(rowLeft + 24, rowYs[1] + 18, 'ヒット時の小さな画面揺れ', { color: '#94a3b8', fontFamily: 'system-ui, sans-serif', fontSize: '16px' }).setOrigin(0, 0.5);
+
+    this.resetPreferencesText = this.add.text(rowLeft + 24, rowYs[2] - 4, '', { color: '#f8fafc', fontFamily: 'system-ui, sans-serif', fontSize: '26px' }).setOrigin(0, 0.5);
+
+    this.add.text(centerX, safeBottom - 60, '↑/↓: 選択   ←/→・Enter/Space: 切替/決定', { color: '#e2e8f0', fontFamily: 'system-ui, sans-serif', fontSize: '18px' }).setOrigin(0.5);
+    this.add.text(centerX, safeBottom - 28, 'Esc: ホームへ戻る', { color: '#facc15', fontFamily: 'system-ui, sans-serif', fontSize: '22px' }).setOrigin(0.5);
 
     this.updateTexts();
 
@@ -1093,10 +1114,10 @@ class OptionsScene extends Phaser.Scene {
   }
 
   private updateTexts() {
-    const prefixA = this.selectedIndex === 0 ? '> ' : '  ';
-    const prefixB = this.selectedIndex === 1 ? '> ' : '  ';
-    const prefixC = this.selectedIndex === 2 ? '> ' : '  ';
-    const resetText = this.isResetArmed ? '設定リセット: もう一度押すと実行' : '設定リセット';
+    const prefixA = this.selectedIndex === 0 ? '▶ ' : '  ';
+    const prefixB = this.selectedIndex === 1 ? '▶ ' : '  ';
+    const prefixC = this.selectedIndex === 2 ? '▶ ' : '  ';
+    const resetText = this.isResetArmed ? '設定リセット（確認中: もう一度押すと実行）' : '設定リセット';
     this.effectsText?.setText(`${prefixA}演出: ${this.effectsEnabled ? 'ON' : 'OFF'}`);
     this.screenShakeText?.setText(`${prefixB}画面揺れ: ${this.screenShakeEnabled ? 'ON' : 'OFF'}`);
     this.resetPreferencesText?.setText(`${prefixC}${resetText}`);
