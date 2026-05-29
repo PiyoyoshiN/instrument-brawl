@@ -851,10 +851,24 @@ class HomeScene extends Phaser.Scene {
     this.transitionStarted = false;
 
     addViewportBackground(this);
-    this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const camera = this.cameras.main;
+    const centerX = camera.scrollX + layoutWidth / 2;
+    const centerY = camera.scrollY + layoutHeight / 2;
+    const safeTop = camera.scrollY + 40;
+    const safeBottom = camera.scrollY + layoutHeight - 40;
+    const panelWidth = Math.min(760, layoutWidth - 80);
+    const cardGap = 24;
+    const cardWidth = Math.min(210, (panelWidth - 96 - cardGap * 2) / 3);
+    const cardY = safeTop + 392;
+    const firstCardX = centerX - cardWidth - cardGap;
+
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - 80), 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(400, 120, 'Instrument Brawl', {
+      .text(centerX, safeTop + 68, 'Instrument Brawl', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '48px',
@@ -862,7 +876,7 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 178, 'ふたり対戦 / CPU戦の楽器バトル', {
+      .text(centerX, safeTop + 126, 'ふたり対戦 / CPU戦の楽器バトル', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -870,56 +884,56 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 220, '4キャラ • ふたり対戦対応 • CPU戦も可能', {
+      .text(centerX, safeTop + 166, '4キャラ • ローカル対戦 • CPU戦', {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
       })
       .setOrigin(0.5);
 
+    this.add.rectangle(centerX, safeTop + 244, panelWidth - 96, 82, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
     this.add
       .text(
-        400,
-        292,
-        `P1 ${getFighterDisplayNameJa(defaultPlayer1FighterId)}: A/D移動、W/Space攻撃
-P2 ${getFighterDisplayNameJa(defaultPlayer2FighterId)}: ←/→移動、↑/Enter攻撃`,
+        centerX,
+        safeTop + 244,
+        [`P1 ${getFighterDisplayNameJa(defaultPlayer1FighterId)}: A/D移動・W/Space攻撃`, `P2 ${getFighterDisplayNameJa(defaultPlayer2FighterId)}: ←/→移動・↑/Enter攻撃`],
         {
           align: 'center',
           color: '#e2e8f0',
           fontFamily: 'system-ui, sans-serif',
-          fontSize: '20px',
-          lineSpacing: 10,
+          fontSize: '19px',
+          lineSpacing: 8,
         },
       )
       .setOrigin(0.5);
 
     this.add
-      .text(400, 392, '←/→/↑/↓: 選択', {
+      .text(centerX, safeTop + 330, '←/→/↑/↓: 選択', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
       .setOrigin(0.5);
 
-    this.startCard = this.add.rectangle(220, 442, 180, 76, 0x0f172a).setStrokeStyle(4, 0xfacc15);
-    this.recordsCard = this.add.rectangle(400, 442, 180, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
-    this.optionsCard = this.add.rectangle(580, 442, 180, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
+    this.startCard = this.add.rectangle(firstCardX, cardY, cardWidth, 76, 0x0f172a).setStrokeStyle(4, 0xfacc15);
+    this.recordsCard = this.add.rectangle(centerX, cardY, cardWidth, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
+    this.optionsCard = this.add.rectangle(centerX + cardWidth + cardGap, cardY, cardWidth, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
     this.add
-      .text(220, 442, 'はじめる', {
+      .text(firstCardX, cardY, 'はじめる', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
       })
       .setOrigin(0.5);
     this.add
-      .text(400, 442, '記録', {
+      .text(centerX, cardY, '記録', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
       })
       .setOrigin(0.5);
     this.add
-      .text(580, 442, '設定', {
+      .text(centerX + cardWidth + cardGap, cardY, '設定', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
@@ -927,7 +941,7 @@ P2 ${getFighterDisplayNameJa(defaultPlayer2FighterId)}: ←/→移動、↑/Ente
       .setOrigin(0.5);
 
     this.add
-      .text(400, 500, 'Enter/Space: 決定', {
+      .text(centerX, safeBottom - 28, 'Enter/Space: 決定', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -1148,10 +1162,26 @@ class ModeSelectScene extends Phaser.Scene {
     this.mode = loadStoredSettings().lastSelected.player2Mode;
 
     addViewportBackground(this);
-    this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const camera = this.cameras.main;
+    const centerX = camera.scrollX + layoutWidth / 2;
+    const centerY = camera.scrollY + layoutHeight / 2;
+    const safeTop = camera.scrollY + 40;
+    const safeBottom = camera.scrollY + layoutHeight - 40;
+    const panelWidth = Math.min(740, layoutWidth - 80);
+    const buttonGap = 32;
+    const buttonWidth = Math.min(320, (panelWidth - 96 - buttonGap) / 2);
+    const buttonHeight = 160;
+    const buttonY = safeTop + 292;
+    const local2pX = centerX - buttonWidth / 2 - buttonGap / 2;
+    const cpuX = centerX + buttonWidth / 2 + buttonGap / 2;
+
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - 80), 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(400, 120, '対戦モード選択', {
+      .text(centerX, safeTop + 64, '対戦モード選択', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '44px',
@@ -1159,54 +1189,56 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 176, '対戦モードを選択', {
+      .text(centerX, safeTop + 112, '遊び方を選んでキャラ選択へ進みます', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
       })
       .setOrigin(0.5);
 
-    this.local2pButton = this.add.rectangle(400, 286, 440, 118, 0x0f172a).setStrokeStyle(4, 0xfacc15);
-    this.cpuButton = this.add.rectangle(400, 432, 440, 118, 0x0f172a).setStrokeStyle(3, 0x475569);
+    this.local2pButton = this.add.rectangle(local2pX, buttonY, buttonWidth, buttonHeight, 0x0f172a).setStrokeStyle(4, 0xfacc15);
+    this.cpuButton = this.add.rectangle(cpuX, buttonY, buttonWidth, buttonHeight, 0x0f172a).setStrokeStyle(3, 0x475569);
 
     this.add
-      .text(400, 266, 'ふたりで対戦', {
+      .text(local2pX, buttonY - 28, 'ふたりで対戦', {
         align: 'center',
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '40px',
+        fontSize: '34px',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(400, 312, 'ローカル2P', {
+      .text(local2pX, buttonY + 30, ['ローカル2P', 'P1/P2を人が操作'], {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
+        fontSize: '19px',
+        lineSpacing: 8,
       })
       .setOrigin(0.5);
 
     this.add
-      .text(400, 412, 'CPU戦', {
+      .text(cpuX, buttonY - 28, 'CPU戦', {
         align: 'center',
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '40px',
+        fontSize: '34px',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(400, 458, 'P1 vs CPU', {
+      .text(cpuX, buttonY + 30, ['P1 vs CPU', 'P2は自動操作'], {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
+        fontSize: '19px',
+        lineSpacing: 8,
       })
       .setOrigin(0.5);
 
     this.add
-      .text(400, 528, '↑/↓: モード選択', {
+      .text(centerX, safeBottom - 60, '↑/↓/←/→: モード選択', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '19px',
@@ -1214,7 +1246,7 @@ class ModeSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 558, 'Enter/Space: 決定   Esc: ホームへ戻る', {
+      .text(centerX, safeBottom - 28, 'Enter/Space: 決定   Esc: ホームへ戻る', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
