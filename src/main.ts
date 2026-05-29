@@ -2,6 +2,94 @@ import Phaser from 'phaser';
 
 const gameWidth = 800;
 const gameHeight = 600;
+const layoutSafeMargin = 40;
+
+type LayoutSafeArea = {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  width: number;
+  height: number;
+  centerX: number;
+  centerY: number;
+};
+
+function getInitialLayoutWidth() {
+  return Math.max(gameWidth, window.innerWidth);
+}
+
+function getInitialLayoutHeight() {
+  return Math.max(gameHeight, window.innerHeight);
+}
+
+function getLayoutWidth(scene: Phaser.Scene) {
+  return Math.max(gameWidth, scene.scale.width);
+}
+
+function getLayoutHeight(scene: Phaser.Scene) {
+  return Math.max(gameHeight, scene.scale.height);
+}
+
+function getLayoutCenterX(scene: Phaser.Scene) {
+  return scene.cameras.main.worldView.centerX;
+}
+
+function getLayoutCenterY(scene: Phaser.Scene) {
+  return scene.cameras.main.worldView.centerY;
+}
+
+function getSafeArea(scene: Phaser.Scene, margin = layoutSafeMargin): LayoutSafeArea {
+  const width = getLayoutWidth(scene);
+  const height = getLayoutHeight(scene);
+  const centerX = getLayoutCenterX(scene);
+  const centerY = getLayoutCenterY(scene);
+  const left = centerX - width / 2 + margin;
+  const right = centerX + width / 2 - margin;
+  const top = centerY - height / 2 + margin;
+  const bottom = centerY + height / 2 - margin;
+
+  return {
+    left,
+    right,
+    top,
+    bottom,
+    width: right - left,
+    height: bottom - top,
+    centerX,
+    centerY,
+  };
+}
+
+function applyViewportLayout(scene: Phaser.Scene, backgroundColor = 0x111827) {
+  const layoutWidth = getLayoutWidth(scene);
+  const layoutHeight = getLayoutHeight(scene);
+  const scrollX = (gameWidth - layoutWidth) / 2;
+  const scrollY = (gameHeight - layoutHeight) / 2;
+
+  scene.cameras.main.setBackgroundColor(backgroundColor);
+  scene.cameras.main.setScroll(scrollX, scrollY);
+}
+
+function addViewportBackground(scene: Phaser.Scene, color = 0x111827) {
+  applyViewportLayout(scene, color);
+
+  const safeArea = getSafeArea(scene, 0);
+  const background = scene.add.rectangle(safeArea.centerX, safeArea.centerY, getLayoutWidth(scene), getLayoutHeight(scene), color);
+  const resizeHandler = () => {
+    applyViewportLayout(scene, color);
+    const nextSafeArea = getSafeArea(scene, 0);
+    background.setPosition(nextSafeArea.centerX, nextSafeArea.centerY);
+    background.setSize(getLayoutWidth(scene), getLayoutHeight(scene));
+  };
+
+  scene.scale.on('resize', resizeHandler);
+  scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+    scene.scale.off('resize', resizeHandler);
+  });
+
+  return background;
+}
 const defaultFighterBodyWidth = 72;
 const defaultFighterBodyHeight = 120;
 const player1StartX = 240;
@@ -762,7 +850,7 @@ class HomeScene extends Phaser.Scene {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
@@ -933,7 +1021,7 @@ class OptionsScene extends Phaser.Scene {
     this.effectsEnabled = stored.preferences.effectsEnabled;
     this.screenShakeEnabled = stored.preferences.screenShakeEnabled;
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add.text(400, 120, '設定', { color: '#ffffff', fontFamily: 'system-ui, sans-serif', fontSize: '44px' }).setOrigin(0.5);
@@ -1038,7 +1126,7 @@ class ModeSelectScene extends Phaser.Scene {
     this.transitionStarted = false;
     this.mode = loadStoredSettings().lastSelected.player2Mode;
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 680, 420, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
@@ -1243,11 +1331,45 @@ class CharacterSelectScene extends Phaser.Scene {
     this.player1Index = this.getFighterIndex(this.player1FighterId, defaultPlayer1FighterId);
     this.player2Index = this.getFighterIndex(this.player2FighterId, defaultPlayer2FighterId);
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
-    this.add.rectangle(400, 300, 700, 460, 0x1e293b).setStrokeStyle(4, 0x475569);
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const safeMargin = 40;
+    const safeTop = safeMargin;
+    const safeBottom = layoutHeight - safeMargin;
+    const safeWidth = layoutWidth - safeMargin * 2;
+    const centerX = layoutWidth / 2;
+
+    this.cameras.main.setBackgroundColor(0x111827);
+    this.cameras.main.setScroll(0, 0);
+    this.add.rectangle(centerX, layoutHeight / 2, layoutWidth, layoutHeight, 0x111827);
+
+    const titleY = safeTop + 52;
+    const subtitleY = titleY + 38;
+    const footerControlsY = safeBottom - 64;
+    const footerActionY = safeBottom - 28;
+    const cardGap = Phaser.Math.Clamp(safeWidth * 0.045, 36, 72);
+    const availableCardWidth = (safeWidth - cardGap) / 2;
+    const cardWidth = Math.min(640, Math.max(320, availableCardWidth));
+    const totalCardsWidth = cardWidth * 2 + cardGap;
+    const cardTop = subtitleY + 38;
+    const cardBottom = footerControlsY - 30;
+    const cardHeight = Phaser.Math.Clamp(cardBottom - cardTop, 286, 440);
+    const cardCenterY = cardTop + cardHeight / 2;
+    const player1CardX = centerX - totalCardsWidth / 2 + cardWidth / 2;
+    const player2CardX = centerX + totalCardsWidth / 2 - cardWidth / 2;
+    const cardTextWidth = Math.max(264, cardWidth - 56);
+    const nameWrapWidth = Math.max(270, cardWidth - 64);
+    const roleWrapWidth = cardTextWidth;
+    const roleLabelY = cardTop + 176;
+    const roleY = roleLabelY + 22;
+    const statsY = Math.min(cardTop + 246, cardTop + cardHeight - 58);
+    const statsPanelWidth = cardTextWidth;
+
+    this.add.rectangle(centerX, cardCenterY, safeWidth, cardHeight + 28, 0x1e293b, 0.72).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(centerX, footerControlsY + 22, safeWidth, 74, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
 
     this.add
-      .text(400, 92, 'キャラ選択', {
+      .text(centerX, titleY, 'キャラ選択', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '44px',
@@ -1255,25 +1377,29 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 128, `${fighterDefinitions.length}キャラから選択 • 同キャラOK`, {
+      .text(centerX, subtitleY, `${fighterDefinitions.length}キャラから選択 • 同キャラOK`, {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
       .setOrigin(0.5);
 
-    this.add.rectangle(230, 292, 270, 290, 0x0f172a).setStrokeStyle(4, 0xf97316);
-    this.add.rectangle(570, 292, 270, 290, 0x0f172a).setStrokeStyle(4, 0x38bdf8);
+    this.add.rectangle(player1CardX, cardCenterY, cardWidth, cardHeight, 0x0f172a).setStrokeStyle(4, 0xf97316);
+    this.add.rectangle(player2CardX, cardCenterY, cardWidth, cardHeight, 0x0f172a).setStrokeStyle(4, 0x38bdf8);
+    this.add.rectangle(player1CardX, cardTop + 104, cardTextWidth, 48, 0x1e293b, 0.54);
+    this.add.rectangle(player2CardX, cardTop + 104, cardTextWidth, 48, 0x1e293b, 0.54);
+    this.add.rectangle(player1CardX, statsY + 22, statsPanelWidth, 58, 0x1e293b, 0.58).setStrokeStyle(2, 0x334155);
+    this.add.rectangle(player2CardX, statsY + 22, statsPanelWidth, 58, 0x1e293b, 0.58).setStrokeStyle(2, 0x334155);
 
     this.add
-      .text(230, 168, 'P1', {
+      .text(player1CardX, cardTop + 28, 'P1', {
         color: '#fed7aa',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '28px',
       })
       .setOrigin(0.5);
     this.add
-      .text(570, 168, 'P2', {
+      .text(player2CardX, cardTop + 28, 'P2', {
         color: '#bae6fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '28px',
@@ -1281,72 +1407,93 @@ class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(230, 206, '選択中', {
+      .text(player1CardX, cardTop + 66, '選択中', {
         color: '#fed7aa',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
       })
       .setOrigin(0.5);
     this.add
-      .text(570, 206, '選択中', {
+      .text(player2CardX, cardTop + 66, '選択中', {
         color: '#bae6fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(player1CardX, roleLabelY, '特徴', {
+        align: 'center',
+        color: '#fdba74',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '14px',
+      })
+      .setOrigin(0.5);
+    this.add
+      .text(player2CardX, roleLabelY, '特徴', {
+        align: 'center',
+        color: '#7dd3fc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '14px',
       })
       .setOrigin(0.5);
 
     this.player1NameText = this.add
-      .text(230, 242, '', {
+      .text(player1CardX, cardTop + 104, '', {
         align: 'center',
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '24px',
+        fontSize: '28px',
+        wordWrap: { width: nameWrapWidth, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
     this.player1IndexText = this.add
-      .text(230, 272, '', {
+      .text(player1CardX, cardTop + 136, '', {
         align: 'center',
-        color: '#fed7aa',
+        color: '#fcd9bd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
       })
       .setOrigin(0.5);
     this.player1RoleText = this.add
-      .text(230, 318, '', {
+      .text(player1CardX, roleY, '', {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '15px',
-        wordWrap: { width: 230 },
+        lineSpacing: 4,
+        wordWrap: { width: roleWrapWidth, useAdvancedWrap: true },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0);
     this.player1StatsText = this.add
-      .text(230, 382, '', {
-        align: 'left',
+      .text(player1CardX, statsY, '', {
+        align: 'center',
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
-        lineSpacing: 4,
+        lineSpacing: 6,
+        wordWrap: { width: cardTextWidth, useAdvancedWrap: true },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0);
     this.player2NameText = this.add
-      .text(570, 242, '', {
+      .text(player2CardX, cardTop + 104, '', {
         align: 'center',
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '24px',
+        fontSize: '28px',
+        wordWrap: { width: nameWrapWidth, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
     this.player2IndexText = this.add
-      .text(570, 272, '', {
+      .text(player2CardX, cardTop + 136, '', {
         align: 'center',
-        color: '#bae6fd',
+        color: '#d4f1ff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
       })
       .setOrigin(0.5);
     this.player2ModeText = this.add
-      .text(570, 292, '', {
+      .text(player2CardX, cardTop + 156, '', {
         align: 'center',
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
@@ -1354,33 +1501,35 @@ class CharacterSelectScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     this.player2RoleText = this.add
-      .text(570, 318, '', {
+      .text(player2CardX, roleY, '', {
         align: 'center',
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '15px',
-        wordWrap: { width: 230 },
+        lineSpacing: 4,
+        wordWrap: { width: roleWrapWidth, useAdvancedWrap: true },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0);
     this.player2StatsText = this.add
-      .text(570, 382, '', {
-        align: 'left',
+      .text(player2CardX, statsY, '', {
+        align: 'center',
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
-        lineSpacing: 4,
+        lineSpacing: 6,
+        wordWrap: { width: cardTextWidth, useAdvancedWrap: true },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0);
 
     this.add
-      .text(400, 474, 'P1: A/Dで選択   P2: ←/→で選択   P2↓: 2P/CPU切替', {
+      .text(centerX, footerControlsY, 'P1: A/Dで選択   P2: ←/→で選択   P2↓: 2P/CPU切替', {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
       })
       .setOrigin(0.5);
     this.add
-      .text(400, 520, 'Enter/Space: 装備選択へ   Esc: ホームへ戻る', {
+      .text(centerX, footerActionY, 'Enter/Space: 装備選択へ   Esc: ホームへ戻る', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -1509,10 +1658,8 @@ class CharacterSelectScene extends Phaser.Scene {
   }
 
   private getStatsText(definition: FighterDefinition) {
-    return `HP: ${definition.stats.maxHp}
-移動速度: ${definition.stats.moveSpeed}
-攻撃力: ${definition.stats.attackDamage}
-ふっとばし: ${definition.stats.knockbackSpeed}`;
+    return `HP ${definition.stats.maxHp} / 攻撃力 ${definition.stats.attackDamage}
+速度 ${definition.stats.moveSpeed} / ふっとばし ${definition.stats.knockbackSpeed}`;
   }
 }
 
@@ -1603,7 +1750,31 @@ class BattleScene extends Phaser.Scene {
     this.clearHitSparks();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanupBattleScene, this);
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
+
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const camera = this.cameras.main;
+    const hudSafeMargin = 32;
+    const hudLeft = camera.scrollX + hudSafeMargin;
+    const hudRight = camera.scrollX + layoutWidth - hudSafeMargin;
+    const hudTop = camera.scrollY + hudSafeMargin;
+    const hudBottom = camera.scrollY + layoutHeight - hudSafeMargin;
+    const hudCenterX = camera.scrollX + layoutWidth / 2;
+    const hudPanelWidth = Math.min(360, Math.max(260, (layoutWidth - hudSafeMargin * 2 - 260) / 2));
+    const hudPanelHeight = 112;
+    const hudPanelY = hudTop + hudPanelHeight / 2;
+    const p1HudLeft = hudLeft;
+    const p2HudRight = hudRight;
+    const p2HudLeft = p2HudRight - hudPanelWidth;
+    const p1HudX = p1HudLeft + 16;
+    const p2HudX = p2HudRight - 16;
+    const hudTextY = hudTop + 18;
+    const equipmentY = hudTop + 76;
+    const instructionText = this.player2Mode === 'cpu'
+      ? 'P1 A/D + W/Space   P2 CPU   P: 操作確認'
+      : 'P1 A/D + W/Space   P2 ←/→ + ↑/Enter   P: 操作確認';
+
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 286, 660, 4, 0x334155, 0.7);
     this.add.rectangle(400, 392, 660, 4, 0x334155, 0.45);
@@ -1614,19 +1785,28 @@ class BattleScene extends Phaser.Scene {
     this.add.rectangle(player1StartX, 516, 132, 10, 0x0f172a, 0.42);
     this.add.rectangle(player2StartX, 516, 132, 10, 0x0f172a, 0.42);
 
+    this.add.rectangle(p1HudLeft + hudPanelWidth / 2, hudPanelY, hudPanelWidth, hudPanelHeight, 0x0f172a, 0.82).setStrokeStyle(3, 0xf97316);
+    this.add.rectangle(p2HudLeft + hudPanelWidth / 2, hudPanelY, hudPanelWidth, hudPanelHeight, 0x0f172a, 0.82).setStrokeStyle(3, 0x38bdf8);
+    this.add.rectangle(hudCenterX, hudTop + 42, 150, 46, 0x020617, 0.42).setStrokeStyle(2, 0x334155);
+    this.add.text(hudCenterX, hudTop + 42, 'VS', {
+      color: '#e2e8f0',
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '24px',
+    }).setOrigin(0.5);
+
     this.player1Hp = this.createHpUi(
-      32,
-      24,
-      'P1',
+      p1HudX,
+      hudTextY,
+      `P1 ${getFighterShortLabelJa(this.player1FighterId)}`,
       this.player1Definition.stats.maxHp,
       this.player1Definition.labelColor,
       0x22c55e,
       0,
     );
     this.player2Hp = this.createHpUi(
-      768,
-      24,
-      this.player2Mode === 'cpu' ? 'P2 CPU' : 'P2',
+      p2HudX,
+      hudTextY,
+      `${this.player2Mode === 'cpu' ? 'P2 CPU' : 'P2'} ${getFighterShortLabelJa(this.player2FighterId)}`,
       this.player2Definition.stats.maxHp,
       this.player2Definition.labelColor,
       0x38bdf8,
@@ -1634,7 +1814,7 @@ class BattleScene extends Phaser.Scene {
     );
 
     this.player1EquipmentHudText = this.add
-      .text(32, 78, `P1装備: ${getEquipmentShortLabelJa(this.player1Equipment.id)}`, {
+      .text(p1HudX, equipmentY, `装備: ${getEquipmentShortLabelJa(this.player1Equipment.id)}`, {
         color: '#86efac',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
@@ -1642,34 +1822,19 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(0, 0);
 
     this.player2EquipmentHudText = this.add
-      .text(768, 78, `P2装備: ${getEquipmentShortLabelJa(this.player2Equipment.id)}`, {
+      .text(p2HudX, equipmentY, `装備: ${getEquipmentShortLabelJa(this.player2Equipment.id)}`, {
         color: '#93c5fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '16px',
       })
       .setOrigin(1, 0);
 
+    this.add.rectangle(hudCenterX, hudBottom - 22, Math.min(720, layoutWidth - hudSafeMargin * 2), 34, 0x020617, 0.58).setStrokeStyle(2, 0x334155);
     this.add
-      .text(400, 64, 'Instrument Brawl', {
-        color: '#ffffff',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '40px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(400, 112, `${this.player1Definition.displayName} vs ${this.player2Definition.displayName}${this.player2Mode === 'cpu' ? ' (CPU)' : ''}`, {
+      .text(hudCenterX, hudBottom - 22, instructionText, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(400, 150, this.player2Mode === 'cpu' ? 'P1: A / D move, W / Space attack    P2: CPU    P: pause/help' : 'P1: A / D move, W / Space attack    P2: ← / → move, ↑ / Enter attack    P: pause/help', {
-        color: '#94a3b8',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '18px',
+        fontSize: '16px',
       })
       .setOrigin(0.5);
 
@@ -2559,7 +2724,7 @@ class ResultScene extends Phaser.Scene {
     this.transitionStarted = false;
     this.recordResultOnce();
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 620, 360, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
@@ -2708,6 +2873,7 @@ class RecordsScene extends Phaser.Scene {
   private selectedIndex = 0;
   private records = getDefaultStoredRecords();
   private recordsText?: Phaser.GameObjects.Text;
+  private recordsLastPlayedText?: Phaser.GameObjects.Text;
   private resetRecordsText?: Phaser.GameObjects.Text;
   private upKey?: Phaser.Input.Keyboard.Key;
   private downKey?: Phaser.Input.Keyboard.Key;
@@ -2729,48 +2895,77 @@ class RecordsScene extends Phaser.Scene {
     this.isResetArmed = false;
     this.records = loadStoredRecords();
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
-    this.add.rectangle(400, 300, 700, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
+    addViewportBackground(this);
+    this.add.rectangle(400, 300, 700, 520, 0x1e293b).setStrokeStyle(4, 0x475569);
+    this.add.rectangle(400, 244, 640, 280, 0x0f172a).setStrokeStyle(2, 0x334155);
+    this.add.rectangle(400, 474, 640, 170, 0x0f172a).setStrokeStyle(2, 0x334155);
 
     this.add
-      .text(400, 96, '記録', {
+      .text(400, 72, '記録', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '44px',
       })
       .setOrigin(0.5);
 
-    this.recordsText = this.add
-      .text(400, 168, '', {
-        align: 'left',
-        color: '#e2e8f0',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '28px',
-        lineSpacing: 12,
-      })
-      .setOrigin(0.5, 0);
-
-    this.resetRecordsText = this.add
-      .text(400, 428, '', {
-        color: '#f8fafc',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '30px',
-      })
-      .setOrigin(0.5);
-
     this.add
-      .text(400, 476, '↑/↓: 選択   Enter/Space: 決定', {
-        color: '#e2e8f0',
+      .text(100, 98, 'サマリー', {
+        color: '#93c5fd',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
-      .setOrigin(0.5);
+      .setOrigin(0, 0);
+
+    this.recordsText = this.add
+      .text(100, 122, '', {
+        align: 'left',
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '30px',
+        lineSpacing: 11,
+      })
+      .setOrigin(0, 0);
 
     this.add
-      .text(400, 506, 'Esc: ホームへ戻る', {
-        color: '#facc15',
+      .text(100, 340, '最終プレイ', {
+        color: '#93c5fd',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
+        fontSize: '18px',
+      })
+      .setOrigin(0, 0);
+
+    this.recordsLastPlayedText = this.add
+      .text(100, 364, '', {
+        align: 'left',
+        color: '#cbd5e1',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '22px',
+        wordWrap: { width: 600, useAdvancedWrap: true },
+      })
+      .setOrigin(0, 0);
+
+    this.add
+      .text(100, 404, '操作', {
+        color: '#93c5fd',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0, 0);
+
+    this.resetRecordsText = this.add
+      .text(100, 428, '', {
+        color: '#f8fafc',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '28px',
+        lineSpacing: 8,
+      })
+      .setOrigin(0, 0);
+
+    this.add
+      .text(400, 542, '↑/↓: 選択   Enter/Space: 決定   Esc: ホームへ戻る', {
+        color: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
       })
       .setOrigin(0.5);
 
@@ -2832,18 +3027,20 @@ class RecordsScene extends Phaser.Scene {
   }
 
   private updateTexts() {
-    const lastPlayedLabel = this.records.lastPlayedAt ?? '未プレイ';
+    const lastPlayedRaw = this.records.lastPlayedAt ?? '未プレイ';
+    const lastPlayedSafe = lastPlayedRaw.length > 56 ? `${lastPlayedRaw.slice(0, 56)}…` : lastPlayedRaw;
     this.recordsText?.setText(`試合数: ${this.records.totalMatches}
 P1勝利: ${this.records.p1Wins}
 P2勝利: ${this.records.p2Wins}
 引き分け: ${this.records.draws}
 CPU戦: ${this.records.cpuMatches}
-ふたり対戦: ${this.records.local2pMatches}
-最終プレイ: ${lastPlayedLabel}`);
+ふたり対戦: ${this.records.local2pMatches}`);
+
+    this.recordsLastPlayedText?.setText(lastPlayedSafe);
 
     const prefixHome = this.selectedIndex === 0 ? '> ' : '  ';
-    const prefixReset = this.selectedIndex === 1 ? '> ' : '  ';
-    const resetLabel = this.isResetArmed ? '記録リセット: もう一度押すと実行' : '記録リセット';
+    const prefixReset = this.selectedIndex === 1 ? (this.isResetArmed ? '▶ ' : '> ') : '  ';
+    const resetLabel = this.isResetArmed ? '記録リセット（確認中: もう一度押すと実行）' : '記録リセット';
     this.resetRecordsText?.setText(`${prefixHome}ホームへ戻る\n${prefixReset}${resetLabel}`);
   }
 }
@@ -2888,7 +3085,7 @@ class EquipmentSelectScene extends Phaser.Scene {
     const p1Label = this.player1FighterId ? getFighterDisplayNameJa(this.player1FighterId) : '未選択';
     const p2Label = this.player2FighterId ? getFighterDisplayNameJa(this.player2FighterId) : '未選択';
 
-    this.add.rectangle(400, 300, gameWidth, gameHeight, 0x111827);
+    addViewportBackground(this);
     this.add.rectangle(400, 300, 720, 500, 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add.text(400, 96, '装備選択', {
@@ -3038,8 +3235,15 @@ ${p2Prefix}P2装備: ${getEquipmentShortLabelJa(p2Equipment.id)}`,
 new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
-  width: gameWidth,
-  height: gameHeight,
+  width: getInitialLayoutWidth(),
+  height: getInitialLayoutHeight(),
   backgroundColor: '#111827',
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    min: {
+      width: gameWidth,
+      height: gameHeight,
+    },
+  },
   scene: [HomeScene, OptionsScene, RecordsScene, ModeSelectScene, CharacterSelectScene, EquipmentSelectScene, BattleScene, ResultScene],
 });
