@@ -2767,10 +2767,20 @@ class ResultScene extends Phaser.Scene {
     this.recordResultOnce();
 
     addViewportBackground(this);
-    this.add.rectangle(400, 300, 620, 360, 0x1e293b).setStrokeStyle(4, 0x475569);
+
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const camera = this.cameras.main;
+    const centerX = camera.scrollX + layoutWidth / 2;
+    const centerY = camera.scrollY + layoutHeight / 2;
+    const safeTop = camera.scrollY + 40;
+    const panelWidth = Math.min(720, layoutWidth - 80);
+    const contentWidth = panelWidth - 96;
+
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(440, layoutHeight - 80), 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(400, 132, '試合結果', {
+      .text(centerX, safeTop + 48, '試合結果', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '24px',
@@ -2778,59 +2788,51 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 174, '試合終了', {
-        color: '#facc15',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '18px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(400, 216, this.result, {
+      .text(centerX, safeTop + 112, this.result, {
         align: 'center',
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '48px',
+        fontSize: '46px',
+        wordWrap: { width: contentWidth, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
 
+    this.add.rectangle(centerX, safeTop + 206, contentWidth, 104, 0x0f172a, 0.78).setStrokeStyle(2, 0x334155);
     this.add
-      .text(400, 262, `${getFighterDisplayNameJa(this.player1FighterId)} vs ${getFighterDisplayNameJa(this.player2FighterId)} • P2 ${this.player2Mode === 'cpu' ? 'CPU' : '2P'}`, {
-        color: '#cbd5e1',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '20px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(400, 286, `P1装備: ${getEquipmentShortLabelJa(this.player1Equipment.id)}   •   P2装備: ${getEquipmentShortLabelJa(this.player2Equipment.id)}`, {
-        color: '#94a3b8',
+      .text(centerX, safeTop + 174, '対戦サマリー', {
+        color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(400, 326, 'R: 再戦', {
-        color: '#facc15',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '26px',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(400, 372, 'C: キャラ変更（装備は維持）', {
+      .text(centerX, safeTop + 200, [`P1: ${getFighterDisplayNameJa(this.player1FighterId)} / 装備 ${getEquipmentShortLabelJa(this.player1Equipment.id)}`, `P2: ${getFighterDisplayNameJa(this.player2FighterId)} (${this.player2Mode === 'cpu' ? 'CPU' : '2P'}) / 装備 ${getEquipmentShortLabelJa(this.player2Equipment.id)}`], {
+        align: 'center',
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '24px',
+        fontSize: '20px',
+        lineSpacing: 10,
+        wordWrap: { width: contentWidth - 40, useAdvancedWrap: true },
+      })
+      .setOrigin(0.5);
+
+    this.add.rectangle(centerX, safeTop + 338, contentWidth, 108, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
+    this.add
+      .text(centerX, safeTop + 304, '次の操作', {
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(400, 414, 'Enter/Space: ホームへ戻る', {
-        color: '#cbd5e1',
+      .text(centerX, safeTop + 334, ['R: 再戦', 'C: キャラ変更（装備は維持）', 'Enter/Space: ホームへ戻る'], {
+        align: 'center',
+        color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
+        lineSpacing: 8,
       })
       .setOrigin(0.5);
 
