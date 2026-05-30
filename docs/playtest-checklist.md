@@ -1187,3 +1187,18 @@ Checkpoint note:
 - [ ] Case, Amp, Drum Sticks critical, Pick preparation behavior, records, settings, KO, and pause behavior remain unchanged.
 
 **Next recommended task:** Phase 12-4: Guard movement and attack-start lockout while guarding.
+
+
+## Phase 12-4 Guard movement / attack lockout checklist
+
+- [ ] P1 holding `S` moves at about 65% normal speed.
+- [ ] P2 holding Down arrow in local 2P moves at about 65% normal speed.
+- [ ] P1 cannot start a new attack with `W` or `Space` while holding `S`.
+- [ ] P2 cannot start a new attack with Up arrow or `Enter` while holding Down arrow.
+- [ ] Releasing Guard restores normal movement speed and attack-start behavior.
+- [ ] Existing active attacks are not canceled just because Guard is pressed after they started.
+- [ ] CPU mode still works normally and does not gain CPU Guard AI.
+- [ ] Guard damage/knockback reduction from Phase 12-3 still works.
+- [ ] Attack cooldown, duration, active hitboxes, fighter stats, equipment behavior, records, settings, pause, and KO behavior are unchanged.
+
+**Next recommended task:** Phase 12-5: Just Guard timing window and successful block behavior.

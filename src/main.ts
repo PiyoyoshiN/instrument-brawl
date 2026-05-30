@@ -122,6 +122,7 @@ const ampAttackReachBonusPx = 24;
 const caseNormalDamageMultiplier = 0.8;
 const normalGuardDamageMultiplier = 0.5;
 const normalGuardKnockbackMultiplier = 0.5;
+const normalGuardMovementMultiplier = 0.65;
 // Phase 10 prototype balancing pass #1:
 // Drum Sticks keeps a high-variance critical identity, tuned to 35% / 1.5x
 // so expected damage stays below Electric Guitar/Bass baseline while preserving burst.
@@ -2302,7 +2303,8 @@ class BattleScene extends Phaser.Scene {
       fighter.facing = direction < 0 ? -1 : 1;
     }
 
-    const distance = fighter.stats.moveSpeed * (delta / 1000);
+    const movementMultiplier = fighter.isGuarding ? normalGuardMovementMultiplier : 1;
+    const distance = fighter.stats.moveSpeed * movementMultiplier * (delta / 1000);
     const bodyHalfWidth = this.getFighterBodyHalfWidth(fighter);
     const nextX = Phaser.Math.Clamp(
       fighter.body.x + direction * distance,
@@ -2321,7 +2323,7 @@ class BattleScene extends Phaser.Scene {
 
     const wantsAttack = keys.attacks.some((key) => Phaser.Input.Keyboard.JustDown(key));
 
-    if (!wantsAttack || time < fighter.nextAttackAt) {
+    if (!wantsAttack || fighter.isGuarding || time < fighter.nextAttackAt) {
       return;
     }
 
@@ -2329,7 +2331,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   private startAttack(fighter: Fighter, time: number) {
-    if (this.matchOver || time < fighter.nextAttackAt) {
+    if (this.matchOver || fighter.isGuarding || time < fighter.nextAttackAt) {
       return;
     }
 
