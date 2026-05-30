@@ -811,6 +811,7 @@ type BattleSceneData = {
 type CharacterSelectSceneData = BattleSceneData;
 
 type MatchEndReason = 'ko' | 'time_up' | 'retire' | 'draw';
+type RetirePlayer = 'p1' | 'p2';
 
 type ResultSceneData = BattleSceneData & {
   result?: 'p1' | 'p2' | 'draw';
@@ -1760,6 +1761,9 @@ class BattleScene extends Phaser.Scene {
   private resultTransitionEvent?: Phaser.Time.TimerEvent;
   private pauseOverlay?: Phaser.GameObjects.Container;
   private pauseKey?: Phaser.Input.Keyboard.Key;
+  private retirePlayer1Key?: Phaser.Input.Keyboard.Key;
+  private retirePlayer2Key?: Phaser.Input.Keyboard.Key;
+  private pendingRetirePlayer?: RetirePlayer;
   private isPaused = false;
   private pauseStartedAt = 0;
   private hitMarker?: Phaser.GameObjects.Text;
@@ -1817,6 +1821,9 @@ class BattleScene extends Phaser.Scene {
     this.isPaused = false;
     this.pauseStartedAt = 0;
     this.pauseKey = undefined;
+    this.retirePlayer1Key = undefined;
+    this.retirePlayer2Key = undefined;
+    this.pendingRetirePlayer = undefined;
     this.destroyPauseOverlay();
     this.startCountdownEvent?.remove(false);
     this.startCountdownEvent = undefined;
@@ -1933,7 +1940,12 @@ class BattleScene extends Phaser.Scene {
       this.togglePause(time);
     }
 
-    if (this.isPaused || this.matchOver || !this.matchStarted) {
+    if (this.isPaused) {
+      this.updateRetireConfirmationInput();
+      return;
+    }
+
+    if (this.matchOver || !this.matchStarted) {
       return;
     }
 
@@ -2132,9 +2144,13 @@ class BattleScene extends Phaser.Scene {
       player2AltAttack: Phaser.Input.Keyboard.KeyCodes.ENTER,
       player2Guard: Phaser.Input.Keyboard.KeyCodes.DOWN,
       pause: Phaser.Input.Keyboard.KeyCodes.P,
+      retirePlayer1: Phaser.Input.Keyboard.KeyCodes.ONE,
+      retirePlayer2: Phaser.Input.Keyboard.KeyCodes.TWO,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
     this.pauseKey = keys.pause;
+    this.retirePlayer1Key = keys.retirePlayer1;
+    this.retirePlayer2Key = keys.retirePlayer2;
 
     return {
       player1: {
@@ -2162,6 +2178,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   private pauseBattle(time: number) {
+    this.pendingRetirePlayer = undefined;
     this.isPaused = true;
     this.pauseStartedAt = time;
     this.setPausableTimersPaused(true);
@@ -2173,6 +2190,7 @@ class BattleScene extends Phaser.Scene {
 
     this.isPaused = false;
     this.pauseStartedAt = 0;
+    this.pendingRetirePlayer = undefined;
     this.shiftPausedTimestamps(pausedDuration);
     this.setPausableTimersPaused(false);
     this.destroyPauseOverlay();
@@ -2241,6 +2259,14 @@ class BattleScene extends Phaser.Scene {
     const player2Lines = this.player2Mode === 'cpu'
       ? ['CPUが自動操作', 'P2手動操作は不要']
       : ['← / →: 移動', '↑ / Enter: 攻撃'];
+    const retireTitle = this.pendingRetirePlayer
+      ? `${this.pendingRetirePlayer === 'p1' ? 'P1' : 'P2'} リタイア確認`
+      : 'リタイア / Forfeit';
+    const retireLines = this.pendingRetirePlayer === 'p1'
+      ? ['1: P1リタイアを確定', 'P: キャンセルして再開']
+      : this.pendingRetirePlayer === 'p2'
+        ? ['2: P2リタイアを確定', 'P: キャンセルして再開']
+        : ['1: P1リタイア / 2: P2リタイア', 'P: 再開 / キャンセル'];
 
     const overlay = this.add.container(centerX, centerY).setDepth(20);
 
@@ -2283,17 +2309,29 @@ class BattleScene extends Phaser.Scene {
         fontSize: '20px',
         lineSpacing: 10,
       }).setOrigin(0, 0),
-      this.add.rectangle(0, panelTop + panelHeight - 102, panelWidth - uiPanelContentInset, 82, 0x1e293b, 0.72).setStrokeStyle(2, 0x334155),
-      this.add.text(panelLeft + 72, panelTop + panelHeight - 132, '基本ルール', {
+      this.add.rectangle(0, panelTop + panelHeight - 156, panelWidth - uiPanelContentInset, 56, 0x3f1f1f, 0.72).setStrokeStyle(2, 0xf97316),
+      this.add.text(panelLeft + 72, panelTop + panelHeight - 176, retireTitle, {
+        color: '#fed7aa',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
+      }).setOrigin(0, 0),
+      this.add.text(panelLeft + 72, panelTop + panelHeight - 148, retireLines, {
+        color: this.pendingRetirePlayer ? '#fecaca' : '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '16px',
+        lineSpacing: 6,
+      }).setOrigin(0, 0),
+      this.add.rectangle(0, panelTop + panelHeight - 76, panelWidth - uiPanelContentInset, 56, 0x1e293b, 0.72).setStrokeStyle(2, 0x334155),
+      this.add.text(panelLeft + 72, panelTop + panelHeight - 98, '基本ルール', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       }).setOrigin(0, 0),
-      this.add.text(panelLeft + 72, panelTop + panelHeight - 96, ['P: 再開', '1回の攻撃で当たるのは1回だけ', '結果画面: R再戦 / Cキャラ選択 / Enter・Spaceホーム'], {
+      this.add.text(panelLeft + 72, panelTop + panelHeight - 70, ['1回の攻撃で当たるのは1回だけ', '結果画面: R再戦 / Cキャラ選択 / Enter・Spaceホーム'], {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '18px',
-        lineSpacing: 8,
+        fontSize: '16px',
+        lineSpacing: 6,
       }).setOrigin(0, 0),
     ]);
 
@@ -2303,6 +2341,42 @@ class BattleScene extends Phaser.Scene {
   private destroyPauseOverlay() {
     this.pauseOverlay?.destroy(true);
     this.pauseOverlay = undefined;
+  }
+
+  private updateRetireConfirmationInput() {
+    if (this.matchOver || !this.matchStarted) {
+      return;
+    }
+
+    if (this.retirePlayer1Key && Phaser.Input.Keyboard.JustDown(this.retirePlayer1Key)) {
+      this.handleRetireConfirmationInput('p1');
+    }
+
+    if (this.retirePlayer2Key && Phaser.Input.Keyboard.JustDown(this.retirePlayer2Key)) {
+      this.handleRetireConfirmationInput('p2');
+    }
+  }
+
+  private handleRetireConfirmationInput(player: RetirePlayer) {
+    if (this.matchOver) {
+      return;
+    }
+
+    if (this.pendingRetirePlayer === player) {
+      this.finishMatchByRetire(player);
+      return;
+    }
+
+    this.pendingRetirePlayer = player;
+    this.showPauseOverlay();
+  }
+
+  private finishMatchByRetire(retiringPlayer: RetirePlayer) {
+    const resultData = retiringPlayer === 'p1'
+      ? { result: 'p2' as const, displayTitle: this.player2.definition.resultWinText, matchEndReason: 'retire' as const }
+      : { result: 'p1' as const, displayTitle: this.player1.definition.resultWinText, matchEndReason: 'retire' as const };
+
+    this.endMatch(resultData);
   }
 
   private updateGuardState(fighter: Fighter, keys: PlayerControls, time: number) {
@@ -2739,6 +2813,26 @@ class BattleScene extends Phaser.Scene {
       : { result: 'p2' as const, displayTitle: this.player2.definition.resultWinText, matchEndReason: 'time_up' as const };
   }
 
+
+  private finishMatchByTimeUp() {
+    if (this.matchOver) {
+      return;
+    }
+
+    const resultData = this.getTimeUpResultData();
+    this.endMatch(resultData);
+  }
+
+  private getTimeUpResultData(): ResultSceneData {
+    if (this.player1Hp.current === this.player2Hp.current) {
+      return { result: 'draw' as const, displayTitle: 'Draw', matchEndReason: 'time_up' as const };
+    }
+
+    return this.player1Hp.current > this.player2Hp.current
+      ? { result: 'p1' as const, displayTitle: this.player1.definition.resultWinText, matchEndReason: 'time_up' as const }
+      : { result: 'p2' as const, displayTitle: this.player2.definition.resultWinText, matchEndReason: 'time_up' as const };
+  }
+
   private showWinEffect(resultData: ResultSceneData) {
     if (!this.effectsEnabled) {
       return;
@@ -2798,6 +2892,7 @@ class BattleScene extends Phaser.Scene {
     this.destroyPauseOverlay();
     this.isPaused = false;
     this.pauseStartedAt = 0;
+    this.pendingRetirePlayer = undefined;
     this.clearActiveAttacks();
     this.player1.knockbackVelocity = 0;
     this.player2.knockbackVelocity = 0;
@@ -2818,6 +2913,7 @@ class BattleScene extends Phaser.Scene {
     this.destroyPauseOverlay();
     this.isPaused = false;
     this.pauseStartedAt = 0;
+    this.pendingRetirePlayer = undefined;
     this.clearActiveAttacks();
     this.startCountdownEvent?.remove(false);
     this.startCountdownEvent = undefined;
@@ -3051,7 +3147,7 @@ class ResultScene extends Phaser.Scene {
     this.add
       .text(centerX, safeTop + 104, this.result, {
         align: 'center',
-        color: '#ffffff',
+        color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '42px',
         wordWrap: { width: contentWidth, useAdvancedWrap: true },

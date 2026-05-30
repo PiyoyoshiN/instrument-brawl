@@ -1277,3 +1277,19 @@ Checkpoint note:
 - [ ] Time Up HP comparison, KO behavior, Guard / Just Guard, CPU battle, equipment behavior, attack timing, hitboxes, fighter stats, and settings remain unchanged.
 
 **Next recommended task:** Phase 12-10: Pause menu Retire / Forfeit confirmation flow.
+
+
+## Phase 12-10 Pause Retire / Forfeit checklist
+
+- [ ] Pause opens with `P` during battle.
+- [ ] While paused, pressing `1` once enters P1 Retire confirmation.
+- [ ] Pressing `1` again confirms P1 Retire, gives P2 the existing win result, and displays `RETIRE` on ResultScene.
+- [ ] While paused, pressing `2` once enters P2 Retire confirmation.
+- [ ] Pressing `2` again confirms P2 Retire, gives P1 the existing win result, and displays `RETIRE` on ResultScene.
+- [ ] Pressing `P` from normal Pause or Retire confirmation cancels/unpauses cleanly and clears pending confirmation.
+- [ ] Timer does not tick while Pause / Retire confirmation is open.
+- [ ] Records continue to use existing P1/P2 win counters; no reason-specific counters or schema changes are added.
+- [ ] KO and Time Up result flows still work normally.
+- [ ] Guard / Just Guard, CPU battle, equipment behavior, attack timing, hitboxes, fighter stats, and settings remain unchanged.
+
+**Next recommended task:** Phase 12-11: Records/settings schema sanity check.
