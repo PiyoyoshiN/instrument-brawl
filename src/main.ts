@@ -124,6 +124,7 @@ const normalGuardDamageMultiplier = 0.5;
 const normalGuardKnockbackMultiplier = 0.5;
 const normalGuardMovementMultiplier = 0.65;
 const justGuardWindowMs = 120;
+const justGuardFeedbackDurationMs = 220;
 // Phase 10 prototype balancing pass #1:
 // Drum Sticks keeps a high-variance critical identity, tuned to 35% / 1.5x
 // so expected damage stays below Electric Guitar/Bass baseline while preserving burst.
@@ -764,6 +765,7 @@ type Fighter = {
   stats: FighterStats;
   definition: FighterDefinition;
   hitFlashEvent?: Phaser.Time.TimerEvent;
+  guardIndicator?: Phaser.GameObjects.Ellipse;
 };
 
 type PlayerControls = {
@@ -1759,6 +1761,8 @@ class BattleScene extends Phaser.Scene {
   private hitMarkerEvent?: Phaser.Time.TimerEvent;
   private activeHitSparks: Phaser.GameObjects.Rectangle[] = [];
   private hitSparkEvents: Phaser.Time.TimerEvent[] = [];
+  private activeJustGuardFeedback: Phaser.GameObjects.Ellipse[] = [];
+  private justGuardFeedbackEvents: Phaser.Time.TimerEvent[] = [];
   private nextCpuDecisionAt = 0;
   private cpuRetreatUntil = 0;
   private effectsEnabled = true;
@@ -1941,6 +1945,8 @@ class BattleScene extends Phaser.Scene {
     this.updateActiveAttacks(time);
     this.updateKnockback(this.player1, delta);
     this.updateKnockback(this.player2, delta);
+    this.updateGuardFeedback(this.player1);
+    this.updateGuardFeedback(this.player2);
   }
 
   private createAmpAccents() {
@@ -2054,6 +2060,11 @@ class BattleScene extends Phaser.Scene {
         fontSize: '18px',
       })
       .setOrigin(0.5, 0);
+    const guardIndicator = this.add
+      .ellipse(x, body.y, bodyWidth + 28, bodyHeight + 30, 0x38bdf8, 0.1)
+      .setStrokeStyle(3, 0xa7f3d0, 0.78)
+      .setDepth(2)
+      .setVisible(false);
 
     return {
       body,
@@ -2066,6 +2077,7 @@ class BattleScene extends Phaser.Scene {
       normalColor: definition.bodyColor,
       stats: definition.stats,
       definition,
+      guardIndicator,
     };
   }
 
@@ -2164,6 +2176,10 @@ class BattleScene extends Phaser.Scene {
 
     if (this.hitMarkerEvent) {
       this.hitMarkerEvent.paused = paused;
+    }
+
+    for (const feedbackEvent of this.justGuardFeedbackEvents) {
+      feedbackEvent.paused = paused;
     }
 
     if (this.player1?.hitFlashEvent) {
@@ -2278,6 +2294,16 @@ class BattleScene extends Phaser.Scene {
   private clearGuardState(fighter: Fighter) {
     fighter.isGuarding = false;
     fighter.guardStartedAt = 0;
+  }
+
+  private updateGuardFeedback(fighter: Fighter) {
+    fighter.guardIndicator
+      ?.setPosition(fighter.body.x, fighter.body.y)
+      .setVisible(fighter.isGuarding && !this.matchOver);
+  }
+
+  private clearGuardFeedback(fighter: Fighter) {
+    fighter.guardIndicator?.setVisible(false);
   }
 
   private moveFighter(fighter: Fighter, keys: PlayerControls, delta: number) {
@@ -2431,6 +2457,12 @@ class BattleScene extends Phaser.Scene {
       if (Phaser.Geom.Intersects.RectangleToRectangle(attack.hitbox.getBounds(), attack.defender.body.getBounds())) {
         attack.hasHit = true;
         const damageResult = this.calculateAttackDamage(attack.attacker, attack.defender, time);
+
+        if (damageResult.wasJustGuarded) {
+          this.showJustGuardFeedback(attack.defender);
+          continue;
+        }
+
         this.applyDamage(attack.defenderHp, damageResult.damage);
         this.applyKnockback(
           attack.defender,
@@ -2498,6 +2530,32 @@ class BattleScene extends Phaser.Scene {
     });
 
     this.hitSparkEvents.push(sparkEvent);
+  }
+
+
+  private showJustGuardFeedback(defender: Fighter) {
+    if (this.matchOver) {
+      return;
+    }
+
+    const ring = this.add
+      .ellipse(defender.body.x, defender.body.y, defender.body.width + 56, defender.body.height + 58, 0x22d3ee, 0.1)
+      .setStrokeStyle(5, 0xf0fdfa, 0.92)
+      .setDepth(8);
+    const burst = this.add
+      .ellipse(defender.body.x, defender.body.y, defender.body.width + 28, defender.body.height + 30, 0xa7f3d0, 0.22)
+      .setStrokeStyle(3, 0x67e8f9, 0.88)
+      .setDepth(8);
+
+    this.activeJustGuardFeedback.push(ring, burst);
+    const feedbackEvent = this.time.delayedCall(justGuardFeedbackDurationMs, () => {
+      ring.destroy();
+      burst.destroy();
+      this.activeJustGuardFeedback = this.activeJustGuardFeedback.filter((feedback) => feedback !== ring && feedback !== burst);
+      this.justGuardFeedbackEvents = this.justGuardFeedbackEvents.filter((event) => event !== feedbackEvent);
+    });
+
+    this.justGuardFeedbackEvents.push(feedbackEvent);
   }
 
   private showHitMarker(fighter: Fighter, damage: number, isCritical = false) {
@@ -2726,6 +2784,7 @@ class BattleScene extends Phaser.Scene {
     this.hitMarker = undefined;
     this.hitMarkerSubLabel = undefined;
     this.clearHitSparks();
+    this.clearJustGuardFeedback();
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
     this.player1AmpAccent?.destroy();
@@ -2736,11 +2795,17 @@ class BattleScene extends Phaser.Scene {
     if (this.player1) {
       this.player1.knockbackVelocity = 0;
       this.resetFighterColor(this.player1);
+      this.clearGuardFeedback(this.player1);
+      this.player1.guardIndicator?.destroy();
+      this.player1.guardIndicator = undefined;
     }
 
     if (this.player2) {
       this.player2.knockbackVelocity = 0;
       this.resetFighterColor(this.player2);
+      this.clearGuardFeedback(this.player2);
+      this.player2.guardIndicator?.destroy();
+      this.player2.guardIndicator = undefined;
     }
   }
 
@@ -2840,6 +2905,21 @@ class BattleScene extends Phaser.Scene {
     }
 
     this.activeHitSparks = [];
+  }
+
+
+  private clearJustGuardFeedback() {
+    for (const feedbackEvent of this.justGuardFeedbackEvents) {
+      feedbackEvent.remove(false);
+    }
+
+    this.justGuardFeedbackEvents = [];
+
+    for (const feedback of this.activeJustGuardFeedback) {
+      feedback.destroy();
+    }
+
+    this.activeJustGuardFeedback = [];
   }
 
   private clearActiveAttacks() {

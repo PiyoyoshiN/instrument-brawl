@@ -1217,3 +1217,19 @@ Checkpoint note:
 - [ ] No Guard / Just Guard HUD or visual feedback is required until Phase 12-6.
 
 **Next recommended task:** Phase 12-6: Guard / Just Guard visual and HUD feedback.
+
+
+## Phase 12-6 Guard / Just Guard feedback checklist
+
+- [ ] P1 holding `S` shows a subtle Guard visual state.
+- [ ] P2 holding Down arrow in local 2P shows a subtle Guard visual state.
+- [ ] Guard visual disappears when Guard is released.
+- [ ] Just Guard success shows distinct short visual feedback that is clearly different from Normal Guard.
+- [ ] Just Guard success does not show misleading `HIT -0`, `CRITICAL 0`, or normal damage-style feedback.
+- [ ] Normal Guard still shows reduced-damage hit feedback when useful.
+- [ ] Non-guard hits and non-guard critical hits still show ordinary hit feedback.
+- [ ] Guard / Just Guard numerical behavior remains unchanged.
+- [ ] No audio, images, 3D, external assets, Timer, Time Up, Retire, Result reason, records/schema, or CPU Guard AI changes are included.
+- [ ] Long-term polish direction remains less text and more sound, timing, light, shape, hit effect, animation, and other non-verbal game-feel feedback.
+
+**Next recommended task:** Phase 12-7: 99-second timer foundation.
