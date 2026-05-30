@@ -754,6 +754,8 @@ type Fighter = {
   facing: -1 | 1;
   nextAttackAt: number;
   knockbackVelocity: number;
+  isGuarding: boolean;
+  guardStartedAt: number;
   normalColor: number;
   stats: FighterStats;
   definition: FighterDefinition;
@@ -764,6 +766,7 @@ type PlayerControls = {
   left: Phaser.Input.Keyboard.Key;
   right: Phaser.Input.Keyboard.Key;
   attacks: Phaser.Input.Keyboard.Key[];
+  guardKey: Phaser.Input.Keyboard.Key;
 };
 
 type PlayerHp = {
@@ -1917,12 +1920,15 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
+    this.updateGuardState(this.player1, this.controls.player1, time);
     this.moveFighter(this.player1, this.controls.player1, delta);
     this.tryAttack(this.player1, this.controls.player1, time);
 
     if (this.player2Mode === 'cpu') {
+      this.clearGuardState(this.player2);
       this.updateCpu(time, delta);
     } else {
+      this.updateGuardState(this.player2, this.controls.player2, time);
       this.moveFighter(this.player2, this.controls.player2, delta);
       this.tryAttack(this.player2, this.controls.player2, time);
     }
@@ -2050,6 +2056,8 @@ class BattleScene extends Phaser.Scene {
       facing: 1,
       nextAttackAt: 0,
       knockbackVelocity: 0,
+      isGuarding: false,
+      guardStartedAt: 0,
       normalColor: definition.bodyColor,
       stats: definition.stats,
       definition,
@@ -2072,10 +2080,12 @@ class BattleScene extends Phaser.Scene {
       player1Right: Phaser.Input.Keyboard.KeyCodes.D,
       player1Attack: Phaser.Input.Keyboard.KeyCodes.W,
       player1AltAttack: Phaser.Input.Keyboard.KeyCodes.SPACE,
+      player1Guard: Phaser.Input.Keyboard.KeyCodes.S,
       player2Left: Phaser.Input.Keyboard.KeyCodes.LEFT,
       player2Right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
       player2Attack: Phaser.Input.Keyboard.KeyCodes.UP,
       player2AltAttack: Phaser.Input.Keyboard.KeyCodes.ENTER,
+      player2Guard: Phaser.Input.Keyboard.KeyCodes.DOWN,
       pause: Phaser.Input.Keyboard.KeyCodes.P,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
@@ -2086,11 +2096,13 @@ class BattleScene extends Phaser.Scene {
         left: keys.player1Left,
         right: keys.player1Right,
         attacks: [keys.player1Attack, keys.player1AltAttack],
+        guardKey: keys.player1Guard,
       },
       player2: {
         left: keys.player2Left,
         right: keys.player2Right,
         attacks: [keys.player2Attack, keys.player2AltAttack],
+        guardKey: keys.player2Guard,
       },
     };
   }
@@ -2242,6 +2254,25 @@ class BattleScene extends Phaser.Scene {
   private destroyPauseOverlay() {
     this.pauseOverlay?.destroy(true);
     this.pauseOverlay = undefined;
+  }
+
+  private updateGuardState(fighter: Fighter, keys: PlayerControls, time: number) {
+    const isGuardKeyDown = keys.guardKey.isDown;
+
+    if (isGuardKeyDown && !fighter.isGuarding) {
+      fighter.isGuarding = true;
+      fighter.guardStartedAt = time;
+      return;
+    }
+
+    if (!isGuardKeyDown && fighter.isGuarding) {
+      this.clearGuardState(fighter);
+    }
+  }
+
+  private clearGuardState(fighter: Fighter) {
+    fighter.isGuarding = false;
+    fighter.guardStartedAt = 0;
   }
 
   private moveFighter(fighter: Fighter, keys: PlayerControls, delta: number) {

@@ -1162,3 +1162,15 @@ Checkpoint note:
 - [ ] No runtime code is modified by Phase 12-1.
 
 **Next recommended task:** Phase 12-2: Guard input and guard state foundation.
+
+
+## Phase 12-2 Guard input/state foundation checklist
+
+- [ ] P1 Guard input is wired to `S` in BattleScene.
+- [ ] P2 Guard input is wired to Down arrow in local 2P BattleScene.
+- [ ] Guard state uses clear internal runtime fields such as `isGuarding` and `guardStartedAt`.
+- [ ] Pressing/releasing Guard updates runtime state without changing damage, knockback, movement speed, attack timing, hitboxes, fighter stats, equipment effects, records, or settings.
+- [ ] CPU mode still plays without P2 manual Guard behavior.
+- [ ] Existing Phase 11 UI guardrails still pass: HP bars visible, footer controls visible, and Japanese UI readable.
+
+**Next recommended task:** Phase 12-3: Normal Guard damage/knockback reduction.
