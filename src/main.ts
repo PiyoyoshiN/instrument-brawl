@@ -810,9 +810,12 @@ type BattleSceneData = {
 
 type CharacterSelectSceneData = BattleSceneData;
 
+type MatchEndReason = 'ko' | 'time_up' | 'retire' | 'draw';
+
 type ResultSceneData = BattleSceneData & {
   result?: 'p1' | 'p2' | 'draw';
   displayTitle?: string;
+  matchEndReason?: MatchEndReason;
 };
 
 type AttackVisualStyle = {
@@ -2707,10 +2710,10 @@ class BattleScene extends Phaser.Scene {
     }
 
     const resultData = player1Defeated && player2Defeated
-      ? { result: 'draw' as const, displayTitle: 'Draw' }
+      ? { result: 'draw' as const, displayTitle: 'Draw', matchEndReason: 'draw' as const }
       : player1Defeated
-        ? { result: 'p2' as const, displayTitle: this.player2.definition.resultWinText }
-        : { result: 'p1' as const, displayTitle: this.player1.definition.resultWinText };
+        ? { result: 'p2' as const, displayTitle: this.player2.definition.resultWinText, matchEndReason: 'ko' as const }
+        : { result: 'p1' as const, displayTitle: this.player1.definition.resultWinText, matchEndReason: 'ko' as const };
 
     this.endMatch(resultData);
   }
@@ -2728,12 +2731,12 @@ class BattleScene extends Phaser.Scene {
 
   private getTimeUpResultData(): ResultSceneData {
     if (this.player1Hp.current === this.player2Hp.current) {
-      return { result: 'draw' as const, displayTitle: 'Draw' };
+      return { result: 'draw' as const, displayTitle: 'Draw', matchEndReason: 'time_up' as const };
     }
 
     return this.player1Hp.current > this.player2Hp.current
-      ? { result: 'p1' as const, displayTitle: this.player1.definition.resultWinText }
-      : { result: 'p2' as const, displayTitle: this.player2.definition.resultWinText };
+      ? { result: 'p1' as const, displayTitle: this.player1.definition.resultWinText, matchEndReason: 'time_up' as const }
+      : { result: 'p2' as const, displayTitle: this.player2.definition.resultWinText, matchEndReason: 'time_up' as const };
   }
 
   private showWinEffect(resultData: ResultSceneData) {
@@ -2981,6 +2984,7 @@ class BattleScene extends Phaser.Scene {
 class ResultScene extends Phaser.Scene {
   private result = 'Match Over';
   private resultKind?: ResultSceneData['result'];
+  private matchEndReason: MatchEndReason = 'ko';
   private hasRecordedResult = false;
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
@@ -3005,6 +3009,7 @@ class ResultScene extends Phaser.Scene {
   init(data: ResultSceneData = {}) {
     this.hasRecordedResult = false;
     this.resultKind = data.result;
+    this.matchEndReason = data.matchEndReason ?? (data.result === 'draw' ? 'draw' : 'ko');
     this.player1FighterId = data.player1FighterId ?? defaultPlayer1FighterId;
     this.player2FighterId = data.player2FighterId ?? defaultPlayer2FighterId;
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
@@ -3044,12 +3049,22 @@ class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(centerX, safeTop + 112, this.result, {
+      .text(centerX, safeTop + 104, this.result, {
         align: 'center',
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '46px',
+        fontSize: '42px',
         wordWrap: { width: contentWidth, useAdvancedWrap: true },
+      })
+      .setOrigin(0.5);
+
+    this.add.rectangle(centerX, safeTop + 206, contentWidth, 104, 0x0f172a, 0.78).setStrokeStyle(2, 0x334155);
+    this.add
+      .text(centerX, safeTop + 146, `理由: ${this.getMatchEndReasonLabel()}`, {
+        align: 'center',
+        color: '#facc15',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '18px',
       })
       .setOrigin(0.5);
 
@@ -3058,10 +3073,13 @@ class ResultScene extends Phaser.Scene {
       .text(centerX, safeTop + 174, '対戦サマリー', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '18px',
+        fontSize: '20px',
+        lineSpacing: 10,
+        wordWrap: { width: contentWidth - 40, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
 
+    this.add.rectangle(centerX, safeTop + 338, contentWidth, 108, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
     this.add
       .text(centerX, safeTop + 200, [`P1: ${getFighterDisplayNameJa(this.player1FighterId)} / 装備 ${getEquipmentShortLabelJa(this.player1Equipment.id)}`, `P2: ${getFighterDisplayNameJa(this.player2FighterId)} (${this.player2Mode === 'cpu' ? 'CPU' : '2P'}) / 装備 ${getEquipmentShortLabelJa(this.player2Equipment.id)}`], {
         align: 'center',
@@ -3139,6 +3157,21 @@ class ResultScene extends Phaser.Scene {
     ) {
       this.transitionStarted = true;
       this.scene.start('HomeScene');
+    }
+  }
+
+
+  private getMatchEndReasonLabel() {
+    switch (this.matchEndReason) {
+      case 'time_up':
+        return 'TIME UP';
+      case 'retire':
+        return 'RETIRE';
+      case 'draw':
+        return 'DRAW';
+      case 'ko':
+      default:
+        return 'KO';
     }
   }
 

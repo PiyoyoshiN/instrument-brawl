@@ -1264,3 +1264,16 @@ Checkpoint note:
 - [ ] Guard / Just Guard, CPU battle, equipment behavior, attack timing, hitboxes, fighter stats, Result reason UI, and Retire / Forfeit remain unchanged.
 
 **Next recommended task:** Phase 12-9: Result reason handoff/display for KO / TIME_UP / RETIRE / DRAW without records schema expansion.
+
+
+## Phase 12-9 Result reason handoff/display checklist
+
+- [ ] KO result passes and displays a `KO` reason label.
+- [ ] Time Up result passes and displays a `TIME UP` reason label.
+- [ ] Draw result passes and displays a clear draw reason label when appropriate.
+- [ ] `RETIRE` is available as a transient reason label/type for Phase 12-10, but Retire / Forfeit behavior is not implemented yet.
+- [ ] ResultScene still shows the correct winner/draw title.
+- [ ] Records continue to use existing P1/P2/draw and CPU/local counters; no reason-specific counters or schema changes are added.
+- [ ] Time Up HP comparison, KO behavior, Guard / Just Guard, CPU battle, equipment behavior, attack timing, hitboxes, fighter stats, and settings remain unchanged.
+
+**Next recommended task:** Phase 12-10: Pause menu Retire / Forfeit confirmation flow.
