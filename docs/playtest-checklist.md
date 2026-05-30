@@ -1417,3 +1417,8 @@ Check these at 800x600, laptop-sized viewport, and large desktop viewport:
 - [ ] Attack tempo review remains deferred to Phase 13.
 
 **Next recommended task:** Phase 12-13: Phase 12 checkpoint docs.
+
+
+## Phase 12 checkpoint reference
+
+Phase 12 checkpoint status and deferred Phase 13 direction are summarized in `docs/phase-12-checkpoint-report.md`. Complete the consolidated Phase 12 checklist above before treating the checkpoint as manually verified.
