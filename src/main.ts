@@ -125,6 +125,7 @@ const normalGuardKnockbackMultiplier = 0.5;
 const normalGuardMovementMultiplier = 0.65;
 const justGuardWindowMs = 120;
 const justGuardFeedbackDurationMs = 220;
+const matchTimerDurationSeconds = 99;
 // Phase 10 prototype balancing pass #1:
 // Drum Sticks keeps a high-variance critical identity, tuned to 35% / 1.5x
 // so expected damage stays below Electric Guitar/Bass baseline while preserving burst.
@@ -1748,6 +1749,8 @@ class BattleScene extends Phaser.Scene {
   private player2Definition = defaultPlayer2FighterDefinition;
   private matchOver = false;
   private matchStarted = false;
+  private matchTimerRemainingSeconds = matchTimerDurationSeconds;
+  private matchTimerText?: Phaser.GameObjects.Text;
   private startPrompt?: Phaser.GameObjects.Text;
   private startCountdownEvent?: Phaser.Time.TimerEvent;
   private startPromptClearEvent?: Phaser.Time.TimerEvent;
@@ -1801,6 +1804,7 @@ class BattleScene extends Phaser.Scene {
   create() {
     this.matchOver = false;
     this.matchStarted = false;
+    this.matchTimerRemainingSeconds = matchTimerDurationSeconds;
     this.activeAttacks = [];
     this.nextCpuDecisionAt = 0;
     this.cpuRetreatUntil = 0;
@@ -1858,11 +1862,12 @@ class BattleScene extends Phaser.Scene {
     this.add.rectangle(p1HudLeft + hudPanelWidth / 2, hudPanelY, hudPanelWidth, hudPanelHeight, 0x0f172a, 0.82).setStrokeStyle(3, 0xf97316);
     this.add.rectangle(p2HudLeft + hudPanelWidth / 2, hudPanelY, hudPanelWidth, hudPanelHeight, 0x0f172a, 0.82).setStrokeStyle(3, 0x38bdf8);
     this.add.rectangle(hudCenterX, hudTop + 42, 150, 46, 0x020617, 0.42).setStrokeStyle(2, 0x334155);
-    this.add.text(hudCenterX, hudTop + 42, 'VS', {
-      color: '#e2e8f0',
+    this.matchTimerText = this.add.text(hudCenterX, hudTop + 42, '', {
+      color: '#f8fafc',
       fontFamily: 'system-ui, sans-serif',
-      fontSize: '24px',
+      fontSize: '28px',
     }).setOrigin(0.5);
+    this.updateMatchTimerText();
 
     this.player1Hp = this.createHpUi(
       p1HudX,
@@ -1929,6 +1934,8 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
+    this.updateMatchTimer(delta);
+
     this.updateGuardState(this.player1, this.controls.player1, time);
     this.moveFighter(this.player1, this.controls.player1, delta);
     this.tryAttack(this.player1, this.controls.player1, time);
@@ -1981,6 +1988,16 @@ class BattleScene extends Phaser.Scene {
       this.player2AmpAccent.setPosition(this.player2.body.x, this.player2.body.y + 74);
       this.player2AmpAccent.setScale(pulse);
     }
+  }
+
+
+  private updateMatchTimer(delta: number) {
+    this.matchTimerRemainingSeconds = Math.max(0, this.matchTimerRemainingSeconds - delta / 1000);
+    this.updateMatchTimerText();
+  }
+
+  private updateMatchTimerText() {
+    this.matchTimerText?.setText(`${Math.ceil(this.matchTimerRemainingSeconds)}`);
   }
 
   private showMatchStartPrompt() {
@@ -2783,6 +2800,8 @@ class BattleScene extends Phaser.Scene {
     this.hitMarkerSubLabel?.destroy();
     this.hitMarker = undefined;
     this.hitMarkerSubLabel = undefined;
+    this.matchTimerText?.destroy();
+    this.matchTimerText = undefined;
     this.clearHitSparks();
     this.clearJustGuardFeedback();
     this.resultTransitionEvent?.remove(false);

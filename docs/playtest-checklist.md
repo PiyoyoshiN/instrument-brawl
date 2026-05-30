@@ -1233,3 +1233,17 @@ Checkpoint note:
 - [ ] Long-term polish direction remains less text and more sound, timing, light, shape, hit effect, animation, and other non-verbal game-feel feedback.
 
 **Next recommended task:** Phase 12-7: 99-second timer foundation.
+
+
+## Phase 12-7 99-second timer foundation checklist
+
+- [ ] BattleScene shows a clear center-top timer.
+- [ ] Timer initializes at `99`.
+- [ ] Timer starts counting down only after the match starts, not during Ready/Fight startup delay.
+- [ ] Timer counts down during active battle.
+- [ ] Timer display clamps at `0` and does not visually go below 0.
+- [ ] Time Up does not end the match yet; winner/draw-by-HP behavior remains deferred to Phase 12-8.
+- [ ] Timer does not overlap P1/P2 HP bars or footer controls at 800x600, laptop-sized viewport, or large desktop viewport.
+- [ ] Guard / Just Guard, KO, CPU battle, equipment behavior, records, settings, and attack/hitbox values remain unchanged.
+
+**Next recommended task:** Phase 12-8: Timer pause behavior and time-up result logic.

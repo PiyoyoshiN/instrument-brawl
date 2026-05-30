@@ -1507,4 +1507,4 @@ Implemented scope:
 - Phase 12 must preserve Phase 11 viewport-aware UI guardrails and must not regress HP bars, Character Select layout, footer visibility, or Japanese UI readability.
 - Phase 12-1 is docs/scope only; runtime mechanics begin in later focused PRs.
 
-**Next recommended task:** Phase 12-7: 99-second timer foundation.
+**Next recommended task:** Phase 12-8: Timer pause behavior and time-up result logic.
