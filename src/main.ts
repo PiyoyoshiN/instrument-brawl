@@ -120,6 +120,8 @@ const cpuAttackDistancePadding = 18;
 const ampAttackReachBonusPx = 24;
 // Phase 10 Case prototype: normal incoming damage only (no knockback/HP/guard behavior changes).
 const caseNormalDamageMultiplier = 0.8;
+const normalGuardDamageMultiplier = 0.5;
+const normalGuardKnockbackMultiplier = 0.5;
 // Phase 10 prototype balancing pass #1:
 // Drum Sticks keeps a high-variance critical identity, tuned to 35% / 1.5x
 // so expected damage stays below Electric Guitar/Bass baseline while preserving burst.
@@ -2426,7 +2428,11 @@ class BattleScene extends Phaser.Scene {
         attack.hasHit = true;
         const damageResult = this.calculateAttackDamage(attack.attacker, attack.defender);
         this.applyDamage(attack.defenderHp, damageResult.damage);
-        this.applyKnockback(attack.defender, attack.attacker.facing, attack.attacker.stats.knockbackSpeed);
+        this.applyKnockback(
+          attack.defender,
+          attack.attacker.facing,
+          this.getGuardedKnockbackSpeed(attack.defender, attack.attacker.stats.knockbackSpeed),
+        );
         this.flashFighter(attack.defender);
         this.showHitSpark(attack.defender, attack.attacker);
         this.showHitMarker(attack.defender, damageResult.damage, damageResult.isCritical);
@@ -2765,6 +2771,18 @@ class BattleScene extends Phaser.Scene {
     return fighter.stats.attackWidth + (this.hasAmpReach(fighter) ? ampAttackReachBonusPx : 0);
   }
 
+  private getGuardedDamage(defender: Fighter, damage: number) {
+    if (!defender.isGuarding || damage <= 0) {
+      return damage;
+    }
+
+    return Math.max(1, Math.floor(damage * normalGuardDamageMultiplier));
+  }
+
+  private getGuardedKnockbackSpeed(defender: Fighter, speed: number) {
+    return defender.isGuarding ? speed * normalGuardKnockbackMultiplier : speed;
+  }
+
   private calculateAttackDamage(attacker: Fighter, defender: Fighter): DamageCalculationResult {
     const baseDamage = attacker.stats.attackDamage;
     const canCritical = this.canUseDrumSticksCritical(attacker);
@@ -2782,7 +2800,7 @@ class BattleScene extends Phaser.Scene {
     }
 
     return {
-      damage: Math.max(1, finalDamage),
+      damage: this.getGuardedDamage(defender, Math.max(1, finalDamage)),
       isCritical,
     };
   }

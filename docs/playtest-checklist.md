@@ -1174,3 +1174,16 @@ Checkpoint note:
 - [ ] Existing Phase 11 UI guardrails still pass: HP bars visible, footer controls visible, and Japanese UI readable.
 
 **Next recommended task:** Phase 12-3: Normal Guard damage/knockback reduction.
+
+
+## Phase 12-3 Normal Guard damage/knockback checklist
+
+- [ ] A guarding defender takes about 50% final damage after existing base damage, Case, and critical calculations.
+- [ ] Guarded positive damage remains at least 1.
+- [ ] A guarding defender receives about 50% knockback.
+- [ ] Normal Guard reduces both normal hits and critical hits without changing critical chance or multiplier.
+- [ ] Non-guard hits behave as before.
+- [ ] Guard does not change movement speed or attack-start behavior yet.
+- [ ] Case, Amp, Drum Sticks critical, Pick preparation behavior, records, settings, KO, and pause behavior remain unchanged.
+
+**Next recommended task:** Phase 12-4: Guard movement and attack-start lockout while guarding.
