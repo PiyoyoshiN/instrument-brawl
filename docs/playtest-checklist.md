@@ -1033,3 +1033,247 @@ Checkpoint note:
 - [ ] Reset records still works.
 - [ ] No records/settings schema changes.
 - [ ] Internal IDs remain English: `none` / `amp` / `pick` / `case` / `electric-guitar` / `bass` / `drum-sticks` / `keyboard` / `human` / `cpu`.
+
+## Phase 11-15 Japanese UI layout playtest checklist
+
+Checkpoint note:
+
+- Use this checklist after the Phase 11 Japanese UI layout work and before the Phase 11 checkpoint docs.
+- Check each scene at 800x600, a laptop-sized viewport, and a large desktop viewport when possible.
+- If a check fails, file or prepare a focused follow-up instead of mixing runtime fixes into this docs-only checklist PR.
+
+### 1) General viewport checks
+
+- [ ] 800x600 minimum viewport remains readable.
+- [ ] Laptop-sized viewport remains readable.
+- [ ] Large desktop viewport uses space safely and does not look trapped in an old 800x600 island.
+- [ ] No upper-left / clipped / offscreen UI regression appears.
+- [ ] Japanese text does not overflow, overlap, or collide with adjacent UI.
+- [ ] Footer controls remain visible and separated from main content.
+
+### 2) HomeScene
+
+- [ ] Game title is readable and visually dominant.
+- [ ] Main menu cards are readable.
+- [ ] Selected menu item is visually obvious.
+- [ ] `Enter` / `Space` activates the selected menu item.
+- [ ] Records navigation works.
+- [ ] Options navigation works.
+
+### 3) ModeSelectScene
+
+- [ ] VS CPU and 2P local options are readable.
+- [ ] Selected mode is visually obvious.
+- [ ] Mode descriptions are readable.
+- [ ] `Enter` / `Space` proceeds to Character Select.
+- [ ] `Esc` returns to Home.
+
+### 4) CharacterSelectScene
+
+- [ ] P1 and P2 cards are fully visible.
+- [ ] Fighter names are readable, including `ドラムスティック`.
+- [ ] Fighter descriptions are readable.
+- [ ] Stats are readable and stay inside the cards.
+- [ ] The previous upper-left huge/clipped regression does not return.
+- [ ] Transition to EquipmentSelectScene works.
+
+### 5) EquipmentSelectScene
+
+- [ ] P1/P2 character labels are readable.
+- [ ] Equipment list is readable.
+- [ ] Equipment descriptions are readable.
+- [ ] `none` / `Amp` / `Case` / `Drum Sticks` equipment/fighter combinations display correctly (`装備なし` / `アンプ` / `ケース` / Drum Sticks compatibility notes).
+- [ ] Incompatible or unavailable notes remain readable.
+- [ ] Selected player state is clear.
+- [ ] Transition to BattleScene works.
+
+### 6) BattleScene HUD
+
+- [ ] P1 HP bar is visible.
+- [ ] P2 HP bar is visible.
+- [ ] Equipment labels are visible.
+- [ ] Always-visible instruction text is short and readable.
+- [ ] CPU mode does not show unnecessary P2 manual controls as primary information.
+- [ ] 2P mode controls remain understandable.
+- [ ] The HP/HUD disappearance regression does not return.
+
+### 7) Pause / Quick Help
+
+- [ ] Opens with `P`.
+- [ ] Closes/resumes with `P`.
+- [ ] P1 controls are readable.
+- [ ] CPU mode explanation is readable.
+- [ ] 2P mode controls are readable.
+- [ ] Overlay does not clip at 800x600.
+
+### 8) ResultScene
+
+- [ ] Result title is readable.
+- [ ] P1/P2 summary is readable.
+- [ ] Equipment labels are readable.
+- [ ] Next-action controls are readable.
+- [ ] `R` rematch works.
+- [ ] `C` character select works.
+- [ ] `Enter` / `Space` returns Home.
+- [ ] Known ResultScene visual bug remains tracked as deferred for later full-screen/global layout cleanup.
+
+### 9) RecordsScene
+
+- [ ] Records summary is readable.
+- [ ] Last played text is readable or truncated safely.
+- [ ] Reset confirmation text is readable.
+- [ ] Home and reset controls work.
+- [ ] Records area and control area do not overlap.
+
+### 10) OptionsScene
+
+- [ ] Setting rows are readable.
+- [ ] Selected row is visually obvious.
+- [ ] ON/OFF values are clear.
+- [ ] Reset confirmation text is readable.
+- [ ] Settings still persist as before.
+- [ ] `Esc` returns Home.
+
+### 11) Regression guardrails
+
+- [ ] No gameplay values changed.
+- [ ] No hitbox or hurtbox changes were introduced.
+- [ ] No fighter stat changes were introduced.
+- [ ] No equipment effect changes were introduced.
+- [ ] No records/settings schema changes were introduced.
+- [ ] No scene flow changes occur except expected UI navigation.
+
+### Known deferred issues
+
+- ResultScene has a known visual bug that remains deferred for later full-screen/global layout cleanup.
+- Final full-screen/global layout cleanup may revisit ResultScene layout and Battle HUD visual polish later.
+- Do not treat this checklist update as approval to implement Guard, Just Guard, Timer, Round rules, Retire, Pick effects, new fighters, audio, images, 3D, or external assets.
+
+
+## Phase 12-1 scope docs checklist
+
+- [ ] Phase 12 goals are documented for Guard, Just Guard, Timer, Retire / Forfeit, time-up result, and match-rule direction.
+- [ ] Initial defaults are documented: P1 Guard `S`, P2 Guard Down arrow, 65% guard movement, 50% normal Guard damage/knockback, 120ms Just Guard window, 99-second timer, pause stops timer, higher HP wins on time up, equal HP is Draw.
+- [ ] Round system is documented as deferred.
+- [ ] Result reason direction is documented for KO / TIME_UP / RETIRE / DRAW.
+- [ ] Records v1 direction is documented to reuse existing win/loss/draw/match counters without reason-specific saved counters.
+- [ ] Phase 12 non-goals forbid attack tempo changes, hitbox/hurtbox tuning, fighter stat changes, Pick effects, new fighters, online play, 3D, audio, images, external assets, and records/settings schema migration.
+- [ ] Phase 11 UI guardrails are carried forward: HP bars visible, Character Select layout stable, footer controls visible, and Japanese UI readable.
+- [ ] No runtime code is modified by Phase 12-1.
+
+**Next recommended task:** Phase 12-2: Guard input and guard state foundation.
+
+
+## Phase 12-2 Guard input/state foundation checklist
+
+- [ ] P1 Guard input is wired to `S` in BattleScene.
+- [ ] P2 Guard input is wired to Down arrow in local 2P BattleScene.
+- [ ] Guard state uses clear internal runtime fields such as `isGuarding` and `guardStartedAt`.
+- [ ] Pressing/releasing Guard updates runtime state without changing damage, knockback, movement speed, attack timing, hitboxes, fighter stats, equipment effects, records, or settings.
+- [ ] CPU mode still plays without P2 manual Guard behavior.
+- [ ] Existing Phase 11 UI guardrails still pass: HP bars visible, footer controls visible, and Japanese UI readable.
+
+**Next recommended task:** Phase 12-3: Normal Guard damage/knockback reduction.
+
+
+## Phase 12-3 Normal Guard damage/knockback checklist
+
+- [ ] A guarding defender takes about 50% final damage after existing base damage, Case, and critical calculations.
+- [ ] Guarded positive damage remains at least 1.
+- [ ] A guarding defender receives about 50% knockback.
+- [ ] Normal Guard reduces both normal hits and critical hits without changing critical chance or multiplier.
+- [ ] Non-guard hits behave as before.
+- [ ] Guard does not change movement speed or attack-start behavior yet.
+- [ ] Case, Amp, Drum Sticks critical, Pick preparation behavior, records, settings, KO, and pause behavior remain unchanged.
+
+**Next recommended task:** Phase 12-4: Guard movement and attack-start lockout while guarding.
+
+
+## Phase 12-4 Guard movement / attack lockout checklist
+
+- [ ] P1 holding `S` moves at about 65% normal speed.
+- [ ] P2 holding Down arrow in local 2P moves at about 65% normal speed.
+- [ ] P1 cannot start a new attack with `W` or `Space` while holding `S`.
+- [ ] P2 cannot start a new attack with Up arrow or `Enter` while holding Down arrow.
+- [ ] Releasing Guard restores normal movement speed and attack-start behavior.
+- [ ] Existing active attacks are not canceled just because Guard is pressed after they started.
+- [ ] CPU mode still works normally and does not gain CPU Guard AI.
+- [ ] Guard damage/knockback reduction from Phase 12-3 still works.
+- [ ] Attack cooldown, duration, active hitboxes, fighter stats, equipment behavior, records, settings, pause, and KO behavior are unchanged.
+
+**Next recommended task:** Phase 12-5: Just Guard timing window and successful block behavior.
+
+
+## Phase 12-5 Just Guard timing / successful block checklist
+
+- [ ] Pressing Guard within the 120ms window before impact causes Just Guard.
+- [ ] Just Guard causes 0 damage.
+- [ ] Just Guard causes 0 knockback.
+- [ ] Holding Guard too early falls back to Normal Guard behavior after the 120ms window.
+- [ ] Releasing and pressing Guard again starts a fresh 120ms Just Guard window.
+- [ ] Normal Guard damage/knockback reduction still works outside the Just Guard window.
+- [ ] Non-guard hits behave as before.
+- [ ] Case, Amp, Drum Sticks critical, Pick preparation behavior, records, settings, pause, KO, and CPU behavior remain unchanged.
+- [ ] No Guard / Just Guard HUD or visual feedback is required until Phase 12-6.
+
+**Next recommended task:** Phase 12-6: Guard / Just Guard visual and HUD feedback.
+
+
+## Phase 12-6 Guard / Just Guard feedback checklist
+
+- [ ] P1 holding `S` shows a subtle Guard visual state.
+- [ ] P2 holding Down arrow in local 2P shows a subtle Guard visual state.
+- [ ] Guard visual disappears when Guard is released.
+- [ ] Just Guard success shows distinct short visual feedback that is clearly different from Normal Guard.
+- [ ] Just Guard success does not show misleading `HIT -0`, `CRITICAL 0`, or normal damage-style feedback.
+- [ ] Normal Guard still shows reduced-damage hit feedback when useful.
+- [ ] Non-guard hits and non-guard critical hits still show ordinary hit feedback.
+- [ ] Guard / Just Guard numerical behavior remains unchanged.
+- [ ] No audio, images, 3D, external assets, Timer, Time Up, Retire, Result reason, records/schema, or CPU Guard AI changes are included.
+- [ ] Long-term polish direction remains less text and more sound, timing, light, shape, hit effect, animation, and other non-verbal game-feel feedback.
+
+**Next recommended task:** Phase 12-7: 99-second timer foundation.
+
+
+## Phase 12-7 99-second timer foundation checklist
+
+- [ ] BattleScene shows a clear center-top timer.
+- [ ] Timer initializes at `99`.
+- [ ] Timer starts counting down only after the match starts, not during Ready/Fight startup delay.
+- [ ] Timer counts down during active battle.
+- [ ] Timer display clamps at `0` and does not visually go below 0.
+- [ ] Time Up does not end the match yet; winner/draw-by-HP behavior remains deferred to Phase 12-8.
+- [ ] Timer does not overlap P1/P2 HP bars or footer controls at 800x600, laptop-sized viewport, or large desktop viewport.
+- [ ] Guard / Just Guard, KO, CPU battle, equipment behavior, records, settings, and attack/hitbox values remain unchanged.
+
+**Next recommended task:** Phase 12-8: Timer pause behavior and time-up result logic.
+
+
+## Phase 12-8 Timer pause / Time Up checklist
+
+- [ ] Timer still starts at `99` and counts down only after the match starts.
+- [ ] Timer does not count down during Pause.
+- [ ] Timer resumes after unpause.
+- [ ] Timer does not count down after match over.
+- [ ] Timer reaching `0` ends the match once.
+- [ ] Time Up with P1 HP higher gives an existing P1 win result.
+- [ ] Time Up with P2 HP higher gives an existing P2 win result.
+- [ ] Time Up with equal HP gives an existing draw result.
+- [ ] KO before Time Up still works normally.
+- [ ] Records continue to use existing P1/P2/draw and CPU/local counters without reason-specific schema changes.
+- [ ] Guard / Just Guard, CPU battle, equipment behavior, attack timing, hitboxes, fighter stats, Result reason UI, and Retire / Forfeit remain unchanged.
+
+**Next recommended task:** Phase 12-9: Result reason handoff/display for KO / TIME_UP / RETIRE / DRAW without records schema expansion.
+
+
+## Phase 12-9 Result reason handoff/display checklist
+
+- [ ] KO result passes and displays a `KO` reason label.
+- [ ] Time Up result passes and displays a `TIME UP` reason label.
+- [ ] Draw result passes and displays a clear draw reason label when appropriate.
+- [ ] `RETIRE` is available as a transient reason label/type for Phase 12-10, but Retire / Forfeit behavior is not implemented yet.
+- [ ] ResultScene still shows the correct winner/draw title.
+- [ ] Records continue to use existing P1/P2/draw and CPU/local counters; no reason-specific counters or schema changes are added.
+- [ ] Time Up HP comparison, KO behavior, Guard / Just Guard, CPU battle, equipment behavior, attack timing, hitboxes, fighter stats, and settings remain unchanged.
+
+**Next recommended task:** Phase 12-10: Pause menu Retire / Forfeit confirmation flow.
