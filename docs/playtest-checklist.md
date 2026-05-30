@@ -1293,3 +1293,19 @@ Checkpoint note:
 - [ ] Guard / Just Guard, CPU battle, equipment behavior, attack timing, hitboxes, fighter stats, and settings remain unchanged.
 
 **Next recommended task:** Phase 12-11: Records/settings schema sanity check.
+
+
+## Phase 12-11 Records/settings schema sanity checklist
+
+- [ ] `finishMatchByTimeUp()` has exactly one implementation.
+- [ ] `getTimeUpResultData()` has exactly one implementation.
+- [ ] KO P1/P2 wins and KO draws update existing P1/P2/draw counters only.
+- [ ] Time Up P1/P2 wins and equal-HP draws update existing P1/P2/draw counters only.
+- [ ] P1 Retire updates the existing P2 win counter; P2 Retire updates the existing P1 win counter.
+- [ ] CPU matches and local 2P matches continue using existing match-type counters.
+- [ ] `matchEndReason` remains transient ResultScene display data and does not add reason-specific records fields.
+- [ ] Existing records/settings saved data loads without migration.
+- [ ] No records/settings schema fields, localStorage keys, or version migrations are added.
+- [ ] Guard / Just Guard, Timer, Time Up, Retire, Result reason display, CPU battle, equipment behavior, attack timing, hitboxes, and fighter stats remain unchanged.
+
+**Next recommended task:** Phase 12-12: Manual playtest checklist update.

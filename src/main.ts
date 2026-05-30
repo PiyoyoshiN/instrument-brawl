@@ -816,6 +816,7 @@ type RetirePlayer = 'p1' | 'p2';
 type ResultSceneData = BattleSceneData & {
   result?: 'p1' | 'p2' | 'draw';
   displayTitle?: string;
+  // Transient ResultScene display only; records continue to use result counters.
   matchEndReason?: MatchEndReason;
 };
 
@@ -2792,28 +2793,6 @@ class BattleScene extends Phaser.Scene {
     this.endMatch(resultData);
   }
 
-
-
-  private finishMatchByTimeUp() {
-    if (this.matchOver) {
-      return;
-    }
-
-    const resultData = this.getTimeUpResultData();
-    this.endMatch(resultData);
-  }
-
-  private getTimeUpResultData(): ResultSceneData {
-    if (this.player1Hp.current === this.player2Hp.current) {
-      return { result: 'draw' as const, displayTitle: 'Draw', matchEndReason: 'time_up' as const };
-    }
-
-    return this.player1Hp.current > this.player2Hp.current
-      ? { result: 'p1' as const, displayTitle: this.player1.definition.resultWinText, matchEndReason: 'time_up' as const }
-      : { result: 'p2' as const, displayTitle: this.player2.definition.resultWinText, matchEndReason: 'time_up' as const };
-  }
-
-
   private finishMatchByTimeUp() {
     if (this.matchOver) {
       return;
@@ -3293,6 +3272,7 @@ class ResultScene extends Phaser.Scene {
       return;
     }
 
+    // matchEndReason is intentionally not recorded; v1 records stay result-only.
     this.hasRecordedResult = true;
     recordStoredMatchResult(this.resultKind, this.player2Mode);
   }
