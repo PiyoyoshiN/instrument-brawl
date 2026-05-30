@@ -1148,3 +1148,17 @@ Checkpoint note:
 - ResultScene has a known visual bug that remains deferred for later full-screen/global layout cleanup.
 - Final full-screen/global layout cleanup may revisit ResultScene layout and Battle HUD visual polish later.
 - Do not treat this checklist update as approval to implement Guard, Just Guard, Timer, Round rules, Retire, Pick effects, new fighters, audio, images, 3D, or external assets.
+
+
+## Phase 12-1 scope docs checklist
+
+- [ ] Phase 12 goals are documented for Guard, Just Guard, Timer, Retire / Forfeit, time-up result, and match-rule direction.
+- [ ] Initial defaults are documented: P1 Guard `S`, P2 Guard Down arrow, 65% guard movement, 50% normal Guard damage/knockback, 120ms Just Guard window, 99-second timer, pause stops timer, higher HP wins on time up, equal HP is Draw.
+- [ ] Round system is documented as deferred.
+- [ ] Result reason direction is documented for KO / TIME_UP / RETIRE / DRAW.
+- [ ] Records v1 direction is documented to reuse existing win/loss/draw/match counters without reason-specific saved counters.
+- [ ] Phase 12 non-goals forbid attack tempo changes, hitbox/hurtbox tuning, fighter stat changes, Pick effects, new fighters, online play, 3D, audio, images, external assets, and records/settings schema migration.
+- [ ] Phase 11 UI guardrails are carried forward: HP bars visible, Character Select layout stable, footer controls visible, and Japanese UI readable.
+- [ ] No runtime code is modified by Phase 12-1.
+
+**Next recommended task:** Phase 12-2: Guard input and guard state foundation.

@@ -1496,4 +1496,15 @@ Implemented scope:
 - Known deferred issue: a ResultScene visual bug remains intentionally deferred for later full-screen/global layout cleanup; Battle HUD visual polish may also be revisited later.
 - Phase 11 remains a UI layout/readability phase and does not approve gameplay/balance/schema changes.
 
-**Next recommended task:** Run the Phase 11-15 manual Japanese UI playtest checklist, then either checkpoint Phase 11 as complete or open a focused deferred full-screen/global layout cleanup follow-up before moving to the next planned gameplay/system phase.
+**Next recommended task:** Phase 12-1: Guard / Just Guard / Timer / Retire / Match Rule scope docs.
+
+
+## Phase 12: Guard / Just Guard / Timer / Retire / Match Rules (planned)
+
+- Phase 12 is the next gameplay/system phase after the Phase 11 UI Layout Rework checkpoint.
+- Scope and initial guardrails are documented in `docs/phase-12-match-rules-scope.md`.
+- Phase 12 starts docs-first with Guard, Just Guard, Timer, Retire / Forfeit, time-up result, and match-rule defaults.
+- Phase 12 must preserve Phase 11 viewport-aware UI guardrails and must not regress HP bars, Character Select layout, footer visibility, or Japanese UI readability.
+- Phase 12-1 is docs/scope only; runtime mechanics begin in later focused PRs.
+
+**Next recommended task:** Phase 12-2: Guard input and guard state foundation.
