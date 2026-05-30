@@ -123,6 +123,7 @@ const caseNormalDamageMultiplier = 0.8;
 const normalGuardDamageMultiplier = 0.5;
 const normalGuardKnockbackMultiplier = 0.5;
 const normalGuardMovementMultiplier = 0.65;
+const justGuardWindowMs = 120;
 // Phase 10 prototype balancing pass #1:
 // Drum Sticks keeps a high-variance critical identity, tuned to 35% / 1.5x
 // so expected damage stays below Electric Guitar/Bass baseline while preserving burst.
@@ -794,6 +795,7 @@ type ActiveAttack = {
 type DamageCalculationResult = {
   damage: number;
   isCritical: boolean;
+  wasJustGuarded: boolean;
 };
 type BattleSceneData = {
   player1FighterId?: string;
@@ -2428,12 +2430,12 @@ class BattleScene extends Phaser.Scene {
 
       if (Phaser.Geom.Intersects.RectangleToRectangle(attack.hitbox.getBounds(), attack.defender.body.getBounds())) {
         attack.hasHit = true;
-        const damageResult = this.calculateAttackDamage(attack.attacker, attack.defender);
+        const damageResult = this.calculateAttackDamage(attack.attacker, attack.defender, time);
         this.applyDamage(attack.defenderHp, damageResult.damage);
         this.applyKnockback(
           attack.defender,
           attack.attacker.facing,
-          this.getGuardedKnockbackSpeed(attack.defender, attack.attacker.stats.knockbackSpeed),
+          this.getGuardedKnockbackSpeed(attack.defender, attack.attacker.stats.knockbackSpeed, damageResult.wasJustGuarded),
         );
         this.flashFighter(attack.defender);
         this.showHitSpark(attack.defender, attack.attacker);
@@ -2773,7 +2775,18 @@ class BattleScene extends Phaser.Scene {
     return fighter.stats.attackWidth + (this.hasAmpReach(fighter) ? ampAttackReachBonusPx : 0);
   }
 
-  private getGuardedDamage(defender: Fighter, damage: number) {
+  private isJustGuarding(defender: Fighter, time: number) {
+    return defender.isGuarding &&
+      defender.guardStartedAt > 0 &&
+      time >= defender.guardStartedAt &&
+      time - defender.guardStartedAt <= justGuardWindowMs;
+  }
+
+  private getGuardedDamage(defender: Fighter, damage: number, wasJustGuarded: boolean) {
+    if (wasJustGuarded) {
+      return 0;
+    }
+
     if (!defender.isGuarding || damage <= 0) {
       return damage;
     }
@@ -2781,11 +2794,15 @@ class BattleScene extends Phaser.Scene {
     return Math.max(1, Math.floor(damage * normalGuardDamageMultiplier));
   }
 
-  private getGuardedKnockbackSpeed(defender: Fighter, speed: number) {
+  private getGuardedKnockbackSpeed(defender: Fighter, speed: number, wasJustGuarded: boolean) {
+    if (wasJustGuarded) {
+      return 0;
+    }
+
     return defender.isGuarding ? speed * normalGuardKnockbackMultiplier : speed;
   }
 
-  private calculateAttackDamage(attacker: Fighter, defender: Fighter): DamageCalculationResult {
+  private calculateAttackDamage(attacker: Fighter, defender: Fighter, time: number): DamageCalculationResult {
     const baseDamage = attacker.stats.attackDamage;
     const canCritical = this.canUseDrumSticksCritical(attacker);
     const isCritical = canCritical && Math.random() < drumSticksCriticalRate;
@@ -2801,9 +2818,12 @@ class BattleScene extends Phaser.Scene {
       }
     }
 
+    const wasJustGuarded = this.isJustGuarding(defender, time);
+
     return {
-      damage: this.getGuardedDamage(defender, Math.max(1, finalDamage)),
+      damage: this.getGuardedDamage(defender, Math.max(1, finalDamage), wasJustGuarded),
       isCritical,
+      wasJustGuarded,
     };
   }
 

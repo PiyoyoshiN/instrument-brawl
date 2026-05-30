@@ -1507,4 +1507,4 @@ Implemented scope:
 - Phase 12 must preserve Phase 11 viewport-aware UI guardrails and must not regress HP bars, Character Select layout, footer visibility, or Japanese UI readability.
 - Phase 12-1 is docs/scope only; runtime mechanics begin in later focused PRs.
 
-**Next recommended task:** Phase 12-5: Just Guard timing window and successful block behavior.
+**Next recommended task:** Phase 12-6: Guard / Just Guard visual and HUD feedback.

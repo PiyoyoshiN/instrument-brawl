@@ -1202,3 +1202,18 @@ Checkpoint note:
 - [ ] Attack cooldown, duration, active hitboxes, fighter stats, equipment behavior, records, settings, pause, and KO behavior are unchanged.
 
 **Next recommended task:** Phase 12-5: Just Guard timing window and successful block behavior.
+
+
+## Phase 12-5 Just Guard timing / successful block checklist
+
+- [ ] Pressing Guard within the 120ms window before impact causes Just Guard.
+- [ ] Just Guard causes 0 damage.
+- [ ] Just Guard causes 0 knockback.
+- [ ] Holding Guard too early falls back to Normal Guard behavior after the 120ms window.
+- [ ] Releasing and pressing Guard again starts a fresh 120ms Just Guard window.
+- [ ] Normal Guard damage/knockback reduction still works outside the Just Guard window.
+- [ ] Non-guard hits behave as before.
+- [ ] Case, Amp, Drum Sticks critical, Pick preparation behavior, records, settings, pause, KO, and CPU behavior remain unchanged.
+- [ ] No Guard / Just Guard HUD or visual feedback is required until Phase 12-6.
+
+**Next recommended task:** Phase 12-6: Guard / Just Guard visual and HUD feedback.
