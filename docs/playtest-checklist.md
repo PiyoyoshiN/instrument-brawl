@@ -1309,3 +1309,111 @@ Checkpoint note:
 - [ ] Guard / Just Guard, Timer, Time Up, Retire, Result reason display, CPU battle, equipment behavior, attack timing, hitboxes, and fighter stats remain unchanged.
 
 **Next recommended task:** Phase 12-12: Manual playtest checklist update.
+
+
+## Phase 12-12 Consolidated Guard / Timer / Retire manual playtest checklist
+
+Use this consolidated checklist before Phase 12 checkpoint docs. Run the checks in both VS CPU and local 2P where applicable, and keep Phase 11 viewport/readability guardrails in mind throughout.
+
+### Guard / Normal Guard
+
+- [ ] P1 can hold `S` to enter Guard.
+- [ ] P2 can hold Down arrow to enter Guard in local 2P.
+- [ ] Guard visual appears while the player is guarding.
+- [ ] Guard visual disappears when Guard is released.
+- [ ] Normal Guard reduces incoming damage.
+- [ ] Normal Guard reduces incoming knockback.
+- [ ] Guarding slows movement.
+- [ ] Guarding prevents starting a new attack.
+- [ ] Releasing Guard restores normal movement speed and normal attack-start behavior.
+- [ ] CPU battle still works without CPU Guard AI.
+
+### Just Guard
+
+- [ ] Pressing Guard shortly before impact triggers Just Guard.
+- [ ] Just Guard causes 0 damage.
+- [ ] Just Guard causes 0 knockback.
+- [ ] Just Guard visual feedback appears and is distinct from Normal Guard.
+- [ ] Just Guard does not show misleading damage text such as `0` or `CRITICAL 0`.
+- [ ] Holding Guard too early falls back to Normal Guard.
+- [ ] Releasing and re-pressing Guard starts a fresh Just Guard window.
+- [ ] Non-guard hits still behave normally.
+
+### Timer / Time Up
+
+- [ ] Timer appears near the center-top HUD.
+- [ ] Timer starts at `99`.
+- [ ] Timer does not count down before match start.
+- [ ] Timer counts down during active battle.
+- [ ] Timer pauses while Pause is open.
+- [ ] Timer resumes after unpause.
+- [ ] Timer clamps at `0` and does not display a negative value.
+- [ ] Time Up with P1 HP higher gives P1 win.
+- [ ] Time Up with P2 HP higher gives P2 win.
+- [ ] Time Up with equal HP gives draw.
+- [ ] KO before Time Up still works normally.
+
+### Result reasons
+
+- [ ] KO result displays `KO`.
+- [ ] Time Up result displays `TIME UP`.
+- [ ] Retire result displays `RETIRE`.
+- [ ] Draw result displays a clear draw/result reason.
+- [ ] ResultScene still shows the correct winner/draw title.
+- [ ] ResultScene remains readable at 800x600, laptop-sized viewport, and large desktop viewport.
+
+### Retire / Forfeit
+
+- [ ] Press `P` during battle to pause.
+- [ ] While paused, pressing `1` once enters P1 Retire confirmation.
+- [ ] Pressing `1` again confirms P1 Retire.
+- [ ] P1 Retire gives P2 win.
+- [ ] While paused, pressing `2` once enters P2 Retire confirmation.
+- [ ] Pressing `2` again confirms P2 Retire.
+- [ ] P2 Retire gives P1 win.
+- [ ] Pressing `P` from Retire confirmation cancels/unpauses cleanly.
+- [ ] Timer does not tick during Pause or Retire confirmation.
+- [ ] Retire cannot trigger repeatedly after match over.
+
+### Records / settings schema
+
+- [ ] KO P1/P2 wins update existing P1/P2 win counters.
+- [ ] KO draw/double KO updates the existing draw counter.
+- [ ] Time Up P1/P2 wins update existing P1/P2 win counters.
+- [ ] Time Up equal HP updates the existing draw counter.
+- [ ] P1 Retire updates the existing P2 win counter.
+- [ ] P2 Retire updates the existing P1 win counter.
+- [ ] CPU matches update the existing CPU match counter.
+- [ ] Local 2P matches update the existing local match counter.
+- [ ] No reason-specific records counters exist.
+- [ ] Existing saved records/settings load without migration.
+- [ ] No new localStorage keys or schema migrations are introduced.
+
+### Phase 11 UI regression checks
+
+Check these at 800x600, laptop-sized viewport, and large desktop viewport:
+
+- [ ] HP bars remain visible.
+- [ ] Battle HUD does not overlap badly with the timer.
+- [ ] Character Select does not regress to the previous upper-left/clipped layout.
+- [ ] Footer controls remain visible.
+- [ ] Japanese UI text remains readable.
+- [ ] Home remains usable.
+- [ ] Mode Select remains usable.
+- [ ] Character Select remains usable.
+- [ ] Equipment Select remains usable.
+- [ ] Battle remains usable.
+- [ ] Result remains usable.
+- [ ] Records remains usable.
+
+### Combat non-regression
+
+- [ ] Attack timing feels unchanged from before Phase 12-12.
+- [ ] Hitboxes/hurtboxes are not changed.
+- [ ] Fighter stats are not changed.
+- [ ] Equipment behavior is not changed.
+- [ ] Pick behavior is not changed.
+- [ ] Guard may still feel underused due to fast attack tempo, but no tuning is included in Phase 12-12.
+- [ ] Attack tempo review remains deferred to Phase 13.
+
+**Next recommended task:** Phase 12-13: Phase 12 checkpoint docs.
