@@ -3126,13 +3126,14 @@ class ResultScene extends Phaser.Scene {
     this.add
       .text(centerX, safeTop + 104, this.result, {
         align: 'center',
-        color: '#ffffff',
+        color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '42px',
         wordWrap: { width: contentWidth, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
 
+    this.add.rectangle(centerX, safeTop + 206, contentWidth, 104, 0x0f172a, 0.78).setStrokeStyle(2, 0x334155);
     this.add
       .text(centerX, safeTop + 146, `理由: ${this.getMatchEndReasonLabel()}`, {
         align: 'center',
@@ -3147,10 +3148,13 @@ class ResultScene extends Phaser.Scene {
       .text(centerX, safeTop + 174, '対戦サマリー', {
         color: '#facc15',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '18px',
+        fontSize: '20px',
+        lineSpacing: 10,
+        wordWrap: { width: contentWidth - 40, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
 
+    this.add.rectangle(centerX, safeTop + 338, contentWidth, 108, 0x0f172a, 0.72).setStrokeStyle(2, 0x334155);
     this.add
       .text(centerX, safeTop + 200, [`P1: ${getFighterDisplayNameJa(this.player1FighterId)} / 装備 ${getEquipmentShortLabelJa(this.player1Equipment.id)}`, `P2: ${getFighterDisplayNameJa(this.player2FighterId)} (${this.player2Mode === 'cpu' ? 'CPU' : '2P'}) / 装備 ${getEquipmentShortLabelJa(this.player2Equipment.id)}`], {
         align: 'center',
