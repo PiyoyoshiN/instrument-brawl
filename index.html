@@ -5,17 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Instrument Brawl</title>
     <style>
+      html,
       body {
         margin: 0;
+        min-width: 800px;
+        min-height: 600px;
         background: #020617;
         color: #e5e7eb;
         font-family: system-ui, sans-serif;
       }
 
+      body {
+        overflow: auto;
+      }
+
       #game {
-        display: grid;
-        min-height: 100vh;
-        place-items: center;
+        width: 100vw;
+        min-width: 800px;
+        height: 100vh;
+        min-height: 600px;
+      }
+
+      #game canvas {
+        display: block;
       }
     </style>
   </head>

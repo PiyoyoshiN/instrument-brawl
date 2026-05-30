@@ -1481,4 +1481,30 @@ Implemented scope:
 - Confirmed no runtime/gameplay/balance/schema changes.
 - Confirmed readiness for manual playtest using the Phase 10-JP checklist.
 
-**Next recommended task:** Phase 11-1: Manual Japanese UI playtest + issue triage.
+**Next recommended task:** Phase 11-1: Create Phase 11 scope/checklist documentation before runtime UI layout PRs.
+
+
+## Phase 11: UI Layout Rework (checkpoint-ready after manual playtest)
+
+- Phase 10 / Phase 10-JP is complete.
+- Phase 11 started with docs-first scope alignment in `docs/phase-11-ui-layout-rework.md`.
+- Primary focus was Japanese UI layout overflow/overlap/cramped hierarchy fixes, starting with RecordsScene, CharacterSelectScene, and BattleScene HUD.
+- Phase 11-4A added a small viewport-aware layout foundation before CharacterSelectScene card/layout rework.
+- Phase 11 completed focused layout/readability passes for Records, Character Select, Battle HUD/instructions, Pause / Quick Help, Equipment Select, Result, Options, Home, and Mode Select.
+- Important regression guardrails are documented for the fixed CharacterSelectScene upper-left/clipped issue and the fixed BattleScene HP/HUD disappearance issue.
+- Manual verification is tracked in `docs/playtest-checklist.md` under `Phase 11-15 Japanese UI layout playtest checklist`.
+- Known deferred issue: a ResultScene visual bug remains intentionally deferred for later full-screen/global layout cleanup; Battle HUD visual polish may also be revisited later.
+- Phase 11 remains a UI layout/readability phase and does not approve gameplay/balance/schema changes.
+
+**Next recommended task:** Phase 12-1: Guard / Just Guard / Timer / Retire / Match Rule scope docs.
+
+
+## Phase 12: Guard / Just Guard / Timer / Retire / Match Rules (planned)
+
+- Phase 12 is the next gameplay/system phase after the Phase 11 UI Layout Rework checkpoint.
+- Scope and initial guardrails are documented in `docs/phase-12-match-rules-scope.md`.
+- Phase 12 starts docs-first with Guard, Just Guard, Timer, Retire / Forfeit, time-up result, and match-rule defaults.
+- Phase 12 must preserve Phase 11 viewport-aware UI guardrails and must not regress HP bars, Character Select layout, footer visibility, or Japanese UI readability.
+- Phase 12-1 is docs/scope only; runtime mechanics begin in later focused PRs.
+
+**Next recommended task:** Phase 12-2: Guard input and guard state foundation.

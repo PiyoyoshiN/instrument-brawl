@@ -1033,3 +1033,132 @@ Checkpoint note:
 - [ ] Reset records still works.
 - [ ] No records/settings schema changes.
 - [ ] Internal IDs remain English: `none` / `amp` / `pick` / `case` / `electric-guitar` / `bass` / `drum-sticks` / `keyboard` / `human` / `cpu`.
+
+## Phase 11-15 Japanese UI layout playtest checklist
+
+Checkpoint note:
+
+- Use this checklist after the Phase 11 Japanese UI layout work and before the Phase 11 checkpoint docs.
+- Check each scene at 800x600, a laptop-sized viewport, and a large desktop viewport when possible.
+- If a check fails, file or prepare a focused follow-up instead of mixing runtime fixes into this docs-only checklist PR.
+
+### 1) General viewport checks
+
+- [ ] 800x600 minimum viewport remains readable.
+- [ ] Laptop-sized viewport remains readable.
+- [ ] Large desktop viewport uses space safely and does not look trapped in an old 800x600 island.
+- [ ] No upper-left / clipped / offscreen UI regression appears.
+- [ ] Japanese text does not overflow, overlap, or collide with adjacent UI.
+- [ ] Footer controls remain visible and separated from main content.
+
+### 2) HomeScene
+
+- [ ] Game title is readable and visually dominant.
+- [ ] Main menu cards are readable.
+- [ ] Selected menu item is visually obvious.
+- [ ] `Enter` / `Space` activates the selected menu item.
+- [ ] Records navigation works.
+- [ ] Options navigation works.
+
+### 3) ModeSelectScene
+
+- [ ] VS CPU and 2P local options are readable.
+- [ ] Selected mode is visually obvious.
+- [ ] Mode descriptions are readable.
+- [ ] `Enter` / `Space` proceeds to Character Select.
+- [ ] `Esc` returns to Home.
+
+### 4) CharacterSelectScene
+
+- [ ] P1 and P2 cards are fully visible.
+- [ ] Fighter names are readable, including `ドラムスティック`.
+- [ ] Fighter descriptions are readable.
+- [ ] Stats are readable and stay inside the cards.
+- [ ] The previous upper-left huge/clipped regression does not return.
+- [ ] Transition to EquipmentSelectScene works.
+
+### 5) EquipmentSelectScene
+
+- [ ] P1/P2 character labels are readable.
+- [ ] Equipment list is readable.
+- [ ] Equipment descriptions are readable.
+- [ ] `none` / `Amp` / `Case` / `Drum Sticks` equipment/fighter combinations display correctly (`装備なし` / `アンプ` / `ケース` / Drum Sticks compatibility notes).
+- [ ] Incompatible or unavailable notes remain readable.
+- [ ] Selected player state is clear.
+- [ ] Transition to BattleScene works.
+
+### 6) BattleScene HUD
+
+- [ ] P1 HP bar is visible.
+- [ ] P2 HP bar is visible.
+- [ ] Equipment labels are visible.
+- [ ] Always-visible instruction text is short and readable.
+- [ ] CPU mode does not show unnecessary P2 manual controls as primary information.
+- [ ] 2P mode controls remain understandable.
+- [ ] The HP/HUD disappearance regression does not return.
+
+### 7) Pause / Quick Help
+
+- [ ] Opens with `P`.
+- [ ] Closes/resumes with `P`.
+- [ ] P1 controls are readable.
+- [ ] CPU mode explanation is readable.
+- [ ] 2P mode controls are readable.
+- [ ] Overlay does not clip at 800x600.
+
+### 8) ResultScene
+
+- [ ] Result title is readable.
+- [ ] P1/P2 summary is readable.
+- [ ] Equipment labels are readable.
+- [ ] Next-action controls are readable.
+- [ ] `R` rematch works.
+- [ ] `C` character select works.
+- [ ] `Enter` / `Space` returns Home.
+- [ ] Known ResultScene visual bug remains tracked as deferred for later full-screen/global layout cleanup.
+
+### 9) RecordsScene
+
+- [ ] Records summary is readable.
+- [ ] Last played text is readable or truncated safely.
+- [ ] Reset confirmation text is readable.
+- [ ] Home and reset controls work.
+- [ ] Records area and control area do not overlap.
+
+### 10) OptionsScene
+
+- [ ] Setting rows are readable.
+- [ ] Selected row is visually obvious.
+- [ ] ON/OFF values are clear.
+- [ ] Reset confirmation text is readable.
+- [ ] Settings still persist as before.
+- [ ] `Esc` returns Home.
+
+### 11) Regression guardrails
+
+- [ ] No gameplay values changed.
+- [ ] No hitbox or hurtbox changes were introduced.
+- [ ] No fighter stat changes were introduced.
+- [ ] No equipment effect changes were introduced.
+- [ ] No records/settings schema changes were introduced.
+- [ ] No scene flow changes occur except expected UI navigation.
+
+### Known deferred issues
+
+- ResultScene has a known visual bug that remains deferred for later full-screen/global layout cleanup.
+- Final full-screen/global layout cleanup may revisit ResultScene layout and Battle HUD visual polish later.
+- Do not treat this checklist update as approval to implement Guard, Just Guard, Timer, Round rules, Retire, Pick effects, new fighters, audio, images, 3D, or external assets.
+
+
+## Phase 12-1 scope docs checklist
+
+- [ ] Phase 12 goals are documented for Guard, Just Guard, Timer, Retire / Forfeit, time-up result, and match-rule direction.
+- [ ] Initial defaults are documented: P1 Guard `S`, P2 Guard Down arrow, 65% guard movement, 50% normal Guard damage/knockback, 120ms Just Guard window, 99-second timer, pause stops timer, higher HP wins on time up, equal HP is Draw.
+- [ ] Round system is documented as deferred.
+- [ ] Result reason direction is documented for KO / TIME_UP / RETIRE / DRAW.
+- [ ] Records v1 direction is documented to reuse existing win/loss/draw/match counters without reason-specific saved counters.
+- [ ] Phase 12 non-goals forbid attack tempo changes, hitbox/hurtbox tuning, fighter stat changes, Pick effects, new fighters, online play, 3D, audio, images, external assets, and records/settings schema migration.
+- [ ] Phase 11 UI guardrails are carried forward: HP bars visible, Character Select layout stable, footer controls visible, and Japanese UI readable.
+- [ ] No runtime code is modified by Phase 12-1.
+
+**Next recommended task:** Phase 12-2: Guard input and guard state foundation.
