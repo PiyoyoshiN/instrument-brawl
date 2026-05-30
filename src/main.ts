@@ -1936,6 +1936,10 @@ class BattleScene extends Phaser.Scene {
 
     this.updateMatchTimer(delta);
 
+    if (this.matchOver) {
+      return;
+    }
+
     this.updateGuardState(this.player1, this.controls.player1, time);
     this.moveFighter(this.player1, this.controls.player1, delta);
     this.tryAttack(this.player1, this.controls.player1, time);
@@ -1994,6 +1998,10 @@ class BattleScene extends Phaser.Scene {
   private updateMatchTimer(delta: number) {
     this.matchTimerRemainingSeconds = Math.max(0, this.matchTimerRemainingSeconds - delta / 1000);
     this.updateMatchTimerText();
+
+    if (this.matchTimerRemainingSeconds <= 0) {
+      this.finishMatchByTimeUp();
+    }
   }
 
   private updateMatchTimerText() {
@@ -2707,6 +2715,26 @@ class BattleScene extends Phaser.Scene {
     this.endMatch(resultData);
   }
 
+
+
+  private finishMatchByTimeUp() {
+    if (this.matchOver) {
+      return;
+    }
+
+    const resultData = this.getTimeUpResultData();
+    this.endMatch(resultData);
+  }
+
+  private getTimeUpResultData(): ResultSceneData {
+    if (this.player1Hp.current === this.player2Hp.current) {
+      return { result: 'draw' as const, displayTitle: 'Draw' };
+    }
+
+    return this.player1Hp.current > this.player2Hp.current
+      ? { result: 'p1' as const, displayTitle: this.player1.definition.resultWinText }
+      : { result: 'p2' as const, displayTitle: this.player2.definition.resultWinText };
+  }
 
   private showWinEffect(resultData: ResultSceneData) {
     if (!this.effectsEnabled) {

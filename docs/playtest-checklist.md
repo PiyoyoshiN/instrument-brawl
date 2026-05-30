@@ -1247,3 +1247,20 @@ Checkpoint note:
 - [ ] Guard / Just Guard, KO, CPU battle, equipment behavior, records, settings, and attack/hitbox values remain unchanged.
 
 **Next recommended task:** Phase 12-8: Timer pause behavior and time-up result logic.
+
+
+## Phase 12-8 Timer pause / Time Up checklist
+
+- [ ] Timer still starts at `99` and counts down only after the match starts.
+- [ ] Timer does not count down during Pause.
+- [ ] Timer resumes after unpause.
+- [ ] Timer does not count down after match over.
+- [ ] Timer reaching `0` ends the match once.
+- [ ] Time Up with P1 HP higher gives an existing P1 win result.
+- [ ] Time Up with P2 HP higher gives an existing P2 win result.
+- [ ] Time Up with equal HP gives an existing draw result.
+- [ ] KO before Time Up still works normally.
+- [ ] Records continue to use existing P1/P2/draw and CPU/local counters without reason-specific schema changes.
+- [ ] Guard / Just Guard, CPU battle, equipment behavior, attack timing, hitboxes, fighter stats, Result reason UI, and Retire / Forfeit remain unchanged.
+
+**Next recommended task:** Phase 12-9: Result reason handoff/display for KO / TIME_UP / RETIRE / DRAW without records schema expansion.
