@@ -95,12 +95,53 @@ function addViewportBackground(scene: Phaser.Scene, color = 0x111827) {
 
   return background;
 }
+type AttackTiming = {
+  startupMs: number;
+  activeMs: number;
+  recoveryMs: number;
+  cooldownMs: number;
+};
+
 const defaultFighterBodyWidth = 72;
 const defaultFighterBodyHeight = 120;
 const player1StartX = 240;
 const player2StartX = 560;
-const attackDurationMs = 180;
+const attackStartupMs = 0;
+const attackActiveMs = 180;
+const attackRecoveryMs = 60;
 const attackCooldownMs = 240;
+const defaultAttackTiming: AttackTiming = {
+  startupMs: attackStartupMs,
+  activeMs: attackActiveMs,
+  recoveryMs: attackRecoveryMs,
+  cooldownMs: attackCooldownMs,
+};
+const attackTimingByFighterId: Record<string, AttackTiming> = {
+  'electric-guitar': {
+    startupMs: 90,
+    activeMs: 100,
+    recoveryMs: 560,
+    cooldownMs: 750,
+  },
+  bass: {
+    startupMs: 130,
+    activeMs: 120,
+    recoveryMs: 650,
+    cooldownMs: 900,
+  },
+  'drum-sticks': {
+    startupMs: 40,
+    activeMs: 70,
+    recoveryMs: 140,
+    cooldownMs: 250,
+  },
+  keyboard: {
+    startupMs: 120,
+    activeMs: 130,
+    recoveryMs: 750,
+    cooldownMs: 1000,
+  },
+};
 const knockbackDecay = 2800;
 const knockbackStopSpeed = 8;
 const hitFlashColor = 0xffffff;
@@ -212,7 +253,7 @@ const equipmentDisplayJaById: Record<EquipmentId, EquipmentDisplayJa> = {
   pick: {
     displayNameJa: 'ピック（準備中）',
     shortLabelJa: 'ピック',
-    descriptionJa: 'Phase 10では効果なし。後のフェーズで検討。',
+    descriptionJa: 'エレキギター・ベース対応。現在は効果なし。後のフェーズで検討。',
   },
   case: {
     displayNameJa: 'ケース',
@@ -227,6 +268,27 @@ function getAllEquipmentDefinitions(): EquipmentDefinition[] {
 
 function isEquipmentId(value: unknown): value is EquipmentId {
   return value === 'none' || value === 'amp' || value === 'pick' || value === 'case';
+}
+
+function isAmpCompatibleFighterId(fighterId: string): boolean {
+  return fighterId === 'electric-guitar' || fighterId === 'bass' || fighterId === 'keyboard';
+}
+
+function isPickCompatibleFighterId(fighterId: string): boolean {
+  return fighterId === 'electric-guitar' || fighterId === 'bass';
+}
+
+function resolveBattleEquipmentIdForFighter(fighterId: string, equipmentId: EquipmentId): EquipmentId {
+  // Battle-side safety fallback: stale/incompatible saved selections must resolve safely.
+  if (equipmentId === 'amp' && !isAmpCompatibleFighterId(fighterId)) {
+    return 'none';
+  }
+
+  if (equipmentId === 'pick' && !isPickCompatibleFighterId(fighterId)) {
+    return 'none';
+  }
+
+  return equipmentId;
 }
 
 function getEquipmentDefinition(id: unknown): EquipmentDefinition {
@@ -289,7 +351,7 @@ const electricGuitarDefinition: FighterDefinition = {
     moveSpeed: 260,
     attackDamage: 10,
     knockbackSpeed: 520,
-    attackWidth: 104,
+    attackWidth: 108,
     attackHeight: 52,
     attackYOffset: -8,
     attackColor: 0xfacc15,
@@ -310,7 +372,7 @@ const bassDefinition: FighterDefinition = {
     moveSpeed: 230,
     attackDamage: 10,
     knockbackSpeed: 580,
-    attackWidth: 88,
+    attackWidth: 96,
     attackHeight: 86,
     attackYOffset: 4,
     attackColor: 0xf59e0b,
@@ -331,8 +393,8 @@ const drumSticksDefinition: FighterDefinition = {
     moveSpeed: 310,
     attackDamage: 8,
     knockbackSpeed: 420,
-    attackWidth: 64,
-    attackHeight: 44,
+    attackWidth: 62,
+    attackHeight: 42,
     attackYOffset: -4,
     attackColor: 0xfde047,
     attackStrokeColor: 0xfef9c3,
@@ -352,8 +414,8 @@ const keyboardDefinition: FighterDefinition = {
     moveSpeed: 215,
     attackDamage: 9,
     knockbackSpeed: 500,
-    attackWidth: 118,
-    attackHeight: 46,
+    attackWidth: 120,
+    attackHeight: 52,
     attackYOffset: 0,
     attackColor: 0xa78bfa,
     attackStrokeColor: 0xede9fe,
@@ -786,12 +848,21 @@ type PlayerHp = {
   barMaxWidth: number;
 };
 
+type PendingAttack = {
+  attacker: Fighter;
+  defender: Fighter;
+  defenderHp: PlayerHp;
+  timing: AttackTiming;
+  activeStartsAt: number;
+};
+
 type ActiveAttack = {
   attacker: Fighter;
   defender: Fighter;
   defenderHp: PlayerHp;
   hitbox: Phaser.GameObjects.Rectangle;
   hasHit: boolean;
+  activeStartedAt: number;
   expiresAt: number;
 };
 
@@ -1742,6 +1813,7 @@ class BattleScene extends Phaser.Scene {
   private player2!: Fighter;
   private player1Hp!: PlayerHp;
   private player2Hp!: PlayerHp;
+  private pendingAttacks: PendingAttack[] = [];
   private activeAttacks: ActiveAttack[] = [];
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
@@ -1782,6 +1854,10 @@ class BattleScene extends Phaser.Scene {
   private player2EquipmentHudText?: Phaser.GameObjects.Text;
   private player1AmpAccent?: Phaser.GameObjects.Arc;
   private player2AmpAccent?: Phaser.GameObjects.Arc;
+  private hitboxDebugKey?: Phaser.Input.Keyboard.Key;
+  private hitboxDebugEnabled = false;
+  private hitboxDebugGraphics?: Phaser.GameObjects.Graphics;
+  private hitboxDebugText?: Phaser.GameObjects.Text;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
@@ -1797,11 +1873,11 @@ class BattleScene extends Phaser.Scene {
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
     this.player1Definition = getFighterDefinition(this.player1FighterId);
     this.player2Definition = getFighterDefinition(this.player2FighterId);
-    this.player1EquipmentId = this.resolveBattleEquipmentIdForFighter(
+    this.player1EquipmentId = resolveBattleEquipmentIdForFighter(
       this.player1FighterId,
       getEquipmentDefinition(data.player1EquipmentId).id,
     );
-    this.player2EquipmentId = this.resolveBattleEquipmentIdForFighter(
+    this.player2EquipmentId = resolveBattleEquipmentIdForFighter(
       this.player2FighterId,
       getEquipmentDefinition(data.player2EquipmentId).id,
     );
@@ -1813,6 +1889,7 @@ class BattleScene extends Phaser.Scene {
     this.matchOver = false;
     this.matchStarted = false;
     this.matchTimerRemainingSeconds = matchTimerDurationSeconds;
+    this.pendingAttacks = [];
     this.activeAttacks = [];
     this.nextCpuDecisionAt = 0;
     this.cpuRetreatUntil = 0;
@@ -1822,6 +1899,9 @@ class BattleScene extends Phaser.Scene {
     this.isPaused = false;
     this.pauseStartedAt = 0;
     this.pauseKey = undefined;
+    this.hitboxDebugKey = undefined;
+    this.hitboxDebugEnabled = false;
+    this.destroyHitboxDebugOverlay();
     this.retirePlayer1Key = undefined;
     this.retirePlayer2Key = undefined;
     this.pendingRetirePlayer = undefined;
@@ -1928,6 +2008,7 @@ class BattleScene extends Phaser.Scene {
     this.player2 = this.createFighter(player2StartX, 'P2', this.player2Definition);
     this.player2.facing = -1;
     this.createAmpAccents();
+    this.createHitboxDebugOverlay();
     this.controls = this.createControls();
     this.showMatchStartPrompt();
   }
@@ -1937,16 +2018,22 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
+    if (this.hitboxDebugKey && Phaser.Input.Keyboard.JustDown(this.hitboxDebugKey)) {
+      this.toggleHitboxDebugOverlay();
+    }
+
     if (this.pauseKey && !this.matchOver && Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
       this.togglePause(time);
     }
 
     if (this.isPaused) {
       this.updateRetireConfirmationInput();
+      this.updateHitboxDebugOverlay();
       return;
     }
 
     if (this.matchOver || !this.matchStarted) {
+      this.updateHitboxDebugOverlay();
       return;
     }
 
@@ -1969,11 +2056,13 @@ class BattleScene extends Phaser.Scene {
       this.tryAttack(this.player2, this.controls.player2, time);
     }
     this.updateAmpAccents(time);
+    this.updatePendingAttacks(time);
     this.updateActiveAttacks(time);
     this.updateKnockback(this.player1, delta);
     this.updateKnockback(this.player2, delta);
     this.updateGuardFeedback(this.player1);
     this.updateGuardFeedback(this.player2);
+    this.updateHitboxDebugOverlay();
   }
 
   private createAmpAccents() {
@@ -2145,11 +2234,13 @@ class BattleScene extends Phaser.Scene {
       player2AltAttack: Phaser.Input.Keyboard.KeyCodes.ENTER,
       player2Guard: Phaser.Input.Keyboard.KeyCodes.DOWN,
       pause: Phaser.Input.Keyboard.KeyCodes.P,
+      hitboxDebug: Phaser.Input.Keyboard.KeyCodes.H,
       retirePlayer1: Phaser.Input.Keyboard.KeyCodes.ONE,
       retirePlayer2: Phaser.Input.Keyboard.KeyCodes.TWO,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
     this.pauseKey = keys.pause;
+    this.hitboxDebugKey = keys.hitboxDebug;
     this.retirePlayer1Key = keys.retirePlayer1;
     this.retirePlayer2Key = keys.retirePlayer2;
 
@@ -2167,6 +2258,109 @@ class BattleScene extends Phaser.Scene {
         guardKey: keys.player2Guard,
       },
     };
+  }
+
+  private createHitboxDebugOverlay() {
+    this.hitboxDebugGraphics?.destroy();
+    this.hitboxDebugText?.destroy();
+
+    const camera = this.cameras.main;
+    this.hitboxDebugGraphics = this.add.graphics().setDepth(50).setVisible(false);
+    this.hitboxDebugText = this.add
+      .text(camera.scrollX + 24, camera.scrollY + 148, 'Hitbox Debug ON (H)', {
+        color: '#fef08a',
+        fontFamily: 'monospace',
+        fontSize: '16px',
+        backgroundColor: '#020617',
+        padding: { x: 8, y: 4 },
+      })
+      .setDepth(51)
+      .setVisible(false);
+  }
+
+  private toggleHitboxDebugOverlay() {
+    this.hitboxDebugEnabled = !this.hitboxDebugEnabled;
+
+    if (!this.hitboxDebugEnabled) {
+      this.hitboxDebugGraphics?.clear();
+    }
+
+    this.hitboxDebugGraphics?.setVisible(this.hitboxDebugEnabled);
+    this.hitboxDebugText?.setVisible(this.hitboxDebugEnabled);
+  }
+
+  private updateHitboxDebugOverlay() {
+    if (!this.hitboxDebugEnabled || !this.hitboxDebugGraphics || !this.hitboxDebugText) {
+      return;
+    }
+
+    const graphics = this.hitboxDebugGraphics;
+    const camera = this.cameras.main;
+    this.hitboxDebugText.setPosition(camera.scrollX + 24, camera.scrollY + 148);
+    graphics.clear();
+    this.drawFighterDebugOverlay(this.player1, 0xf97316);
+    this.drawFighterDebugOverlay(this.player2, 0x38bdf8);
+
+    for (const attack of this.activeAttacks) {
+      const attackBounds = attack.hitbox.getBounds();
+      graphics.lineStyle(3, attack.hasHit ? 0xfbbf24 : 0xef4444, 0.95);
+      graphics.strokeRect(attackBounds.x, attackBounds.y, attackBounds.width, attackBounds.height);
+      graphics.fillStyle(attack.hasHit ? 0xfbbf24 : 0xef4444, attack.hasHit ? 0.08 : 0.14);
+      graphics.fillRect(attackBounds.x, attackBounds.y, attackBounds.width, attackBounds.height);
+    }
+  }
+
+  private drawFighterDebugOverlay(fighter: Fighter, color: number) {
+    if (!this.hitboxDebugGraphics) {
+      return;
+    }
+
+    const graphics = this.hitboxDebugGraphics;
+    const bodyBounds = fighter.body.getBounds();
+    const centerX = fighter.body.x;
+    const centerY = fighter.body.y;
+    const attackCenterY = centerY + fighter.stats.attackYOffset;
+    const frontX = centerX + fighter.facing * this.getFighterBodyHalfWidth(fighter);
+    const projectedHitboxCenterX = frontX + fighter.facing * (this.getEffectiveAttackWidth(fighter) / 2);
+
+    graphics.lineStyle(2, color, 0.95);
+    graphics.strokeRect(bodyBounds.x, bodyBounds.y, bodyBounds.width, bodyBounds.height);
+
+    graphics.fillStyle(color, 0.95);
+    graphics.fillCircle(centerX, centerY, 4);
+
+    graphics.lineStyle(2, 0xfef08a, 0.9);
+    graphics.beginPath();
+    graphics.moveTo(centerX, attackCenterY);
+    graphics.lineTo(projectedHitboxCenterX, attackCenterY);
+    graphics.strokePath();
+    this.drawDebugArrowHead(projectedHitboxCenterX, attackCenterY, fighter.facing, 0xfef08a);
+
+    graphics.fillStyle(0xfef08a, 0.95);
+    graphics.fillCircle(projectedHitboxCenterX, attackCenterY, 3);
+  }
+
+  private drawDebugArrowHead(x: number, y: number, facing: -1 | 1, color: number) {
+    if (!this.hitboxDebugGraphics) {
+      return;
+    }
+
+    const graphics = this.hitboxDebugGraphics;
+    const tipX = x + facing * 9;
+    graphics.lineStyle(2, color, 0.9);
+    graphics.beginPath();
+    graphics.moveTo(tipX, y);
+    graphics.lineTo(x, y - 6);
+    graphics.moveTo(tipX, y);
+    graphics.lineTo(x, y + 6);
+    graphics.strokePath();
+  }
+
+  private destroyHitboxDebugOverlay() {
+    this.hitboxDebugGraphics?.destroy();
+    this.hitboxDebugText?.destroy();
+    this.hitboxDebugGraphics = undefined;
+    this.hitboxDebugText = undefined;
   }
 
   private togglePause(time: number) {
@@ -2207,7 +2401,12 @@ class BattleScene extends Phaser.Scene {
     this.nextCpuDecisionAt += pausedDuration;
     this.cpuRetreatUntil += pausedDuration;
 
+    for (const pendingAttack of this.pendingAttacks) {
+      pendingAttack.activeStartsAt += pausedDuration;
+    }
+
     for (const attack of this.activeAttacks) {
+      attack.activeStartedAt += pausedDuration;
       attack.expiresAt += pausedDuration;
     }
   }
@@ -2466,11 +2665,12 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
-    fighter.nextAttackAt = time + attackCooldownMs;
+    const timing = this.getAttackTiming(fighter);
+    fighter.nextAttackAt = time + timing.cooldownMs;
     const opponent = fighter === this.player1 ? this.player2 : this.player1;
     const opponentHp = fighter === this.player1 ? this.player2Hp : this.player1Hp;
 
-    this.createAttackHitbox(fighter, opponent, opponentHp, time);
+    this.queueAttackStartup(fighter, opponent, opponentHp, timing, time);
   }
 
   private updateCpu(time: number, delta: number) {
@@ -2523,7 +2723,52 @@ class BattleScene extends Phaser.Scene {
     return Phaser.Math.RND.pick(palette);
   }
 
-  private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
+  private getAttackTiming(fighter: Fighter): AttackTiming {
+    return attackTimingByFighterId[fighter.definition.id] ?? defaultAttackTiming;
+  }
+
+  private queueAttackStartup(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, timing: AttackTiming, time: number) {
+    const activeStartsAt = time + timing.startupMs;
+
+    if (timing.startupMs <= 0) {
+      this.createAttackHitbox(fighter, opponent, opponentHp, timing, time);
+      return;
+    }
+
+    this.pendingAttacks.push({
+      attacker: fighter,
+      defender: opponent,
+      defenderHp: opponentHp,
+      timing,
+      activeStartsAt,
+    });
+  }
+
+  private updatePendingAttacks(time: number) {
+    for (let i = this.pendingAttacks.length - 1; i >= 0; i -= 1) {
+      const pendingAttack = this.pendingAttacks[i];
+
+      if (time < pendingAttack.activeStartsAt) {
+        continue;
+      }
+
+      this.pendingAttacks.splice(i, 1);
+
+      if (this.matchOver) {
+        continue;
+      }
+
+      this.createAttackHitbox(
+        pendingAttack.attacker,
+        pendingAttack.defender,
+        pendingAttack.defenderHp,
+        pendingAttack.timing,
+        pendingAttack.activeStartsAt,
+      );
+    }
+  }
+
+  private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, timing: AttackTiming, time: number) {
     const effectiveAttackWidth = this.getEffectiveAttackWidth(fighter);
     const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + effectiveAttackWidth / 2);
     const hitboxY = fighter.body.y + fighter.stats.attackYOffset;
@@ -2539,7 +2784,8 @@ class BattleScene extends Phaser.Scene {
       defenderHp: opponentHp,
       hitbox,
       hasHit: false,
-      expiresAt: time + attackDurationMs,
+      activeStartedAt: time,
+      expiresAt: time + timing.activeMs,
     });
   }
 
@@ -2908,6 +3154,9 @@ class BattleScene extends Phaser.Scene {
     this.hitMarkerSubLabel = undefined;
     this.matchTimerText?.destroy();
     this.matchTimerText = undefined;
+    this.hitboxDebugEnabled = false;
+    this.hitboxDebugKey = undefined;
+    this.destroyHitboxDebugOverlay();
     this.clearHitSparks();
     this.clearJustGuardFeedback();
     this.resultTransitionEvent?.remove(false);
@@ -2934,19 +3183,6 @@ class BattleScene extends Phaser.Scene {
     }
   }
 
-  private isAmpCompatibleFighter(fighterId: string): boolean {
-    return fighterId === 'electric-guitar' || fighterId === 'bass' || fighterId === 'keyboard';
-  }
-
-  private resolveBattleEquipmentIdForFighter(fighterId: string, equipmentId: EquipmentId): EquipmentId {
-    // Battle-side safety fallback: stale/incompatible saved selections must resolve safely.
-    if (equipmentId === 'amp' && !this.isAmpCompatibleFighter(fighterId)) {
-      return 'none';
-    }
-
-    return equipmentId;
-  }
-
   private getFighterEquipmentId(fighter: Fighter): EquipmentId {
     return fighter === this.player1 ? this.player1EquipmentId : this.player2EquipmentId;
   }
@@ -2958,7 +3194,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   private hasAmpReach(fighter: Fighter): boolean {
-    return this.getFighterEquipmentId(fighter) === 'amp' && this.isAmpCompatibleFighter(fighter.definition.id);
+    return this.getFighterEquipmentId(fighter) === 'amp' && isAmpCompatibleFighterId(fighter.definition.id);
   }
 
   private getEffectiveAttackWidth(fighter: Fighter): number {
@@ -3048,6 +3284,8 @@ class BattleScene extends Phaser.Scene {
   }
 
   private clearActiveAttacks() {
+    this.pendingAttacks = [];
+
     for (const attack of this.activeAttacks) {
       attack.hitbox.destroy();
     }
@@ -3649,13 +3887,17 @@ class EquipmentSelectScene extends Phaser.Scene {
       focusedEquipment.id === 'amp' && focusedFighterId === 'drum-sticks'
         ? '\nドラムスティックはアンプ非対応。バトルでは装備なし扱い。'
         : '';
+    const pickIncompatibleNote =
+      focusedEquipment.id === 'pick' && focusedFighterId && !isPickCompatibleFighterId(focusedFighterId)
+        ? '\nこのキャラはピック非対応。バトルでは装備なし扱い。'
+        : '';
 
     this.equipmentRowsText?.setText(
       `${p1Prefix}P1装備: ${getEquipmentShortLabelJa(p1Equipment.id)}
 ${p2Prefix}P2装備: ${getEquipmentShortLabelJa(p2Equipment.id)}`,
     );
     this.equipmentDescriptionText?.setText(
-      `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}${ampIncompatibleNote}`,
+      `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}${ampIncompatibleNote}${pickIncompatibleNote}`,
     );
     this.statusText?.setText(`${this.selectedEquipmentRow === 0 ? 'P1' : 'P2'}の装備を選択中`);
   }
