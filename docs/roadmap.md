@@ -1512,6 +1512,7 @@ Implemented scope:
 - Phase 13 is the next focused gameplay-feel phase after Guard / Just Guard / Timer / Retire entered the prototype.
 - Scope, non-goals, task order, inventory policy, timing terminology, Pick direction, and review guardrails are documented in `docs/phase-13-attack-tempo-hitbox-pick-scope.md`.
 - Phase 13 starts docs-first with 13-1 and must not change runtime attack values, hitbox values, Pick gameplay, Guard / Just Guard values, Timer / Retire behavior, Result reason behavior, or records/settings schema.
+- Phase 13-2 inventories current main-branch attack timing, fighter stats, hitboxes, equipment / Pick behavior, Guard relationships, and regression notes in `docs/phase-13-current-attack-values-inventory.md`.
 - Phase 13 should evaluate attack startup / active / recovery / cooldown, current hitbox readability, and Pick's future role before directly strengthening Guard.
 
-**Next recommended task:** Phase 13-2: Current attack values inventory.
+**Next recommended task:** Phase 13-3: Hitbox Debug Overlay.
