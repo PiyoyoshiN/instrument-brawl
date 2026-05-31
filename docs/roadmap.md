@@ -1517,6 +1517,7 @@ Implemented scope:
 - Phase 13-4 introduces a behavior-preserving shared attack timing model with explicit startup / active / recovery / cooldown fields before per-fighter tuning.
 - Phase 13-5 adds initial per-fighter attack timing values for Electric Guitar, Bass, Drum Sticks, and Keyboard without changing hitbox size, damage, knockback, Pick, Guard, Timer, Retire, Result reason, or schemas.
 - Phase 13-6 lightly tunes fighter attack hitbox width / height / `attackYOffset` while leaving AttackTiming, damage, knockback, Pick, Guard, Timer, Retire, Result reason, and schemas unchanged.
+- Phase 13-7 makes Pick compatible with Electric Guitar / Bass only and safely resolves Drum Sticks / Keyboard + Pick to `none` in battle without adding Pick damage yet.
 - Phase 13 should evaluate attack startup / active / recovery / cooldown, current hitbox readability, and Pick's future role before directly strengthening Guard.
 
-**Next recommended task:** Phase 13-7: Pick compatibility cleanup.
+**Next recommended task:** Phase 13-8: Pick add-on damage implementation.

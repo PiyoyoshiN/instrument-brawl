@@ -253,7 +253,7 @@ const equipmentDisplayJaById: Record<EquipmentId, EquipmentDisplayJa> = {
   pick: {
     displayNameJa: 'ピック（準備中）',
     shortLabelJa: 'ピック',
-    descriptionJa: 'Phase 10では効果なし。後のフェーズで検討。',
+    descriptionJa: 'エレキギター・ベース対応。現在は効果なし。後のフェーズで検討。',
   },
   case: {
     displayNameJa: 'ケース',
@@ -268,6 +268,27 @@ function getAllEquipmentDefinitions(): EquipmentDefinition[] {
 
 function isEquipmentId(value: unknown): value is EquipmentId {
   return value === 'none' || value === 'amp' || value === 'pick' || value === 'case';
+}
+
+function isAmpCompatibleFighterId(fighterId: string): boolean {
+  return fighterId === 'electric-guitar' || fighterId === 'bass' || fighterId === 'keyboard';
+}
+
+function isPickCompatibleFighterId(fighterId: string): boolean {
+  return fighterId === 'electric-guitar' || fighterId === 'bass';
+}
+
+function resolveBattleEquipmentIdForFighter(fighterId: string, equipmentId: EquipmentId): EquipmentId {
+  // Battle-side safety fallback: stale/incompatible saved selections must resolve safely.
+  if (equipmentId === 'amp' && !isAmpCompatibleFighterId(fighterId)) {
+    return 'none';
+  }
+
+  if (equipmentId === 'pick' && !isPickCompatibleFighterId(fighterId)) {
+    return 'none';
+  }
+
+  return equipmentId;
 }
 
 function getEquipmentDefinition(id: unknown): EquipmentDefinition {
@@ -1852,11 +1873,11 @@ class BattleScene extends Phaser.Scene {
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
     this.player1Definition = getFighterDefinition(this.player1FighterId);
     this.player2Definition = getFighterDefinition(this.player2FighterId);
-    this.player1EquipmentId = this.resolveBattleEquipmentIdForFighter(
+    this.player1EquipmentId = resolveBattleEquipmentIdForFighter(
       this.player1FighterId,
       getEquipmentDefinition(data.player1EquipmentId).id,
     );
-    this.player2EquipmentId = this.resolveBattleEquipmentIdForFighter(
+    this.player2EquipmentId = resolveBattleEquipmentIdForFighter(
       this.player2FighterId,
       getEquipmentDefinition(data.player2EquipmentId).id,
     );
@@ -3162,19 +3183,6 @@ class BattleScene extends Phaser.Scene {
     }
   }
 
-  private isAmpCompatibleFighter(fighterId: string): boolean {
-    return fighterId === 'electric-guitar' || fighterId === 'bass' || fighterId === 'keyboard';
-  }
-
-  private resolveBattleEquipmentIdForFighter(fighterId: string, equipmentId: EquipmentId): EquipmentId {
-    // Battle-side safety fallback: stale/incompatible saved selections must resolve safely.
-    if (equipmentId === 'amp' && !this.isAmpCompatibleFighter(fighterId)) {
-      return 'none';
-    }
-
-    return equipmentId;
-  }
-
   private getFighterEquipmentId(fighter: Fighter): EquipmentId {
     return fighter === this.player1 ? this.player1EquipmentId : this.player2EquipmentId;
   }
@@ -3186,7 +3194,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   private hasAmpReach(fighter: Fighter): boolean {
-    return this.getFighterEquipmentId(fighter) === 'amp' && this.isAmpCompatibleFighter(fighter.definition.id);
+    return this.getFighterEquipmentId(fighter) === 'amp' && isAmpCompatibleFighterId(fighter.definition.id);
   }
 
   private getEffectiveAttackWidth(fighter: Fighter): number {
@@ -3879,13 +3887,17 @@ class EquipmentSelectScene extends Phaser.Scene {
       focusedEquipment.id === 'amp' && focusedFighterId === 'drum-sticks'
         ? '\nドラムスティックはアンプ非対応。バトルでは装備なし扱い。'
         : '';
+    const pickIncompatibleNote =
+      focusedEquipment.id === 'pick' && focusedFighterId && !isPickCompatibleFighterId(focusedFighterId)
+        ? '\nこのキャラはピック非対応。バトルでは装備なし扱い。'
+        : '';
 
     this.equipmentRowsText?.setText(
       `${p1Prefix}P1装備: ${getEquipmentShortLabelJa(p1Equipment.id)}
 ${p2Prefix}P2装備: ${getEquipmentShortLabelJa(p2Equipment.id)}`,
     );
     this.equipmentDescriptionText?.setText(
-      `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}${ampIncompatibleNote}`,
+      `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}${ampIncompatibleNote}${pickIncompatibleNote}`,
     );
     this.statusText?.setText(`${this.selectedEquipmentRow === 0 ? 'P1' : 'P2'}の装備を選択中`);
   }

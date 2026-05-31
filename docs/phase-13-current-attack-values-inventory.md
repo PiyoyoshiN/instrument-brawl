@@ -89,7 +89,7 @@ Amp currently adds `+24` attack width when it is active and compatible. BattleSc
 | --- | --- | --- | --- |
 | none | Yes | No support equipment; baseline behavior. | Always valid. |
 | Amp | Yes | Adds `+24` attack reach only; no projectile, no damage increase. | Effective for Electric Guitar, Bass, and Keyboard. Drum Sticks + Amp resolves to `none` in battle and displays an incompatibility note in Equipment Select. |
-| Pick | Yes | No current gameplay effect. | No runtime compatibility restriction currently exists for Pick. |
+| Pick | Yes | No current gameplay effect yet. | Electric Guitar and Bass compatible. Drum Sticks and Keyboard resolve to `none` in battle and display an incompatibility note in Equipment Select. |
 | Case | Yes | Reduces non-critical incoming damage with multiplier `0.8`; no knockback / HP / Guard behavior change. | Always valid. |
 
 ### Pick current behavior
@@ -105,9 +105,9 @@ Its Japanese display text currently presents it as preparation / no-effect:
 
 - `displayNameJa`: `ピック（準備中）`
 - `shortLabelJa`: `ピック`
-- `descriptionJa`: `Phase 10では効果なし。後のフェーズで検討。`
+- `descriptionJa`: `エレキギター・ベース対応。現在は効果なし。後のフェーズで検討。`
 
-There is no Pick-specific damage, hitbox, knockback, timing, Guard, Timer, Retire, Result reason, records, or settings behavior in the current runtime. There is also no current runtime Pick compatibility restriction by fighter.
+There is no Pick-specific damage, hitbox, knockback, timing, Guard, Timer, Retire, Result reason, records, or settings behavior in the current runtime. Phase 13-7 adds compatibility cleanup only: Electric Guitar / Bass keep Pick in battle, while Drum Sticks / Keyboard resolve Pick to `none` in BattleScene.
 
 ### Drum Sticks critical relationship
 
@@ -199,6 +199,20 @@ Phase 13-6 lightly adjusts hitbox width / height / `attackYOffset` after the Pha
 
 With Amp, effective attack width remains `attackWidth + 24` for compatible fighters: Electric Guitar `132`, Bass `120`, and Keyboard `144`. Drum Sticks + Amp remains battle-side `none` and keeps width `62`.
 
+
+## Phase 13-7 Pick compatibility cleanup
+
+Phase 13-7 makes Pick an Electric Guitar / Bass compatible equipment choice while keeping Pick gameplay effect unimplemented until Phase 13-8.
+
+| Fighter | Pick compatibility | Battle resolution | Gameplay effect in 13-7 |
+| --- | --- | --- | --- |
+| Electric Guitar | Compatible | `pick` remains `pick` | No damage / critical / knockback effect yet. |
+| Bass | Compatible | `pick` remains `pick` | No damage / critical / knockback effect yet. |
+| Drum Sticks | Incompatible | `pick` resolves to `none` | No Pick effect. |
+| Keyboard | Incompatible | `pick` resolves to `none` | No Pick effect. |
+
+Equipment Select displays a compact incompatibility note when Pick is focused for an unsupported fighter. BattleScene still safely resolves stale or saved incompatible Pick selections to `none`, so no settings schema migration is required.
+
 ## Findings for later Phase 13 tasks
 
 These are inventory findings only, not approved tuning decisions:
@@ -207,7 +221,7 @@ These are inventory findings only, not approved tuning decisions:
 - **13-4 attack timing model** now makes startup, active, recovery, and cooldown explicit while preserving current shared timing behavior.
 - **13-5 timing tuning** now gives each fighter initial startup / active / recovery / cooldown values; playtest should verify Guard readability before changing Guard values.
 - **13-6 hitbox tuning** now applies a small width / height / `attackYOffset` pass aligned to Phase 13-5 attack tempo.
-- **13-7 / 13-8 Pick work** should keep Pick as a main-hit add-on if implemented later, because current Pick has no gameplay effect and no compatibility restriction.
+- **13-7 Pick compatibility cleanup** now restricts Pick compatibility to Electric Guitar / Bass while keeping Pick gameplay effect unimplemented for Phase 13-8.
 
 ## Phase 13 inventory / tuning verification expectation
 
