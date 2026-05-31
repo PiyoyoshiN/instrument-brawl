@@ -21,11 +21,13 @@ Primary implementation references checked for this inventory:
 
 | Item | Current value / behavior | Source-of-truth note |
 | --- | --- | --- |
-| `attackDurationMs` | `180` ms | Active attack hitboxes expire at `time + attackDurationMs`. |
+| `attackStartupMs` | `0` ms | Phase 13-4 timing model default; startup exists structurally but is behavior-preserving at 0ms. |
+| `attackActiveMs` | `180` ms | Active attack hitboxes expire at active start time + `attackActiveMs`. |
+| `attackRecoveryMs` | `60` ms | Explicit model value for the gap between active end and the 240ms repeat gate; it does not add movement restrictions in 13-4. |
 | `attackCooldownMs` | `240` ms | Starting an attack sets `fighter.nextAttackAt = time + attackCooldownMs`. |
-| Startup | No explicit startup phase exists. | A hitbox is created immediately when `startAttack` succeeds. |
-| Active | The hitbox exists immediately and remains active until its `expiresAt` time. | The current active window is effectively the hitbox lifetime. |
-| Recovery | No explicit recovery phase exists. | There is no separate post-active recovery state; repeat prevention is handled by `nextAttackAt`. |
+| Startup | Explicit model phase with current value 0ms. | Because startup is 0ms, a hitbox is created immediately when `startAttack` succeeds. |
+| Active | The hitbox exists immediately and remains active until its `expiresAt` time. | The current active window is effectively the same 180ms lifetime as before 13-4. |
+| Recovery | Explicit model value only. | Recovery currently does not restrict movement or add new behavior; repeat prevention is still handled by `nextAttackAt`. |
 | Cooldown / repeat gate | A fighter cannot start another attack while `time < fighter.nextAttackAt`. | This also prevents attack starts while guarding or after match over. |
 
 Current attack flow:
@@ -34,10 +36,10 @@ Current attack flow:
 2. The request is ignored if the fighter is guarding, the match is over, or `time < fighter.nextAttackAt`.
 3. On a valid attack, `nextAttackAt` is set to `time + 240` ms.
 4. The attack hitbox is created immediately.
-5. The hitbox is stored as an active attack with `expiresAt = time + 180` ms.
+5. The hitbox is stored as an active attack with `expiresAt = activeStartedAt + 180` ms.
 6. Active attacks are checked for rectangle overlap each update until they expire.
 
-Because `attackCooldownMs` is 240ms and `attackDurationMs` is 180ms, the current implementation has a repeat gate that extends 60ms beyond the hitbox lifetime. That 60ms is not modeled as named recovery; it is only a consequence of the cooldown being longer than the active hitbox duration.
+Because `attackCooldownMs` is 240ms and `attackActiveMs` is 180ms, the current model has an explicit `attackRecoveryMs` value of 60ms. In Phase 13-4 this recovery value is a timing concept only; it does not add movement lockout or new behavior.
 
 ## Fighter stat inventory
 
@@ -163,12 +165,16 @@ Phase 13-3 adds a development-only BattleScene Hitbox Debug Overlay. Press `H` d
 
 When enabled, the overlay draws P1/P2 body rectangles, fighter center markers, attack direction / `attackYOffset` guide markers, and currently active attack hitboxes using the same rectangle bounds used by collision checks. Amp-compatible attack widths appear through the actual active attack hitbox because the runtime hitbox already uses effective attack width.
 
+## Phase 13-4 behavior-preserving timing model note
+
+Phase 13-4 introduces a shared `AttackTiming` model with `startupMs = 0`, `activeMs = 180`, `recoveryMs = 60`, and `cooldownMs = 240`. This preserves the previous immediate-hitbox / 180ms-active / 240ms-repeat-gate behavior while giving later Phase 13 tasks clear startup / active / recovery / cooldown fields to tune. Recovery is not a movement lockout or new action state in 13-4.
+
 ## Findings for later Phase 13 tasks
 
 These are inventory findings only, not approved tuning decisions:
 
 - **13-3 Hitbox Debug Overlay** now provides development-only visibility for current body rectangles, active hitbox bounds, attack direction, and `attackYOffset` markers before tuning.
-- **13-4 attack timing model** should explicitly decide how startup, active, recovery, and cooldown relate because current startup and recovery are not named runtime phases.
+- **13-4 attack timing model** now makes startup, active, recovery, and cooldown explicit while preserving current shared timing behavior.
 - **13-5 timing tuning** should evaluate whether the current `180` ms active duration and `240` ms repeat gate make Guard difficult to use before changing Guard values.
 - **13-6 hitbox tuning** should review fighter identity and fairness using the current width / height / offset table before changing values.
 - **13-7 / 13-8 Pick work** should keep Pick as a main-hit add-on if implemented later, because current Pick has no gameplay effect and no compatibility restriction.

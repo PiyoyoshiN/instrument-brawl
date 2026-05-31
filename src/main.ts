@@ -95,12 +95,27 @@ function addViewportBackground(scene: Phaser.Scene, color = 0x111827) {
 
   return background;
 }
+type AttackTiming = {
+  startupMs: number;
+  activeMs: number;
+  recoveryMs: number;
+  cooldownMs: number;
+};
+
 const defaultFighterBodyWidth = 72;
 const defaultFighterBodyHeight = 120;
 const player1StartX = 240;
 const player2StartX = 560;
-const attackDurationMs = 180;
+const attackStartupMs = 0;
+const attackActiveMs = 180;
+const attackRecoveryMs = 60;
 const attackCooldownMs = 240;
+const defaultAttackTiming: AttackTiming = {
+  startupMs: attackStartupMs,
+  activeMs: attackActiveMs,
+  recoveryMs: attackRecoveryMs,
+  cooldownMs: attackCooldownMs,
+};
 const knockbackDecay = 2800;
 const knockbackStopSpeed = 8;
 const hitFlashColor = 0xffffff;
@@ -786,12 +801,21 @@ type PlayerHp = {
   barMaxWidth: number;
 };
 
+type PendingAttack = {
+  attacker: Fighter;
+  defender: Fighter;
+  defenderHp: PlayerHp;
+  timing: AttackTiming;
+  activeStartsAt: number;
+};
+
 type ActiveAttack = {
   attacker: Fighter;
   defender: Fighter;
   defenderHp: PlayerHp;
   hitbox: Phaser.GameObjects.Rectangle;
   hasHit: boolean;
+  activeStartedAt: number;
   expiresAt: number;
 };
 
@@ -1742,6 +1766,7 @@ class BattleScene extends Phaser.Scene {
   private player2!: Fighter;
   private player1Hp!: PlayerHp;
   private player2Hp!: PlayerHp;
+  private pendingAttacks: PendingAttack[] = [];
   private activeAttacks: ActiveAttack[] = [];
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
@@ -1817,6 +1842,7 @@ class BattleScene extends Phaser.Scene {
     this.matchOver = false;
     this.matchStarted = false;
     this.matchTimerRemainingSeconds = matchTimerDurationSeconds;
+    this.pendingAttacks = [];
     this.activeAttacks = [];
     this.nextCpuDecisionAt = 0;
     this.cpuRetreatUntil = 0;
@@ -1983,6 +2009,7 @@ class BattleScene extends Phaser.Scene {
       this.tryAttack(this.player2, this.controls.player2, time);
     }
     this.updateAmpAccents(time);
+    this.updatePendingAttacks(time);
     this.updateActiveAttacks(time);
     this.updateKnockback(this.player1, delta);
     this.updateKnockback(this.player2, delta);
@@ -2327,7 +2354,12 @@ class BattleScene extends Phaser.Scene {
     this.nextCpuDecisionAt += pausedDuration;
     this.cpuRetreatUntil += pausedDuration;
 
+    for (const pendingAttack of this.pendingAttacks) {
+      pendingAttack.activeStartsAt += pausedDuration;
+    }
+
     for (const attack of this.activeAttacks) {
+      attack.activeStartedAt += pausedDuration;
       attack.expiresAt += pausedDuration;
     }
   }
@@ -2586,11 +2618,12 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
-    fighter.nextAttackAt = time + attackCooldownMs;
+    const timing = this.getAttackTiming(fighter);
+    fighter.nextAttackAt = time + timing.cooldownMs;
     const opponent = fighter === this.player1 ? this.player2 : this.player1;
     const opponentHp = fighter === this.player1 ? this.player2Hp : this.player1Hp;
 
-    this.createAttackHitbox(fighter, opponent, opponentHp, time);
+    this.queueAttackStartup(fighter, opponent, opponentHp, timing, time);
   }
 
   private updateCpu(time: number, delta: number) {
@@ -2643,7 +2676,52 @@ class BattleScene extends Phaser.Scene {
     return Phaser.Math.RND.pick(palette);
   }
 
-  private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
+  private getAttackTiming(_fighter: Fighter): AttackTiming {
+    return defaultAttackTiming;
+  }
+
+  private queueAttackStartup(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, timing: AttackTiming, time: number) {
+    const activeStartsAt = time + timing.startupMs;
+
+    if (timing.startupMs <= 0) {
+      this.createAttackHitbox(fighter, opponent, opponentHp, timing, time);
+      return;
+    }
+
+    this.pendingAttacks.push({
+      attacker: fighter,
+      defender: opponent,
+      defenderHp: opponentHp,
+      timing,
+      activeStartsAt,
+    });
+  }
+
+  private updatePendingAttacks(time: number) {
+    for (let i = this.pendingAttacks.length - 1; i >= 0; i -= 1) {
+      const pendingAttack = this.pendingAttacks[i];
+
+      if (time < pendingAttack.activeStartsAt) {
+        continue;
+      }
+
+      this.pendingAttacks.splice(i, 1);
+
+      if (this.matchOver) {
+        continue;
+      }
+
+      this.createAttackHitbox(
+        pendingAttack.attacker,
+        pendingAttack.defender,
+        pendingAttack.defenderHp,
+        pendingAttack.timing,
+        pendingAttack.activeStartsAt,
+      );
+    }
+  }
+
+  private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, timing: AttackTiming, time: number) {
     const effectiveAttackWidth = this.getEffectiveAttackWidth(fighter);
     const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + effectiveAttackWidth / 2);
     const hitboxY = fighter.body.y + fighter.stats.attackYOffset;
@@ -2659,7 +2737,8 @@ class BattleScene extends Phaser.Scene {
       defenderHp: opponentHp,
       hitbox,
       hasHit: false,
-      expiresAt: time + attackDurationMs,
+      activeStartedAt: time,
+      expiresAt: time + timing.activeMs,
     });
   }
 
@@ -3171,6 +3250,8 @@ class BattleScene extends Phaser.Scene {
   }
 
   private clearActiveAttacks() {
+    this.pendingAttacks = [];
+
     for (const attack of this.activeAttacks) {
       attack.hitbox.destroy();
     }
