@@ -47,10 +47,10 @@ Default fighter body size is `72 x 120`. Only Keyboard overrides the body size.
 
 | Fighter | `maxHp` | `moveSpeed` | `attackDamage` | `knockbackSpeed` | `attackWidth` | `attackHeight` | `attackYOffset` | Body size |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| Electric Guitar | 100 | 260 | 10 | 520 | 104 | 52 | -8 | default `72 x 120` |
-| Bass | 105 | 230 | 10 | 580 | 88 | 86 | 4 | default `72 x 120` |
-| Drum Sticks | 80 | 310 | 8 | 420 | 64 | 44 | -4 | default `72 x 120` |
-| Keyboard | 95 | 215 | 9 | 500 | 118 | 46 | 0 | override `112 x 70` |
+| Electric Guitar | 100 | 260 | 10 | 520 | 108 | 52 | -8 | default `72 x 120` |
+| Bass | 105 | 230 | 10 | 580 | 96 | 86 | 4 | default `72 x 120` |
+| Drum Sticks | 80 | 310 | 8 | 420 | 62 | 42 | -4 | default `72 x 120` |
+| Keyboard | 95 | 215 | 9 | 500 | 120 | 52 | 0 | override `112 x 70` |
 
 ## Hitbox inventory
 
@@ -60,17 +60,17 @@ Current attack hitboxes are simple rectangles.
 - Vertical position: the hitbox center uses the fighter body `y` plus `attackYOffset`.
 - Width: the base width is the fighter's `attackWidth`, plus Amp's reach bonus only when the fighter has compatible Amp reach.
 - Height: the hitbox height is the fighter's `attackHeight`.
-- Lifetime: the hitbox exists for `attackDurationMs` (`180` ms).
+- Lifetime: the hitbox exists for the attacker fighter's current `AttackTiming.activeMs`.
 - Collision: overlap uses Phaser rectangle-to-rectangle intersection between the attack hitbox bounds and defender body bounds.
 
 ### Base hitbox values
 
 | Fighter | Base `attackWidth` | `attackHeight` | `attackYOffset` |
 | --- | ---: | ---: | ---: |
-| Electric Guitar | 104 | 52 | -8 |
-| Bass | 88 | 86 | 4 |
-| Drum Sticks | 64 | 44 | -4 |
-| Keyboard | 118 | 46 | 0 |
+| Electric Guitar | 108 | 52 | -8 |
+| Bass | 96 | 86 | 4 |
+| Drum Sticks | 62 | 42 | -4 |
+| Keyboard | 120 | 52 | 0 |
 
 ### Effective attack width with Amp
 
@@ -78,10 +78,10 @@ Amp currently adds `+24` attack width when it is active and compatible. BattleSc
 
 | Fighter | Base width | Amp bonus if active | Effective width with Amp |
 | --- | ---: | ---: | ---: |
-| Electric Guitar | 104 | +24 | 128 |
-| Bass | 88 | +24 | 112 |
-| Drum Sticks | 64 | n/a | 64 |
-| Keyboard | 118 | +24 | 142 |
+| Electric Guitar | 108 | +24 | 132 |
+| Bass | 96 | +24 | 120 |
+| Drum Sticks | 62 | n/a | 62 |
+| Keyboard | 120 | +24 | 144 |
 
 ## Equipment / Pick inventory
 
@@ -185,6 +185,20 @@ The `cooldownMs` value remains the actual repeat gate for when the next attack c
 
 Follow-up notes for later Phase 13 tasks: startup-time Guard input, facing changes during startup, and movement during startup should be observed during playtest before becoming stricter rules.
 
+
+## Phase 13-6 hitbox width / height / attackYOffset tuning
+
+Phase 13-6 lightly adjusts hitbox width / height / `attackYOffset` after the Phase 13-5 timing pass. This task does not change AttackTiming, damage, knockback, HP, move speed, body size, Pick, Guard, Timer, Retire, Result reason, or records/settings schema.
+
+| Fighter | Previous `attackWidth` | Previous `attackHeight` | Previous `attackYOffset` | Phase 13-6 `attackWidth` | Phase 13-6 `attackHeight` | Phase 13-6 `attackYOffset` | Intent |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| Electric Guitar | 104 | 52 | -8 | 108 | 52 | -8 | Slightly improves horizontal reliability for the standard fighter. |
+| Bass | 88 | 86 | 4 | 96 | 86 | 4 | Adds enough reach to fit the slower heavy attack tempo. |
+| Drum Sticks | 64 | 44 | -4 | 62 | 42 | -4 | Slightly reduces the hitbox because Drum Sticks has a fast short-cooldown tempo. |
+| Keyboard | 118 | 46 | 0 | 120 | 52 | 0 | Adds vertical presence for the slow area-control fighter. |
+
+With Amp, effective attack width remains `attackWidth + 24` for compatible fighters: Electric Guitar `132`, Bass `120`, and Keyboard `144`. Drum Sticks + Amp remains battle-side `none` and keeps width `62`.
+
 ## Findings for later Phase 13 tasks
 
 These are inventory findings only, not approved tuning decisions:
@@ -192,7 +206,7 @@ These are inventory findings only, not approved tuning decisions:
 - **13-3 Hitbox Debug Overlay** now provides development-only visibility for current body rectangles, active hitbox bounds, attack direction, and `attackYOffset` markers before tuning.
 - **13-4 attack timing model** now makes startup, active, recovery, and cooldown explicit while preserving current shared timing behavior.
 - **13-5 timing tuning** now gives each fighter initial startup / active / recovery / cooldown values; playtest should verify Guard readability before changing Guard values.
-- **13-6 hitbox tuning** should review fighter identity and fairness using the current width / height / offset table before changing values.
+- **13-6 hitbox tuning** now applies a small width / height / `attackYOffset` pass aligned to Phase 13-5 attack tempo.
 - **13-7 / 13-8 Pick work** should keep Pick as a main-hit add-on if implemented later, because current Pick has no gameplay effect and no compatibility restriction.
 
 ## Phase 13 inventory / tuning verification expectation
