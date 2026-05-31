@@ -1515,6 +1515,7 @@ Implemented scope:
 - Phase 13-2 inventories current main-branch attack timing, fighter stats, hitboxes, equipment / Pick behavior, Guard relationships, and regression notes in `docs/phase-13-current-attack-values-inventory.md`.
 - Phase 13-3 adds a development-only BattleScene Hitbox Debug Overlay toggled with `H` so current body rectangles, active attack hitboxes, direction, and `attackYOffset` markers can be inspected before tuning.
 - Phase 13-4 introduces a behavior-preserving shared attack timing model with explicit startup / active / recovery / cooldown fields before per-fighter tuning.
+- Phase 13-5 adds initial per-fighter attack timing values for Electric Guitar, Bass, Drum Sticks, and Keyboard without changing hitbox size, damage, knockback, Pick, Guard, Timer, Retire, Result reason, or schemas.
 - Phase 13 should evaluate attack startup / active / recovery / cooldown, current hitbox readability, and Pick's future role before directly strengthening Guard.
 
-**Next recommended task:** Phase 13-5: Character attack timing initial tuning.
+**Next recommended task:** Phase 13-6: Hitbox width / height / attackYOffset tuning.

@@ -21,12 +21,12 @@ Primary implementation references checked for this inventory:
 
 | Item | Current value / behavior | Source-of-truth note |
 | --- | --- | --- |
-| `attackStartupMs` | `0` ms | Phase 13-4 timing model default; startup exists structurally but is behavior-preserving at 0ms. |
-| `attackActiveMs` | `180` ms | Active attack hitboxes expire at active start time + `attackActiveMs`. |
-| `attackRecoveryMs` | `60` ms | Explicit model value for the gap between active end and the 240ms repeat gate; it does not add movement restrictions in 13-4. |
-| `attackCooldownMs` | `240` ms | Starting an attack sets `fighter.nextAttackAt = time + attackCooldownMs`. |
-| Startup | Explicit model phase with current value 0ms. | Because startup is 0ms, a hitbox is created immediately when `startAttack` succeeds. |
-| Active | The hitbox exists immediately and remains active until its `expiresAt` time. | The current active window is effectively the same 180ms lifetime as before 13-4. |
+| `AttackTiming.startupMs` | Per-fighter values in Phase 13-5. | Startup is the delay before the active hitbox appears. |
+| `AttackTiming.activeMs` | Per-fighter values in Phase 13-5. | Active attack hitboxes expire at active start time + `activeMs`. |
+| `AttackTiming.recoveryMs` | Per-fighter values in Phase 13-5. | Recovery is recorded as the gap between active end and cooldown end; it does not add movement restrictions in 13-5. |
+| `AttackTiming.cooldownMs` | Per-fighter values in Phase 13-5. | Starting an attack sets `fighter.nextAttackAt = time + cooldownMs`. |
+| Startup | Explicit per-fighter phase. | A hitbox is queued and appears after startup; Drum Sticks has the shortest startup, Bass / Keyboard are slower. |
+| Active | The hitbox exists only during the active window. | Hitbox Debug Overlay still draws active hitboxes from the runtime hitbox bounds. |
 | Recovery | Explicit model value only. | Recovery currently does not restrict movement or add new behavior; repeat prevention is still handled by `nextAttackAt`. |
 | Cooldown / repeat gate | A fighter cannot start another attack while `time < fighter.nextAttackAt`. | This also prevents attack starts while guarding or after match over. |
 
@@ -34,12 +34,12 @@ Current attack flow:
 
 1. Input or CPU logic requests an attack.
 2. The request is ignored if the fighter is guarding, the match is over, or `time < fighter.nextAttackAt`.
-3. On a valid attack, `nextAttackAt` is set to `time + 240` ms.
-4. The attack hitbox is created immediately.
-5. The hitbox is stored as an active attack with `expiresAt = activeStartedAt + 180` ms.
+3. On a valid attack, `nextAttackAt` is set to `time + cooldownMs` for the attacker's fighter timing.
+4. The attack is queued for startup based on the attacker's per-fighter `startupMs`.
+5. When startup completes, the hitbox is created and stored as an active attack with `expiresAt = activeStartedAt + activeMs`.
 6. Active attacks are checked for rectangle overlap each update until they expire.
 
-Because `attackCooldownMs` is 240ms and `attackActiveMs` is 180ms, the current model has an explicit `attackRecoveryMs` value of 60ms. In Phase 13-4 this recovery value is a timing concept only; it does not add movement lockout or new behavior.
+Phase 13-5 changes the shared Phase 13-4 timing defaults into per-fighter initial timing. Recovery remains a timing concept only; it does not add movement lockout or new behavior.
 
 ## Fighter stat inventory
 
@@ -169,26 +169,40 @@ When enabled, the overlay draws P1/P2 body rectangles, fighter center markers, a
 
 Phase 13-4 introduces a shared `AttackTiming` model with `startupMs = 0`, `activeMs = 180`, `recoveryMs = 60`, and `cooldownMs = 240`. This preserves the previous immediate-hitbox / 180ms-active / 240ms-repeat-gate behavior while giving later Phase 13 tasks clear startup / active / recovery / cooldown fields to tune. Recovery is not a movement lockout or new action state in 13-4.
 
+
+## Phase 13-5 character attack timing initial tuning
+
+Phase 13-5 changes attack timing from shared defaults to per-fighter initial values. These values are the first runtime tuning pass for attack tempo and are still subject to later playtest follow-up.
+
+| Fighter | `startupMs` | `activeMs` | `recoveryMs` | `cooldownMs` | Intent |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Electric Guitar | 90 | 100 | 560 | 750 | Standard tempo; readable but not extremely slow. |
+| Bass | 130 | 120 | 650 | 900 | Heavy tempo with more whiff commitment. |
+| Drum Sticks | 40 | 70 | 140 | 250 | Fast short-reach tempo with a short active window. |
+| Keyboard | 120 | 130 | 750 | 1000 | Slowest tempo because Keyboard already controls wide space. |
+
+The `cooldownMs` value remains the actual repeat gate for when the next attack can start. Startup now delays hitbox creation, active controls hitbox lifetime, and recovery remains a documented timing segment rather than a new movement/action lockout.
+
+Follow-up notes for later Phase 13 tasks: startup-time Guard input, facing changes during startup, and movement during startup should be observed during playtest before becoming stricter rules.
+
 ## Findings for later Phase 13 tasks
 
 These are inventory findings only, not approved tuning decisions:
 
 - **13-3 Hitbox Debug Overlay** now provides development-only visibility for current body rectangles, active hitbox bounds, attack direction, and `attackYOffset` markers before tuning.
 - **13-4 attack timing model** now makes startup, active, recovery, and cooldown explicit while preserving current shared timing behavior.
-- **13-5 timing tuning** should evaluate whether the current `180` ms active duration and `240` ms repeat gate make Guard difficult to use before changing Guard values.
+- **13-5 timing tuning** now gives each fighter initial startup / active / recovery / cooldown values; playtest should verify Guard readability before changing Guard values.
 - **13-6 hitbox tuning** should review fighter identity and fairness using the current width / height / offset table before changing values.
 - **13-7 / 13-8 Pick work** should keep Pick as a main-hit add-on if implemented later, because current Pick has no gameplay effect and no compatibility restriction.
 
-## Phase 13-2 verification expectation
+## Phase 13 inventory / tuning verification expectation
 
-Phase 13-2 should leave runtime behavior unchanged. Verification should confirm:
+Phase 13 follow-up tasks should keep unrelated systems unchanged unless explicitly scoped otherwise. Verification should confirm:
 
-- Documentation-only changes.
-- No TypeScript runtime source changes.
-- No changes to attack timing values.
-- No changes to hitbox width / height / `attackYOffset` values.
-- No Pick gameplay or compatibility changes.
-- No Guard / Just Guard value changes.
-- No Timer / Retire / Result reason changes.
-- No records/settings schema changes.
+- The PR changes only its scoped Phase 13 task.
+- Hitbox width / height / `attackYOffset` values are unchanged unless the task is explicitly hitbox tuning.
+- Pick gameplay and compatibility are unchanged unless the task is explicitly Pick work.
+- Guard / Just Guard values are unchanged unless the task is explicitly Guard work.
+- Timer / Retire / Result reason behavior is unchanged unless explicitly scoped.
+- Records/settings schema are unchanged unless explicitly scoped.
 - `npm run build` was run if possible, or the reason it was not run is documented.

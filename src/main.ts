@@ -116,6 +116,32 @@ const defaultAttackTiming: AttackTiming = {
   recoveryMs: attackRecoveryMs,
   cooldownMs: attackCooldownMs,
 };
+const attackTimingByFighterId: Record<string, AttackTiming> = {
+  'electric-guitar': {
+    startupMs: 90,
+    activeMs: 100,
+    recoveryMs: 560,
+    cooldownMs: 750,
+  },
+  bass: {
+    startupMs: 130,
+    activeMs: 120,
+    recoveryMs: 650,
+    cooldownMs: 900,
+  },
+  'drum-sticks': {
+    startupMs: 40,
+    activeMs: 70,
+    recoveryMs: 140,
+    cooldownMs: 250,
+  },
+  keyboard: {
+    startupMs: 120,
+    activeMs: 130,
+    recoveryMs: 750,
+    cooldownMs: 1000,
+  },
+};
 const knockbackDecay = 2800;
 const knockbackStopSpeed = 8;
 const hitFlashColor = 0xffffff;
@@ -2676,8 +2702,8 @@ class BattleScene extends Phaser.Scene {
     return Phaser.Math.RND.pick(palette);
   }
 
-  private getAttackTiming(_fighter: Fighter): AttackTiming {
-    return defaultAttackTiming;
+  private getAttackTiming(fighter: Fighter): AttackTiming {
+    return attackTimingByFighterId[fighter.definition.id] ?? defaultAttackTiming;
   }
 
   private queueAttackStartup(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, timing: AttackTiming, time: number) {
