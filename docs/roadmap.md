@@ -1499,12 +1499,22 @@ Implemented scope:
 **Next recommended task:** Phase 12-1: Guard / Just Guard / Timer / Retire / Match Rule scope docs.
 
 
-## Phase 12: Guard / Just Guard / Timer / Retire / Match Rules (planned)
+## Phase 12: Guard / Just Guard / Timer / Retire / Match Rules (checkpoint documented)
 
-- Phase 12 is the next gameplay/system phase after the Phase 11 UI Layout Rework checkpoint.
+- Phase 12 followed the Phase 11 UI Layout Rework checkpoint.
 - Scope and initial guardrails are documented in `docs/phase-12-match-rules-scope.md`.
-- Phase 12 starts docs-first with Guard, Just Guard, Timer, Retire / Forfeit, time-up result, and match-rule defaults.
-- Phase 12 must preserve Phase 11 viewport-aware UI guardrails and must not regress HP bars, Character Select layout, footer visibility, or Japanese UI readability.
-- Phase 12-1 is docs/scope only; runtime mechanics begin in later focused PRs.
+- Checkpoint status is documented in `docs/phase-12-checkpoint-report.md`.
+- Phase 12 added Guard, Just Guard, Timer, Retire / Forfeit, Time Up outcomes, and transient Result reason display.
+- Phase 12 preserved Phase 11 viewport-aware UI guardrails and deferred attack tempo, hitbox feel, and Pick behavior to Phase 13.
 
-**Next recommended task:** Phase 13-1: Attack Tempo / Hitbox / Pick scope docs.
+## Phase 13: Attack Tempo / Hitbox / Pick (planned)
+
+- Phase 13 is the next focused gameplay-feel phase after Guard / Just Guard / Timer / Retire entered the prototype.
+- Scope, non-goals, task order, inventory policy, timing terminology, Pick direction, and review guardrails are documented in `docs/phase-13-attack-tempo-hitbox-pick-scope.md`.
+- Phase 13 starts docs-first with 13-1 and must not change runtime attack values, hitbox values, Pick gameplay, Guard / Just Guard values, Timer / Retire behavior, Result reason behavior, or records/settings schema.
+- Phase 13-2 inventories current main-branch attack timing, fighter stats, hitboxes, equipment / Pick behavior, Guard relationships, and regression notes in `docs/phase-13-current-attack-values-inventory.md`.
+- Phase 13-3 adds a development-only BattleScene Hitbox Debug Overlay toggled with `H` so current body rectangles, active attack hitboxes, direction, and `attackYOffset` markers can be inspected before tuning.
+- Phase 13-4 introduces a behavior-preserving shared attack timing model with explicit startup / active / recovery / cooldown fields before per-fighter tuning.
+- Phase 13 should evaluate attack startup / active / recovery / cooldown, current hitbox readability, and Pick's future role before directly strengthening Guard.
+
+**Next recommended task:** Phase 13-5: Character attack timing initial tuning.
