@@ -1513,6 +1513,7 @@ Implemented scope:
 - Scope, non-goals, task order, inventory policy, timing terminology, Pick direction, and review guardrails are documented in `docs/phase-13-attack-tempo-hitbox-pick-scope.md`.
 - Phase 13 starts docs-first with 13-1 and must not change runtime attack values, hitbox values, Pick gameplay, Guard / Just Guard values, Timer / Retire behavior, Result reason behavior, or records/settings schema.
 - Phase 13-2 inventories current main-branch attack timing, fighter stats, hitboxes, equipment / Pick behavior, Guard relationships, and regression notes in `docs/phase-13-current-attack-values-inventory.md`.
+- Phase 13-3 adds a development-only BattleScene Hitbox Debug Overlay toggled with `H` so current body rectangles, active attack hitboxes, direction, and `attackYOffset` markers can be inspected before tuning.
 - Phase 13 should evaluate attack startup / active / recovery / cooldown, current hitbox readability, and Pick's future role before directly strengthening Guard.
 
-**Next recommended task:** Phase 13-3: Hitbox Debug Overlay.
+**Next recommended task:** Phase 13-4: Attack startup / active / recovery / cooldown model introduction.

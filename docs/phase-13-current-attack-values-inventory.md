@@ -157,11 +157,17 @@ Current behavior:
 - Future updates skip collision application for that attack when `attack.hasHit` is true.
 - This means each active attack can affect its defender only once, including Just Guard success consuming that attack's hit.
 
+## Phase 13-3 Hitbox Debug Overlay note
+
+Phase 13-3 adds a development-only BattleScene Hitbox Debug Overlay. Press `H` during BattleScene to toggle it on or off. The overlay is normally off, is not saved to localStorage, and does not change attack timing, hitbox values, equipment behavior, Guard, Timer, Retire, Result reason, or records/settings schema.
+
+When enabled, the overlay draws P1/P2 body rectangles, fighter center markers, attack direction / `attackYOffset` guide markers, and currently active attack hitboxes using the same rectangle bounds used by collision checks. Amp-compatible attack widths appear through the actual active attack hitbox because the runtime hitbox already uses effective attack width.
+
 ## Findings for later Phase 13 tasks
 
 These are inventory findings only, not approved tuning decisions:
 
-- **13-3 Hitbox Debug Overlay** should make base and Amp-modified hitbox width / height / Y offset visible because current collisions are rectangle-based and immediate.
+- **13-3 Hitbox Debug Overlay** now provides development-only visibility for current body rectangles, active hitbox bounds, attack direction, and `attackYOffset` markers before tuning.
 - **13-4 attack timing model** should explicitly decide how startup, active, recovery, and cooldown relate because current startup and recovery are not named runtime phases.
 - **13-5 timing tuning** should evaluate whether the current `180` ms active duration and `240` ms repeat gate make Guard difficult to use before changing Guard values.
 - **13-6 hitbox tuning** should review fighter identity and fairness using the current width / height / offset table before changing values.
