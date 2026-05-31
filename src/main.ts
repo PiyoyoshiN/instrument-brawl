@@ -1782,6 +1782,10 @@ class BattleScene extends Phaser.Scene {
   private player2EquipmentHudText?: Phaser.GameObjects.Text;
   private player1AmpAccent?: Phaser.GameObjects.Arc;
   private player2AmpAccent?: Phaser.GameObjects.Arc;
+  private hitboxDebugKey?: Phaser.Input.Keyboard.Key;
+  private hitboxDebugEnabled = false;
+  private hitboxDebugGraphics?: Phaser.GameObjects.Graphics;
+  private hitboxDebugText?: Phaser.GameObjects.Text;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
@@ -1822,6 +1826,9 @@ class BattleScene extends Phaser.Scene {
     this.isPaused = false;
     this.pauseStartedAt = 0;
     this.pauseKey = undefined;
+    this.hitboxDebugKey = undefined;
+    this.hitboxDebugEnabled = false;
+    this.destroyHitboxDebugOverlay();
     this.retirePlayer1Key = undefined;
     this.retirePlayer2Key = undefined;
     this.pendingRetirePlayer = undefined;
@@ -1928,6 +1935,7 @@ class BattleScene extends Phaser.Scene {
     this.player2 = this.createFighter(player2StartX, 'P2', this.player2Definition);
     this.player2.facing = -1;
     this.createAmpAccents();
+    this.createHitboxDebugOverlay();
     this.controls = this.createControls();
     this.showMatchStartPrompt();
   }
@@ -1937,16 +1945,22 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
+    if (this.hitboxDebugKey && Phaser.Input.Keyboard.JustDown(this.hitboxDebugKey)) {
+      this.toggleHitboxDebugOverlay();
+    }
+
     if (this.pauseKey && !this.matchOver && Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
       this.togglePause(time);
     }
 
     if (this.isPaused) {
       this.updateRetireConfirmationInput();
+      this.updateHitboxDebugOverlay();
       return;
     }
 
     if (this.matchOver || !this.matchStarted) {
+      this.updateHitboxDebugOverlay();
       return;
     }
 
@@ -1974,6 +1988,7 @@ class BattleScene extends Phaser.Scene {
     this.updateKnockback(this.player2, delta);
     this.updateGuardFeedback(this.player1);
     this.updateGuardFeedback(this.player2);
+    this.updateHitboxDebugOverlay();
   }
 
   private createAmpAccents() {
@@ -2145,11 +2160,13 @@ class BattleScene extends Phaser.Scene {
       player2AltAttack: Phaser.Input.Keyboard.KeyCodes.ENTER,
       player2Guard: Phaser.Input.Keyboard.KeyCodes.DOWN,
       pause: Phaser.Input.Keyboard.KeyCodes.P,
+      hitboxDebug: Phaser.Input.Keyboard.KeyCodes.H,
       retirePlayer1: Phaser.Input.Keyboard.KeyCodes.ONE,
       retirePlayer2: Phaser.Input.Keyboard.KeyCodes.TWO,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
     this.pauseKey = keys.pause;
+    this.hitboxDebugKey = keys.hitboxDebug;
     this.retirePlayer1Key = keys.retirePlayer1;
     this.retirePlayer2Key = keys.retirePlayer2;
 
@@ -2167,6 +2184,109 @@ class BattleScene extends Phaser.Scene {
         guardKey: keys.player2Guard,
       },
     };
+  }
+
+  private createHitboxDebugOverlay() {
+    this.hitboxDebugGraphics?.destroy();
+    this.hitboxDebugText?.destroy();
+
+    const camera = this.cameras.main;
+    this.hitboxDebugGraphics = this.add.graphics().setDepth(50).setVisible(false);
+    this.hitboxDebugText = this.add
+      .text(camera.scrollX + 24, camera.scrollY + 148, 'Hitbox Debug ON (H)', {
+        color: '#fef08a',
+        fontFamily: 'monospace',
+        fontSize: '16px',
+        backgroundColor: '#020617',
+        padding: { x: 8, y: 4 },
+      })
+      .setDepth(51)
+      .setVisible(false);
+  }
+
+  private toggleHitboxDebugOverlay() {
+    this.hitboxDebugEnabled = !this.hitboxDebugEnabled;
+
+    if (!this.hitboxDebugEnabled) {
+      this.hitboxDebugGraphics?.clear();
+    }
+
+    this.hitboxDebugGraphics?.setVisible(this.hitboxDebugEnabled);
+    this.hitboxDebugText?.setVisible(this.hitboxDebugEnabled);
+  }
+
+  private updateHitboxDebugOverlay() {
+    if (!this.hitboxDebugEnabled || !this.hitboxDebugGraphics || !this.hitboxDebugText) {
+      return;
+    }
+
+    const graphics = this.hitboxDebugGraphics;
+    const camera = this.cameras.main;
+    this.hitboxDebugText.setPosition(camera.scrollX + 24, camera.scrollY + 148);
+    graphics.clear();
+    this.drawFighterDebugOverlay(this.player1, 0xf97316);
+    this.drawFighterDebugOverlay(this.player2, 0x38bdf8);
+
+    for (const attack of this.activeAttacks) {
+      const attackBounds = attack.hitbox.getBounds();
+      graphics.lineStyle(3, attack.hasHit ? 0xfbbf24 : 0xef4444, 0.95);
+      graphics.strokeRect(attackBounds.x, attackBounds.y, attackBounds.width, attackBounds.height);
+      graphics.fillStyle(attack.hasHit ? 0xfbbf24 : 0xef4444, attack.hasHit ? 0.08 : 0.14);
+      graphics.fillRect(attackBounds.x, attackBounds.y, attackBounds.width, attackBounds.height);
+    }
+  }
+
+  private drawFighterDebugOverlay(fighter: Fighter, color: number) {
+    if (!this.hitboxDebugGraphics) {
+      return;
+    }
+
+    const graphics = this.hitboxDebugGraphics;
+    const bodyBounds = fighter.body.getBounds();
+    const centerX = fighter.body.x;
+    const centerY = fighter.body.y;
+    const attackCenterY = centerY + fighter.stats.attackYOffset;
+    const frontX = centerX + fighter.facing * this.getFighterBodyHalfWidth(fighter);
+    const projectedHitboxCenterX = frontX + fighter.facing * (this.getEffectiveAttackWidth(fighter) / 2);
+
+    graphics.lineStyle(2, color, 0.95);
+    graphics.strokeRect(bodyBounds.x, bodyBounds.y, bodyBounds.width, bodyBounds.height);
+
+    graphics.fillStyle(color, 0.95);
+    graphics.fillCircle(centerX, centerY, 4);
+
+    graphics.lineStyle(2, 0xfef08a, 0.9);
+    graphics.beginPath();
+    graphics.moveTo(centerX, attackCenterY);
+    graphics.lineTo(projectedHitboxCenterX, attackCenterY);
+    graphics.strokePath();
+    this.drawDebugArrowHead(projectedHitboxCenterX, attackCenterY, fighter.facing, 0xfef08a);
+
+    graphics.fillStyle(0xfef08a, 0.95);
+    graphics.fillCircle(projectedHitboxCenterX, attackCenterY, 3);
+  }
+
+  private drawDebugArrowHead(x: number, y: number, facing: -1 | 1, color: number) {
+    if (!this.hitboxDebugGraphics) {
+      return;
+    }
+
+    const graphics = this.hitboxDebugGraphics;
+    const tipX = x + facing * 9;
+    graphics.lineStyle(2, color, 0.9);
+    graphics.beginPath();
+    graphics.moveTo(tipX, y);
+    graphics.lineTo(x, y - 6);
+    graphics.moveTo(tipX, y);
+    graphics.lineTo(x, y + 6);
+    graphics.strokePath();
+  }
+
+  private destroyHitboxDebugOverlay() {
+    this.hitboxDebugGraphics?.destroy();
+    this.hitboxDebugText?.destroy();
+    this.hitboxDebugGraphics = undefined;
+    this.hitboxDebugText = undefined;
   }
 
   private togglePause(time: number) {
@@ -2908,6 +3028,9 @@ class BattleScene extends Phaser.Scene {
     this.hitMarkerSubLabel = undefined;
     this.matchTimerText?.destroy();
     this.matchTimerText = undefined;
+    this.hitboxDebugEnabled = false;
+    this.hitboxDebugKey = undefined;
+    this.destroyHitboxDebugOverlay();
     this.clearHitSparks();
     this.clearJustGuardFeedback();
     this.resultTransitionEvent?.remove(false);
