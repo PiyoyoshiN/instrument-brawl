@@ -1520,6 +1520,7 @@ Implemented scope:
 - Phase 13-7 makes Pick compatible with Electric Guitar / Bass only and safely resolves Drum Sticks / Keyboard + Pick to `none` in battle without adding Pick damage yet.
 - Phase 13-8 implements Pick add-on damage for compatible Electric Guitar / Bass attacks as same-hit damage, with no separate hitbox, second hit, or added knockback.
 - Phase 13-9 updates minimal Pick UI text so Pick no longer appears as `準備中` and unsupported notes remain clear.
+- Phase 13-10 adds the manual playtest checklist for attack timing, hitbox debug overlay, hitbox tuning, Pick compatibility, Pick add-on damage, Guard / Case interactions, Timer / Retire / Result, and records/settings schema checks.
 - Phase 13 should evaluate attack startup / active / recovery / cooldown, current hitbox readability, and Pick's future role before directly strengthening Guard.
 
-**Next recommended task:** Phase 13-10: Manual playtest checklist update.
+**Next recommended task:** Phase 13-11: Phase 13 checkpoint docs.
