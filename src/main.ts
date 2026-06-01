@@ -172,6 +172,9 @@ const matchTimerDurationSeconds = 99;
 // so expected damage stays below Electric Guitar/Bass baseline while preserving burst.
 const drumSticksCriticalRate = 0.35;
 const drumSticksCriticalMultiplier = 1.5;
+const pickNormalAddOnDamage = 1;
+const pickCriticalAddOnDamage = 4;
+const pickCriticalRate = 0.2;
 const cpuComfortDistance = 140;
 const cpuDecisionIntervalMs = 850;
 const cpuRetreatDurationMs = 420;
@@ -3193,6 +3196,18 @@ class BattleScene extends Phaser.Scene {
     return attacker.definition.id === 'drum-sticks' && this.getFighterEquipmentId(attacker) !== 'case';
   }
 
+  private canApplyPickAddOn(attacker: Fighter): boolean {
+    return this.getFighterEquipmentId(attacker) === 'pick' && isPickCompatibleFighterId(attacker.definition.id);
+  }
+
+  private rollPickAddOnDamage(attacker: Fighter): number {
+    if (!this.canApplyPickAddOn(attacker)) {
+      return 0;
+    }
+
+    return Math.random() < pickCriticalRate ? pickCriticalAddOnDamage : pickNormalAddOnDamage;
+  }
+
   private hasAmpReach(fighter: Fighter): boolean {
     return this.getFighterEquipmentId(fighter) === 'amp' && isAmpCompatibleFighterId(fighter.definition.id);
   }
@@ -3233,14 +3248,16 @@ class BattleScene extends Phaser.Scene {
     const canCritical = this.canUseDrumSticksCritical(attacker);
     const isCritical = canCritical && Math.random() < drumSticksCriticalRate;
 
+    const pickAddOnDamage = this.rollPickAddOnDamage(attacker);
     let finalDamage = baseDamage;
 
     if (isCritical) {
       finalDamage = Math.floor(baseDamage * drumSticksCriticalMultiplier);
     } else {
+      finalDamage = baseDamage + pickAddOnDamage;
       const defenderEquipmentId = this.getFighterEquipmentId(defender);
       if (defenderEquipmentId === 'case') {
-        finalDamage = Math.floor(baseDamage * caseNormalDamageMultiplier);
+        finalDamage = Math.floor(finalDamage * caseNormalDamageMultiplier);
       }
     }
 

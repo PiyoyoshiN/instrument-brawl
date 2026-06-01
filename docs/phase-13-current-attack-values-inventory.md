@@ -89,7 +89,7 @@ Amp currently adds `+24` attack width when it is active and compatible. BattleSc
 | --- | --- | --- | --- |
 | none | Yes | No support equipment; baseline behavior. | Always valid. |
 | Amp | Yes | Adds `+24` attack reach only; no projectile, no damage increase. | Effective for Electric Guitar, Bass, and Keyboard. Drum Sticks + Amp resolves to `none` in battle and displays an incompatibility note in Equipment Select. |
-| Pick | Yes | No current gameplay effect yet. | Electric Guitar and Bass compatible. Drum Sticks and Keyboard resolve to `none` in battle and display an incompatibility note in Equipment Select. |
+| Pick | Yes | Electric Guitar / Bass add-on damage on the same successful main hit; no separate hitbox / hit / knockback. | Electric Guitar and Bass compatible. Drum Sticks and Keyboard resolve to `none` in battle and display an incompatibility note in Equipment Select. |
 | Case | Yes | Reduces non-critical incoming damage with multiplier `0.8`; no knockback / HP / Guard behavior change. | Always valid. |
 
 ### Pick current behavior
@@ -107,7 +107,7 @@ Its Japanese display text currently presents it as preparation / no-effect:
 - `shortLabelJa`: `ピック`
 - `descriptionJa`: `エレキギター・ベース対応。現在は効果なし。後のフェーズで検討。`
 
-There is no Pick-specific damage, hitbox, knockback, timing, Guard, Timer, Retire, Result reason, records, or settings behavior in the current runtime. Phase 13-7 adds compatibility cleanup only: Electric Guitar / Bass keep Pick in battle, while Drum Sticks / Keyboard resolve Pick to `none` in BattleScene.
+Phase 13-8 adds Pick-specific add-on damage only for compatible Electric Guitar / Bass attacks. Pick still does not add a hitbox, second hit, knockback, timing change, Guard change, Timer / Retire / Result reason behavior, records fields, or settings schema. Drum Sticks / Keyboard still resolve Pick to `none` in BattleScene.
 
 ### Drum Sticks critical relationship
 
@@ -213,6 +213,37 @@ Phase 13-7 makes Pick an Electric Guitar / Bass compatible equipment choice whil
 
 Equipment Select displays a compact incompatibility note when Pick is focused for an unsupported fighter. BattleScene still safely resolves stale or saved incompatible Pick selections to `none`, so no settings schema migration is required.
 
+
+## Phase 13-8 Pick add-on damage implementation
+
+Phase 13-8 gives compatible Pick users a small add-on damage effect inside the same successful main attack hit. Pick remains incompatible with Drum Sticks and Keyboard.
+
+| Pick value | Current value | Notes |
+| --- | ---: | --- |
+| Normal add-on damage | `+1` | Added to base damage before Case and Guard calculations. |
+| Critical add-on damage | `+4` | Replaces the normal Pick add-on when the Pick critical roll succeeds. |
+| Pick critical rate | `20%` | Rolled once on successful hit only. |
+
+Pick add-on damage order:
+
+1. Determine attacker base damage.
+2. Roll Pick add-on only if the attacker is Electric Guitar / Bass with battle-resolved `pick` equipment.
+3. Add Pick add-on damage to base damage.
+4. Apply defender Case reduction to the combined damage when applicable.
+5. Apply Guard / Just Guard reduction to the resulting damage.
+6. Apply the final damage to HP.
+
+Important behavior constraints:
+
+- Pick does not create a separate hitbox.
+- Pick does not create a second hit.
+- Pick does not consume `hasHit` more than once.
+- Pick does not add knockback.
+- Pick critical affects only the add-on amount, not the base attack damage.
+- Just Guard reduces the full base + Pick add-on damage to `0`.
+- Normal Guard reduces the combined base + Pick add-on damage.
+- Case reduces the combined base + Pick add-on damage before Guard / Just Guard.
+
 ## Findings for later Phase 13 tasks
 
 These are inventory findings only, not approved tuning decisions:
@@ -221,7 +252,8 @@ These are inventory findings only, not approved tuning decisions:
 - **13-4 attack timing model** now makes startup, active, recovery, and cooldown explicit while preserving current shared timing behavior.
 - **13-5 timing tuning** now gives each fighter initial startup / active / recovery / cooldown values; playtest should verify Guard readability before changing Guard values.
 - **13-6 hitbox tuning** now applies a small width / height / `attackYOffset` pass aligned to Phase 13-5 attack tempo.
-- **13-7 Pick compatibility cleanup** now restricts Pick compatibility to Electric Guitar / Bass while keeping Pick gameplay effect unimplemented for Phase 13-8.
+- **13-7 Pick compatibility cleanup** now restricts Pick compatibility to Electric Guitar / Bass.
+- **13-8 Pick add-on damage** now adds same-hit Pick damage for compatible Pick users without adding hitboxes, second hits, or knockback.
 
 ## Phase 13 inventory / tuning verification expectation
 
