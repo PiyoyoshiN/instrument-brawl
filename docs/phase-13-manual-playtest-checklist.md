@@ -97,6 +97,8 @@ Expected Pick values:
 
 ## G. Guard / Just Guard / Case
 
+- [ ] Home / Battle / Pause show P1 `S` Guard and P2 `↓` Guard controls clearly.
+- [ ] Pause help shows a short Just Guard note.
 - [ ] During Normal Guard, combined base + Pick add-on damage is reduced.
 - [ ] During Just Guard, combined base + Pick add-on damage becomes `0`.
 - [ ] Pick does not pierce Just Guard.

@@ -991,7 +991,7 @@ class HomeScene extends Phaser.Scene {
       .text(
         centerX,
         safeTop + 244,
-        [`P1 ${getFighterDisplayNameJa(defaultPlayer1FighterId)}: A/D移動・W/Space攻撃`, `P2 ${getFighterDisplayNameJa(defaultPlayer2FighterId)}: ←/→移動・↑/Enter攻撃`],
+        [`P1 ${getFighterDisplayNameJa(defaultPlayer1FighterId)}: A/D移動・W/Space攻撃・Sガード`, `P2 ${getFighterDisplayNameJa(defaultPlayer2FighterId)}: ←/→移動・↑/Enter攻撃・↓ガード`],
         {
           align: 'center',
           color: '#e2e8f0',
@@ -1940,8 +1940,8 @@ class BattleScene extends Phaser.Scene {
     const hudTextY = hudTop + 18;
     const equipmentY = hudTop + 76;
     const instructionText = this.player2Mode === 'cpu'
-      ? 'P1 A/D + W/Space   P2 CPU   P: 操作確認'
-      : 'P1 A/D + W/Space   P2 ←/→ + ↑/Enter   P: 操作確認';
+      ? 'P1 A/D移動 W/Space攻撃 Sガード / P2 CPU / P操作確認'
+      : 'P1 A/D移動 W/Space攻撃 Sガード / P2 ←/→移動 ↑/Enter攻撃 ↓ガード / P操作確認';
 
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 286, 660, 4, 0x334155, 0.7);
@@ -2003,7 +2003,7 @@ class BattleScene extends Phaser.Scene {
       .text(hudCenterX, hudBottom - 22, instructionText, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '16px',
+        fontSize: '13px',
       })
       .setOrigin(0.5);
 
@@ -2461,7 +2461,7 @@ class BattleScene extends Phaser.Scene {
     const currentMode = this.player2Mode === 'cpu' ? 'CPU' : '2P';
     const player2Lines = this.player2Mode === 'cpu'
       ? ['CPUが自動操作', 'P2手動操作は不要']
-      : ['← / →: 移動', '↑ / Enter: 攻撃'];
+      : ['← / →: 移動', '↑ / Enter: 攻撃', '↓: ガード'];
     const retireTitle = this.pendingRetirePlayer
       ? `${this.pendingRetirePlayer === 'p1' ? 'P1' : 'P2'} リタイア確認`
       : 'リタイア / Forfeit';
@@ -2495,7 +2495,7 @@ class BattleScene extends Phaser.Scene {
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
       }).setOrigin(0, 0),
-      this.add.text(panelLeft + 72, panelTop + 154, ['A / D: 移動', 'W / Space: 攻撃'], {
+      this.add.text(panelLeft + 72, panelTop + 154, ['A / D: 移動', 'W / Space: 攻撃', 'S: ガード'], {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -2530,11 +2530,15 @@ class BattleScene extends Phaser.Scene {
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       }).setOrigin(0, 0),
-      this.add.text(panelLeft + 72, panelTop + panelHeight - 70, ['1回の攻撃で当たるのは1回だけ', '結果画面: R再戦 / Cキャラ選択 / Enter・Spaceホーム'], {
+      this.add.text(panelLeft + 72, panelTop + panelHeight - 70, [
+        '1回の攻撃で当たるのは1回だけ',
+        'ガード開始直後はJust Guard（成功時ダメージ0）',
+        '結果画面: R再戦 / Cキャラ選択 / Enter・Spaceホーム',
+      ], {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '16px',
-        lineSpacing: 6,
+        fontSize: '14px',
+        lineSpacing: 4,
       }).setOrigin(0, 0),
     ]);
 
