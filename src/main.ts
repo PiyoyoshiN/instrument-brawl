@@ -254,9 +254,9 @@ const equipmentDisplayJaById: Record<EquipmentId, EquipmentDisplayJa> = {
     descriptionJa: 'エレキギター・ベース・キーボード対応。攻撃の届く範囲が少し伸びる。',
   },
   pick: {
-    displayNameJa: 'ピック（準備中）',
+    displayNameJa: 'ピック',
     shortLabelJa: 'ピック',
-    descriptionJa: 'エレキギター・ベース対応。現在は効果なし。後のフェーズで検討。',
+    descriptionJa: 'エレキギター・ベース対応。命中時に同じ1ヒット内で追加ダメージ（通常+1、20%で+4）。',
   },
   case: {
     displayNameJa: 'ケース',

@@ -101,11 +101,11 @@ Pick is present in the equipment ID union and equipment definitions, so it is se
 - `description`: `Sharper and more precise playing flavor.`
 - `conceptRole`: `sharper / precise playing flavor`
 
-Its Japanese display text currently presents it as preparation / no-effect:
+Its Japanese display text currently presents the implemented same-hit add-on damage:
 
-- `displayNameJa`: `ピック（準備中）`
+- `displayNameJa`: `ピック`
 - `shortLabelJa`: `ピック`
-- `descriptionJa`: `エレキギター・ベース対応。現在は効果なし。後のフェーズで検討。`
+- `descriptionJa`: `エレキギター・ベース対応。命中時に同じ1ヒット内で追加ダメージ（通常+1、20%で+4）。`
 
 Phase 13-8 adds Pick-specific add-on damage only for compatible Electric Guitar / Bass attacks. Pick still does not add a hitbox, second hit, knockback, timing change, Guard change, Timer / Retire / Result reason behavior, records fields, or settings schema. Drum Sticks / Keyboard still resolve Pick to `none` in BattleScene.
 
@@ -244,6 +244,15 @@ Important behavior constraints:
 - Normal Guard reduces the combined base + Pick add-on damage.
 - Case reduces the combined base + Pick add-on damage before Guard / Just Guard.
 
+
+## Phase 13-9 minimal Pick UI text update
+
+Phase 13-9 updates Pick-facing Japanese UI text only. The player-facing Pick label is now `ピック` instead of `ピック（準備中）`, and the Equipment Select description now explains the implemented add-on damage: `エレキギター・ベース対応。命中時に同じ1ヒット内で追加ダメージ（通常+1、20%で+4）。`
+
+The unsupported note remains compact: `このキャラはピック非対応。バトルでは装備なし扱い。`
+
+This is a text-only follow-up. It does not change Pick damage values, Pick compatibility, AttackTiming, hitbox values, Guard / Just Guard, Case, Timer, Retire, Result reason, records/settings schema, or Hitbox Debug Overlay controls.
+
 ## Findings for later Phase 13 tasks
 
 These are inventory findings only, not approved tuning decisions:
@@ -254,6 +263,7 @@ These are inventory findings only, not approved tuning decisions:
 - **13-6 hitbox tuning** now applies a small width / height / `attackYOffset` pass aligned to Phase 13-5 attack tempo.
 - **13-7 Pick compatibility cleanup** now restricts Pick compatibility to Electric Guitar / Bass.
 - **13-8 Pick add-on damage** now adds same-hit Pick damage for compatible Pick users without adding hitboxes, second hits, or knockback.
+- **13-9 Pick UI text** updates Pick labels/descriptions to match the implemented add-on damage while preserving unsupported notes.
 
 ## Phase 13 inventory / tuning verification expectation
 

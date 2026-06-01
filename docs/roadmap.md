@@ -1519,6 +1519,7 @@ Implemented scope:
 - Phase 13-6 lightly tunes fighter attack hitbox width / height / `attackYOffset` while leaving AttackTiming, damage, knockback, Pick, Guard, Timer, Retire, Result reason, and schemas unchanged.
 - Phase 13-7 makes Pick compatible with Electric Guitar / Bass only and safely resolves Drum Sticks / Keyboard + Pick to `none` in battle without adding Pick damage yet.
 - Phase 13-8 implements Pick add-on damage for compatible Electric Guitar / Bass attacks as same-hit damage, with no separate hitbox, second hit, or added knockback.
+- Phase 13-9 updates minimal Pick UI text so Pick no longer appears as `準備中` and unsupported notes remain clear.
 - Phase 13 should evaluate attack startup / active / recovery / cooldown, current hitbox readability, and Pick's future role before directly strengthening Guard.
 
-**Next recommended task:** Phase 13-9: Minimal UI text updates for Pick / unsupported notes.
+**Next recommended task:** Phase 13-10: Manual playtest checklist update.
