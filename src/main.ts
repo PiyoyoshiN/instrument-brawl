@@ -95,6 +95,90 @@ function addViewportBackground(scene: Phaser.Scene, color = 0x111827) {
 
   return background;
 }
+
+
+type SoundEffectKey =
+  | 'ui-confirm'
+  | 'ui-cancel'
+  | 'attack-bass-normal-01'
+  | 'attack-bass-normal-02'
+  | 'attack-bass-critical-01'
+  | 'attack-bass-critical-02';
+
+type SoundEffectDefinition = {
+  key: SoundEffectKey;
+  path: string;
+};
+
+const soundEffectDefinitions: SoundEffectDefinition[] = [
+  { key: 'ui-confirm', path: 'assets/audio/se/se_ui_confirm.wav' },
+  { key: 'ui-cancel', path: 'assets/audio/se/se_ui_cancel.wav' },
+  { key: 'attack-bass-normal-01', path: 'assets/audio/se/se_attack_bass_normal_01.wav' },
+  { key: 'attack-bass-normal-02', path: 'assets/audio/se/se_attack_bass_normal_02.wav' },
+  { key: 'attack-bass-critical-01', path: 'assets/audio/se/se_attack_bass_critical_01.wav' },
+  { key: 'attack-bass-critical-02', path: 'assets/audio/se/se_attack_bass_critical_02.wav' },
+];
+
+const bassNormalAttackSoundEffectKeys: SoundEffectKey[] = ['attack-bass-normal-01', 'attack-bass-normal-02'];
+const uiSoundVolume = 0.42;
+const attackSoundVolume = 0.48;
+const defaultSoundEffectCooldownMs = 70;
+const bassAttackSoundCooldownMs = 120;
+const soundEffectLastPlayedAtByKey = new Map<SoundEffectKey, number>();
+
+function preloadInitialSoundEffects(scene: Phaser.Scene) {
+  for (const definition of soundEffectDefinitions) {
+    scene.load.audio(definition.key, definition.path);
+  }
+}
+
+function playSoundEffect(
+  scene: Phaser.Scene,
+  key: SoundEffectKey,
+  volume: number,
+  cooldownMs = defaultSoundEffectCooldownMs,
+) {
+  if (!scene.cache.audio.exists(key)) {
+    return;
+  }
+
+  const now = scene.time.now;
+  const lastPlayedAt = soundEffectLastPlayedAtByKey.get(key) ?? Number.NEGATIVE_INFINITY;
+
+  if (now - lastPlayedAt < cooldownMs) {
+    return;
+  }
+
+  soundEffectLastPlayedAtByKey.set(key, now);
+
+  try {
+    scene.sound.play(key, { volume });
+  } catch {
+    // Missing/failed audio should never block gameplay or scene transitions.
+  }
+}
+
+function playUiConfirmSound(scene: Phaser.Scene) {
+  playSoundEffect(scene, 'ui-confirm', uiSoundVolume);
+}
+
+function playUiCancelSound(scene: Phaser.Scene) {
+  playSoundEffect(scene, 'ui-cancel', uiSoundVolume);
+}
+
+function playRandomSoundEffect(
+  scene: Phaser.Scene,
+  keys: SoundEffectKey[],
+  volume: number,
+  cooldownMs = defaultSoundEffectCooldownMs,
+) {
+  if (keys.length === 0) {
+    return;
+  }
+
+  const key = keys[Math.floor(Math.random() * keys.length)];
+  playSoundEffect(scene, key, volume, cooldownMs);
+}
 type AttackTiming = {
   startupMs: number;
   activeMs: number;
@@ -941,6 +1025,10 @@ class HomeScene extends Phaser.Scene {
     super('HomeScene');
   }
 
+  preload() {
+    preloadInitialSoundEffects(this);
+  }
+
   create() {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
@@ -1084,6 +1172,7 @@ class HomeScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
       this.transitionStarted = true;
       this.scene.start(this.selectedIndex === 0 ? 'ModeSelectScene' : this.selectedIndex === 1 ? 'RecordsScene' : 'OptionsScene');
     }
@@ -1197,6 +1286,8 @@ class OptionsScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
+
       if (this.selectedIndex === 0) {
         this.isResetArmed = false;
         this.effectsEnabled = !this.effectsEnabled;
@@ -1217,6 +1308,7 @@ class OptionsScene extends Phaser.Scene {
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      playUiCancelSound(this);
       this.transitionStarted = true;
       this.scene.start('HomeScene');
     }
@@ -1390,6 +1482,7 @@ class ModeSelectScene extends Phaser.Scene {
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      playUiCancelSound(this);
       this.transitionStarted = true;
       this.scene.start('HomeScene');
       return;
@@ -1417,6 +1510,7 @@ class ModeSelectScene extends Phaser.Scene {
       return;
     }
 
+    playUiConfirmSound(this);
     this.transitionStarted = true;
     saveLastSelected({
       player2Mode: this.mode,
@@ -1739,6 +1833,7 @@ class CharacterSelectScene extends Phaser.Scene {
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      playUiCancelSound(this);
       this.transitionStarted = true;
       this.scene.start('HomeScene');
       return;
@@ -1748,6 +1843,7 @@ class CharacterSelectScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
       const player1FighterId = fighterDefinitions[this.player1Index].id;
       const player2FighterId = fighterDefinitions[this.player2Index].id;
 
@@ -2386,6 +2482,7 @@ class BattleScene extends Phaser.Scene {
   private resumeBattle(time: number) {
     const pausedDuration = Math.max(0, time - this.pauseStartedAt);
 
+    playUiCancelSound(this);
     this.isPaused = false;
     this.pauseStartedAt = 0;
     this.pendingRetirePlayer = undefined;
@@ -2674,6 +2771,11 @@ class BattleScene extends Phaser.Scene {
 
     const timing = this.getAttackTiming(fighter);
     fighter.nextAttackAt = time + timing.cooldownMs;
+
+    if (fighter.definition.id === 'bass') {
+      playRandomSoundEffect(this, bassNormalAttackSoundEffectKeys, attackSoundVolume, bassAttackSoundCooldownMs);
+    }
+
     const opponent = fighter === this.player1 ? this.player2 : this.player1;
     const opponentHp = fighter === this.player1 ? this.player2Hp : this.player1Hp;
 
@@ -3462,6 +3564,7 @@ class ResultScene extends Phaser.Scene {
     }
 
     if (this.restartKey && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+      playUiConfirmSound(this);
       this.transitionStarted = true;
       this.scene.start('BattleScene', {
         player1FighterId: this.player1FighterId,
@@ -3474,6 +3577,7 @@ class ResultScene extends Phaser.Scene {
     }
 
     if (this.characterSelectKey && Phaser.Input.Keyboard.JustDown(this.characterSelectKey)) {
+      playUiConfirmSound(this);
       this.transitionStarted = true;
       this.scene.start('CharacterSelectScene', {
         player1FighterId: this.player1FighterId,
@@ -3489,6 +3593,7 @@ class ResultScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
       this.transitionStarted = true;
       this.scene.start('HomeScene');
     }
@@ -3671,6 +3776,8 @@ class RecordsScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
+
       if (this.selectedIndex === 0) {
         this.transitionStarted = true;
         this.scene.start('HomeScene');
@@ -3688,6 +3795,7 @@ class RecordsScene extends Phaser.Scene {
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      playUiCancelSound(this);
       this.isResetArmed = false;
       this.transitionStarted = true;
       this.scene.start('HomeScene');
@@ -3853,6 +3961,7 @@ class EquipmentSelectScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
       saveLastSelected({
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
@@ -3872,6 +3981,7 @@ class EquipmentSelectScene extends Phaser.Scene {
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      playUiCancelSound(this);
       this.scene.start('CharacterSelectScene', {
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
