@@ -103,7 +103,10 @@ type SoundEffectKey =
   | 'attack-bass-normal-01'
   | 'attack-bass-normal-02'
   | 'attack-bass-critical-01'
-  | 'attack-bass-critical-02';
+  | 'attack-bass-critical-02'
+  | 'attack-drum-sticks-vs-keyboard-plastic'
+  | 'attack-drum-sticks-vs-wood-normal-01'
+  | 'attack-drum-sticks-critical-shared-01';
 
 type SoundEffectDefinition = {
   key: SoundEffectKey;
@@ -117,6 +120,9 @@ const soundEffectDefinitions: SoundEffectDefinition[] = [
   { key: 'attack-bass-normal-02', path: 'assets/audio/se/se_attack_bass_normal_02.wav' },
   { key: 'attack-bass-critical-01', path: 'assets/audio/se/se_attack_bass_critical_01.wav' },
   { key: 'attack-bass-critical-02', path: 'assets/audio/se/se_attack_bass_critical_02.wav' },
+  { key: 'attack-drum-sticks-vs-keyboard-plastic', path: 'assets/audio/se/se_attack_drum_sticks_vs_keyboard_plastic.wav' },
+  { key: 'attack-drum-sticks-vs-wood-normal-01', path: 'assets/audio/se/se_attack_drum_sticks_vs_wood_normal_01.wav' },
+  { key: 'attack-drum-sticks-critical-shared-01', path: 'assets/audio/se/se_attack_drum_sticks_critical_shared_01.wav' },
 ];
 
 const bassNormalAttackSoundEffectKeys: SoundEffectKey[] = ['attack-bass-normal-01', 'attack-bass-normal-02'];
@@ -2921,6 +2927,7 @@ class BattleScene extends Phaser.Scene {
           continue;
         }
 
+        this.playDrumSticksHitSoundEffect(attack.attacker, attack.defender, damageResult.isCritical);
         this.applyDamage(attack.defenderHp, damageResult.damage);
         this.applyKnockback(
           attack.defender,
@@ -3304,6 +3311,30 @@ class BattleScene extends Phaser.Scene {
 
   private canApplyPickAddOn(attacker: Fighter): boolean {
     return this.getFighterEquipmentId(attacker) === 'pick' && isPickCompatibleFighterId(attacker.definition.id);
+  }
+
+  private getDrumSticksHitSoundEffectKey(attacker: Fighter, defender: Fighter, isCritical: boolean): SoundEffectKey | undefined {
+    if (attacker.definition.id !== 'drum-sticks') {
+      return undefined;
+    }
+
+    if (isCritical) {
+      return 'attack-drum-sticks-critical-shared-01';
+    }
+
+    return defender.definition.id === 'keyboard'
+      ? 'attack-drum-sticks-vs-keyboard-plastic'
+      : 'attack-drum-sticks-vs-wood-normal-01';
+  }
+
+  private playDrumSticksHitSoundEffect(attacker: Fighter, defender: Fighter, isCritical: boolean) {
+    const soundEffectKey = this.getDrumSticksHitSoundEffectKey(attacker, defender, isCritical);
+
+    if (!soundEffectKey) {
+      return;
+    }
+
+    playSoundEffect(this, soundEffectKey, attackSoundVolume);
   }
 
   private rollPickAddOnDamage(attacker: Fighter): number {
