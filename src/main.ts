@@ -185,6 +185,25 @@ function playRandomSoundEffect(
   const key = keys[Math.floor(Math.random() * keys.length)];
   playSoundEffect(scene, key, volume, cooldownMs);
 }
+
+
+type FighterBaseImageDefinition = {
+  key: string;
+  path: string;
+};
+
+const fighterBaseImageById: Record<string, FighterBaseImageDefinition> = {
+  keyboard: { key: 'fighter-keyboard-base', path: 'assets/images/fighters/fighter_keyboard_base.png' },
+  'drum-sticks': { key: 'fighter-drum-sticks-base', path: 'assets/images/fighters/fighter_drum_sticks_base.png' },
+  bass: { key: 'fighter-bass-base', path: 'assets/images/fighters/fighter_bass_base.png' },
+  'electric-guitar': { key: 'fighter-electric-guitar-base', path: 'assets/images/fighters/fighter_electric_guitar_base.png' },
+};
+
+function preloadFighterBaseImages(scene: Phaser.Scene) {
+  for (const imageDefinition of Object.values(fighterBaseImageById)) {
+    scene.load.image(imageDefinition.key, imageDefinition.path);
+  }
+}
 type AttackTiming = {
   startupMs: number;
   activeMs: number;
@@ -911,6 +930,7 @@ function resetStoredSettings(): StoredSettings {
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
+  sprite?: Phaser.GameObjects.Image;
   label: Phaser.GameObjects.Text;
   facing: -1 | 1;
   nextAttackAt: number;
@@ -1033,6 +1053,7 @@ class HomeScene extends Phaser.Scene {
 
   preload() {
     preloadInitialSoundEffects(this);
+    preloadFighterBaseImages(this);
   }
 
   create() {
@@ -2112,6 +2133,8 @@ class BattleScene extends Phaser.Scene {
     this.player1 = this.createFighter(player1StartX, 'P1', this.player1Definition);
     this.player2 = this.createFighter(player2StartX, 'P2', this.player2Definition);
     this.player2.facing = -1;
+    this.syncFighterVisual(this.player1);
+    this.syncFighterVisual(this.player2);
     this.createAmpAccents();
     this.createHitboxDebugOverlay();
     this.controls = this.createControls();
@@ -2287,6 +2310,12 @@ class BattleScene extends Phaser.Scene {
     const body = this.add
       .rectangle(x, 440, bodyWidth, bodyHeight, definition.bodyColor)
       .setStrokeStyle(3, definition.bodyStrokeColor);
+    const sprite = this.createFighterBaseSprite(x, body.y, bodyWidth, bodyHeight, definition);
+
+    if (sprite) {
+      body.setAlpha(0);
+    }
+
     const labelText = this.add
       .text(x, body.y + bodyHeight / 2 + 20, `${playerLabel}\n${definition.displayName}`, {
         align: 'center',
@@ -2303,6 +2332,7 @@ class BattleScene extends Phaser.Scene {
 
     return {
       body,
+      sprite,
       label: labelText,
       facing: 1,
       nextAttackAt: 0,
@@ -2314,6 +2344,37 @@ class BattleScene extends Phaser.Scene {
       definition,
       guardIndicator,
     };
+  }
+
+  private createFighterBaseSprite(
+    x: number,
+    y: number,
+    bodyWidth: number,
+    bodyHeight: number,
+    definition: FighterDefinition,
+  ): Phaser.GameObjects.Image | undefined {
+    const imageDefinition = fighterBaseImageById[definition.id];
+
+    if (!imageDefinition || !this.textures.exists(imageDefinition.key)) {
+      return undefined;
+    }
+
+    const sprite = this.add.image(x, y, imageDefinition.key).setDepth(1);
+    const maxDisplayWidth = Math.max(bodyWidth * 1.5, bodyWidth + 36);
+    const maxDisplayHeight = Math.max(bodyHeight * 1.2, bodyHeight + 24);
+    const spriteWidth = sprite.width || bodyWidth;
+    const spriteHeight = sprite.height || bodyHeight;
+    const scale = Math.min(maxDisplayWidth / spriteWidth, maxDisplayHeight / spriteHeight);
+
+    sprite.setScale(Number.isFinite(scale) && scale > 0 ? scale : 1);
+
+    return sprite;
+  }
+
+  private syncFighterVisual(fighter: Fighter) {
+    fighter.sprite
+      ?.setPosition(fighter.body.x, fighter.body.y)
+      .setFlipX(fighter.facing < 0);
   }
 
   private getFighterBodyHalfWidth(fighter: Fighter) {
@@ -2754,6 +2815,7 @@ class BattleScene extends Phaser.Scene {
 
     fighter.body.setX(nextX);
     fighter.label.setX(nextX);
+    this.syncFighterVisual(fighter);
   }
 
   private tryAttack(fighter: Fighter, keys: PlayerControls, time: number) {
@@ -3081,6 +3143,7 @@ class BattleScene extends Phaser.Scene {
 
     fighter.hitFlashEvent?.remove(false);
     fighter.body.setFillStyle(hitFlashColor);
+    fighter.sprite?.setTint(hitFlashColor);
     fighter.hitFlashEvent = this.time.delayedCall(hitFlashDurationMs, () => {
       this.resetFighterColor(fighter);
     });
@@ -3090,6 +3153,7 @@ class BattleScene extends Phaser.Scene {
     fighter.hitFlashEvent?.remove(false);
     fighter.hitFlashEvent = undefined;
     fighter.body.setFillStyle(fighter.normalColor);
+    fighter.sprite?.clearTint();
   }
 
   private applyKnockback(fighter: Fighter, direction: -1 | 1, speed: number) {
@@ -3122,6 +3186,7 @@ class BattleScene extends Phaser.Scene {
 
     fighter.body.setX(nextX);
     fighter.label.setX(nextX);
+    this.syncFighterVisual(fighter);
 
     if (nextX === leftBound || nextX === rightBound) {
       fighter.knockbackVelocity = 0;
