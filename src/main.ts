@@ -106,7 +106,10 @@ type SoundEffectKey =
   | 'attack-bass-critical-02'
   | 'attack-drum-sticks-vs-keyboard-plastic'
   | 'attack-drum-sticks-vs-wood-normal-01'
-  | 'attack-drum-sticks-critical-shared-01';
+  | 'attack-drum-sticks-critical-shared-01'
+  | 'guard-common-01'
+  | 'guard-common-02'
+  | 'just-guard';
 
 type SoundEffectDefinition = {
   key: SoundEffectKey;
@@ -123,11 +126,17 @@ const soundEffectDefinitions: SoundEffectDefinition[] = [
   { key: 'attack-drum-sticks-vs-keyboard-plastic', path: 'assets/audio/se/se_attack_drum_sticks_vs_keyboard_plastic.wav' },
   { key: 'attack-drum-sticks-vs-wood-normal-01', path: 'assets/audio/se/se_attack_drum_sticks_vs_wood_normal_01.wav' },
   { key: 'attack-drum-sticks-critical-shared-01', path: 'assets/audio/se/se_attack_drum_sticks_critical_shared_01.wav' },
+  { key: 'guard-common-01', path: 'assets/audio/se/se_guard_common_01.wav' },
+  { key: 'guard-common-02', path: 'assets/audio/se/se_guard_common_02.wav' },
+  { key: 'just-guard', path: 'assets/audio/se/se_just_guard.wav' },
 ];
 
 const bassNormalAttackSoundEffectKeys: SoundEffectKey[] = ['attack-bass-normal-01', 'attack-bass-normal-02'];
+const guardSoundEffectKeys: SoundEffectKey[] = ['guard-common-01', 'guard-common-02'];
 const uiSoundVolume = 0.42;
 const attackSoundVolume = 0.48;
+const guardSoundVolume = 0.42;
+const justGuardSoundVolume = 0.5;
 const defaultSoundEffectCooldownMs = 70;
 const bassAttackSoundCooldownMs = 120;
 const soundEffectLastPlayedAtByKey = new Map<SoundEffectKey, number>();
@@ -170,6 +179,14 @@ function playUiConfirmSound(scene: Phaser.Scene) {
 
 function playUiCancelSound(scene: Phaser.Scene) {
   playSoundEffect(scene, 'ui-cancel', uiSoundVolume);
+}
+
+function playNormalGuardSoundEffect(scene: Phaser.Scene) {
+  playRandomSoundEffect(scene, guardSoundEffectKeys, guardSoundVolume);
+}
+
+function playJustGuardSoundEffect(scene: Phaser.Scene) {
+  playSoundEffect(scene, 'just-guard', justGuardSoundVolume);
 }
 
 function playRandomSoundEffect(
@@ -2984,12 +3001,20 @@ class BattleScene extends Phaser.Scene {
         attack.hasHit = true;
         const damageResult = this.calculateAttackDamage(attack.attacker, attack.defender, time);
 
+        const wasNormallyGuarded = attack.defender.isGuarding && !damageResult.wasJustGuarded;
+
         if (damageResult.wasJustGuarded) {
+          playJustGuardSoundEffect(this);
           this.showJustGuardFeedback(attack.defender);
           continue;
         }
 
-        this.playDrumSticksHitSoundEffect(attack.attacker, attack.defender, damageResult.isCritical);
+        if (wasNormallyGuarded) {
+          playNormalGuardSoundEffect(this);
+        } else {
+          this.playDrumSticksHitSoundEffect(attack.attacker, attack.defender, damageResult.isCritical);
+        }
+
         this.applyDamage(attack.defenderHp, damageResult.damage);
         this.applyKnockback(
           attack.defender,
