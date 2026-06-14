@@ -95,12 +95,179 @@ function addViewportBackground(scene: Phaser.Scene, color = 0x111827) {
 
   return background;
 }
+
+
+type SoundEffectKey =
+  | 'ui-confirm'
+  | 'ui-cancel'
+  | 'attack-bass-normal-01'
+  | 'attack-bass-normal-02'
+  | 'attack-bass-critical-01'
+  | 'attack-bass-critical-02'
+  | 'attack-drum-sticks-vs-keyboard-plastic'
+  | 'attack-drum-sticks-vs-wood-normal-01'
+  | 'attack-drum-sticks-critical-shared-01'
+  | 'guard-common-01'
+  | 'guard-common-02'
+  | 'just-guard';
+
+type SoundEffectDefinition = {
+  key: SoundEffectKey;
+  path: string;
+};
+
+const soundEffectDefinitions: SoundEffectDefinition[] = [
+  { key: 'ui-confirm', path: 'assets/audio/se/se_ui_confirm.wav' },
+  { key: 'ui-cancel', path: 'assets/audio/se/se_ui_cancel.wav' },
+  { key: 'attack-bass-normal-01', path: 'assets/audio/se/se_attack_bass_normal_01.wav' },
+  { key: 'attack-bass-normal-02', path: 'assets/audio/se/se_attack_bass_normal_02.wav' },
+  { key: 'attack-bass-critical-01', path: 'assets/audio/se/se_attack_bass_critical_01.wav' },
+  { key: 'attack-bass-critical-02', path: 'assets/audio/se/se_attack_bass_critical_02.wav' },
+  { key: 'attack-drum-sticks-vs-keyboard-plastic', path: 'assets/audio/se/se_attack_drum_sticks_vs_keyboard_plastic.wav' },
+  { key: 'attack-drum-sticks-vs-wood-normal-01', path: 'assets/audio/se/se_attack_drum_sticks_vs_wood_normal_01.wav' },
+  { key: 'attack-drum-sticks-critical-shared-01', path: 'assets/audio/se/se_attack_drum_sticks_critical_shared_01.wav' },
+  { key: 'guard-common-01', path: 'assets/audio/se/se_guard_common_01.wav' },
+  { key: 'guard-common-02', path: 'assets/audio/se/se_guard_common_02.wav' },
+  { key: 'just-guard', path: 'assets/audio/se/se_just_guard.wav' },
+];
+
+const bassNormalAttackSoundEffectKeys: SoundEffectKey[] = ['attack-bass-normal-01', 'attack-bass-normal-02'];
+const guardSoundEffectKeys: SoundEffectKey[] = ['guard-common-01', 'guard-common-02'];
+const uiSoundVolume = 0.42;
+const attackSoundVolume = 0.48;
+const guardSoundVolume = 0.42;
+const justGuardSoundVolume = 0.5;
+const defaultSoundEffectCooldownMs = 70;
+const bassAttackSoundCooldownMs = 120;
+const soundEffectLastPlayedAtByKey = new Map<SoundEffectKey, number>();
+
+function preloadInitialSoundEffects(scene: Phaser.Scene) {
+  for (const definition of soundEffectDefinitions) {
+    scene.load.audio(definition.key, definition.path);
+  }
+}
+
+function playSoundEffect(
+  scene: Phaser.Scene,
+  key: SoundEffectKey,
+  volume: number,
+  cooldownMs = defaultSoundEffectCooldownMs,
+) {
+  if (!scene.cache.audio.exists(key)) {
+    return;
+  }
+
+  const now = scene.time.now;
+  const lastPlayedAt = soundEffectLastPlayedAtByKey.get(key) ?? Number.NEGATIVE_INFINITY;
+
+  if (now - lastPlayedAt < cooldownMs) {
+    return;
+  }
+
+  soundEffectLastPlayedAtByKey.set(key, now);
+
+  try {
+    scene.sound.play(key, { volume });
+  } catch {
+    // Missing/failed audio should never block gameplay or scene transitions.
+  }
+}
+
+function playUiConfirmSound(scene: Phaser.Scene) {
+  playSoundEffect(scene, 'ui-confirm', uiSoundVolume);
+}
+
+function playUiCancelSound(scene: Phaser.Scene) {
+  playSoundEffect(scene, 'ui-cancel', uiSoundVolume);
+}
+
+function playNormalGuardSoundEffect(scene: Phaser.Scene) {
+  playRandomSoundEffect(scene, guardSoundEffectKeys, guardSoundVolume);
+}
+
+function playJustGuardSoundEffect(scene: Phaser.Scene) {
+  playSoundEffect(scene, 'just-guard', justGuardSoundVolume);
+}
+
+function playRandomSoundEffect(
+  scene: Phaser.Scene,
+  keys: SoundEffectKey[],
+  volume: number,
+  cooldownMs = defaultSoundEffectCooldownMs,
+) {
+  if (keys.length === 0) {
+    return;
+  }
+
+  const key = keys[Math.floor(Math.random() * keys.length)];
+  playSoundEffect(scene, key, volume, cooldownMs);
+}
+
+
+type FighterBaseImageDefinition = {
+  key: string;
+  path: string;
+};
+
+const fighterBaseImageById: Record<string, FighterBaseImageDefinition> = {
+  keyboard: { key: 'fighter-keyboard-base', path: 'assets/images/fighters/fighter_keyboard_base.png' },
+  'drum-sticks': { key: 'fighter-drum-sticks-base', path: 'assets/images/fighters/fighter_drum_sticks_base.png' },
+  bass: { key: 'fighter-bass-base', path: 'assets/images/fighters/fighter_bass_base.png' },
+  'electric-guitar': { key: 'fighter-electric-guitar-base', path: 'assets/images/fighters/fighter_electric_guitar_base.png' },
+};
+
+function preloadFighterBaseImages(scene: Phaser.Scene) {
+  for (const imageDefinition of Object.values(fighterBaseImageById)) {
+    scene.load.image(imageDefinition.key, imageDefinition.path);
+  }
+}
+type AttackTiming = {
+  startupMs: number;
+  activeMs: number;
+  recoveryMs: number;
+  cooldownMs: number;
+};
+
 const defaultFighterBodyWidth = 72;
 const defaultFighterBodyHeight = 120;
 const player1StartX = 240;
 const player2StartX = 560;
-const attackDurationMs = 180;
+const attackStartupMs = 0;
+const attackActiveMs = 180;
+const attackRecoveryMs = 60;
 const attackCooldownMs = 240;
+const defaultAttackTiming: AttackTiming = {
+  startupMs: attackStartupMs,
+  activeMs: attackActiveMs,
+  recoveryMs: attackRecoveryMs,
+  cooldownMs: attackCooldownMs,
+};
+const attackTimingByFighterId: Record<string, AttackTiming> = {
+  'electric-guitar': {
+    startupMs: 90,
+    activeMs: 100,
+    recoveryMs: 560,
+    cooldownMs: 750,
+  },
+  bass: {
+    startupMs: 130,
+    activeMs: 120,
+    recoveryMs: 650,
+    cooldownMs: 900,
+  },
+  'drum-sticks': {
+    startupMs: 40,
+    activeMs: 70,
+    recoveryMs: 140,
+    cooldownMs: 250,
+  },
+  keyboard: {
+    startupMs: 120,
+    activeMs: 130,
+    recoveryMs: 750,
+    cooldownMs: 1000,
+  },
+};
 const knockbackDecay = 2800;
 const knockbackStopSpeed = 8;
 const hitFlashColor = 0xffffff;
@@ -131,6 +298,9 @@ const matchTimerDurationSeconds = 99;
 // so expected damage stays below Electric Guitar/Bass baseline while preserving burst.
 const drumSticksCriticalRate = 0.35;
 const drumSticksCriticalMultiplier = 1.5;
+const pickNormalAddOnDamage = 1;
+const pickCriticalAddOnDamage = 4;
+const pickCriticalRate = 0.2;
 const cpuComfortDistance = 140;
 const cpuDecisionIntervalMs = 850;
 const cpuRetreatDurationMs = 420;
@@ -210,9 +380,9 @@ const equipmentDisplayJaById: Record<EquipmentId, EquipmentDisplayJa> = {
     descriptionJa: 'エレキギター・ベース・キーボード対応。攻撃の届く範囲が少し伸びる。',
   },
   pick: {
-    displayNameJa: 'ピック（準備中）',
+    displayNameJa: 'ピック',
     shortLabelJa: 'ピック',
-    descriptionJa: 'Phase 10では効果なし。後のフェーズで検討。',
+    descriptionJa: 'エレキギター・ベース対応。命中時に同じ1ヒット内で追加ダメージ（通常+1、20%で+4）。',
   },
   case: {
     displayNameJa: 'ケース',
@@ -227,6 +397,27 @@ function getAllEquipmentDefinitions(): EquipmentDefinition[] {
 
 function isEquipmentId(value: unknown): value is EquipmentId {
   return value === 'none' || value === 'amp' || value === 'pick' || value === 'case';
+}
+
+function isAmpCompatibleFighterId(fighterId: string): boolean {
+  return fighterId === 'electric-guitar' || fighterId === 'bass' || fighterId === 'keyboard';
+}
+
+function isPickCompatibleFighterId(fighterId: string): boolean {
+  return fighterId === 'electric-guitar' || fighterId === 'bass';
+}
+
+function resolveBattleEquipmentIdForFighter(fighterId: string, equipmentId: EquipmentId): EquipmentId {
+  // Battle-side safety fallback: stale/incompatible saved selections must resolve safely.
+  if (equipmentId === 'amp' && !isAmpCompatibleFighterId(fighterId)) {
+    return 'none';
+  }
+
+  if (equipmentId === 'pick' && !isPickCompatibleFighterId(fighterId)) {
+    return 'none';
+  }
+
+  return equipmentId;
 }
 
 function getEquipmentDefinition(id: unknown): EquipmentDefinition {
@@ -289,7 +480,7 @@ const electricGuitarDefinition: FighterDefinition = {
     moveSpeed: 260,
     attackDamage: 10,
     knockbackSpeed: 520,
-    attackWidth: 104,
+    attackWidth: 108,
     attackHeight: 52,
     attackYOffset: -8,
     attackColor: 0xfacc15,
@@ -310,7 +501,7 @@ const bassDefinition: FighterDefinition = {
     moveSpeed: 230,
     attackDamage: 10,
     knockbackSpeed: 580,
-    attackWidth: 88,
+    attackWidth: 96,
     attackHeight: 86,
     attackYOffset: 4,
     attackColor: 0xf59e0b,
@@ -331,8 +522,8 @@ const drumSticksDefinition: FighterDefinition = {
     moveSpeed: 310,
     attackDamage: 8,
     knockbackSpeed: 420,
-    attackWidth: 64,
-    attackHeight: 44,
+    attackWidth: 62,
+    attackHeight: 42,
     attackYOffset: -4,
     attackColor: 0xfde047,
     attackStrokeColor: 0xfef9c3,
@@ -352,8 +543,8 @@ const keyboardDefinition: FighterDefinition = {
     moveSpeed: 215,
     attackDamage: 9,
     knockbackSpeed: 500,
-    attackWidth: 118,
-    attackHeight: 46,
+    attackWidth: 120,
+    attackHeight: 52,
     attackYOffset: 0,
     attackColor: 0xa78bfa,
     attackStrokeColor: 0xede9fe,
@@ -756,6 +947,7 @@ function resetStoredSettings(): StoredSettings {
 
 type Fighter = {
   body: Phaser.GameObjects.Rectangle;
+  sprite?: Phaser.GameObjects.Image;
   label: Phaser.GameObjects.Text;
   facing: -1 | 1;
   nextAttackAt: number;
@@ -786,12 +978,21 @@ type PlayerHp = {
   barMaxWidth: number;
 };
 
+type PendingAttack = {
+  attacker: Fighter;
+  defender: Fighter;
+  defenderHp: PlayerHp;
+  timing: AttackTiming;
+  activeStartsAt: number;
+};
+
 type ActiveAttack = {
   attacker: Fighter;
   defender: Fighter;
   defenderHp: PlayerHp;
   hitbox: Phaser.GameObjects.Rectangle;
   hasHit: boolean;
+  activeStartedAt: number;
   expiresAt: number;
 };
 
@@ -867,6 +1068,11 @@ class HomeScene extends Phaser.Scene {
     super('HomeScene');
   }
 
+  preload() {
+    preloadInitialSoundEffects(this);
+    preloadFighterBaseImages(this);
+  }
+
   create() {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
@@ -917,7 +1123,7 @@ class HomeScene extends Phaser.Scene {
       .text(
         centerX,
         safeTop + 244,
-        [`P1 ${getFighterDisplayNameJa(defaultPlayer1FighterId)}: A/D移動・W/Space攻撃`, `P2 ${getFighterDisplayNameJa(defaultPlayer2FighterId)}: ←/→移動・↑/Enter攻撃`],
+        [`P1 ${getFighterDisplayNameJa(defaultPlayer1FighterId)}: A/D移動・W/Space攻撃・Sガード`, `P2 ${getFighterDisplayNameJa(defaultPlayer2FighterId)}: ←/→移動・↑/Enter攻撃・↓ガード`],
         {
           align: 'center',
           color: '#e2e8f0',
@@ -1010,6 +1216,7 @@ class HomeScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
       this.transitionStarted = true;
       this.scene.start(this.selectedIndex === 0 ? 'ModeSelectScene' : this.selectedIndex === 1 ? 'RecordsScene' : 'OptionsScene');
     }
@@ -1123,6 +1330,8 @@ class OptionsScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
+
       if (this.selectedIndex === 0) {
         this.isResetArmed = false;
         this.effectsEnabled = !this.effectsEnabled;
@@ -1143,6 +1352,7 @@ class OptionsScene extends Phaser.Scene {
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      playUiCancelSound(this);
       this.transitionStarted = true;
       this.scene.start('HomeScene');
     }
@@ -1316,6 +1526,7 @@ class ModeSelectScene extends Phaser.Scene {
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      playUiCancelSound(this);
       this.transitionStarted = true;
       this.scene.start('HomeScene');
       return;
@@ -1343,6 +1554,7 @@ class ModeSelectScene extends Phaser.Scene {
       return;
     }
 
+    playUiConfirmSound(this);
     this.transitionStarted = true;
     saveLastSelected({
       player2Mode: this.mode,
@@ -1665,6 +1877,7 @@ class CharacterSelectScene extends Phaser.Scene {
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      playUiCancelSound(this);
       this.transitionStarted = true;
       this.scene.start('HomeScene');
       return;
@@ -1674,6 +1887,7 @@ class CharacterSelectScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
       const player1FighterId = fighterDefinitions[this.player1Index].id;
       const player2FighterId = fighterDefinitions[this.player2Index].id;
 
@@ -1742,6 +1956,7 @@ class BattleScene extends Phaser.Scene {
   private player2!: Fighter;
   private player1Hp!: PlayerHp;
   private player2Hp!: PlayerHp;
+  private pendingAttacks: PendingAttack[] = [];
   private activeAttacks: ActiveAttack[] = [];
   private player1FighterId = defaultPlayer1FighterId;
   private player2FighterId = defaultPlayer2FighterId;
@@ -1782,6 +1997,10 @@ class BattleScene extends Phaser.Scene {
   private player2EquipmentHudText?: Phaser.GameObjects.Text;
   private player1AmpAccent?: Phaser.GameObjects.Arc;
   private player2AmpAccent?: Phaser.GameObjects.Arc;
+  private hitboxDebugKey?: Phaser.Input.Keyboard.Key;
+  private hitboxDebugEnabled = false;
+  private hitboxDebugGraphics?: Phaser.GameObjects.Graphics;
+  private hitboxDebugText?: Phaser.GameObjects.Text;
   private controls?: {
     player1: PlayerControls;
     player2: PlayerControls;
@@ -1797,11 +2016,11 @@ class BattleScene extends Phaser.Scene {
     this.player2Mode = data.player2Mode ?? defaultPlayer2Mode;
     this.player1Definition = getFighterDefinition(this.player1FighterId);
     this.player2Definition = getFighterDefinition(this.player2FighterId);
-    this.player1EquipmentId = this.resolveBattleEquipmentIdForFighter(
+    this.player1EquipmentId = resolveBattleEquipmentIdForFighter(
       this.player1FighterId,
       getEquipmentDefinition(data.player1EquipmentId).id,
     );
-    this.player2EquipmentId = this.resolveBattleEquipmentIdForFighter(
+    this.player2EquipmentId = resolveBattleEquipmentIdForFighter(
       this.player2FighterId,
       getEquipmentDefinition(data.player2EquipmentId).id,
     );
@@ -1813,6 +2032,7 @@ class BattleScene extends Phaser.Scene {
     this.matchOver = false;
     this.matchStarted = false;
     this.matchTimerRemainingSeconds = matchTimerDurationSeconds;
+    this.pendingAttacks = [];
     this.activeAttacks = [];
     this.nextCpuDecisionAt = 0;
     this.cpuRetreatUntil = 0;
@@ -1822,6 +2042,9 @@ class BattleScene extends Phaser.Scene {
     this.isPaused = false;
     this.pauseStartedAt = 0;
     this.pauseKey = undefined;
+    this.hitboxDebugKey = undefined;
+    this.hitboxDebugEnabled = false;
+    this.destroyHitboxDebugOverlay();
     this.retirePlayer1Key = undefined;
     this.retirePlayer2Key = undefined;
     this.pendingRetirePlayer = undefined;
@@ -1857,8 +2080,8 @@ class BattleScene extends Phaser.Scene {
     const hudTextY = hudTop + 18;
     const equipmentY = hudTop + 76;
     const instructionText = this.player2Mode === 'cpu'
-      ? 'P1 A/D + W/Space   P2 CPU   P: 操作確認'
-      : 'P1 A/D + W/Space   P2 ←/→ + ↑/Enter   P: 操作確認';
+      ? 'P1 A/D移動 W/Space攻撃 Sガード / P2 CPU / P操作確認'
+      : 'P1 A/D移動 W/Space攻撃 Sガード / P2 ←/→移動 ↑/Enter攻撃 ↓ガード / P操作確認';
 
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 286, 660, 4, 0x334155, 0.7);
@@ -1920,14 +2143,17 @@ class BattleScene extends Phaser.Scene {
       .text(hudCenterX, hudBottom - 22, instructionText, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '16px',
+        fontSize: '13px',
       })
       .setOrigin(0.5);
 
     this.player1 = this.createFighter(player1StartX, 'P1', this.player1Definition);
     this.player2 = this.createFighter(player2StartX, 'P2', this.player2Definition);
     this.player2.facing = -1;
+    this.syncFighterVisual(this.player1);
+    this.syncFighterVisual(this.player2);
     this.createAmpAccents();
+    this.createHitboxDebugOverlay();
     this.controls = this.createControls();
     this.showMatchStartPrompt();
   }
@@ -1937,16 +2163,22 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
+    if (this.hitboxDebugKey && Phaser.Input.Keyboard.JustDown(this.hitboxDebugKey)) {
+      this.toggleHitboxDebugOverlay();
+    }
+
     if (this.pauseKey && !this.matchOver && Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
       this.togglePause(time);
     }
 
     if (this.isPaused) {
       this.updateRetireConfirmationInput();
+      this.updateHitboxDebugOverlay();
       return;
     }
 
     if (this.matchOver || !this.matchStarted) {
+      this.updateHitboxDebugOverlay();
       return;
     }
 
@@ -1969,11 +2201,13 @@ class BattleScene extends Phaser.Scene {
       this.tryAttack(this.player2, this.controls.player2, time);
     }
     this.updateAmpAccents(time);
+    this.updatePendingAttacks(time);
     this.updateActiveAttacks(time);
     this.updateKnockback(this.player1, delta);
     this.updateKnockback(this.player2, delta);
     this.updateGuardFeedback(this.player1);
     this.updateGuardFeedback(this.player2);
+    this.updateHitboxDebugOverlay();
   }
 
   private createAmpAccents() {
@@ -2093,6 +2327,12 @@ class BattleScene extends Phaser.Scene {
     const body = this.add
       .rectangle(x, 440, bodyWidth, bodyHeight, definition.bodyColor)
       .setStrokeStyle(3, definition.bodyStrokeColor);
+    const sprite = this.createFighterBaseSprite(x, body.y, bodyWidth, bodyHeight, definition);
+
+    if (sprite) {
+      body.setAlpha(0);
+    }
+
     const labelText = this.add
       .text(x, body.y + bodyHeight / 2 + 20, `${playerLabel}\n${definition.displayName}`, {
         align: 'center',
@@ -2109,6 +2349,7 @@ class BattleScene extends Phaser.Scene {
 
     return {
       body,
+      sprite,
       label: labelText,
       facing: 1,
       nextAttackAt: 0,
@@ -2120,6 +2361,37 @@ class BattleScene extends Phaser.Scene {
       definition,
       guardIndicator,
     };
+  }
+
+  private createFighterBaseSprite(
+    x: number,
+    y: number,
+    bodyWidth: number,
+    bodyHeight: number,
+    definition: FighterDefinition,
+  ): Phaser.GameObjects.Image | undefined {
+    const imageDefinition = fighterBaseImageById[definition.id];
+
+    if (!imageDefinition || !this.textures.exists(imageDefinition.key)) {
+      return undefined;
+    }
+
+    const sprite = this.add.image(x, y, imageDefinition.key).setDepth(1);
+    const maxDisplayWidth = Math.max(bodyWidth * 1.5, bodyWidth + 36);
+    const maxDisplayHeight = Math.max(bodyHeight * 1.2, bodyHeight + 24);
+    const spriteWidth = sprite.width || bodyWidth;
+    const spriteHeight = sprite.height || bodyHeight;
+    const scale = Math.min(maxDisplayWidth / spriteWidth, maxDisplayHeight / spriteHeight);
+
+    sprite.setScale(Number.isFinite(scale) && scale > 0 ? scale : 1);
+
+    return sprite;
+  }
+
+  private syncFighterVisual(fighter: Fighter) {
+    fighter.sprite
+      ?.setPosition(fighter.body.x, fighter.body.y)
+      .setFlipX(fighter.facing < 0);
   }
 
   private getFighterBodyHalfWidth(fighter: Fighter) {
@@ -2145,11 +2417,13 @@ class BattleScene extends Phaser.Scene {
       player2AltAttack: Phaser.Input.Keyboard.KeyCodes.ENTER,
       player2Guard: Phaser.Input.Keyboard.KeyCodes.DOWN,
       pause: Phaser.Input.Keyboard.KeyCodes.P,
+      hitboxDebug: Phaser.Input.Keyboard.KeyCodes.H,
       retirePlayer1: Phaser.Input.Keyboard.KeyCodes.ONE,
       retirePlayer2: Phaser.Input.Keyboard.KeyCodes.TWO,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
     this.pauseKey = keys.pause;
+    this.hitboxDebugKey = keys.hitboxDebug;
     this.retirePlayer1Key = keys.retirePlayer1;
     this.retirePlayer2Key = keys.retirePlayer2;
 
@@ -2167,6 +2441,109 @@ class BattleScene extends Phaser.Scene {
         guardKey: keys.player2Guard,
       },
     };
+  }
+
+  private createHitboxDebugOverlay() {
+    this.hitboxDebugGraphics?.destroy();
+    this.hitboxDebugText?.destroy();
+
+    const camera = this.cameras.main;
+    this.hitboxDebugGraphics = this.add.graphics().setDepth(50).setVisible(false);
+    this.hitboxDebugText = this.add
+      .text(camera.scrollX + 24, camera.scrollY + 148, 'Hitbox Debug ON (H)', {
+        color: '#fef08a',
+        fontFamily: 'monospace',
+        fontSize: '16px',
+        backgroundColor: '#020617',
+        padding: { x: 8, y: 4 },
+      })
+      .setDepth(51)
+      .setVisible(false);
+  }
+
+  private toggleHitboxDebugOverlay() {
+    this.hitboxDebugEnabled = !this.hitboxDebugEnabled;
+
+    if (!this.hitboxDebugEnabled) {
+      this.hitboxDebugGraphics?.clear();
+    }
+
+    this.hitboxDebugGraphics?.setVisible(this.hitboxDebugEnabled);
+    this.hitboxDebugText?.setVisible(this.hitboxDebugEnabled);
+  }
+
+  private updateHitboxDebugOverlay() {
+    if (!this.hitboxDebugEnabled || !this.hitboxDebugGraphics || !this.hitboxDebugText) {
+      return;
+    }
+
+    const graphics = this.hitboxDebugGraphics;
+    const camera = this.cameras.main;
+    this.hitboxDebugText.setPosition(camera.scrollX + 24, camera.scrollY + 148);
+    graphics.clear();
+    this.drawFighterDebugOverlay(this.player1, 0xf97316);
+    this.drawFighterDebugOverlay(this.player2, 0x38bdf8);
+
+    for (const attack of this.activeAttacks) {
+      const attackBounds = attack.hitbox.getBounds();
+      graphics.lineStyle(3, attack.hasHit ? 0xfbbf24 : 0xef4444, 0.95);
+      graphics.strokeRect(attackBounds.x, attackBounds.y, attackBounds.width, attackBounds.height);
+      graphics.fillStyle(attack.hasHit ? 0xfbbf24 : 0xef4444, attack.hasHit ? 0.08 : 0.14);
+      graphics.fillRect(attackBounds.x, attackBounds.y, attackBounds.width, attackBounds.height);
+    }
+  }
+
+  private drawFighterDebugOverlay(fighter: Fighter, color: number) {
+    if (!this.hitboxDebugGraphics) {
+      return;
+    }
+
+    const graphics = this.hitboxDebugGraphics;
+    const bodyBounds = fighter.body.getBounds();
+    const centerX = fighter.body.x;
+    const centerY = fighter.body.y;
+    const attackCenterY = centerY + fighter.stats.attackYOffset;
+    const frontX = centerX + fighter.facing * this.getFighterBodyHalfWidth(fighter);
+    const projectedHitboxCenterX = frontX + fighter.facing * (this.getEffectiveAttackWidth(fighter) / 2);
+
+    graphics.lineStyle(2, color, 0.95);
+    graphics.strokeRect(bodyBounds.x, bodyBounds.y, bodyBounds.width, bodyBounds.height);
+
+    graphics.fillStyle(color, 0.95);
+    graphics.fillCircle(centerX, centerY, 4);
+
+    graphics.lineStyle(2, 0xfef08a, 0.9);
+    graphics.beginPath();
+    graphics.moveTo(centerX, attackCenterY);
+    graphics.lineTo(projectedHitboxCenterX, attackCenterY);
+    graphics.strokePath();
+    this.drawDebugArrowHead(projectedHitboxCenterX, attackCenterY, fighter.facing, 0xfef08a);
+
+    graphics.fillStyle(0xfef08a, 0.95);
+    graphics.fillCircle(projectedHitboxCenterX, attackCenterY, 3);
+  }
+
+  private drawDebugArrowHead(x: number, y: number, facing: -1 | 1, color: number) {
+    if (!this.hitboxDebugGraphics) {
+      return;
+    }
+
+    const graphics = this.hitboxDebugGraphics;
+    const tipX = x + facing * 9;
+    graphics.lineStyle(2, color, 0.9);
+    graphics.beginPath();
+    graphics.moveTo(tipX, y);
+    graphics.lineTo(x, y - 6);
+    graphics.moveTo(tipX, y);
+    graphics.lineTo(x, y + 6);
+    graphics.strokePath();
+  }
+
+  private destroyHitboxDebugOverlay() {
+    this.hitboxDebugGraphics?.destroy();
+    this.hitboxDebugText?.destroy();
+    this.hitboxDebugGraphics = undefined;
+    this.hitboxDebugText = undefined;
   }
 
   private togglePause(time: number) {
@@ -2189,6 +2566,7 @@ class BattleScene extends Phaser.Scene {
   private resumeBattle(time: number) {
     const pausedDuration = Math.max(0, time - this.pauseStartedAt);
 
+    playUiCancelSound(this);
     this.isPaused = false;
     this.pauseStartedAt = 0;
     this.pendingRetirePlayer = undefined;
@@ -2207,7 +2585,12 @@ class BattleScene extends Phaser.Scene {
     this.nextCpuDecisionAt += pausedDuration;
     this.cpuRetreatUntil += pausedDuration;
 
+    for (const pendingAttack of this.pendingAttacks) {
+      pendingAttack.activeStartsAt += pausedDuration;
+    }
+
     for (const attack of this.activeAttacks) {
+      attack.activeStartedAt += pausedDuration;
       attack.expiresAt += pausedDuration;
     }
   }
@@ -2259,7 +2642,7 @@ class BattleScene extends Phaser.Scene {
     const currentMode = this.player2Mode === 'cpu' ? 'CPU' : '2P';
     const player2Lines = this.player2Mode === 'cpu'
       ? ['CPUが自動操作', 'P2手動操作は不要']
-      : ['← / →: 移動', '↑ / Enter: 攻撃'];
+      : ['← / →: 移動', '↑ / Enter: 攻撃', '↓: ガード'];
     const retireTitle = this.pendingRetirePlayer
       ? `${this.pendingRetirePlayer === 'p1' ? 'P1' : 'P2'} リタイア確認`
       : 'リタイア / Forfeit';
@@ -2293,7 +2676,7 @@ class BattleScene extends Phaser.Scene {
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
       }).setOrigin(0, 0),
-      this.add.text(panelLeft + 72, panelTop + 154, ['A / D: 移動', 'W / Space: 攻撃'], {
+      this.add.text(panelLeft + 72, panelTop + 154, ['A / D: 移動', 'W / Space: 攻撃', 'S: ガード'], {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -2328,11 +2711,15 @@ class BattleScene extends Phaser.Scene {
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       }).setOrigin(0, 0),
-      this.add.text(panelLeft + 72, panelTop + panelHeight - 70, ['1回の攻撃で当たるのは1回だけ', '結果画面: R再戦 / Cキャラ選択 / Enter・Spaceホーム'], {
+      this.add.text(panelLeft + 72, panelTop + panelHeight - 70, [
+        '1回の攻撃で当たるのは1回だけ',
+        'ガード開始直後はJust Guard（成功時ダメージ0）',
+        '結果画面: R再戦 / Cキャラ選択 / Enter・Spaceホーム',
+      ], {
         color: '#e2e8f0',
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '16px',
-        lineSpacing: 6,
+        fontSize: '14px',
+        lineSpacing: 4,
       }).setOrigin(0, 0),
     ]);
 
@@ -2445,6 +2832,7 @@ class BattleScene extends Phaser.Scene {
 
     fighter.body.setX(nextX);
     fighter.label.setX(nextX);
+    this.syncFighterVisual(fighter);
   }
 
   private tryAttack(fighter: Fighter, keys: PlayerControls, time: number) {
@@ -2466,11 +2854,17 @@ class BattleScene extends Phaser.Scene {
       return;
     }
 
-    fighter.nextAttackAt = time + attackCooldownMs;
+    const timing = this.getAttackTiming(fighter);
+    fighter.nextAttackAt = time + timing.cooldownMs;
+
+    if (fighter.definition.id === 'bass') {
+      playRandomSoundEffect(this, bassNormalAttackSoundEffectKeys, attackSoundVolume, bassAttackSoundCooldownMs);
+    }
+
     const opponent = fighter === this.player1 ? this.player2 : this.player1;
     const opponentHp = fighter === this.player1 ? this.player2Hp : this.player1Hp;
 
-    this.createAttackHitbox(fighter, opponent, opponentHp, time);
+    this.queueAttackStartup(fighter, opponent, opponentHp, timing, time);
   }
 
   private updateCpu(time: number, delta: number) {
@@ -2523,7 +2917,52 @@ class BattleScene extends Phaser.Scene {
     return Phaser.Math.RND.pick(palette);
   }
 
-  private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, time: number) {
+  private getAttackTiming(fighter: Fighter): AttackTiming {
+    return attackTimingByFighterId[fighter.definition.id] ?? defaultAttackTiming;
+  }
+
+  private queueAttackStartup(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, timing: AttackTiming, time: number) {
+    const activeStartsAt = time + timing.startupMs;
+
+    if (timing.startupMs <= 0) {
+      this.createAttackHitbox(fighter, opponent, opponentHp, timing, time);
+      return;
+    }
+
+    this.pendingAttacks.push({
+      attacker: fighter,
+      defender: opponent,
+      defenderHp: opponentHp,
+      timing,
+      activeStartsAt,
+    });
+  }
+
+  private updatePendingAttacks(time: number) {
+    for (let i = this.pendingAttacks.length - 1; i >= 0; i -= 1) {
+      const pendingAttack = this.pendingAttacks[i];
+
+      if (time < pendingAttack.activeStartsAt) {
+        continue;
+      }
+
+      this.pendingAttacks.splice(i, 1);
+
+      if (this.matchOver) {
+        continue;
+      }
+
+      this.createAttackHitbox(
+        pendingAttack.attacker,
+        pendingAttack.defender,
+        pendingAttack.defenderHp,
+        pendingAttack.timing,
+        pendingAttack.activeStartsAt,
+      );
+    }
+  }
+
+  private createAttackHitbox(fighter: Fighter, opponent: Fighter, opponentHp: PlayerHp, timing: AttackTiming, time: number) {
     const effectiveAttackWidth = this.getEffectiveAttackWidth(fighter);
     const hitboxX = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + effectiveAttackWidth / 2);
     const hitboxY = fighter.body.y + fighter.stats.attackYOffset;
@@ -2539,7 +2978,8 @@ class BattleScene extends Phaser.Scene {
       defenderHp: opponentHp,
       hitbox,
       hasHit: false,
-      expiresAt: time + attackDurationMs,
+      activeStartedAt: time,
+      expiresAt: time + timing.activeMs,
     });
   }
 
@@ -2561,9 +3001,18 @@ class BattleScene extends Phaser.Scene {
         attack.hasHit = true;
         const damageResult = this.calculateAttackDamage(attack.attacker, attack.defender, time);
 
+        const wasNormallyGuarded = attack.defender.isGuarding && !damageResult.wasJustGuarded;
+
         if (damageResult.wasJustGuarded) {
+          playJustGuardSoundEffect(this);
           this.showJustGuardFeedback(attack.defender);
           continue;
+        }
+
+        if (wasNormallyGuarded) {
+          playNormalGuardSoundEffect(this);
+        } else {
+          this.playDrumSticksHitSoundEffect(attack.attacker, attack.defender, damageResult.isCritical);
         }
 
         this.applyDamage(attack.defenderHp, damageResult.damage);
@@ -2719,6 +3168,7 @@ class BattleScene extends Phaser.Scene {
 
     fighter.hitFlashEvent?.remove(false);
     fighter.body.setFillStyle(hitFlashColor);
+    fighter.sprite?.setTint(hitFlashColor);
     fighter.hitFlashEvent = this.time.delayedCall(hitFlashDurationMs, () => {
       this.resetFighterColor(fighter);
     });
@@ -2728,6 +3178,7 @@ class BattleScene extends Phaser.Scene {
     fighter.hitFlashEvent?.remove(false);
     fighter.hitFlashEvent = undefined;
     fighter.body.setFillStyle(fighter.normalColor);
+    fighter.sprite?.clearTint();
   }
 
   private applyKnockback(fighter: Fighter, direction: -1 | 1, speed: number) {
@@ -2760,6 +3211,7 @@ class BattleScene extends Phaser.Scene {
 
     fighter.body.setX(nextX);
     fighter.label.setX(nextX);
+    this.syncFighterVisual(fighter);
 
     if (nextX === leftBound || nextX === rightBound) {
       fighter.knockbackVelocity = 0;
@@ -2908,6 +3360,9 @@ class BattleScene extends Phaser.Scene {
     this.hitMarkerSubLabel = undefined;
     this.matchTimerText?.destroy();
     this.matchTimerText = undefined;
+    this.hitboxDebugEnabled = false;
+    this.hitboxDebugKey = undefined;
+    this.destroyHitboxDebugOverlay();
     this.clearHitSparks();
     this.clearJustGuardFeedback();
     this.resultTransitionEvent?.remove(false);
@@ -2934,19 +3389,6 @@ class BattleScene extends Phaser.Scene {
     }
   }
 
-  private isAmpCompatibleFighter(fighterId: string): boolean {
-    return fighterId === 'electric-guitar' || fighterId === 'bass' || fighterId === 'keyboard';
-  }
-
-  private resolveBattleEquipmentIdForFighter(fighterId: string, equipmentId: EquipmentId): EquipmentId {
-    // Battle-side safety fallback: stale/incompatible saved selections must resolve safely.
-    if (equipmentId === 'amp' && !this.isAmpCompatibleFighter(fighterId)) {
-      return 'none';
-    }
-
-    return equipmentId;
-  }
-
   private getFighterEquipmentId(fighter: Fighter): EquipmentId {
     return fighter === this.player1 ? this.player1EquipmentId : this.player2EquipmentId;
   }
@@ -2957,8 +3399,44 @@ class BattleScene extends Phaser.Scene {
     return attacker.definition.id === 'drum-sticks' && this.getFighterEquipmentId(attacker) !== 'case';
   }
 
+  private canApplyPickAddOn(attacker: Fighter): boolean {
+    return this.getFighterEquipmentId(attacker) === 'pick' && isPickCompatibleFighterId(attacker.definition.id);
+  }
+
+  private getDrumSticksHitSoundEffectKey(attacker: Fighter, defender: Fighter, isCritical: boolean): SoundEffectKey | undefined {
+    if (attacker.definition.id !== 'drum-sticks') {
+      return undefined;
+    }
+
+    if (isCritical) {
+      return 'attack-drum-sticks-critical-shared-01';
+    }
+
+    return defender.definition.id === 'keyboard'
+      ? 'attack-drum-sticks-vs-keyboard-plastic'
+      : 'attack-drum-sticks-vs-wood-normal-01';
+  }
+
+  private playDrumSticksHitSoundEffect(attacker: Fighter, defender: Fighter, isCritical: boolean) {
+    const soundEffectKey = this.getDrumSticksHitSoundEffectKey(attacker, defender, isCritical);
+
+    if (!soundEffectKey) {
+      return;
+    }
+
+    playSoundEffect(this, soundEffectKey, attackSoundVolume);
+  }
+
+  private rollPickAddOnDamage(attacker: Fighter): number {
+    if (!this.canApplyPickAddOn(attacker)) {
+      return 0;
+    }
+
+    return Math.random() < pickCriticalRate ? pickCriticalAddOnDamage : pickNormalAddOnDamage;
+  }
+
   private hasAmpReach(fighter: Fighter): boolean {
-    return this.getFighterEquipmentId(fighter) === 'amp' && this.isAmpCompatibleFighter(fighter.definition.id);
+    return this.getFighterEquipmentId(fighter) === 'amp' && isAmpCompatibleFighterId(fighter.definition.id);
   }
 
   private getEffectiveAttackWidth(fighter: Fighter): number {
@@ -2997,14 +3475,16 @@ class BattleScene extends Phaser.Scene {
     const canCritical = this.canUseDrumSticksCritical(attacker);
     const isCritical = canCritical && Math.random() < drumSticksCriticalRate;
 
+    const pickAddOnDamage = this.rollPickAddOnDamage(attacker);
     let finalDamage = baseDamage;
 
     if (isCritical) {
       finalDamage = Math.floor(baseDamage * drumSticksCriticalMultiplier);
     } else {
+      finalDamage = baseDamage + pickAddOnDamage;
       const defenderEquipmentId = this.getFighterEquipmentId(defender);
       if (defenderEquipmentId === 'case') {
-        finalDamage = Math.floor(baseDamage * caseNormalDamageMultiplier);
+        finalDamage = Math.floor(finalDamage * caseNormalDamageMultiplier);
       }
     }
 
@@ -3048,6 +3528,8 @@ class BattleScene extends Phaser.Scene {
   }
 
   private clearActiveAttacks() {
+    this.pendingAttacks = [];
+
     for (const attack of this.activeAttacks) {
       attack.hitbox.destroy();
     }
@@ -3203,6 +3685,7 @@ class ResultScene extends Phaser.Scene {
     }
 
     if (this.restartKey && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+      playUiConfirmSound(this);
       this.transitionStarted = true;
       this.scene.start('BattleScene', {
         player1FighterId: this.player1FighterId,
@@ -3215,6 +3698,7 @@ class ResultScene extends Phaser.Scene {
     }
 
     if (this.characterSelectKey && Phaser.Input.Keyboard.JustDown(this.characterSelectKey)) {
+      playUiConfirmSound(this);
       this.transitionStarted = true;
       this.scene.start('CharacterSelectScene', {
         player1FighterId: this.player1FighterId,
@@ -3230,6 +3714,7 @@ class ResultScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
       this.transitionStarted = true;
       this.scene.start('HomeScene');
     }
@@ -3412,6 +3897,8 @@ class RecordsScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
+
       if (this.selectedIndex === 0) {
         this.transitionStarted = true;
         this.scene.start('HomeScene');
@@ -3429,6 +3916,7 @@ class RecordsScene extends Phaser.Scene {
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      playUiCancelSound(this);
       this.isResetArmed = false;
       this.transitionStarted = true;
       this.scene.start('HomeScene');
@@ -3594,6 +4082,7 @@ class EquipmentSelectScene extends Phaser.Scene {
       (this.enterKey && Phaser.Input.Keyboard.JustDown(this.enterKey)) ||
       (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey))
     ) {
+      playUiConfirmSound(this);
       saveLastSelected({
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
@@ -3613,6 +4102,7 @@ class EquipmentSelectScene extends Phaser.Scene {
     }
 
     if (this.escapeKey && Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      playUiCancelSound(this);
       this.scene.start('CharacterSelectScene', {
         player1FighterId: this.player1FighterId,
         player2FighterId: this.player2FighterId,
@@ -3649,13 +4139,17 @@ class EquipmentSelectScene extends Phaser.Scene {
       focusedEquipment.id === 'amp' && focusedFighterId === 'drum-sticks'
         ? '\nドラムスティックはアンプ非対応。バトルでは装備なし扱い。'
         : '';
+    const pickIncompatibleNote =
+      focusedEquipment.id === 'pick' && focusedFighterId && !isPickCompatibleFighterId(focusedFighterId)
+        ? '\nこのキャラはピック非対応。バトルでは装備なし扱い。'
+        : '';
 
     this.equipmentRowsText?.setText(
       `${p1Prefix}P1装備: ${getEquipmentShortLabelJa(p1Equipment.id)}
 ${p2Prefix}P2装備: ${getEquipmentShortLabelJa(p2Equipment.id)}`,
     );
     this.equipmentDescriptionText?.setText(
-      `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}${ampIncompatibleNote}`,
+      `${getEquipmentDisplayNameJa(focusedEquipment.id)}: ${getEquipmentDescriptionJa(focusedEquipment.id)}${ampIncompatibleNote}${pickIncompatibleNote}`,
     );
     this.statusText?.setText(`${this.selectedEquipmentRow === 0 ? 'P1' : 'P2'}の装備を選択中`);
   }
