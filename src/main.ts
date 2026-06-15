@@ -109,7 +109,19 @@ type SoundEffectKey =
   | 'attack-drum-sticks-critical-shared-01'
   | 'guard-common-01'
   | 'guard-common-02'
-  | 'just-guard';
+  | 'just-guard'
+  | 'attack-electric-guitar-normal-01'
+  | 'attack-electric-guitar-normal-02'
+  | 'attack-electric-guitar-critical-01'
+  | 'attack-electric-guitar-critical-02'
+  | 'attack-keyboard-normal-01'
+  | 'attack-keyboard-critical-01'
+  | 'result-win-01'
+  | 'result-win-02'
+  | 'result-ko-normal'
+  | 'result-ko-light'
+  | 'result-retire'
+  | 'result-defeat';
 
 type SoundEffectDefinition = {
   key: SoundEffectKey;
@@ -129,10 +141,25 @@ const soundEffectDefinitions: SoundEffectDefinition[] = [
   { key: 'guard-common-01', path: 'assets/audio/se/se_guard_common_01.wav' },
   { key: 'guard-common-02', path: 'assets/audio/se/se_guard_common_02.wav' },
   { key: 'just-guard', path: 'assets/audio/se/se_just_guard.wav' },
+  { key: 'attack-electric-guitar-normal-01', path: 'assets/audio/se/se_attack_electric_guitar_normal_01.wav' },
+  { key: 'attack-electric-guitar-normal-02', path: 'assets/audio/se/se_attack_electric_guitar_normal_02.wav' },
+  { key: 'attack-electric-guitar-critical-01', path: 'assets/audio/se/se_attack_electric_guitar_critical_01.wav' },
+  { key: 'attack-electric-guitar-critical-02', path: 'assets/audio/se/se_attack_electric_guitar_critical_02.wav' },
+  { key: 'attack-keyboard-normal-01', path: 'assets/audio/se/se_attack_keyboard_normal_01.wav' },
+  { key: 'attack-keyboard-critical-01', path: 'assets/audio/se/se_attack_keyboard_critical_01.wav' },
+  { key: 'result-win-01', path: 'assets/audio/se/se_result_win_01.wav' },
+  { key: 'result-win-02', path: 'assets/audio/se/se_result_win_02.wav' },
+  { key: 'result-ko-normal', path: 'assets/audio/se/se_result_ko_normal.wav' },
+  { key: 'result-ko-light', path: 'assets/audio/se/se_result_ko_light.wav' },
+  { key: 'result-retire', path: 'assets/audio/se/se_result_retire.wav' },
+  { key: 'result-defeat', path: 'assets/audio/se/se_result_defeat.wav' },
 ];
 
 const bassNormalAttackSoundEffectKeys: SoundEffectKey[] = ['attack-bass-normal-01', 'attack-bass-normal-02'];
 const guardSoundEffectKeys: SoundEffectKey[] = ['guard-common-01', 'guard-common-02'];
+const electricGuitarNormalAttackSoundEffectKeys: SoundEffectKey[] = ['attack-electric-guitar-normal-01', 'attack-electric-guitar-normal-02'];
+const electricGuitarCriticalAttackSoundEffectKeys: SoundEffectKey[] = ['attack-electric-guitar-critical-01', 'attack-electric-guitar-critical-02'];
+const resultWinSoundEffectKeys: SoundEffectKey[] = ['result-win-01', 'result-win-02'];
 const uiSoundVolume = 0.42;
 const attackSoundVolume = 0.48;
 const guardSoundVolume = 0.42;
@@ -3012,7 +3039,7 @@ class BattleScene extends Phaser.Scene {
         if (wasNormallyGuarded) {
           playNormalGuardSoundEffect(this);
         } else {
-          this.playDrumSticksHitSoundEffect(attack.attacker, attack.defender, damageResult.isCritical);
+          this.playAttackHitSoundEffect(attack.attacker, attack.defender, damageResult.isCritical);
         }
 
         this.applyDamage(attack.defenderHp, damageResult.damage);
@@ -3320,6 +3347,7 @@ class BattleScene extends Phaser.Scene {
       fontSize: '30px',
     }).setOrigin(0.5).setDepth(8);
     this.showWinEffect(resultData);
+    this.playMatchEndSoundEffect(resultData);
     this.destroyPauseOverlay();
     this.isPaused = false;
     this.pauseStartedAt = 0;
@@ -3403,28 +3431,53 @@ class BattleScene extends Phaser.Scene {
     return this.getFighterEquipmentId(attacker) === 'pick' && isPickCompatibleFighterId(attacker.definition.id);
   }
 
-  private getDrumSticksHitSoundEffectKey(attacker: Fighter, defender: Fighter, isCritical: boolean): SoundEffectKey | undefined {
-    if (attacker.definition.id !== 'drum-sticks') {
-      return undefined;
-    }
+  private getAttackHitSoundEffectKeys(attacker: Fighter, defender: Fighter, isCritical: boolean): SoundEffectKey[] {
+    switch (attacker.definition.id) {
+      case 'drum-sticks':
+        if (isCritical) {
+          return ['attack-drum-sticks-critical-shared-01'];
+        }
 
-    if (isCritical) {
-      return 'attack-drum-sticks-critical-shared-01';
+        return defender.definition.id === 'keyboard'
+          ? ['attack-drum-sticks-vs-keyboard-plastic']
+          : ['attack-drum-sticks-vs-wood-normal-01'];
+      case 'electric-guitar':
+        return isCritical
+          ? electricGuitarCriticalAttackSoundEffectKeys
+          : electricGuitarNormalAttackSoundEffectKeys;
+      case 'keyboard':
+        return isCritical ? ['attack-keyboard-critical-01'] : ['attack-keyboard-normal-01'];
+      default:
+        return [];
     }
-
-    return defender.definition.id === 'keyboard'
-      ? 'attack-drum-sticks-vs-keyboard-plastic'
-      : 'attack-drum-sticks-vs-wood-normal-01';
   }
 
-  private playDrumSticksHitSoundEffect(attacker: Fighter, defender: Fighter, isCritical: boolean) {
-    const soundEffectKey = this.getDrumSticksHitSoundEffectKey(attacker, defender, isCritical);
+  private playAttackHitSoundEffect(attacker: Fighter, defender: Fighter, isCritical: boolean) {
+    playRandomSoundEffect(this, this.getAttackHitSoundEffectKeys(attacker, defender, isCritical), attackSoundVolume);
+  }
 
-    if (!soundEffectKey) {
+  private playMatchEndSoundEffect(resultData: ResultSceneData) {
+    if (resultData.matchEndReason === 'ko') {
+      const defeatedFighterId = resultData.result === 'p1' ? this.player2FighterId : resultData.result === 'p2' ? this.player1FighterId : undefined;
+
+      if (defeatedFighterId) {
+        playSoundEffect(this, this.getKoSoundEffectKey(defeatedFighterId), attackSoundVolume);
+      }
+
       return;
     }
 
-    playSoundEffect(this, soundEffectKey, attackSoundVolume);
+    if (resultData.matchEndReason === 'retire') {
+      playSoundEffect(this, 'result-retire', attackSoundVolume);
+    }
+  }
+
+  private getKoSoundEffectKey(defeatedFighterId: string): SoundEffectKey {
+    return this.isLightweightFighterForKo(defeatedFighterId) ? 'result-ko-light' : 'result-ko-normal';
+  }
+
+  private isLightweightFighterForKo(fighterId: string): boolean {
+    return fighterId === 'drum-sticks';
   }
 
   private rollPickAddOnDamage(attacker: Fighter): number {
@@ -3583,6 +3636,7 @@ class ResultScene extends Phaser.Scene {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
     this.recordResultOnce();
+    this.playResultWinSoundEffect();
 
     addViewportBackground(this);
 
@@ -3720,6 +3774,14 @@ class ResultScene extends Phaser.Scene {
     }
   }
 
+
+  private playResultWinSoundEffect() {
+    if (this.matchEndReason !== 'ko' || (this.resultKind !== 'p1' && this.resultKind !== 'p2')) {
+      return;
+    }
+
+    playRandomSoundEffect(this, resultWinSoundEffectKeys, attackSoundVolume);
+  }
 
   private getMatchEndReasonLabel() {
     switch (this.matchEndReason) {
