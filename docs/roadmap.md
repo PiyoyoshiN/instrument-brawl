@@ -1525,4 +1525,16 @@ Implemented scope:
 - Phase 13 follow-up updates Guard / Just Guard control text in Home, Battle HUD, and Pause help while leaving Guard values, input bindings, gameplay logic, and schemas unchanged.
 - Phase 13 should evaluate attack startup / active / recovery / cooldown, current hitbox readability, and Pick's future role before directly strengthening Guard.
 
-**Next recommended task:** Phase 14-1: Post-Phase-13 playtest findings / balance planning docs.
+**Next recommended task:** Phase 14-1: Fighter visual / illustration presentation review and cleanup plan.
+
+
+## Phase 15: SE Implementation (checkpoint complete for v1.0 progress)
+
+- Phase 15 connected the already-added SE assets for UI confirm / cancel, Bass / Drum Sticks / Keyboard / Electric Guitar attacks, Guard / Just Guard, and Result KO / Retire / Win.
+- Detailed SE routing, registered-unused SE, and deferred SE notes are tracked in `docs/se_implementation_memo.md`.
+- Checkpoint status is documented in `docs/phase-15-se-checkpoint.md`.
+- Phase 15 is considered checkpoint complete for v1.0 progress. Final volume polish, final presentation polish, and final balance checks can remain for Phase 17 or later.
+- Deferred SE items include Time Up, Draw, Pick, Pick critical, full Defeat usage, final volume polish, BGM, and audio settings UI.
+- Next, return to Phase 14 visual / illustration / sprite presentation work because the four fighter base images are already temporarily displayed, but visual consistency, transparent asset checks, form/state variant decisions, and in-Battle readability still need review.
+
+**Next recommended task:** Phase 14-1: Fighter visual / illustration presentation review and cleanup plan.
