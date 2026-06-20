@@ -255,10 +255,35 @@ type BattleImageAssetDefinition = {
   path: string;
 };
 
-const battleBackgroundImage: BattleImageAssetDefinition = {
-  key: 'bg-music-studio-pixel',
-  path: 'assets/images/backgrounds/bg_music_studio_pixel.png',
+type BattleBackgroundDefinition = BattleImageAssetDefinition & {
+  id: string;
+  displayName: string;
+  overlayAlpha: number;
 };
+
+const battleBackgroundImages: BattleBackgroundDefinition[] = [
+  {
+    id: 'music-studio',
+    displayName: 'Music Studio',
+    key: 'bg-music-studio-pixel',
+    path: 'assets/images/backgrounds/bg_music_studio_pixel.png',
+    overlayAlpha: 0.28,
+  },
+  {
+    id: 'live-house',
+    displayName: 'Live House',
+    key: 'bg-live-house-pixel',
+    path: 'assets/images/backgrounds/bg_live_house_pixel.png',
+    overlayAlpha: 0.32,
+  },
+  {
+    id: 'summer-festival',
+    displayName: 'Summer Festival',
+    key: 'bg-summer-festival-pixel',
+    path: 'assets/images/backgrounds/bg_summer_festival_pixel.png',
+    overlayAlpha: 0.34,
+  },
+];
 
 const attackEffectImageByFighterId: Record<string, BattleImageAssetDefinition> = {
   'electric-guitar': { key: 'effect-attack-electric-guitar-slash', path: 'assets/images/effects/attack/effect_attack_electric_guitar_slash.png' },
@@ -297,7 +322,7 @@ const criticalEffectImageByFighterId: Record<string, BattleImageAssetDefinition>
 
 function preloadBattleVisualImages(scene: Phaser.Scene) {
   const definitions = [
-    battleBackgroundImage,
+    ...battleBackgroundImages,
     ...guardEffectImages,
     ...justGuardEffectImages,
     ...Object.values(attackEffectImageByFighterId),
@@ -2310,7 +2335,9 @@ class BattleScene extends Phaser.Scene {
   }
 
   private createBattleBackground() {
-    if (!this.textures.exists(battleBackgroundImage.key)) {
+    const backgroundDefinition = this.selectBattleBackground();
+
+    if (!backgroundDefinition || !this.textures.exists(backgroundDefinition.key)) {
       return;
     }
 
@@ -2319,11 +2346,21 @@ class BattleScene extends Phaser.Scene {
     const camera = this.cameras.main;
     const centerX = camera.scrollX + layoutWidth / 2;
     const centerY = camera.scrollY + layoutHeight / 2;
-    const background = this.add.image(centerX, centerY, battleBackgroundImage.key).setDepth(-10).setAlpha(0.58);
+    const background = this.add.image(centerX, centerY, backgroundDefinition.key).setDepth(-10).setAlpha(0.58);
     const scale = Math.max(layoutWidth / background.width, layoutHeight / background.height);
 
     background.setScale(Number.isFinite(scale) && scale > 0 ? scale : 1);
-    this.add.rectangle(centerX, centerY, layoutWidth, layoutHeight, 0x020617, 0.28).setDepth(-9);
+    this.add.rectangle(centerX, centerY, layoutWidth, layoutHeight, 0x020617, backgroundDefinition.overlayAlpha).setDepth(-9);
+  }
+
+  private selectBattleBackground() {
+    const availableBackgrounds = battleBackgroundImages.filter((definition) => this.textures.exists(definition.key));
+
+    if (availableBackgrounds.length === 0) {
+      return undefined;
+    }
+
+    return Phaser.Math.RND.pick(availableBackgrounds);
   }
 
   private showAttackEffect(fighter: Fighter, activeMs: number) {
