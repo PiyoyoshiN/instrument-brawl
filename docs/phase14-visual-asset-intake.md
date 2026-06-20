@@ -27,3 +27,16 @@ Do not change gameplay values, storage schema, fighter stats, timers, guard rule
 - Tune per-background brightness/overlay values after visual playtest.
 - Revisit effect scale/readability against each background only if a specific background causes clarity issues.
 - Add a compact background selection UI later if/when selecting arenas becomes part of the MVP scope.
+
+## Fullscreen / viewport support status
+
+- BattleScene supports fullscreen toggle with the `F` key and keeps the random background selection behavior for normal play.
+- The selected battle background is re-laid out with the same cover-style scaling on resize/fullscreen changes, with the dark readability overlay resized with the viewport.
+- Development-only background cycling is available with `B` while hitbox debug is enabled; it is not shown as a normal player-facing selection UI and is not saved.
+- HUD text, HP bars, timer text, pause overlay, and match-over title are repositioned on resize to reduce wide/fullscreen viewport clipping.
+
+## Remaining fullscreen / viewport work
+
+- Fine-tune brightness per background after fullscreen playtests.
+- Recheck effect scale/readability only where a specific viewport/background combination needs it.
+- Consider a future background selection UI only if it becomes part of the MVP scope.
