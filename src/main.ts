@@ -248,6 +248,92 @@ function preloadFighterBaseImages(scene: Phaser.Scene) {
     scene.load.image(imageDefinition.key, imageDefinition.path);
   }
 }
+
+
+type BattleImageAssetDefinition = {
+  key: string;
+  path: string;
+};
+
+type BattleBackgroundDefinition = BattleImageAssetDefinition & {
+  id: string;
+  displayName: string;
+  overlayAlpha: number;
+};
+
+const battleBackgroundImages: BattleBackgroundDefinition[] = [
+  {
+    id: 'music-studio',
+    displayName: 'Music Studio',
+    key: 'bg-music-studio-pixel',
+    path: 'assets/images/backgrounds/bg_music_studio_pixel.png',
+    overlayAlpha: 0.28,
+  },
+  {
+    id: 'live-house',
+    displayName: 'Live House',
+    key: 'bg-live-house-pixel',
+    path: 'assets/images/backgrounds/bg_live_house_pixel.png',
+    overlayAlpha: 0.32,
+  },
+  {
+    id: 'summer-festival',
+    displayName: 'Summer Festival',
+    key: 'bg-summer-festival-pixel',
+    path: 'assets/images/backgrounds/bg_summer_festival_pixel.png',
+    overlayAlpha: 0.34,
+  },
+];
+
+const attackEffectImageByFighterId: Record<string, BattleImageAssetDefinition> = {
+  'electric-guitar': { key: 'effect-attack-electric-guitar-slash', path: 'assets/images/effects/attack/effect_attack_electric_guitar_slash.png' },
+  bass: { key: 'effect-attack-bass-wave', path: 'assets/images/effects/attack/effect_attack_bass_wave.png' },
+  'drum-sticks': { key: 'effect-attack-drum-sticks-spark', path: 'assets/images/effects/attack/effect_attack_drum_sticks_spark.png' },
+  keyboard: { key: 'effect-attack-keyboard-waveform', path: 'assets/images/effects/attack/effect_attack_keyboard_waveform.png' },
+};
+
+const hitEffectImageByFighterId: Record<string, BattleImageAssetDefinition> = {
+  'electric-guitar': { key: 'effect-hit-normal-spark', path: 'assets/images/effects/hit/effect_hit_normal_spark.png' },
+  bass: { key: 'effect-hit-bass-heavy-spark', path: 'assets/images/effects/hit/effect_hit_bass_heavy_spark.png' },
+  'drum-sticks': { key: 'effect-hit-drum-sticks-quick-spark', path: 'assets/images/effects/hit/effect_hit_drum_sticks_quick_spark.png' },
+  keyboard: { key: 'effect-hit-keyboard-digital-spark', path: 'assets/images/effects/hit/effect_hit_keyboard_digital_spark.png' },
+};
+
+const guardEffectImages: BattleImageAssetDefinition[] = [
+  { key: 'effect-guard-ring', path: 'assets/images/effects/guard/effect_guard_ring.png' },
+  { key: 'effect-guard-oval-barrier', path: 'assets/images/effects/guard/effect_guard_oval_barrier.png' },
+  { key: 'effect-guard-front-arc', path: 'assets/images/effects/guard/effect_guard_front_arc.png' },
+];
+const guardEffectImage = guardEffectImages[2];
+
+const justGuardEffectImages: BattleImageAssetDefinition[] = [
+  { key: 'effect-just-guard-burst-ring', path: 'assets/images/effects/just_guard/effect_just_guard_burst_ring.png' },
+  { key: 'effect-just-guard-spark-circle', path: 'assets/images/effects/just_guard/effect_just_guard_spark_circle.png' },
+  { key: 'effect-just-guard-cyan-burst', path: 'assets/images/effects/just_guard/effect_just_guard_cyan_burst.png' },
+];
+const justGuardEffectImage = justGuardEffectImages[2];
+
+const criticalEffectImageByFighterId: Record<string, BattleImageAssetDefinition> = {
+  'electric-guitar': { key: 'effect-critical-yellow-starburst', path: 'assets/images/effects/critical/effect_critical_yellow_starburst.png' },
+  bass: { key: 'effect-critical-blue-heavy-burst', path: 'assets/images/effects/critical/effect_critical_blue_heavy_burst.png' },
+  'drum-sticks': { key: 'effect-critical-orange-impact', path: 'assets/images/effects/critical/effect_critical_orange_impact.png' },
+  keyboard: { key: 'effect-critical-purple-electronic-burst', path: 'assets/images/effects/critical/effect_critical_purple_electronic_burst.png' },
+};
+
+function preloadBattleVisualImages(scene: Phaser.Scene) {
+  const definitions = [
+    ...battleBackgroundImages,
+    ...guardEffectImages,
+    ...justGuardEffectImages,
+    ...Object.values(attackEffectImageByFighterId),
+    ...Object.values(hitEffectImageByFighterId),
+    ...Object.values(criticalEffectImageByFighterId),
+  ];
+
+  for (const definition of definitions) {
+    scene.load.image(definition.key, definition.path);
+  }
+}
 type AttackTiming = {
   startupMs: number;
   activeMs: number;
@@ -986,6 +1072,7 @@ type Fighter = {
   definition: FighterDefinition;
   hitFlashEvent?: Phaser.Time.TimerEvent;
   guardIndicator?: Phaser.GameObjects.Ellipse;
+  guardEffect?: Phaser.GameObjects.Image;
 };
 
 type PlayerControls = {
@@ -1098,6 +1185,7 @@ class HomeScene extends Phaser.Scene {
   preload() {
     preloadInitialSoundEffects(this);
     preloadFighterBaseImages(this);
+    preloadBattleVisualImages(this);
   }
 
   create() {
@@ -2004,6 +2092,8 @@ class BattleScene extends Phaser.Scene {
   private resultTransitionEvent?: Phaser.Time.TimerEvent;
   private pauseOverlay?: Phaser.GameObjects.Container;
   private pauseKey?: Phaser.Input.Keyboard.Key;
+  private fullscreenKey?: Phaser.Input.Keyboard.Key;
+  private backgroundDebugKey?: Phaser.Input.Keyboard.Key;
   private retirePlayer1Key?: Phaser.Input.Keyboard.Key;
   private retirePlayer2Key?: Phaser.Input.Keyboard.Key;
   private pendingRetirePlayer?: RetirePlayer;
@@ -2014,14 +2104,23 @@ class BattleScene extends Phaser.Scene {
   private hitMarkerEvent?: Phaser.Time.TimerEvent;
   private activeHitSparks: Phaser.GameObjects.Rectangle[] = [];
   private hitSparkEvents: Phaser.Time.TimerEvent[] = [];
-  private activeJustGuardFeedback: Phaser.GameObjects.Ellipse[] = [];
+  private activeJustGuardFeedback: Phaser.GameObjects.GameObject[] = [];
   private justGuardFeedbackEvents: Phaser.Time.TimerEvent[] = [];
+  private activeVisualEffects: Phaser.GameObjects.Image[] = [];
+  private visualEffectEvents: Phaser.Time.TimerEvent[] = [];
   private nextCpuDecisionAt = 0;
   private cpuRetreatUntil = 0;
   private effectsEnabled = true;
   private screenShakeEnabled = true;
   private player1EquipmentHudText?: Phaser.GameObjects.Text;
   private player2EquipmentHudText?: Phaser.GameObjects.Text;
+  private battleInstructionText?: Phaser.GameObjects.Text;
+  private battleBackground?: Phaser.GameObjects.Image;
+  private battleBackgroundOverlay?: Phaser.GameObjects.Rectangle;
+  private selectedBattleBackgroundIndex = 0;
+  private battleResizeHandler?: () => void;
+  private resultPanel?: Phaser.GameObjects.Rectangle;
+  private resultTitleText?: Phaser.GameObjects.Text;
   private player1AmpAccent?: Phaser.GameObjects.Arc;
   private player2AmpAccent?: Phaser.GameObjects.Arc;
   private hitboxDebugKey?: Phaser.Input.Keyboard.Key;
@@ -2035,6 +2134,12 @@ class BattleScene extends Phaser.Scene {
 
   constructor() {
     super('BattleScene');
+  }
+
+  preload() {
+    preloadBattleVisualImages(this);
+    preloadFighterBaseImages(this);
+    preloadInitialSoundEffects(this);
   }
 
   init(data: BattleSceneData = {}) {
@@ -2069,6 +2174,8 @@ class BattleScene extends Phaser.Scene {
     this.isPaused = false;
     this.pauseStartedAt = 0;
     this.pauseKey = undefined;
+    this.fullscreenKey = undefined;
+    this.backgroundDebugKey = undefined;
     this.hitboxDebugKey = undefined;
     this.hitboxDebugEnabled = false;
     this.destroyHitboxDebugOverlay();
@@ -2086,6 +2193,8 @@ class BattleScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanupBattleScene, this);
 
     addViewportBackground(this);
+    this.createBattleBackground();
+    this.registerBattleResizeHandler();
 
     const layoutWidth = getLayoutWidth(this);
     const layoutHeight = getLayoutHeight(this);
@@ -2107,8 +2216,8 @@ class BattleScene extends Phaser.Scene {
     const hudTextY = hudTop + 18;
     const equipmentY = hudTop + 76;
     const instructionText = this.player2Mode === 'cpu'
-      ? 'P1 A/D移動 W/Space攻撃 Sガード / P2 CPU / P操作確認'
-      : 'P1 A/D移動 W/Space攻撃 Sガード / P2 ←/→移動 ↑/Enter攻撃 ↓ガード / P操作確認';
+      ? 'P1 A/D移動 W/Space攻撃 Sガード / P2 CPU / P操作確認 / F fullscreen'
+      : 'P1 A/D移動 W/Space攻撃 Sガード / P2 ←/→移動 ↑/Enter攻撃 ↓ガード / P操作確認 / F fullscreen';
 
     this.add.rectangle(400, 360, 720, 260, 0x1e293b).setStrokeStyle(4, 0x475569);
     this.add.rectangle(400, 286, 660, 4, 0x334155, 0.7);
@@ -2166,7 +2275,7 @@ class BattleScene extends Phaser.Scene {
       .setOrigin(1, 0);
 
     this.add.rectangle(hudCenterX, hudBottom - 22, Math.min(720, layoutWidth - hudSafeMargin * 2), 34, 0x020617, 0.58).setStrokeStyle(2, 0x334155);
-    this.add
+    this.battleInstructionText = this.add
       .text(hudCenterX, hudBottom - 22, instructionText, {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
@@ -2192,6 +2301,14 @@ class BattleScene extends Phaser.Scene {
 
     if (this.hitboxDebugKey && Phaser.Input.Keyboard.JustDown(this.hitboxDebugKey)) {
       this.toggleHitboxDebugOverlay();
+    }
+
+    if (this.fullscreenKey && Phaser.Input.Keyboard.JustDown(this.fullscreenKey)) {
+      this.toggleFullscreen();
+    }
+
+    if (this.backgroundDebugKey && this.hitboxDebugEnabled && Phaser.Input.Keyboard.JustDown(this.backgroundDebugKey)) {
+      this.cycleBattleBackgroundForDebug();
     }
 
     if (this.pauseKey && !this.matchOver && Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
@@ -2235,6 +2352,209 @@ class BattleScene extends Phaser.Scene {
     this.updateGuardFeedback(this.player1);
     this.updateGuardFeedback(this.player2);
     this.updateHitboxDebugOverlay();
+  }
+
+  private createBattleBackground() {
+    const backgroundDefinition = this.selectBattleBackground();
+
+    if (!backgroundDefinition || !this.textures.exists(backgroundDefinition.key)) {
+      return;
+    }
+
+    this.battleBackground?.destroy();
+    this.battleBackgroundOverlay?.destroy();
+    this.battleBackground = this.add.image(0, 0, backgroundDefinition.key).setDepth(-10).setAlpha(0.58);
+    this.battleBackgroundOverlay = this.add.rectangle(0, 0, 1, 1, 0x020617, backgroundDefinition.overlayAlpha).setDepth(-9);
+    this.layoutBattleBackground();
+  }
+
+  private layoutBattleBackground() {
+    if (!this.battleBackground || !this.battleBackgroundOverlay) {
+      return;
+    }
+
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const camera = this.cameras.main;
+    const centerX = camera.scrollX + layoutWidth / 2;
+    const centerY = camera.scrollY + layoutHeight / 2;
+    const scale = Math.max(layoutWidth / this.battleBackground.width, layoutHeight / this.battleBackground.height);
+
+    this.battleBackground.setPosition(centerX, centerY).setScale(Number.isFinite(scale) && scale > 0 ? scale : 1);
+    this.battleBackgroundOverlay.setPosition(centerX, centerY).setSize(layoutWidth, layoutHeight);
+  }
+
+  private selectBattleBackground() {
+    const availableBackgrounds = battleBackgroundImages.filter((definition) => this.textures.exists(definition.key));
+
+    if (availableBackgrounds.length === 0) {
+      return undefined;
+    }
+
+    const selectedBackground = Phaser.Math.RND.pick(availableBackgrounds);
+    this.selectedBattleBackgroundIndex = Math.max(0, battleBackgroundImages.findIndex((definition) => definition.key === selectedBackground.key));
+
+    return selectedBackground;
+  }
+
+  private cycleBattleBackgroundForDebug() {
+    const availableBackgrounds = battleBackgroundImages.filter((definition) => this.textures.exists(definition.key));
+
+    if (availableBackgrounds.length <= 1) {
+      return;
+    }
+
+    const currentAvailableIndex = Math.max(
+      0,
+      availableBackgrounds.findIndex((definition) => definition.key === battleBackgroundImages[this.selectedBattleBackgroundIndex]?.key),
+    );
+    const nextBackground = availableBackgrounds[(currentAvailableIndex + 1) % availableBackgrounds.length];
+    this.selectedBattleBackgroundIndex = Math.max(0, battleBackgroundImages.findIndex((definition) => definition.key === nextBackground.key));
+
+    this.battleBackground?.setTexture(nextBackground.key);
+    this.battleBackgroundOverlay?.setAlpha(nextBackground.overlayAlpha);
+    this.layoutBattleBackground();
+  }
+
+  private toggleFullscreen() {
+    if (this.scale.isFullscreen) {
+      this.scale.stopFullscreen();
+      return;
+    }
+
+    this.scale.startFullscreen();
+  }
+
+  private registerBattleResizeHandler() {
+    this.battleResizeHandler = () => {
+      applyViewportLayout(this);
+      this.layoutBattleBackground();
+      this.layoutBattleViewportUi();
+
+      if (this.isPaused) {
+        this.showPauseOverlay();
+      }
+    };
+
+    this.scale.on('resize', this.battleResizeHandler);
+  }
+
+  private layoutBattleViewportUi() {
+    const layoutWidth = getLayoutWidth(this);
+    const layoutHeight = getLayoutHeight(this);
+    const camera = this.cameras.main;
+    const hudSafeMargin = 32;
+    const hudLeft = camera.scrollX + hudSafeMargin;
+    const hudRight = camera.scrollX + layoutWidth - hudSafeMargin;
+    const hudTop = camera.scrollY + hudSafeMargin;
+    const hudBottom = camera.scrollY + layoutHeight - hudSafeMargin;
+    const hudCenterX = camera.scrollX + layoutWidth / 2;
+    const hudPanelWidth = Math.min(360, Math.max(260, (layoutWidth - hudSafeMargin * 2 - 260) / 2));
+    const p1HudX = hudLeft + 16;
+    const p2HudX = hudRight - 16;
+    const hudTextY = hudTop + 18;
+    const equipmentY = hudTop + 76;
+
+    this.matchTimerText?.setPosition(hudCenterX, hudTop + 42);
+    if (!this.player1Hp || !this.player2Hp) {
+      return;
+    }
+
+    this.layoutHpUi(this.player1Hp, p1HudX, hudTextY, 0);
+    this.layoutHpUi(this.player2Hp, p2HudX, hudTextY, 1);
+    this.player1EquipmentHudText?.setPosition(p1HudX, equipmentY);
+    this.player2EquipmentHudText?.setPosition(p2HudX, equipmentY);
+    this.battleInstructionText
+      ?.setPosition(hudCenterX, hudBottom - 22)
+      .setWordWrapWidth(Math.min(720, layoutWidth - hudSafeMargin * 2));
+    this.startPrompt?.setPosition(hudCenterX, camera.scrollY + 292);
+    this.resultPanel?.setPosition(hudCenterX, camera.scrollY + 292);
+    this.resultTitleText?.setPosition(hudCenterX, camera.scrollY + 292);
+
+    this.player1Hp.barBackground.setSize(hpBarWidth, hpBarHeight);
+    this.player2Hp.barBackground.setSize(hpBarWidth, hpBarHeight);
+
+    this.player1Hp.text.setFontSize(hudPanelWidth <= 280 ? 18 : 20);
+    this.player2Hp.text.setFontSize(hudPanelWidth <= 280 ? 18 : 20);
+  }
+
+  private layoutHpUi(playerHp: PlayerHp, x: number, y: number, alignX: 0 | 1) {
+    playerHp.text.setPosition(x, y).setOrigin(alignX, 0);
+    playerHp.barBackground.setPosition(x, y + 30).setOrigin(alignX, 0);
+    playerHp.barFill.setPosition(alignX === 0 ? x + hpBarInset : x - hpBarInset, y + 30 + hpBarInset).setOrigin(alignX, 0);
+  }
+
+  private showAttackEffect(fighter: Fighter, activeMs: number) {
+    const definition = attackEffectImageByFighterId[fighter.definition.id];
+
+    if (!definition) {
+      return;
+    }
+
+    const x = fighter.body.x + fighter.facing * (this.getFighterBodyHalfWidth(fighter) + this.getEffectiveAttackWidth(fighter) * 0.44);
+    const y = fighter.body.y + fighter.stats.attackYOffset;
+    this.showImageEffect(definition, x, y, Math.min(activeMs, 180), {
+      maxWidth: this.getEffectiveAttackWidth(fighter) + 32,
+      maxHeight: fighter.stats.attackHeight + 36,
+      depth: 4,
+      alpha: 0.82,
+      flipX: fighter.facing < 0,
+    });
+  }
+
+  private showHitEffect(defender: Fighter, attacker: Fighter, isCritical: boolean) {
+    const hitDefinition = hitEffectImageByFighterId[attacker.definition.id];
+    const x = defender.body.x + attacker.facing * 18;
+    const y = defender.body.y - defender.body.height * 0.1;
+
+    this.showImageEffect(hitDefinition, x, y, hitSparkDurationMs, {
+      maxWidth: defender.body.width + 62,
+      maxHeight: defender.body.height * 0.82,
+      depth: 8,
+      alpha: 0.86,
+      flipX: attacker.facing < 0,
+    });
+
+    if (isCritical) {
+      this.showCriticalEffect(defender, attacker);
+    }
+  }
+
+  private showCriticalEffect(defender: Fighter, attacker: Fighter) {
+    const definition = criticalEffectImageByFighterId[attacker.definition.id];
+
+    this.showImageEffect(definition, defender.body.x, defender.body.y - defender.body.height * 0.06, 210, {
+      maxWidth: defender.body.width + 96,
+      maxHeight: defender.body.height + 36,
+      depth: 9,
+      alpha: 0.9,
+      flipX: attacker.facing < 0,
+    });
+  }
+
+  private showImageEffect(
+    definition: BattleImageAssetDefinition | undefined,
+    x: number,
+    y: number,
+    durationMs: number,
+    options: { maxWidth: number; maxHeight: number; depth: number; alpha: number; flipX?: boolean },
+  ) {
+    if (this.matchOver || !this.effectsEnabled || !definition || !this.textures.exists(definition.key)) {
+      return;
+    }
+
+    const image = this.add.image(x, y, definition.key).setDepth(options.depth).setAlpha(options.alpha).setFlipX(Boolean(options.flipX));
+    const scale = Math.min(options.maxWidth / image.width, options.maxHeight / image.height);
+    image.setScale(Number.isFinite(scale) && scale > 0 ? scale : 1);
+    this.activeVisualEffects.push(image);
+
+    const event = this.time.delayedCall(durationMs, () => {
+      image.destroy();
+      this.activeVisualEffects = this.activeVisualEffects.filter((effect) => effect !== image);
+      this.visualEffectEvents = this.visualEffectEvents.filter((visualEvent) => visualEvent !== event);
+    });
+
+    this.visualEffectEvents.push(event);
   }
 
   private createAmpAccents() {
@@ -2373,6 +2693,14 @@ class BattleScene extends Phaser.Scene {
       .setStrokeStyle(3, 0xa7f3d0, 0.78)
       .setDepth(2)
       .setVisible(false);
+    const guardEffect = this.textures.exists(guardEffectImage.key)
+      ? this.add.image(x, body.y, guardEffectImage.key).setDepth(3).setAlpha(0.48).setVisible(false)
+      : undefined;
+
+    if (guardEffect) {
+      const guardScale = Math.min((bodyWidth + 42) / guardEffect.width, (bodyHeight + 42) / guardEffect.height);
+      guardEffect.setScale(Number.isFinite(guardScale) && guardScale > 0 ? guardScale : 1);
+    }
 
     return {
       body,
@@ -2387,6 +2715,7 @@ class BattleScene extends Phaser.Scene {
       stats: definition.stats,
       definition,
       guardIndicator,
+      guardEffect,
     };
   }
 
@@ -2444,13 +2773,17 @@ class BattleScene extends Phaser.Scene {
       player2AltAttack: Phaser.Input.Keyboard.KeyCodes.ENTER,
       player2Guard: Phaser.Input.Keyboard.KeyCodes.DOWN,
       pause: Phaser.Input.Keyboard.KeyCodes.P,
+      fullscreen: Phaser.Input.Keyboard.KeyCodes.F,
       hitboxDebug: Phaser.Input.Keyboard.KeyCodes.H,
+      backgroundDebug: Phaser.Input.Keyboard.KeyCodes.B,
       retirePlayer1: Phaser.Input.Keyboard.KeyCodes.ONE,
       retirePlayer2: Phaser.Input.Keyboard.KeyCodes.TWO,
     }) as Record<string, Phaser.Input.Keyboard.Key>;
 
     this.pauseKey = keys.pause;
+    this.fullscreenKey = keys.fullscreen;
     this.hitboxDebugKey = keys.hitboxDebug;
+    this.backgroundDebugKey = keys.backgroundDebug;
     this.retirePlayer1Key = keys.retirePlayer1;
     this.retirePlayer2Key = keys.retirePlayer2;
 
@@ -2477,7 +2810,7 @@ class BattleScene extends Phaser.Scene {
     const camera = this.cameras.main;
     this.hitboxDebugGraphics = this.add.graphics().setDepth(50).setVisible(false);
     this.hitboxDebugText = this.add
-      .text(camera.scrollX + 24, camera.scrollY + 148, 'Hitbox Debug ON (H)', {
+      .text(camera.scrollX + 24, camera.scrollY + 148, 'Hitbox Debug ON (H) / B背景切替', {
         color: '#fef08a',
         fontFamily: 'monospace',
         fontSize: '16px',
@@ -2650,6 +2983,10 @@ class BattleScene extends Phaser.Scene {
     for (const sparkEvent of this.hitSparkEvents) {
       sparkEvent.paused = paused;
     }
+
+    for (const visualEffectEvent of this.visualEffectEvents) {
+      visualEffectEvent.paused = paused;
+    }
   }
 
   private showPauseOverlay() {
@@ -2814,13 +3151,19 @@ class BattleScene extends Phaser.Scene {
   }
 
   private updateGuardFeedback(fighter: Fighter) {
+    const visible = fighter.isGuarding && !this.matchOver;
     fighter.guardIndicator
       ?.setPosition(fighter.body.x, fighter.body.y)
-      .setVisible(fighter.isGuarding && !this.matchOver);
+      .setVisible(visible);
+    fighter.guardEffect
+      ?.setPosition(fighter.body.x + fighter.facing * 10, fighter.body.y)
+      .setFlipX(fighter.facing < 0)
+      .setVisible(visible);
   }
 
   private clearGuardFeedback(fighter: Fighter) {
     fighter.guardIndicator?.setVisible(false);
+    fighter.guardEffect?.setVisible(false);
   }
 
   private moveFighter(fighter: Fighter, keys: PlayerControls, delta: number) {
@@ -2998,6 +3341,7 @@ class BattleScene extends Phaser.Scene {
       .rectangle(hitboxX, hitboxY, effectiveAttackWidth, fighter.stats.attackHeight, attackVisualStyle.fillColor, 0.35)
       .setStrokeStyle(2, attackVisualStyle.strokeColor)
       .setDepth(1);
+    this.showAttackEffect(fighter, timing.activeMs);
 
     this.activeAttacks.push({
       attacker: fighter,
@@ -3050,6 +3394,7 @@ class BattleScene extends Phaser.Scene {
         );
         this.flashFighter(attack.defender);
         this.showHitSpark(attack.defender, attack.attacker);
+        this.showHitEffect(attack.defender, attack.attacker, damageResult.isCritical);
         this.showHitMarker(attack.defender, damageResult.damage, damageResult.isCritical);
         this.shakeCameraOnHit();
         this.checkMatchResult();
@@ -3125,12 +3470,21 @@ class BattleScene extends Phaser.Scene {
       .ellipse(defender.body.x, defender.body.y, defender.body.width + 28, defender.body.height + 30, 0xa7f3d0, 0.22)
       .setStrokeStyle(3, 0x67e8f9, 0.88)
       .setDepth(8);
+    const justGuardImage = this.textures.exists(justGuardEffectImage.key)
+      ? this.add.image(defender.body.x, defender.body.y, justGuardEffectImage.key).setDepth(10).setAlpha(0.9)
+      : undefined;
 
-    this.activeJustGuardFeedback.push(ring, burst);
+    if (justGuardImage) {
+      const scale = Math.min((defender.body.width + 92) / justGuardImage.width, (defender.body.height + 92) / justGuardImage.height);
+      justGuardImage.setScale(Number.isFinite(scale) && scale > 0 ? scale : 1);
+    }
+
+    this.activeJustGuardFeedback.push(...(justGuardImage ? [ring, burst, justGuardImage] : [ring, burst]));
     const feedbackEvent = this.time.delayedCall(justGuardFeedbackDurationMs, () => {
       ring.destroy();
       burst.destroy();
-      this.activeJustGuardFeedback = this.activeJustGuardFeedback.filter((feedback) => feedback !== ring && feedback !== burst);
+      justGuardImage?.destroy();
+      this.activeJustGuardFeedback = this.activeJustGuardFeedback.filter((feedback) => feedback !== ring && feedback !== burst && feedback !== justGuardImage);
       this.justGuardFeedbackEvents = this.justGuardFeedbackEvents.filter((event) => event !== feedbackEvent);
     });
 
@@ -3339,8 +3693,11 @@ class BattleScene extends Phaser.Scene {
     }
 
     this.matchOver = true;
-    this.add.rectangle(400, 292, 360, 86, 0x020617, 0.62).setStrokeStyle(3, 0xfacc15).setDepth(7);
-    this.add.text(400, 292, resultData.displayTitle ?? 'Match Over', {
+    const camera = this.cameras.main;
+    const resultCenterX = camera.scrollX + getLayoutWidth(this) / 2;
+    const resultCenterY = camera.scrollY + 292;
+    this.resultPanel = this.add.rectangle(resultCenterX, resultCenterY, 360, 86, 0x020617, 0.62).setStrokeStyle(3, 0xfacc15).setDepth(7);
+    this.resultTitleText = this.add.text(resultCenterX, resultCenterY, resultData.displayTitle ?? 'Match Over', {
       align: 'center',
       color: '#facc15',
       fontFamily: 'system-ui, sans-serif',
@@ -3370,6 +3727,10 @@ class BattleScene extends Phaser.Scene {
 
   private cleanupBattleScene() {
     this.destroyPauseOverlay();
+    if (this.battleResizeHandler) {
+      this.scale.off('resize', this.battleResizeHandler);
+      this.battleResizeHandler = undefined;
+    }
     this.isPaused = false;
     this.pauseStartedAt = 0;
     this.pendingRetirePlayer = undefined;
@@ -3388,11 +3749,24 @@ class BattleScene extends Phaser.Scene {
     this.hitMarkerSubLabel = undefined;
     this.matchTimerText?.destroy();
     this.matchTimerText = undefined;
+    this.battleInstructionText?.destroy();
+    this.battleInstructionText = undefined;
+    this.battleBackground?.destroy();
+    this.battleBackgroundOverlay?.destroy();
+    this.battleBackground = undefined;
+    this.battleBackgroundOverlay = undefined;
+    this.resultPanel?.destroy();
+    this.resultTitleText?.destroy();
+    this.resultPanel = undefined;
+    this.resultTitleText = undefined;
     this.hitboxDebugEnabled = false;
     this.hitboxDebugKey = undefined;
+    this.fullscreenKey = undefined;
+    this.backgroundDebugKey = undefined;
     this.destroyHitboxDebugOverlay();
     this.clearHitSparks();
     this.clearJustGuardFeedback();
+    this.clearVisualEffects();
     this.resultTransitionEvent?.remove(false);
     this.resultTransitionEvent = undefined;
     this.player1AmpAccent?.destroy();
@@ -3405,7 +3779,9 @@ class BattleScene extends Phaser.Scene {
       this.resetFighterColor(this.player1);
       this.clearGuardFeedback(this.player1);
       this.player1.guardIndicator?.destroy();
+      this.player1.guardEffect?.destroy();
       this.player1.guardIndicator = undefined;
+      this.player1.guardEffect = undefined;
     }
 
     if (this.player2) {
@@ -3413,7 +3789,9 @@ class BattleScene extends Phaser.Scene {
       this.resetFighterColor(this.player2);
       this.clearGuardFeedback(this.player2);
       this.player2.guardIndicator?.destroy();
+      this.player2.guardEffect?.destroy();
       this.player2.guardIndicator = undefined;
+      this.player2.guardEffect = undefined;
     }
   }
 
@@ -3578,6 +3956,20 @@ class BattleScene extends Phaser.Scene {
     }
 
     this.activeJustGuardFeedback = [];
+  }
+
+  private clearVisualEffects() {
+    for (const visualEffectEvent of this.visualEffectEvents) {
+      visualEffectEvent.remove(false);
+    }
+
+    this.visualEffectEvents = [];
+
+    for (const visualEffect of this.activeVisualEffects) {
+      visualEffect.destroy();
+    }
+
+    this.activeVisualEffects = [];
   }
 
   private clearActiveAttacks() {
