@@ -40,3 +40,7 @@ Do not change gameplay values, storage schema, fighter stats, timers, guard rule
 - Fine-tune brightness per background after fullscreen playtests.
 - Recheck effect scale/readability only where a specific viewport/background combination needs it.
 - Consider a future background selection UI only if it becomes part of the MVP scope.
+
+## Checkpoint reference
+
+Phase 14 is checkpointed in `docs/phase14-checkpoint-report.md`. Further fullscreen, viewport, brightness, effect tuning, sprite variant, or player-facing background selection work should be scoped as later-phase tasks.
