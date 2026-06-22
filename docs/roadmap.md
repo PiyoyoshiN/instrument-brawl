@@ -1507,34 +1507,43 @@ Implemented scope:
 - Phase 12 added Guard, Just Guard, Timer, Retire / Forfeit, Time Up outcomes, and transient Result reason display.
 - Phase 12 preserved Phase 11 viewport-aware UI guardrails and deferred attack tempo, hitbox feel, and Pick behavior to Phase 13.
 
-## Phase 13: Attack Tempo / Hitbox / Pick (planned)
+## Phase 13: Attack Tempo / Hitbox / Pick (checkpoint complete)
 
-- Phase 13 is the next focused gameplay-feel phase after Guard / Just Guard / Timer / Retire entered the prototype.
+- Phase 13 followed Guard / Just Guard / Timer / Retire by improving attack readability and Pick behavior.
 - Scope, non-goals, task order, inventory policy, timing terminology, Pick direction, and review guardrails are documented in `docs/phase-13-attack-tempo-hitbox-pick-scope.md`.
-- Phase 13 starts docs-first with 13-1 and must not change runtime attack values, hitbox values, Pick gameplay, Guard / Just Guard values, Timer / Retire behavior, Result reason behavior, or records/settings schema.
-- Phase 13-2 inventories current main-branch attack timing, fighter stats, hitboxes, equipment / Pick behavior, Guard relationships, and regression notes in `docs/phase-13-current-attack-values-inventory.md`.
-- Phase 13-3 adds a development-only BattleScene Hitbox Debug Overlay toggled with `H` so current body rectangles, active attack hitboxes, direction, and `attackYOffset` markers can be inspected before tuning.
-- Phase 13-4 introduces a behavior-preserving shared attack timing model with explicit startup / active / recovery / cooldown fields before per-fighter tuning.
-- Phase 13-5 adds initial per-fighter attack timing values for Electric Guitar, Bass, Drum Sticks, and Keyboard without changing hitbox size, damage, knockback, Pick, Guard, Timer, Retire, Result reason, or schemas.
-- Phase 13-6 lightly tunes fighter attack hitbox width / height / `attackYOffset` while leaving AttackTiming, damage, knockback, Pick, Guard, Timer, Retire, Result reason, and schemas unchanged.
-- Phase 13-7 makes Pick compatible with Electric Guitar / Bass only and safely resolves Drum Sticks / Keyboard + Pick to `none` in battle without adding Pick damage yet.
-- Phase 13-8 implements Pick add-on damage for compatible Electric Guitar / Bass attacks as same-hit damage, with no separate hitbox, second hit, or added knockback.
-- Phase 13-9 updates minimal Pick UI text so Pick no longer appears as `準備中` and unsupported notes remain clear.
-- Phase 13-10 adds the manual playtest checklist for attack timing, hitbox debug overlay, hitbox tuning, Pick compatibility, Pick add-on damage, Guard / Case interactions, Timer / Retire / Result, and records/settings schema checks.
-- Phase 13-11 records the Phase 13 checkpoint in `docs/phase-13-checkpoint.md`, including final timing, hitbox, Pick, non-goal, checklist, and next-phase handoff notes.
-- Phase 13 follow-up updates Guard / Just Guard control text in Home, Battle HUD, and Pause help while leaving Guard values, input bindings, gameplay logic, and schemas unchanged.
-- Phase 13 should evaluate attack startup / active / recovery / cooldown, current hitbox readability, and Pick's future role before directly strengthening Guard.
+- Current attack values were inventoried in `docs/phase-13-current-attack-values-inventory.md` before runtime tuning.
+- Phase 13 added the development-only Hitbox Debug Overlay, introduced the shared AttackTiming model, tuned per-fighter attack timing and hitbox dimensions, cleaned up Pick compatibility, implemented Pick same-hit add-on damage, and updated minimal Pick UI text.
+- Phase 13 checkpoint status, final timing/hitbox/Pick values, non-goals, and handoff notes are documented in `docs/phase-13-checkpoint.md`.
 
-**Next recommended task:** Phase 14-1: Fighter visual / illustration presentation review and cleanup plan.
+## Phase 14: Combat Visualization / Fighter Presentation / Background & Fullscreen (checkpoint complete / visually frozen)
 
+- Phase 14 is the visual-readability checkpoint for the current v1.0 prototype track.
+- BattleScene now presents the four current fighters with base sprites and short-lived attack / hit / guard / Just Guard / Critical visual effects.
+- BattleScene supports three backgrounds: `bg_music_studio_pixel.png`, `bg_live_house_pixel.png`, and `bg_summer_festival_pixel.png`.
+- Normal play keeps background selection random; development checks can use debug-only background cycling.
+- Fullscreen / viewport support has a trial implementation, but final stabilization is deferred to a later focused phase.
+- Phase 14 is checkpoint complete and visually frozen for now. Do not continue tuning fullscreen, brightness, effect scale/alpha/duration, sprite variants, title logo, or player-facing background selection inside Phase 14.
+- Checkpoint status is documented in `docs/phase14-checkpoint-report.md`.
 
 ## Phase 15: SE Implementation (checkpoint complete for v1.0 progress)
 
 - Phase 15 connected the already-added SE assets for UI confirm / cancel, Bass / Drum Sticks / Keyboard / Electric Guitar attacks, Guard / Just Guard, and Result KO / Retire / Win.
 - Detailed SE routing, registered-unused SE, and deferred SE notes are tracked in `docs/se_implementation_memo.md`.
 - Checkpoint status is documented in `docs/phase-15-se-checkpoint.md`.
-- Phase 15 is considered checkpoint complete for v1.0 progress. Final volume polish, final presentation polish, and final balance checks can remain for Phase 17 or later.
-- Deferred SE items include Time Up, Draw, Pick, Pick critical, full Defeat usage, final volume polish, BGM, and audio settings UI.
-- Next, return to Phase 14 visual / illustration / sprite presentation work because the four fighter base images are already temporarily displayed, but visual consistency, transparent asset checks, form/state variant decisions, and in-Battle readability still need review.
+- Phase 15 is considered checkpoint complete for v1.0 progress.
+- Final volume polish, final mix / overlap polish, BGM, audio settings UI, Time Up / Draw / Pick-specific SE, and full Defeat SE usage remain deferred.
 
-**Next recommended task:** Phase 14-1: Fighter visual / illustration presentation review and cleanup plan.
+## Phase 0-15 closeout status
+
+- Phase 0 / Phase 1-15 are summarized in `docs/phase-0-15-progress-summary.md`.
+- Phase 1-4 remain part of the project history as early concept, prototype, roster foundation, solo-play preparation, presentation, and planning phases.
+- Phase 14 and Phase 15 are checkpoint complete.
+- Final balance, final volume polish, final visual tuning, and fullscreen / viewport stabilization remain later-phase work.
+- Until v1.0 scope explicitly changes, avoid new fighters, online play, 3D conversion, large asset additions, and Pedal equipment.
+
+**Next recommended candidates:**
+
+- Result Flow / Rematch / Navigation Polish.
+- Home / Title presentation polish.
+- Fullscreen / viewport stabilization.
+- Visual tuning pass if needed.

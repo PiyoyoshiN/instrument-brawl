@@ -101,17 +101,15 @@ Phase 15 did not intentionally change:
 - `docs/se_implementation_memo.md` is the detailed SE implementation memo.
 - `docs/phase-13-checkpoint.md` remains the Attack Tempo / Hitbox / Pick checkpoint.
 
-## Next direction: return to Phase 14 visuals
+## Next direction after Phase 0-15 closeout
 
-Next, return to **Phase 14: fighter visual / illustration / sprite presentation** work.
+Phase 15 remains checkpoint complete for v1.0 progress. Phase 14 has also been checkpointed as visually complete / frozen in `docs/phase14-checkpoint-report.md`, so the project should not loop back into Phase 14 implementation by default.
 
-Reasoning:
+Recommended next candidates are tracked in `docs/phase-0-15-progress-summary.md` and `docs/roadmap.md`:
 
-- The four fighter base images are already temporarily displayed in the game.
-- The current visual implementation is still a v1.0 preview layer rather than final presentation.
-- Remaining visual work includes checking overall visual consistency, confirming transparent assets, reviewing how the sprites read in BattleScene, and deciding whether any form/state variants are needed later.
-- Because Phase 15 SE is now checkpoint complete, the next priority should move back from sound to visual / illustration polish.
+- Result Flow / Rematch / Navigation Polish.
+- Home / Title presentation polish.
+- Fullscreen / viewport stabilization.
+- Visual tuning pass if needed.
 
-Recommended next task:
-
-**Phase 14-1: Fighter visual / illustration presentation review and cleanup plan.**
+Final volume polish, final presentation polish, final balance checks, BGM, and audio settings UI remain later-phase work.
