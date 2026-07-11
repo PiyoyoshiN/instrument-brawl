@@ -92,12 +92,18 @@ export type SurvivalProgress = {
   bestThreat: number;
   selectedInstrument: InstrumentId;
   commonLevels: Record<CommonUpgradeId, number>;
-  instruments: Record<InstrumentId, { material: number; specialtyLevel: number; bestThreat: number }>;
+  instruments: Record<InstrumentId, {
+    material: number;
+    specialtyLevel: number;
+    bestThreat: number;
+    highestClearedThreat: number;
+  }>;
 };
 
 export type SurvivalRunRewards = {
   coins: number;
   bestThreat: number;
+  highestClearedThreat: number;
   instrumentId: InstrumentId;
   materials: Partial<Record<MaterialId, number>>;
 };
@@ -120,10 +126,10 @@ function defaultProgress(): SurvivalProgress {
       recovery: 0,
     },
     instruments: {
-      'electric-guitar': { material: 0, specialtyLevel: 0, bestThreat: 0 },
-      bass: { material: 0, specialtyLevel: 0, bestThreat: 0 },
-      'drum-sticks': { material: 0, specialtyLevel: 0, bestThreat: 0 },
-      keyboard: { material: 0, specialtyLevel: 0, bestThreat: 0 },
+      'electric-guitar': { material: 0, specialtyLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
+      bass: { material: 0, specialtyLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
+      'drum-sticks': { material: 0, specialtyLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
+      keyboard: { material: 0, specialtyLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
     },
   };
 }
@@ -158,6 +164,7 @@ function sanitizeProgress(value: unknown): SurvivalProgress {
         material: safeLevel(entry.material),
         specialtyLevel: safeLevel(entry.specialtyLevel),
         bestThreat: safeLevel(entry.bestThreat),
+        highestClearedThreat: safeLevel(entry.highestClearedThreat),
       };
     }
   }
@@ -225,6 +232,10 @@ export function bankRunRewards(rewards: SurvivalRunRewards) {
   progress.bestThreat = Math.max(progress.bestThreat, rewards.bestThreat);
   const instrumentProgress = progress.instruments[rewards.instrumentId];
   instrumentProgress.bestThreat = Math.max(instrumentProgress.bestThreat, rewards.bestThreat);
+  instrumentProgress.highestClearedThreat = Math.max(
+    instrumentProgress.highestClearedThreat,
+    rewards.highestClearedThreat,
+  );
   const materialId = instrumentById.get(rewards.instrumentId)?.materialId;
   if (materialId) instrumentProgress.material += Math.max(0, Math.floor(rewards.materials[materialId] ?? 0));
   return saveSurvivalProgress(progress);
@@ -244,12 +255,34 @@ export function getThreatUnlockForTotalLevel(totalLevel: number) {
   return unlocked;
 }
 
+export function getInstrumentPowerLevel(progress: SurvivalProgress, instrumentId: InstrumentId) {
+  const commonTotal = commonUpgradeDefinitions.reduce(
+    (sum, definition) => sum + progress.commonLevels[definition.id],
+    0,
+  );
+  return commonTotal + progress.instruments[instrumentId].specialtyLevel;
+}
+
+export function getInstrumentThreatCap(progress: SurvivalProgress, instrumentId: InstrumentId) {
+  return getThreatUnlockForTotalLevel(getInstrumentPowerLevel(progress, instrumentId));
+}
+
 export function getRecommendedStartingThreat(totalLevel: number, maxThreat = getThreatUnlockForTotalLevel(totalLevel)) {
   if (totalLevel < 8) return 1;
   let start = Math.max(1, Math.floor(maxThreat * 0.38));
   // Never drop a newly strengthened player directly into a boss level.
   if (start % 5 === 0) start = Math.max(1, start - 1);
   return start;
+}
+
+export function getInstrumentStartingThreat(progress: SurvivalProgress, instrumentId: InstrumentId) {
+  const powerLevel = getInstrumentPowerLevel(progress, instrumentId);
+  const maxThreat = getInstrumentThreatCap(progress, instrumentId);
+  const powerBasedStart = getRecommendedStartingThreat(powerLevel, maxThreat);
+  const nextUnclearedThreat = progress.instruments[instrumentId].highestClearedThreat + 1;
+  let start = Math.min(powerBasedStart, nextUnclearedThreat);
+  if (start % 5 === 0) start = Math.max(1, start - 1);
+  return Math.max(1, start);
 }
 
 export function isSpecialBattleUnlocked(progress: SurvivalProgress) {
