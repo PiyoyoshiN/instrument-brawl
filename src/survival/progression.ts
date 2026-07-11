@@ -77,8 +77,8 @@ export const autoSkillDefinitions: Record<InstrumentId, {
   intervalSeconds: number;
 }> = {
   'electric-guitar': {
-    name: 'フィードバックアンプ',
-    description: '一定間隔で最寄りの敵へ自動的に貫通フィードバック波を放つ。',
+    name: 'ハーモニーアンプ',
+    description: '一定間隔で明るい和音を鳴らし、最寄りの敵へ貫通する音圧波を放つ。',
     intervalSeconds: 4.4,
   },
   bass: {

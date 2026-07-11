@@ -6,7 +6,7 @@
 
 ## Main survival mode
 
-- Three.js製の3Dフィールドを移動し、有限数の敵集団と戦う。
+- 青空・草地・木・岩・花で構成したThree.js製の草原フィールドを移動し、有限数の敵集団と戦う。
 - 主人公の身体・腕・脚・楽器は別々の3Dオブジェクトで、攻撃時に腕と楽器を振る。
 - 敵の全滅または時間経過で敵水準が上昇する。
 - 共通強化＋使用楽器の専用Lvを「楽器Lv」として扱い、楽器ごとに敵水準の解放上限と連続クリア記録を持つ。
@@ -18,7 +18,7 @@
 - ボスは画像差し替えではなく、専用3Dモデル・固有名・範囲攻撃を持つオリジナルキャラクター。
 - 吹き飛ばし、敵の打ち上げ、ヒットストップ、カメラ揺れ、連続撃破表示を実装。
 - 12体撃破でENCOREが発動し、8秒間だけ攻撃力・攻撃速度・移動速度が上昇する。
-- 各楽器には専用素材で解放する自動演奏拡張がある。ギターはフィードバックアンプ、ベースはサブウーファー、ドラムはバスドラム、鍵盤はアルペジエーター。
+- 各楽器には専用素材で解放する自動演奏拡張がある。ギターはハーモニーアンプ、ベースはサブウーファー、ドラムはバスドラム、鍵盤はアルペジエーター。
 - 自動演奏は専用Lvを上げるほど威力が上がり、発動間隔が短縮される。
 - 自動演奏SEは既存曲・既存音源を使わず、このゲーム用に合成したWAVを使用する。
 - 戦闘中に得たコインと専用素材は、敗北・撤退時もすべて持ち帰る。
@@ -30,8 +30,24 @@
 
 - WASD / Arrow keys: move
 - Space / J / Click: attack (nearest enemy is assisted)
-- Escape: retire and bank the current run rewards
+- P / Escape: pause
 - Hub: Left / Right changes instrument, Up / Down changes menu item
+
+Pause behavior:
+
+- P / Escape: pause or resume the 3D battle
+- Pause freezes survival time, enemy movement, projectiles, drops, buffs, and automatic skills
+- Pause shows controls plus Resume / Bank and Retire actions
+- Retire requires two confirmations
+- Moving the browser tab into the background automatically pauses the battle
+
+## Survival UI
+
+- Home、拠点、永続強化、リザルト、戦闘HUD、ポーズは草色・クリーム・琥珀の温かい配色で統一。
+- The hub uses four evenly spaced instrument loadout cards instead of the earlier fighter image preview.
+- Battle, Upgrade, and Special Battle are presented as three centered action cards.
+- Permanent Upgrade uses a balanced 2-column common-upgrade grid plus separate Specialty / Auto cards.
+- The survival result uses a centered 3-by-2 stat-card layout and no legacy fighter image.
 
 ### Guitar sound pressure
 

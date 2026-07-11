@@ -25,6 +25,10 @@ The earlier 2D 1v1 fighting game remains as a separate special-battle mode.
 - Keep the main survival battle 3D. Do not replace the chibi hero with a flat instrument sprite.
 - Keep the hero body and held instrument as separate 3D objects.
 - Prioritize crowd knockback, hit stop, readable sound pressure, and satisfying attacks over competitive balance.
+- Keep survival selection screens balanced across the full safe area; do not return to a left-preview/right-menu legacy layout.
+- Do not use the legacy fighter images in the 3D survival hub or survival result screen.
+- Keep the main survival presentation warm and inviting: meadow greens, cream panels, and amber accents instead of blue-black menu and arena palettes.
+- Guitar automatic-skill audio should read as a musical chord or sound-pressure hit, not high-pitched horror-style feedback.
 - Phase 16 is the active direction: 3D survival action and persistent progression.
 - The Phaser 1v1 BattleScene is legacy special-battle content; avoid coupling it to the Three.js survival loop.
 - Do not add a full tutorial yet; future help should be a compact in-battle Pause / Quick Help overlay.
