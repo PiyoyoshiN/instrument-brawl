@@ -2,13 +2,15 @@
 
 ## Project
 
-This is a browser-based 1v1 physics fighting game where musical instruments fight each other.
+This is a browser-based 3D action game where a chibi hero wields instruments against enemy crowds.
+The earlier 2D 1v1 fighting game remains as a separate special-battle mode.
 
 ## Tech
 
 - TypeScript
 - Vite
 - Phaser
+- Three.js
 
 ## Commands
 
@@ -20,13 +22,13 @@ This is a browser-based 1v1 physics fighting game where musical instruments figh
 - Prioritize a playable MVP.
 - Keep changes small.
 - Do not implement online multiplayer yet.
-- Character select exists; keep it minimal and do not overbuild it yet.
-- Do not add complex combo systems yet.
-- Do not add new fighters, specials, progression, story, timer/rounds/retire runtime, or equipment buffs unless explicitly instructed.
-- Phase 8 checkpoint is complete; Phase 9 is in progress.
-- Current focus is Phase 9: Equipment Shell & Attack Identity Foundation (docs-first steps before runtime implementation).
+- Keep the main survival battle 3D. Do not replace the chibi hero with a flat instrument sprite.
+- Keep the hero body and held instrument as separate 3D objects.
+- Prioritize crowd knockback, hit stop, readable sound pressure, and satisfying attacks over competitive balance.
+- Phase 16 is the active direction: 3D survival action and persistent progression.
+- The Phaser 1v1 BattleScene is legacy special-battle content; avoid coupling it to the Three.js survival loop.
 - Do not add a full tutorial yet; future help should be a compact in-battle Pause / Quick Help overlay.
-- Keep one attack hitting only once unless explicitly instructed otherwise.
+- Avoid real-person likenesses for modern musician-inspired bosses. Use clearly original silhouettes, clothing, motion, and names.
 - Keep PRs focused: 1 PR = 1 feature.
 - Run npm run build after code changes.
 

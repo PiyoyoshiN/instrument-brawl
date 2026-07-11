@@ -1424,6 +1424,25 @@ Check these at 800x600, laptop-sized viewport, and large desktop viewport:
 Phase 12 checkpoint status and deferred Phase 13 direction are summarized in `docs/phase-12-checkpoint-report.md`. Complete the consolidated Phase 12 checklist above before treating the checkpoint as manually verified.
 # 楽器無双・通常戦チェック
 
+## 3D戦闘基盤
+
+- [ ] 通常戦では楽器画像そのものではなく、丸い頭・身体・腕・脚を持つ3D主人公が表示される
+- [ ] 楽器が主人公の手に保持され、攻撃時に腕と一緒に振られる
+- [ ] カメラが主人公を追従し、移動してもフィールド全体の奥行きが読める
+- [ ] 3体以上を同時に攻撃するとヒットストップとカメラ揺れが発生する
+- [ ] 撃破された敵が攻撃方向へ打ち上げられて消える
+- [ ] 連続撃破時にK.O. CHAINが表示される
+
+## 敵解放
+
+- [ ] 総レベル0では敵水準4までが解放される
+- [ ] 総レベル2では敵水準6までが解放され、最初のボス水準へ到達できる
+- [ ] 解放上限が5の倍数になる場合、原則として次の通常水準まで同時に解放される
+- [ ] 総レベル8未満では水準1から始まる
+- [ ] 総レベル8以上では開始水準が上がるが、5の倍数のボス水準から直接始まらない
+- [ ] 解放上限到達後は敵水準が上がらず、同水準の限界演奏として継続する
+- [ ] 水準3からCharger、水準4からRanged、水準6からBrute、水準8からSupportが混ざる
+
 ## 拠点と永続保存
 
 - [ ] Homeの「楽器無双」から拠点へ移動できる

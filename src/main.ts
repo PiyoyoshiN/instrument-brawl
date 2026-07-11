@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
 import {
-  SurvivalBattleScene,
   SurvivalHubScene,
   SurvivalResultScene,
   SurvivalUpgradeScene,
 } from './survival/scenes';
+import { SurvivalBattleScene } from './survival/three-battle-scene';
 
 const gameWidth = 800;
 const gameHeight = 600;
