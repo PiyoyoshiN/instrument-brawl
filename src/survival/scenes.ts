@@ -28,9 +28,27 @@ const minHeight = 600;
 function viewport(scene: Phaser.Scene, color = 0x07111f) {
   const width = Math.max(minWidth, scene.scale.width);
   const height = Math.max(minHeight, scene.scale.height);
-  scene.cameras.main.setScroll((minWidth - width) / 2, (minHeight - height) / 2);
+  const scrollX = (minWidth - width) / 2;
+  const scrollY = (minHeight - height) / 2;
+  const centerX = scrollX + width / 2;
+  const centerY = scrollY + height / 2;
+  scene.cameras.main.setScroll(scrollX, scrollY);
   scene.cameras.main.setBackgroundColor(color);
-  scene.add.rectangle(scene.cameras.main.worldView.centerX, scene.cameras.main.worldView.centerY, width, height, color);
+  const background = scene.add.rectangle(centerX, centerY, width, height, color);
+
+  const resizeHandler = () => {
+    const nextWidth = Math.max(minWidth, scene.scale.width);
+    const nextHeight = Math.max(minHeight, scene.scale.height);
+    const nextScrollX = (minWidth - nextWidth) / 2;
+    const nextScrollY = (minHeight - nextHeight) / 2;
+    scene.cameras.main.setScroll(nextScrollX, nextScrollY);
+    background.setPosition(nextScrollX + nextWidth / 2, nextScrollY + nextHeight / 2);
+    background.setSize(nextWidth, nextHeight);
+  };
+
+  scene.scale.on('resize', resizeHandler);
+  scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => scene.scale.off('resize', resizeHandler));
+  return { centerX, centerY };
 }
 
 function addText(
@@ -81,9 +99,7 @@ export class SurvivalHubScene extends Phaser.Scene {
     this.progress = loadSurvivalProgress();
     this.instrumentIndex = Math.max(0, instrumentDefinitions.findIndex((item) => item.id === this.progress.selectedInstrument));
     this.menuIndex = 0;
-    viewport(this, 0x08131f);
-    const centerX = this.cameras.main.worldView.centerX;
-    const centerY = this.cameras.main.worldView.centerY;
+    const { centerX, centerY } = viewport(this, 0x08131f);
 
     this.add.rectangle(centerX, centerY, 760, 530, 0x102033, 0.98).setStrokeStyle(3, 0x31536f);
     addText(this, centerX, centerY - 238, '楽器無双', 43, '#ffffff', 'center').setOrigin(0.5);
@@ -206,9 +222,7 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
   create() {
     this.progress = loadSurvivalProgress();
     this.selectedIndex = 0;
-    viewport(this);
-    const centerX = this.cameras.main.worldView.centerX;
-    const centerY = this.cameras.main.worldView.centerY;
+    const { centerX, centerY } = viewport(this);
     this.add.rectangle(centerX, centerY, 760, 550, 0x102033, 0.98).setStrokeStyle(3, 0x31536f);
     addText(this, centerX, centerY - 245, '永続強化', 38, '#ffffff', 'center').setOrigin(0.5);
     this.headerText = addText(this, centerX, centerY - 201, '', 18, '#7dd3fc', 'center').setOrigin(0.5);
@@ -320,9 +334,7 @@ export class SurvivalResultScene extends Phaser.Scene {
     const progress = bankRunRewards(this.rewards);
     const definition = instrumentById.get(this.instrumentId)!;
     const material = this.rewards.materials[definition.materialId] ?? 0;
-    viewport(this, 0x08131f);
-    const centerX = this.cameras.main.worldView.centerX;
-    const centerY = this.cameras.main.worldView.centerY;
+    const { centerX, centerY } = viewport(this, 0x08131f);
     this.add.rectangle(centerX, centerY, 700, 500, 0x102033, 0.98).setStrokeStyle(4, definition.color);
     addText(this, centerX, centerY - 205, this.reason, 38, '#ffffff', 'center').setOrigin(0.5);
     addText(this, centerX, centerY - 156, `${definition.name} RUN RESULT`, 18, '#7dd3fc', 'center').setOrigin(0.5);
