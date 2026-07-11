@@ -7,8 +7,9 @@ import {
   getCommonUpgradeCost,
   getSpecialtyCost,
   getTotalLevel,
-  getRecommendedStartingThreat,
-  getThreatUnlockForTotalLevel,
+  getInstrumentPowerLevel,
+  getInstrumentStartingThreat,
+  getInstrumentThreatCap,
   instrumentById,
   instrumentDefinitions,
   isSpecialBattleUnlocked,
@@ -173,8 +174,9 @@ export class SurvivalHubScene extends Phaser.Scene {
     const definition = instrumentDefinitions[this.instrumentIndex];
     const instrumentProgress = this.progress.instruments[definition.id];
     const totalLevel = getTotalLevel(this.progress);
-    const unlockedThreat = getThreatUnlockForTotalLevel(totalLevel);
-    const startingThreat = getRecommendedStartingThreat(totalLevel, unlockedThreat);
+    const instrumentLevel = getInstrumentPowerLevel(this.progress, definition.id);
+    const unlockedThreat = getInstrumentThreatCap(this.progress, definition.id);
+    const startingThreat = getInstrumentStartingThreat(this.progress, definition.id);
     this.instrumentImage?.setTexture(definition.imageKey).setTint(definition.color);
     this.instrumentName?.setText(`${definition.name}  専用Lv.${instrumentProgress.specialtyLevel}`);
     const specialtyNumbers = definition.id === 'electric-guitar' && instrumentProgress.specialtyLevel > 0
@@ -182,7 +184,7 @@ export class SurvivalHubScene extends Phaser.Scene {
       : '';
     this.instrumentDetail?.setText(`${definition.specialtyName}\n${definition.specialtyDescription}${specialtyNumbers}`);
     this.resourceText?.setText(
-      `コイン ${this.progress.coins}　総レベル ${totalLevel}　最高敵水準 ${this.progress.bestThreat}\n敵水準 ${startingThreat}開始 / ${unlockedThreat}まで解放　${definition.materialName} ${instrumentProgress.material}`,
+      `コイン ${this.progress.coins}　総Lv.${totalLevel} / ${definition.shortName}Lv.${instrumentLevel}\n${definition.shortName}：水準${instrumentProgress.highestClearedThreat}までクリア・${startingThreat}開始・${unlockedThreat}まで解放　${definition.materialName} ${instrumentProgress.material}`,
     );
     this.menuTexts.forEach((text, index) => {
       const selected = index === this.menuIndex;
@@ -227,16 +229,20 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
     addText(this, centerX, centerY - 245, '永続強化', 38, '#ffffff', 'center').setOrigin(0.5);
     this.headerText = addText(this, centerX, centerY - 201, '', 18, '#7dd3fc', 'center').setOrigin(0.5);
 
-    for (let index = 0; index < commonUpgradeDefinitions.length + 1; index += 1) {
-      const column = index < 4 ? 0 : 1;
-      const row = index < 4 ? index : index - 4;
+    for (let index = 0; index < commonUpgradeDefinitions.length; index += 1) {
+      const column = index < 3 ? 0 : 1;
+      const row = index % 3;
       const x = centerX + (column === 0 ? -330 : 30);
-      const y = centerY - 143 + row * 72;
+      const y = centerY - 150 + row * 68;
       this.add.rectangle(x + 150, y + 23, 300, 58, 0x07111f, 0.8).setStrokeStyle(1, 0x31536f);
       this.rowTexts.push(addText(this, x + 16, y + 9, '', 19));
     }
-    this.add.rectangle(centerX, centerY + 151, 690, 74, 0x07111f, 0.82).setStrokeStyle(2, 0x31536f);
-    this.descriptionText = addText(this, centerX, centerY + 128, '', 17, '#cbd5e1', 'center')
+    const specialtyY = centerY + 62;
+    this.add.rectangle(centerX, specialtyY + 23, 660, 58, 0x07111f, 0.82).setStrokeStyle(2, 0x8b5cf6);
+    this.rowTexts.push(addText(this, centerX - 314, specialtyY + 9, '', 19));
+
+    this.add.rectangle(centerX, centerY + 161, 690, 70, 0x07111f, 0.82).setStrokeStyle(2, 0x31536f);
+    this.descriptionText = addText(this, centerX, centerY + 138, '', 17, '#cbd5e1', 'center')
       .setOrigin(0.5, 0)
       .setWordWrapWidth(650, true);
     addText(this, centerX, centerY + 243, '↑/↓ 選択  Enter/Space 購入  Esc 拠点へ', 17, '#facc15', 'center').setOrigin(0.5);
@@ -282,7 +288,9 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
   private refresh() {
     const instrument = instrumentById.get(this.instrumentId)!;
     const specialty = this.progress.instruments[this.instrumentId];
-    this.headerText?.setText(`コイン ${this.progress.coins}　総レベル ${getTotalLevel(this.progress)}　${instrument.materialName} ${specialty.material}`);
+    this.headerText?.setText(
+      `コイン ${this.progress.coins}　総Lv.${getTotalLevel(this.progress)} / ${instrument.shortName}Lv.${getInstrumentPowerLevel(this.progress, this.instrumentId)}　${instrument.materialName} ${specialty.material}`,
+    );
     commonUpgradeDefinitions.forEach((definition, index) => {
       const level = this.progress.commonLevels[definition.id];
       const cost = getCommonUpgradeCost(definition.id, level);
@@ -310,7 +318,13 @@ type SurvivalResultData = {
 
 export class SurvivalResultScene extends Phaser.Scene {
   private instrumentId: InstrumentId = 'electric-guitar';
-  private rewards: SurvivalRunRewards = { coins: 0, bestThreat: 1, instrumentId: 'electric-guitar', materials: {} };
+  private rewards: SurvivalRunRewards = {
+    coins: 0,
+    bestThreat: 1,
+    highestClearedThreat: 0,
+    instrumentId: 'electric-guitar',
+    materials: {},
+  };
   private reason = '戦闘終了';
   private kills = 0;
   private durationMs = 0;
@@ -341,6 +355,7 @@ export class SurvivalResultScene extends Phaser.Scene {
     this.add.image(centerX - 205, centerY - 22, definition.imageKey).setDisplaySize(185, 185).setTint(definition.color);
     addText(this, centerX + 20, centerY - 112, [
       `到達敵水準　${this.rewards.bestThreat}`,
+      `連続クリア　水準${this.rewards.highestClearedThreat}`,
       `撃破数　　　${this.kills}`,
       `生存時間　　${Math.floor(this.durationMs / 60000)}:${String(Math.floor(this.durationMs / 1000) % 60).padStart(2, '0')}`,
       `獲得コイン　+${this.rewards.coins}`,

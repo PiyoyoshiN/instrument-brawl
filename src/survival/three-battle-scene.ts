@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import * as THREE from 'three';
 import {
-  getTotalLevel,
-  getRecommendedStartingThreat,
-  getThreatUnlockForTotalLevel,
+  getInstrumentPowerLevel,
+  getInstrumentStartingThreat,
+  getInstrumentThreatCap,
   instrumentById,
   loadSurvivalProgress,
   type InstrumentId,
@@ -17,6 +17,7 @@ type BossKind = 'amp-shroom' | 'clockwork-maestro' | 'neon-conductor';
 
 type Enemy3D = {
   id: number;
+  threatLevel: number;
   kind: EnemyKind;
   instrumentId: InstrumentId;
   group: THREE.Group;
@@ -256,7 +257,7 @@ function createBossModel(kind: BossKind, color: number) {
 export class SurvivalBattleScene extends Phaser.Scene {
   private instrumentId: InstrumentId = 'electric-guitar';
   private progress: SurvivalProgress = loadSurvivalProgress();
-  private totalLevel = 0;
+  private instrumentPowerLevel = 0;
   private maxUnlockedThreat = 4;
   private scene3d?: THREE.Scene;
   private camera3d?: THREE.PerspectiveCamera;
@@ -306,6 +307,11 @@ export class SurvivalBattleScene extends Phaser.Scene {
   private cameraShake = 0;
   private combo = 0;
   private comboUntil = 0;
+  private encoreCharge = 0;
+  private encoreUntil = 0;
+  private encoreAura?: THREE.Mesh;
+  private highestClearedThreat = 0;
+  private clearedWaveLevels = new Set<number>();
   private runEnded = false;
   private resizeHandler = () => this.resizeRenderer();
   private keyDownHandler = (event: KeyboardEvent) => this.onKeyDown(event);
@@ -323,10 +329,11 @@ export class SurvivalBattleScene extends Phaser.Scene {
   create() {
     this.resetRun();
     this.progress = loadSurvivalProgress();
-    this.totalLevel = getTotalLevel(this.progress);
-    this.maxUnlockedThreat = getThreatUnlockForTotalLevel(this.totalLevel);
-    this.threat = getRecommendedStartingThreat(this.totalLevel, this.maxUnlockedThreat);
+    this.instrumentPowerLevel = getInstrumentPowerLevel(this.progress, this.instrumentId);
+    this.maxUnlockedThreat = getInstrumentThreatCap(this.progress, this.instrumentId);
+    this.threat = getInstrumentStartingThreat(this.progress, this.instrumentId);
     this.highestThreat = this.threat;
+    this.highestClearedThreat = this.progress.instruments[this.instrumentId].highestClearedThreat;
     const common = this.progress.commonLevels;
     this.maxCondition = 120 + common.condition * 18;
     this.condition = this.maxCondition;
@@ -341,7 +348,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.spawnThreat(this.threat);
     this.showNotice(`敵水準 ${this.threat}　演奏開始！`, '#fde047');
     this.showEvolution(`攻撃段階：${this.getEvolutionStage()}`, '#bae6fd');
-    if (this.threat > 1) this.showEvolution(`総Lv.${this.totalLevel}により開始水準${this.threat}`, '#7dd3fc');
+    if (this.threat > 1) this.showEvolution(`${instrumentById.get(this.instrumentId)!.shortName}Lv.${this.instrumentPowerLevel}・クリア記録により水準${this.threat}開始`, '#7dd3fc');
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanup, this);
   }
 
@@ -394,6 +401,11 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.cameraShake = 0;
     this.combo = 0;
     this.comboUntil = 0;
+    this.encoreCharge = 0;
+    this.encoreUntil = 0;
+    this.encoreAura = undefined;
+    this.highestClearedThreat = 0;
+    this.clearedWaveLevels.clear();
     this.runEnded = false;
   }
 
@@ -437,6 +449,17 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.player = chibi.root;
     this.weaponPivot = chibi.weaponPivot;
     this.scene3d.add(this.player);
+    this.encoreAura = new THREE.Mesh(
+      new THREE.TorusGeometry(1.05, 0.09, 8, 28),
+      new THREE.MeshBasicMaterial({
+        color: instrumentById.get(this.instrumentId)!.color,
+        transparent: true,
+        opacity: 0,
+      }),
+    );
+    this.encoreAura.rotation.x = Math.PI / 2;
+    this.encoreAura.position.y = 0.08;
+    this.scene3d.add(this.encoreAura);
   }
 
   private createDomHud() {
@@ -497,7 +520,8 @@ export class SurvivalBattleScene extends Phaser.Scene {
     const move = new THREE.Vector3(x, 0, z);
     if (move.lengthSq() > 0) {
       move.normalize();
-      this.playerPosition.addScaledVector(move, this.moveSpeed * dt);
+      const encoreMoveMultiplier = this.runTime < this.encoreUntil ? 1.15 : 1;
+      this.playerPosition.addScaledVector(move, this.moveSpeed * encoreMoveMultiplier * dt);
       this.playerPosition.x = THREE.MathUtils.clamp(this.playerPosition.x, -worldHalfX, worldHalfX);
       this.playerPosition.z = THREE.MathUtils.clamp(this.playerPosition.z, -worldHalfZ, worldHalfZ);
       if (!this.attacking) this.aimDirection.lerp(move, 0.24).normalize();
@@ -505,6 +529,15 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.player.position.copy(this.playerPosition);
     this.player.position.y = Math.abs(Math.sin(this.runTime * 9)) * (move.lengthSq() > 0 ? 0.09 : 0.025);
     this.player.rotation.y = Math.atan2(this.aimDirection.x, this.aimDirection.z);
+    if (this.encoreAura) {
+      this.encoreAura.position.x = this.playerPosition.x;
+      this.encoreAura.position.z = this.playerPosition.z;
+      this.encoreAura.rotation.z += dt * 2.8;
+      const auraMaterial = this.encoreAura.material as THREE.MeshBasicMaterial;
+      auraMaterial.opacity = this.runTime < this.encoreUntil ? 0.72 : 0.08 + this.encoreCharge / 12 * 0.18;
+      const pulse = this.runTime < this.encoreUntil ? 1 + Math.sin(this.runTime * 10) * 0.12 : 0.8 + this.encoreCharge / 30;
+      this.encoreAura.scale.setScalar(pulse);
+    }
   }
 
   private requestAttack() {
@@ -513,7 +546,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.attacking = true;
     this.attackApplied = false;
     this.attackElapsed = 0;
-    const tempo = this.runTime < this.tempoUntil ? 1.35 : 1;
+    const tempo = (this.runTime < this.tempoUntil ? 1.35 : 1) * (this.runTime < this.encoreUntil ? 1.2 : 1);
     this.nextAttackAt = this.runTime + this.attackCooldown / tempo;
     const soundKey = this.instrumentId === 'electric-guitar' ? 'attack-electric-guitar-normal-01'
       : this.instrumentId === 'bass' ? 'attack-bass-normal-01'
@@ -556,7 +589,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
 
   private applyInstrumentAttack() {
     const specialty = this.progress.instruments[this.instrumentId].specialtyLevel;
-    const power = this.runTime < this.powerUntil ? 1.35 : 1;
+    const power = (this.runTime < this.powerUntil ? 1.35 : 1) * (this.runTime < this.encoreUntil ? 1.25 : 1);
     const damage = this.attackDamage * power;
     const color = instrumentById.get(this.instrumentId)!.color;
     if (this.instrumentId === 'electric-guitar') {
@@ -679,6 +712,10 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.kills += 1;
     this.combo = this.runTime <= this.comboUntil ? this.combo + 1 : 1;
     this.comboUntil = this.runTime + 2.2;
+    if (this.runTime >= this.encoreUntil) {
+      this.encoreCharge += enemy.boss ? 6 : 1;
+      if (this.encoreCharge >= 12) this.triggerEncore();
+    }
     const selectedMaterial = instrumentById.get(this.instrumentId)!.materialId;
     if (enemy.instrumentId === this.instrumentId && (enemy.boss || Math.random() < 0.24)) {
       const amount = enemy.boss ? (this.threat % 10 === 0 ? 4 : 2) : 1;
@@ -693,6 +730,32 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.hitStopRemaining = Math.max(this.hitStopRemaining, enemy.boss ? 0.12 : 0.025);
     this.cameraShake = Math.max(this.cameraShake, enemy.boss ? 1.1 : 0.22);
     if (enemy.boss) this.showNotice(`${this.getBossName(enemy.bossKind)} 撃破！`, '#fde047');
+    this.markThreatWaveDefeated(enemy.threatLevel);
+  }
+
+  private markThreatWaveDefeated(level: number) {
+    if (this.enemies.some((enemy) => enemy.threatLevel === level)) return;
+    this.clearedWaveLevels.add(level);
+    let advanced = false;
+    while (this.clearedWaveLevels.has(this.highestClearedThreat + 1)) {
+      this.highestClearedThreat += 1;
+      advanced = true;
+    }
+    if (advanced) {
+      const shortName = instrumentById.get(this.instrumentId)!.shortName;
+      this.showEvolution(`${shortName}：敵水準${this.highestClearedThreat}まで連続クリア`, '#86efac');
+    }
+  }
+
+  private triggerEncore() {
+    this.encoreCharge = 0;
+    this.encoreUntil = this.runTime + 8;
+    const color = instrumentById.get(this.instrumentId)!.color;
+    this.showNotice('ENCORE！ 8秒間 音圧・速度上昇', '#fde047');
+    this.spawnImpact(this.playerPosition, 7.5, color);
+    this.meleeStrike(7.5, this.attackDamage * 1.7, true, color, 3.6);
+    this.cameraShake = Math.max(this.cameraShake, 0.9);
+    this.hitStopRemaining = Math.max(this.hitStopRemaining, 0.08);
   }
 
   private updateEnemies(dt: number) {
@@ -851,6 +914,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     const hp = 34 * (1 + level * 0.14) * kindHp;
     this.enemies.push({
       id: ++this.enemyId,
+      threatLevel: level,
       kind,
       instrumentId: instrument.id,
       group,
@@ -883,6 +947,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     group.add(healthBar);
     this.enemies.push({
       id: ++this.enemyId,
+      threatLevel: level,
       kind: 'brute',
       instrumentId: this.instrumentId,
       group,
@@ -1055,12 +1120,17 @@ export class SurvivalBattleScene extends Phaser.Scene {
     const definition = instrumentById.get(this.instrumentId)!;
     const materialCount = this.runMaterials[definition.materialId] ?? 0;
     const bossLock = this.enemies.some((enemy) => enemy.boss) ? '　<span style="color:#fb7185">BOSS LOCK</span>' : '';
-    this.statLine.innerHTML = `<div style="font-size:23px;color:#fde047">敵水準 ${this.threat} / 解放上限 ${this.maxUnlockedThreat}${bossLock}</div><div style="margin-top:5px;font-size:16px">${definition.name}【${this.getEvolutionStage()}】　撃破 ${this.kills}　コイン ${this.runCoins}　素材 ${materialCount}</div>`;
+    this.statLine.innerHTML = `<div style="font-size:23px;color:#fde047">敵水準 ${this.threat} / 解放上限 ${this.maxUnlockedThreat}${bossLock}</div><div style="margin-top:5px;font-size:16px">${definition.name}Lv.${this.instrumentPowerLevel}【${this.getEvolutionStage()}】　連続クリア ${this.highestClearedThreat}</div><div style="margin-top:3px;font-size:14px">撃破 ${this.kills}　コイン ${this.runCoins}　素材 ${materialCount}</div>`;
     const ratio = Math.max(0, this.condition / this.maxCondition);
     const barColor = ratio > 0.5 ? '#22c55e' : ratio > 0.25 ? '#f59e0b' : '#ef4444';
     this.conditionLine.innerHTML = `<div style="height:16px;background:#450a0a;border:2px solid #e2e8f0;border-radius:8px;overflow:hidden"><div style="width:${ratio * 100}%;height:100%;background:${barColor}"></div></div><div style="font-size:13px;text-align:center;margin-top:-17px">CONDITION ${Math.ceil(this.condition)} / ${this.maxCondition}</div>`;
-    const activeBuffs = [this.runTime < this.powerUntil ? `POWER ${Math.ceil(this.powerUntil - this.runTime)}s` : '', this.runTime < this.tempoUntil ? `TEMPO ${Math.ceil(this.tempoUntil - this.runTime)}s` : ''].filter(Boolean);
-    this.comboLine.innerHTML = `${this.combo > 1 && this.runTime <= this.comboUntil ? `${this.combo} K.O. CHAIN<br>` : ''}<span style="font-size:15px;color:#bae6fd">${activeBuffs.join(' / ')}</span>`;
+    const activeBuffs = [
+      this.runTime < this.powerUntil ? `POWER ${Math.ceil(this.powerUntil - this.runTime)}s` : '',
+      this.runTime < this.tempoUntil ? `TEMPO ${Math.ceil(this.tempoUntil - this.runTime)}s` : '',
+      this.runTime < this.encoreUntil ? `ENCORE ${Math.ceil(this.encoreUntil - this.runTime)}s` : '',
+    ].filter(Boolean);
+    const encoreRatio = this.runTime < this.encoreUntil ? 1 : this.encoreCharge / 12;
+    this.comboLine.innerHTML = `${this.combo > 1 && this.runTime <= this.comboUntil ? `${this.combo} K.O. CHAIN<br>` : ''}<span style="font-size:15px;color:#bae6fd">${activeBuffs.join(' / ')}</span><div style="width:190px;height:8px;margin-top:7px;margin-left:auto;background:#172033;border:1px solid #94a3b8"><div style="width:${encoreRatio * 100}%;height:100%;background:#fde047"></div></div><span style="font-size:12px;color:#fde68a">ENCORE ${this.runTime < this.encoreUntil ? 'ACTIVE' : `${this.encoreCharge}/12`}</span>`;
   }
 
   private showNotice(text: string, color: string) {
@@ -1102,6 +1172,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     const rewards: SurvivalRunRewards = {
       coins: this.runCoins,
       bestThreat: this.highestThreat,
+      highestClearedThreat: this.highestClearedThreat,
       instrumentId: this.instrumentId,
       materials: this.runMaterials,
     };
