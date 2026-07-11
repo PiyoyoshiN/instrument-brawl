@@ -1224,7 +1224,7 @@ class HomeScene extends Phaser.Scene {
     this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - uiPanelOuterMargin), 0x1e293b).setStrokeStyle(4, 0x475569);
 
     this.add
-      .text(centerX, safeTop + 68, 'Instrument Brawl', {
+      .text(centerX, safeTop + 68, '楽器無双', {
         color: '#ffffff',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '48px',
@@ -1240,7 +1240,7 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(centerX, safeTop + 166, '通常戦がメイン • 既存1対1は特別戦として収録', {
+      .text(centerX, safeTop + 166, '3D SURVIVAL ACTION • 既存1対1は特別戦として収録', {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',

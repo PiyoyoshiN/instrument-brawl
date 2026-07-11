@@ -81,11 +81,13 @@ export class SurvivalHubScene extends Phaser.Scene {
   private progress: SurvivalProgress = loadSurvivalProgress();
   private instrumentIndex = 0;
   private menuIndex = 0;
-  private instrumentImage?: Phaser.GameObjects.Image;
   private instrumentName?: Phaser.GameObjects.Text;
   private instrumentDetail?: Phaser.GameObjects.Text;
   private resourceText?: Phaser.GameObjects.Text;
   private statusText?: Phaser.GameObjects.Text;
+  private instrumentCards: Phaser.GameObjects.Rectangle[] = [];
+  private instrumentCardTexts: Phaser.GameObjects.Text[] = [];
+  private menuCards: Phaser.GameObjects.Rectangle[] = [];
   private menuTexts: Phaser.GameObjects.Text[] = [];
   private leftKey?: Phaser.Input.Keyboard.Key;
   private rightKey?: Phaser.Input.Keyboard.Key;
@@ -103,31 +105,45 @@ export class SurvivalHubScene extends Phaser.Scene {
     this.progress = loadSurvivalProgress();
     this.instrumentIndex = Math.max(0, instrumentDefinitions.findIndex((item) => item.id === this.progress.selectedInstrument));
     this.menuIndex = 0;
+    this.instrumentCards = [];
+    this.instrumentCardTexts = [];
+    this.menuCards = [];
+    this.menuTexts = [];
     const { centerX, centerY } = viewport(this, 0x08131f);
 
-    this.add.rectangle(centerX, centerY, 760, 530, 0x102033, 0.98).setStrokeStyle(3, 0x31536f);
-    addText(this, centerX, centerY - 238, '楽器無双', 43, '#ffffff', 'center').setOrigin(0.5);
-    addText(this, centerX, centerY - 198, '永続強化アクション / 拠点', 18, '#7dd3fc', 'center').setOrigin(0.5);
+    this.add.rectangle(centerX, centerY, 760, 540, 0x0b1728, 0.99).setStrokeStyle(3, 0x38bdf8);
+    addText(this, centerX, centerY - 244, '楽器無双', 40, '#ffffff', 'center').setOrigin(0.5);
+    addText(this, centerX, centerY - 205, 'INSTRUMENT LOADOUT', 15, '#7dd3fc', 'center').setOrigin(0.5);
 
-    this.add.rectangle(centerX - 190, centerY - 34, 322, 278, 0x07111f, 0.78).setStrokeStyle(2, 0x31536f);
-    this.instrumentImage = this.add.image(centerX - 190, centerY - 64, 'fighter-electric-guitar-base').setDisplaySize(150, 150);
-    this.instrumentName = addText(this, centerX - 190, centerY + 42, '', 25, '#ffffff', 'center').setOrigin(0.5);
-    this.instrumentDetail = addText(this, centerX - 190, centerY + 80, '', 15, '#cbd5e1', 'center')
+    instrumentDefinitions.forEach((definition, index) => {
+      const x = centerX + (index - 1.5) * 174;
+      this.instrumentCards.push(
+        this.add.rectangle(x, centerY - 146, 160, 70, 0x101f33, 0.98).setStrokeStyle(2, 0x334155),
+      );
+      this.instrumentCardTexts.push(
+        addText(this, x, centerY - 146, definition.shortName, 18, '#e2e8f0', 'center').setOrigin(0.5),
+      );
+    });
+
+    this.add.rectangle(centerX, centerY - 29, 690, 140, 0x07111f, 0.9).setStrokeStyle(2, 0x31536f);
+    this.instrumentName = addText(this, centerX, centerY - 78, '', 25, '#ffffff', 'center').setOrigin(0.5);
+    this.instrumentDetail = addText(this, centerX, centerY - 48, '', 14, '#cbd5e1', 'center')
       .setOrigin(0.5, 0)
-      .setWordWrapWidth(280, true);
-    addText(this, centerX - 190, centerY + 145, '← / →  楽器変更', 16, '#facc15', 'center').setOrigin(0.5);
+      .setWordWrapWidth(640, true);
+    this.resourceText = addText(this, centerX, centerY + 21, '', 16, '#bae6fd', 'center').setOrigin(0.5);
 
-    this.add.rectangle(centerX + 175, centerY - 34, 340, 278, 0x07111f, 0.78).setStrokeStyle(2, 0x31536f);
     const labels = ['通常戦へ出撃', '永続強化', '1対1 特別戦'];
-    this.menuTexts = labels.map((label, index) =>
-      addText(this, centerX + 175, centerY - 108 + index * 72, label, 25, '#e2e8f0', 'center').setOrigin(0.5),
-    );
-    this.statusText = addText(this, centerX + 175, centerY + 110, '', 15, '#94a3b8', 'center')
+    this.menuTexts = labels.map((label, index) => {
+      const x = centerX + (index - 1) * 226;
+      this.menuCards.push(
+        this.add.rectangle(x, centerY + 105, 210, 72, 0x101f33, 0.98).setStrokeStyle(2, 0x334155),
+      );
+      return addText(this, x, centerY + 105, label, 21, '#e2e8f0', 'center').setOrigin(0.5);
+    });
+    this.statusText = addText(this, centerX, centerY + 164, '', 14, '#94a3b8', 'center')
       .setOrigin(0.5)
-      .setWordWrapWidth(300, true);
-
-    this.resourceText = addText(this, centerX, centerY + 177, '', 19, '#e2e8f0', 'center').setOrigin(0.5);
-    addText(this, centerX, centerY + 225, '↑/↓ 選択  Enter/Space 決定  Esc ホーム', 17, '#facc15', 'center').setOrigin(0.5);
+      .setWordWrapWidth(680, true);
+    addText(this, centerX, centerY + 230, '←/→ 楽器　↑/↓ メニュー　Enter/Space 決定　Esc ホーム', 16, '#facc15', 'center').setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
     if (keyboard) {
@@ -180,8 +196,9 @@ export class SurvivalHubScene extends Phaser.Scene {
     const instrumentLevel = getInstrumentPowerLevel(this.progress, definition.id);
     const unlockedThreat = getInstrumentThreatCap(this.progress, definition.id);
     const startingThreat = getInstrumentStartingThreat(this.progress, definition.id);
-    this.instrumentImage?.setTexture(definition.imageKey).setTint(definition.color);
-    this.instrumentName?.setText(`${definition.name}  専用Lv.${instrumentProgress.specialtyLevel}`);
+    this.instrumentName?.setText(
+      `${definition.name}　専用Lv.${instrumentProgress.specialtyLevel} / 自動Lv.${instrumentProgress.autoSkillLevel}`,
+    );
     const specialtyNumbers = definition.id === 'electric-guitar' && instrumentProgress.specialtyLevel > 0
       ? `\n距離残存率 ${Math.round(Math.min(0.97, 0.64 + instrumentProgress.specialtyLevel * 0.055) * 100)}% / 貫通残存率 ${Math.round(Math.min(0.96, 0.7 + instrumentProgress.specialtyLevel * 0.045) * 100)}%`
       : '';
@@ -192,6 +209,17 @@ export class SurvivalHubScene extends Phaser.Scene {
     this.menuTexts.forEach((text, index) => {
       const selected = index === this.menuIndex;
       text.setColor(selected ? '#facc15' : '#e2e8f0').setText(`${selected ? '▶ ' : ''}${['通常戦へ出撃', '永続強化', `1対1 特別戦 ${isSpecialBattleUnlocked(this.progress) ? '' : '(総Lv.3)'}`][index]}`);
+      this.menuCards[index]?.setFillStyle(selected ? 0x1e3147 : 0x101f33, 0.98)
+        .setStrokeStyle(selected ? 4 : 2, selected ? 0xfacc15 : 0x334155);
+    });
+    this.instrumentCards.forEach((card, index) => {
+      const selected = index === this.instrumentIndex;
+      const cardDefinition = instrumentDefinitions[index];
+      const level = getInstrumentPowerLevel(this.progress, cardDefinition.id);
+      card.setFillStyle(selected ? 0x1e3147 : 0x101f33, 0.98)
+        .setStrokeStyle(selected ? 4 : 2, selected ? cardDefinition.color : 0x334155);
+      this.instrumentCardTexts[index]?.setColor(selected ? '#ffffff' : '#94a3b8')
+        .setText(`${selected ? '● ' : ''}${cardDefinition.shortName}\nLv.${level} / CLEAR ${this.progress.instruments[cardDefinition.id].highestClearedThreat}`);
     });
     this.statusText?.setText(this.menuIndex === 0
       ? '強化するほど開始水準と敵解放上限が上昇。ボス水準から直接開始することはない。'
@@ -208,6 +236,7 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
   private instrumentId: InstrumentId = 'electric-guitar';
   private selectedIndex = 0;
   private rowTexts: Phaser.GameObjects.Text[] = [];
+  private rowCards: Phaser.GameObjects.Rectangle[] = [];
   private headerText?: Phaser.GameObjects.Text;
   private descriptionText?: Phaser.GameObjects.Text;
   private upKey?: Phaser.Input.Keyboard.Key;
@@ -230,22 +259,24 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
     // Phaser reuses Scene instances. Clear references to display objects that
     // were destroyed during the previous visit before rebuilding this screen.
     this.rowTexts = [];
+    this.rowCards = [];
     const { centerX, centerY } = viewport(this);
-    this.add.rectangle(centerX, centerY, 760, 550, 0x102033, 0.98).setStrokeStyle(3, 0x31536f);
+    this.add.rectangle(centerX, centerY, 760, 550, 0x0b1728, 0.99).setStrokeStyle(3, 0x38bdf8);
     addText(this, centerX, centerY - 245, '永続強化', 38, '#ffffff', 'center').setOrigin(0.5);
-    this.headerText = addText(this, centerX, centerY - 201, '', 18, '#7dd3fc', 'center').setOrigin(0.5);
+    addText(this, centerX, centerY - 211, 'PERMANENT UPGRADE', 13, '#7dd3fc', 'center').setOrigin(0.5);
+    this.headerText = addText(this, centerX, centerY - 181, '', 17, '#bae6fd', 'center').setOrigin(0.5);
 
     for (let index = 0; index < commonUpgradeDefinitions.length; index += 1) {
       const column = index < 3 ? 0 : 1;
       const row = index % 3;
       const x = centerX + (column === 0 ? -330 : 30);
       const y = centerY - 150 + row * 68;
-      this.add.rectangle(x + 150, y + 23, 300, 58, 0x07111f, 0.8).setStrokeStyle(1, 0x31536f);
+      this.rowCards.push(this.add.rectangle(x + 150, y + 23, 300, 58, 0x07111f, 0.9).setStrokeStyle(1, 0x31536f));
       this.rowTexts.push(addText(this, x + 16, y + 9, '', 19));
     }
     const specialtyY = centerY + 62;
-    this.add.rectangle(centerX - 168, specialtyY + 23, 322, 58, 0x07111f, 0.82).setStrokeStyle(2, 0x8b5cf6);
-    this.add.rectangle(centerX + 168, specialtyY + 23, 322, 58, 0x07111f, 0.82).setStrokeStyle(2, 0x22d3ee);
+    this.rowCards.push(this.add.rectangle(centerX - 168, specialtyY + 23, 322, 58, 0x07111f, 0.9).setStrokeStyle(2, 0x8b5cf6));
+    this.rowCards.push(this.add.rectangle(centerX + 168, specialtyY + 23, 322, 58, 0x07111f, 0.9).setStrokeStyle(2, 0x22d3ee));
     this.rowTexts.push(addText(this, centerX - 314, specialtyY + 9, '', 18));
     this.rowTexts.push(addText(this, centerX + 22, specialtyY + 9, '', 18));
 
@@ -324,6 +355,12 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
         ? instrument.specialtyDescription
         : `${autoDefinition.description} Lv.1で解放し、強化すると威力と発動間隔が向上する。`;
     this.descriptionText?.setText(selected);
+    this.rowCards.forEach((card, index) => {
+      const selectedCard = index === this.selectedIndex;
+      const accent = index === uniqueIndex ? 0x8b5cf6 : index === autoIndex ? 0x22d3ee : 0xfacc15;
+      card.setFillStyle(selectedCard ? 0x1e3147 : 0x07111f, 0.9)
+        .setStrokeStyle(selectedCard ? 4 : index >= uniqueIndex ? 2 : 1, selectedCard ? accent : index === uniqueIndex ? 0x8b5cf6 : index === autoIndex ? 0x22d3ee : 0x31536f);
+    });
   }
 }
 
@@ -368,21 +405,32 @@ export class SurvivalResultScene extends Phaser.Scene {
     const definition = instrumentById.get(this.instrumentId)!;
     const material = this.rewards.materials[definition.materialId] ?? 0;
     const { centerX, centerY } = viewport(this, 0x08131f);
-    this.add.rectangle(centerX, centerY, 700, 500, 0x102033, 0.98).setStrokeStyle(4, definition.color);
-    addText(this, centerX, centerY - 205, this.reason, 38, '#ffffff', 'center').setOrigin(0.5);
-    addText(this, centerX, centerY - 156, `${definition.name} RUN RESULT`, 18, '#7dd3fc', 'center').setOrigin(0.5);
-    this.add.image(centerX - 205, centerY - 22, definition.imageKey).setDisplaySize(185, 185).setTint(definition.color);
-    addText(this, centerX + 20, centerY - 112, [
-      `到達敵水準　${this.rewards.bestThreat}`,
-      `連続クリア　水準${this.rewards.highestClearedThreat}`,
-      `撃破数　　　${this.kills}`,
-      `生存時間　　${Math.floor(this.durationMs / 60000)}:${String(Math.floor(this.durationMs / 1000) % 60).padStart(2, '0')}`,
-      `獲得コイン　+${this.rewards.coins}`,
-      `${definition.materialName}　+${material}`,
-    ], 23, '#e2e8f0').setOrigin(0, 0.5);
-    this.add.rectangle(centerX, centerY + 132, 610, 58, 0x07111f, 0.82).setStrokeStyle(2, 0x31536f);
-    addText(this, centerX, centerY + 132, `所持コイン ${progress.coins}　総レベル ${getTotalLevel(progress)}　最高敵水準 ${progress.bestThreat}`, 18, '#facc15', 'center').setOrigin(0.5);
-    addText(this, centerX, centerY + 210, 'Enter/Space 拠点へ　R もう一度', 19, '#facc15', 'center').setOrigin(0.5);
+    this.add.rectangle(centerX, centerY, 740, 520, 0x0b1728, 0.99).setStrokeStyle(4, definition.color);
+    addText(this, centerX, centerY - 220, this.reason, 36, '#ffffff', 'center').setOrigin(0.5);
+    addText(this, centerX, centerY - 180, `${definition.name.toUpperCase()} / RUN RESULT`, 16, '#7dd3fc', 'center').setOrigin(0.5);
+
+    const duration = `${Math.floor(this.durationMs / 60000)}:${String(Math.floor(this.durationMs / 1000) % 60).padStart(2, '0')}`;
+    const resultCards = [
+      ['到達水準', String(this.rewards.bestThreat)],
+      ['連続クリア', String(this.rewards.highestClearedThreat)],
+      ['撃破数', String(this.kills)],
+      ['生存時間', duration],
+      ['獲得コイン', `+${this.rewards.coins}`],
+      [definition.materialName, `+${material}`],
+    ];
+    resultCards.forEach(([label, value], index) => {
+      const column = index % 3;
+      const row = Math.floor(index / 3);
+      const x = centerX + (column - 1) * 220;
+      const y = centerY - 95 + row * 92;
+      this.add.rectangle(x, y, 204, 74, 0x07111f, 0.9).setStrokeStyle(2, row === 0 ? definition.color : 0x31536f);
+      addText(this, x, y - 15, label, 14, '#94a3b8', 'center').setOrigin(0.5);
+      addText(this, x, y + 12, value, 25, row === 0 ? '#ffffff' : '#fde047', 'center').setOrigin(0.5);
+    });
+
+    this.add.rectangle(centerX, centerY + 117, 650, 58, 0x07111f, 0.9).setStrokeStyle(2, 0x31536f);
+    addText(this, centerX, centerY + 117, `所持コイン ${progress.coins}　総Lv.${getTotalLevel(progress)}　全体最高水準 ${progress.bestThreat}`, 17, '#bae6fd', 'center').setOrigin(0.5);
+    addText(this, centerX, centerY + 210, 'Enter/Space 拠点へ　　R もう一度', 18, '#facc15', 'center').setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
     if (keyboard) {

@@ -30,8 +30,23 @@
 
 - WASD / Arrow keys: move
 - Space / J / Click: attack (nearest enemy is assisted)
-- Escape: retire and bank the current run rewards
+- P / Escape: pause
 - Hub: Left / Right changes instrument, Up / Down changes menu item
+
+Pause behavior:
+
+- P / Escape: pause or resume the 3D battle
+- Pause freezes survival time, enemy movement, projectiles, drops, buffs, and automatic skills
+- Pause shows controls plus Resume / Bank and Retire actions
+- Retire requires two confirmations
+- Moving the browser tab into the background automatically pauses the battle
+
+## Survival UI
+
+- The hub uses four evenly spaced instrument loadout cards instead of the earlier fighter image preview.
+- Battle, Upgrade, and Special Battle are presented as three centered action cards.
+- Permanent Upgrade uses a balanced 2-column common-upgrade grid plus separate Specialty / Auto cards.
+- The survival result uses a centered 3-by-2 stat-card layout and no legacy fighter image.
 
 ### Guitar sound pressure
 

@@ -274,6 +274,8 @@ export class SurvivalBattleScene extends Phaser.Scene {
   private centerNotice?: HTMLDivElement;
   private comboLine?: HTMLDivElement;
   private evolutionLine?: HTMLDivElement;
+  private pauseLayer?: HTMLDivElement;
+  private pauseMenuText?: HTMLDivElement;
   private enemies: Enemy3D[] = [];
   private projectiles: PlayerProjectile[] = [];
   private enemyProjectiles: EnemyProjectile[] = [];
@@ -316,10 +318,16 @@ export class SurvivalBattleScene extends Phaser.Scene {
   private highestClearedThreat = 0;
   private clearedWaveLevels = new Set<number>();
   private runEnded = false;
+  private paused = false;
+  private pauseSelectedIndex = 0;
+  private retireArmed = false;
   private resizeHandler = () => this.resizeRenderer();
   private keyDownHandler = (event: KeyboardEvent) => this.onKeyDown(event);
   private keyUpHandler = (event: KeyboardEvent) => this.keys.delete(event.code);
   private pointerHandler = () => this.requestAttack();
+  private visibilityHandler = () => {
+    if (document.hidden && !this.runEnded && !this.paused) this.setPaused(true);
+  };
 
   constructor() {
     super('SurvivalBattleScene');
@@ -362,6 +370,10 @@ export class SurvivalBattleScene extends Phaser.Scene {
 
   update(_time: number, delta: number) {
     if (!this.threeRenderer || !this.scene3d || !this.camera3d || !this.player || this.runEnded) return;
+    if (this.paused) {
+      this.threeRenderer.render(this.scene3d, this.camera3d);
+      return;
+    }
     const dt = clampDelta(delta);
     this.runTime += dt;
     this.updatePlayer(dt);
@@ -418,6 +430,9 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.autoSkillLevel = 0;
     this.nextAutoSkillAt = Number.POSITIVE_INFINITY;
     this.runEnded = false;
+    this.paused = false;
+    this.pauseSelectedIndex = 0;
+    this.retireArmed = false;
   }
 
   private createThreeWorld() {
@@ -483,7 +498,19 @@ export class SurvivalBattleScene extends Phaser.Scene {
       <div data-role="notice" style="position:absolute;left:50%;top:42px;transform:translateX(-50%);font-size:26px;font-weight:900;text-align:center;transition:opacity .35s"></div>
       <div data-role="combo" style="position:absolute;right:28px;top:24px;font-size:28px;font-weight:900;text-align:right;color:#fde047"></div>
       <div data-role="evolution" style="position:absolute;left:50%;bottom:90px;transform:translateX(-50%);padding:9px 18px;background:#020617d9;border:1px solid #64748b;border-radius:10px;font-size:18px;font-weight:800;opacity:0;transition:opacity .3s"></div>
-      <div style="position:absolute;right:22px;bottom:18px;padding:8px 12px;background:#020617b8;border-radius:8px;font-size:14px">WASD/矢印 移動　Space/J/クリック 攻撃　Esc 撤退</div>
+      <div style="position:absolute;right:22px;bottom:18px;padding:8px 12px;background:#020617b8;border-radius:8px;font-size:14px">WASD/矢印 移動　Space/J/クリック 攻撃　P/Esc ポーズ</div>
+      <div data-role="pause" style="display:none;position:absolute;inset:0;background:radial-gradient(circle at center,#0f2748e8,#020617f5);align-items:center;justify-content:center;pointer-events:auto;text-shadow:none">
+        <div style="width:min(620px,82vw);padding:34px 42px;background:linear-gradient(145deg,#13233df7,#07111ff7);border:2px solid #38bdf8;border-radius:20px;box-shadow:0 24px 80px #000b">
+          <div style="font-size:42px;font-weight:950;letter-spacing:.12em;text-align:center;color:#f8fafc">PAUSE</div>
+          <div style="margin:10px 0 24px;text-align:center;color:#7dd3fc;font-size:16px">演奏と敵の進行は完全に停止中</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px">
+            <div style="padding:16px;background:#02061799;border:1px solid #334155;border-radius:12px"><b style="color:#fde047">移動</b><br>WASD / 矢印キー</div>
+            <div style="padding:16px;background:#02061799;border:1px solid #334155;border-radius:12px"><b style="color:#fde047">攻撃</b><br>Space / J / クリック</div>
+          </div>
+          <div data-role="pause-menu" style="font-size:24px;line-height:2;text-align:center;font-weight:850"></div>
+          <div style="margin-top:18px;text-align:center;color:#94a3b8;font-size:14px">↑/↓ 選択　Enter/Space 決定　P/Esc 再開</div>
+        </div>
+      </div>
     `;
     host.appendChild(root);
     this.uiRoot = root;
@@ -492,22 +519,77 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.centerNotice = root.querySelector('[data-role="notice"]') as HTMLDivElement;
     this.comboLine = root.querySelector('[data-role="combo"]') as HTMLDivElement;
     this.evolutionLine = root.querySelector('[data-role="evolution"]') as HTMLDivElement;
+    this.pauseLayer = root.querySelector('[data-role="pause"]') as HTMLDivElement;
+    this.pauseMenuText = root.querySelector('[data-role="pause-menu"]') as HTMLDivElement;
   }
 
   private bindInputs() {
     window.addEventListener('keydown', this.keyDownHandler);
     window.addEventListener('keyup', this.keyUpHandler);
     window.addEventListener('resize', this.resizeHandler);
+    document.addEventListener('visibilitychange', this.visibilityHandler);
     this.threeRenderer?.domElement.addEventListener('pointerdown', this.pointerHandler);
   }
 
   private onKeyDown(event: KeyboardEvent) {
+    if ((event.code === 'Escape' || event.code === 'KeyP') && !event.repeat) {
+      event.preventDefault();
+      this.setPaused(!this.paused);
+      return;
+    }
+
+    if (this.paused) {
+      event.preventDefault();
+      if (!event.repeat && (event.code === 'ArrowUp' || event.code === 'KeyW')) {
+        this.pauseSelectedIndex = (this.pauseSelectedIndex + 1) % 2;
+        this.retireArmed = false;
+        this.updatePauseMenu();
+      }
+      if (!event.repeat && (event.code === 'ArrowDown' || event.code === 'KeyS')) {
+        this.pauseSelectedIndex = (this.pauseSelectedIndex + 1) % 2;
+        this.retireArmed = false;
+        this.updatePauseMenu();
+      }
+      if (!event.repeat && ['Enter', 'Space'].includes(event.code)) this.confirmPauseSelection();
+      return;
+    }
+
     this.keys.add(event.code);
     if (['Space', 'KeyJ'].includes(event.code)) {
       event.preventDefault();
       this.requestAttack();
     }
-    if (event.code === 'Escape') this.finishRun('撤退');
+  }
+
+  private setPaused(paused: boolean) {
+    if (this.runEnded) return;
+    this.paused = paused;
+    this.keys.clear();
+    this.retireArmed = false;
+    this.pauseSelectedIndex = 0;
+    if (this.pauseLayer) this.pauseLayer.style.display = paused ? 'flex' : 'none';
+    if (paused) this.updatePauseMenu();
+  }
+
+  private updatePauseMenu() {
+    if (!this.pauseMenuText) return;
+    const resumePrefix = this.pauseSelectedIndex === 0 ? '<span style="color:#fde047">▶</span> ' : '　';
+    const retirePrefix = this.pauseSelectedIndex === 1 ? '<span style="color:#fb7185">▶</span> ' : '　';
+    const retireText = this.retireArmed ? '本当に撤退する（もう一度決定）' : 'ランを終了して持ち帰る';
+    this.pauseMenuText.innerHTML = `${resumePrefix}演奏へ戻る<br>${retirePrefix}${retireText}`;
+  }
+
+  private confirmPauseSelection() {
+    if (this.pauseSelectedIndex === 0) {
+      this.setPaused(false);
+      return;
+    }
+    if (!this.retireArmed) {
+      this.retireArmed = true;
+      this.updatePauseMenu();
+      return;
+    }
+    this.finishRun('撤退');
   }
 
   private resizeRenderer() {
@@ -552,7 +634,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
   }
 
   private requestAttack() {
-    if (this.runEnded || this.attacking || this.runTime < this.nextAttackAt) return;
+    if (this.runEnded || this.paused || this.attacking || this.runTime < this.nextAttackAt) return;
     this.aimAtNearest();
     this.attacking = true;
     this.attackApplied = false;
@@ -1255,6 +1337,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     window.removeEventListener('keydown', this.keyDownHandler);
     window.removeEventListener('keyup', this.keyUpHandler);
     window.removeEventListener('resize', this.resizeHandler);
+    document.removeEventListener('visibilitychange', this.visibilityHandler);
     this.threeRenderer?.domElement.removeEventListener('pointerdown', this.pointerHandler);
     this.uiRoot?.remove();
     this.scene3d?.traverse((object) => {
