@@ -178,6 +178,54 @@ function createChibiPlayer(instrumentId: InstrumentId) {
   return { root, weaponPivot, leftArm };
 }
 
+function createMeadowDecor() {
+  const decor = new THREE.Group();
+  const treePositions: Array<[number, number, number]> = [
+    [-34, -19, 1.2], [-34, 5, 0.9], [-33, 20, 1.1], [34, -18, 1], [34, 1, 1.25], [34, 19, 0.9],
+    [-22, -25, 0.95], [3, -25, 1.1], [25, -25, 0.85], [-24, 25, 1.1], [7, 25, 0.9], [27, 25, 1.2],
+  ];
+  for (const [x, z, scale] of treePositions) {
+    const tree = new THREE.Group();
+    const trunk = mesh(new THREE.CylinderGeometry(0.28, 0.4, 2.5, 7), 0x8a623d, 0.95);
+    trunk.position.y = 1.25;
+    const crownLower = mesh(new THREE.ConeGeometry(1.5, 2.45, 9), 0x4f873f, 0.95);
+    crownLower.position.y = 3.05;
+    const crownUpper = mesh(new THREE.ConeGeometry(1.15, 2, 9), 0x69a84f, 0.92);
+    crownUpper.position.y = 4.15;
+    tree.add(trunk, crownLower, crownUpper);
+    tree.position.set(x, 0, z);
+    tree.scale.setScalar(scale);
+    decor.add(tree);
+  }
+
+  const rockPositions: Array<[number, number, number]> = [
+    [-29, -12, 0.8], [-30, 13, 0.55], [30, -9, 0.65], [29, 13, 0.9], [-14, 22, 0.55], [18, -22, 0.7],
+  ];
+  for (const [x, z, scale] of rockPositions) {
+    const rock = mesh(new THREE.DodecahedronGeometry(0.85, 0), 0xa69b7d, 1);
+    rock.position.set(x, 0.48 * scale, z);
+    rock.scale.set(scale * 1.25, scale, scale);
+    rock.rotation.y = x * 0.17;
+    decor.add(rock);
+  }
+
+  const flowerColors = [0xfff0a6, 0xf49e8f, 0xf7f2e2, 0xb89ad9];
+  const flowerPositions: Array<[number, number]> = [
+    [-27, -18], [-24, -20], [-20, 20], [-15, 21], [-8, -21], [1, 21], [12, -21], [18, 20], [25, -19], [28, 18],
+  ];
+  flowerPositions.forEach(([x, z], index) => {
+    const patch = new THREE.Group();
+    for (let petal = 0; petal < 3; petal += 1) {
+      const bloom = mesh(new THREE.SphereGeometry(0.13, 6, 5), flowerColors[(index + petal) % flowerColors.length], 0.8);
+      bloom.position.set((petal - 1) * 0.28, 0.18 + petal * 0.04, (petal % 2) * 0.2);
+      patch.add(bloom);
+    }
+    patch.position.set(x, 0, z);
+    decor.add(patch);
+  });
+  return decor;
+}
+
 function createEnemyModel(kind: EnemyKind, color: number) {
   const group = new THREE.Group();
   if (kind === 'walker') {
@@ -439,8 +487,8 @@ export class SurvivalBattleScene extends Phaser.Scene {
     const host = document.getElementById('game') ?? document.body;
     host.style.position = 'relative';
     this.scene3d = new THREE.Scene();
-    this.scene3d.background = new THREE.Color(0x07121c);
-    this.scene3d.fog = new THREE.Fog(0x07121c, 34, 65);
+    this.scene3d.background = new THREE.Color(0xaedff2);
+    this.scene3d.fog = new THREE.Fog(0xaedff2, 42, 78);
     this.camera3d = new THREE.PerspectiveCamera(48, 1, 0.1, 130);
     this.threeRenderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     this.threeRenderer.setPixelRatio(Math.min(1.5, window.devicePixelRatio));
@@ -448,28 +496,29 @@ export class SurvivalBattleScene extends Phaser.Scene {
     host.appendChild(this.threeRenderer.domElement);
     this.resizeRenderer();
 
-    this.scene3d.add(new THREE.HemisphereLight(0xb9e6ff, 0x1c2131, 2.0));
-    const sun = new THREE.DirectionalLight(0xfff1d6, 2.6);
+    this.scene3d.add(new THREE.HemisphereLight(0xe8f7ff, 0x66884d, 2.35));
+    const sun = new THREE.DirectionalLight(0xffe3a8, 2.8);
     sun.position.set(-10, 18, 12);
     this.scene3d.add(sun);
     const rim = new THREE.DirectionalLight(instrumentById.get(this.instrumentId)!.color, 1.35);
     rim.position.set(12, 8, -8);
     this.scene3d.add(rim);
 
-    this.floor = mesh(new THREE.PlaneGeometry(worldHalfX * 2 + 5, worldHalfZ * 2 + 5), 0x132536, 0.94);
+    this.floor = mesh(new THREE.PlaneGeometry(worldHalfX * 2 + 5, worldHalfZ * 2 + 5), 0x79aa59, 0.98);
     this.floor.rotation.x = -Math.PI / 2;
     this.floor.position.y = -0.03;
     this.scene3d.add(this.floor);
-    const grid = new THREE.GridHelper(70, 35, 0x315a72, 0x1b3447);
+    const grid = new THREE.GridHelper(70, 35, 0xa4c77d, 0x6f9955);
     grid.position.y = 0;
     this.scene3d.add(grid);
-    const borderMaterial = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.35 });
+    const borderMaterial = new THREE.LineBasicMaterial({ color: 0xe8c36a, transparent: true, opacity: 0.65 });
     const borderPoints = [
       new THREE.Vector3(-worldHalfX, 0.05, -worldHalfZ), new THREE.Vector3(worldHalfX, 0.05, -worldHalfZ),
       new THREE.Vector3(worldHalfX, 0.05, worldHalfZ), new THREE.Vector3(-worldHalfX, 0.05, worldHalfZ),
       new THREE.Vector3(-worldHalfX, 0.05, -worldHalfZ),
     ];
     this.scene3d.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(borderPoints), borderMaterial));
+    this.scene3d.add(createMeadowDecor());
 
     const chibi = createChibiPlayer(this.instrumentId);
     this.player = chibi.root;
@@ -491,24 +540,24 @@ export class SurvivalBattleScene extends Phaser.Scene {
   private createDomHud() {
     const host = document.getElementById('game') ?? document.body;
     const root = document.createElement('div');
-    root.style.cssText = 'position:absolute;inset:0;z-index:30;pointer-events:none;color:#f8fafc;font-family:system-ui,sans-serif;text-shadow:0 2px 4px #000;';
+    root.style.cssText = 'position:absolute;inset:0;z-index:30;pointer-events:none;color:#3f382c;font-family:system-ui,sans-serif;text-shadow:0 1px 2px #fff8;';
     root.innerHTML = `
-      <div data-role="stats" style="position:absolute;left:20px;top:18px;min-width:330px;padding:12px 16px;background:#020617cc;border:2px solid #31536f;border-radius:12px;font-weight:700"></div>
+      <div data-role="stats" style="position:absolute;left:20px;top:18px;min-width:330px;padding:12px 16px;background:#fff4dce8;border:2px solid #78935a;border-radius:12px;font-weight:700;box-shadow:0 5px 18px #49602d35"></div>
       <div data-role="condition" style="position:absolute;left:20px;top:104px;width:330px"></div>
-      <div data-role="notice" style="position:absolute;left:50%;top:42px;transform:translateX(-50%);font-size:26px;font-weight:900;text-align:center;transition:opacity .35s"></div>
-      <div data-role="combo" style="position:absolute;right:28px;top:24px;font-size:28px;font-weight:900;text-align:right;color:#fde047"></div>
-      <div data-role="evolution" style="position:absolute;left:50%;bottom:90px;transform:translateX(-50%);padding:9px 18px;background:#020617d9;border:1px solid #64748b;border-radius:10px;font-size:18px;font-weight:800;opacity:0;transition:opacity .3s"></div>
-      <div style="position:absolute;right:22px;bottom:18px;padding:8px 12px;background:#020617b8;border-radius:8px;font-size:14px">WASD/矢印 移動　Space/J/クリック 攻撃　P/Esc ポーズ</div>
-      <div data-role="pause" style="display:none;position:absolute;inset:0;background:radial-gradient(circle at center,#0f2748e8,#020617f5);align-items:center;justify-content:center;pointer-events:auto;text-shadow:none">
-        <div style="width:min(620px,82vw);padding:34px 42px;background:linear-gradient(145deg,#13233df7,#07111ff7);border:2px solid #38bdf8;border-radius:20px;box-shadow:0 24px 80px #000b">
-          <div style="font-size:42px;font-weight:950;letter-spacing:.12em;text-align:center;color:#f8fafc">PAUSE</div>
-          <div style="margin:10px 0 24px;text-align:center;color:#7dd3fc;font-size:16px">演奏と敵の進行は完全に停止中</div>
+      <div data-role="notice" style="position:absolute;left:50%;top:42px;transform:translateX(-50%);font-size:26px;font-weight:900;text-align:center;transition:opacity .35s;text-shadow:0 2px 3px #fff"></div>
+      <div data-role="combo" style="position:absolute;right:28px;top:24px;font-size:28px;font-weight:900;text-align:right;color:#a85f21"></div>
+      <div data-role="evolution" style="position:absolute;left:50%;bottom:90px;transform:translateX(-50%);padding:9px 18px;background:#fff4dcee;border:1px solid #78935a;border-radius:10px;font-size:18px;font-weight:800;opacity:0;transition:opacity .3s;box-shadow:0 5px 18px #49602d35"></div>
+      <div style="position:absolute;right:22px;bottom:18px;padding:8px 12px;background:#fff4dcd9;border:1px solid #9bab7f;border-radius:8px;font-size:14px">WASD/矢印 移動　Space/J/クリック 攻撃　P/Esc ポーズ</div>
+      <div data-role="pause" style="display:none;position:absolute;inset:0;background:radial-gradient(circle at center,#f8edcff2,#b9d79cf2);align-items:center;justify-content:center;pointer-events:auto;text-shadow:none;color:#3f382c">
+        <div style="width:min(620px,82vw);padding:34px 42px;background:linear-gradient(145deg,#fff7e8fa,#f3e2bffa);border:3px solid #d8892b;border-radius:20px;box-shadow:0 24px 80px #49602d66">
+          <div style="font-size:42px;font-weight:950;letter-spacing:.12em;text-align:center;color:#3f382c">PAUSE</div>
+          <div style="margin:10px 0 24px;text-align:center;color:#55703d;font-size:16px">演奏と敵の進行は完全に停止中</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px">
-            <div style="padding:16px;background:#02061799;border:1px solid #334155;border-radius:12px"><b style="color:#fde047">移動</b><br>WASD / 矢印キー</div>
-            <div style="padding:16px;background:#02061799;border:1px solid #334155;border-radius:12px"><b style="color:#fde047">攻撃</b><br>Space / J / クリック</div>
+            <div style="padding:16px;background:#e5edcf;border:1px solid #78935a;border-radius:12px"><b style="color:#8b4a16">移動</b><br>WASD / 矢印キー</div>
+            <div style="padding:16px;background:#e5edcf;border:1px solid #78935a;border-radius:12px"><b style="color:#8b4a16">攻撃</b><br>Space / J / クリック</div>
           </div>
           <div data-role="pause-menu" style="font-size:24px;line-height:2;text-align:center;font-weight:850"></div>
-          <div style="margin-top:18px;text-align:center;color:#94a3b8;font-size:14px">↑/↓ 選択　Enter/Space 決定　P/Esc 再開</div>
+          <div style="margin-top:18px;text-align:center;color:#6d6a54;font-size:14px">↑/↓ 選択　Enter/Space 決定　P/Esc 再開</div>
         </div>
       </div>
     `;
@@ -573,7 +622,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
 
   private updatePauseMenu() {
     if (!this.pauseMenuText) return;
-    const resumePrefix = this.pauseSelectedIndex === 0 ? '<span style="color:#fde047">▶</span> ' : '　';
+    const resumePrefix = this.pauseSelectedIndex === 0 ? '<span style="color:#d8892b">▶</span> ' : '　';
     const retirePrefix = this.pauseSelectedIndex === 1 ? '<span style="color:#fb7185">▶</span> ' : '　';
     const retireText = this.retireArmed ? '本当に撤退する（もう一度決定）' : 'ランを終了して持ち帰る';
     this.pauseMenuText.innerHTML = `${resumePrefix}演奏へ戻る<br>${retirePrefix}${retireText}`;
@@ -1267,10 +1316,10 @@ export class SurvivalBattleScene extends Phaser.Scene {
     const definition = instrumentById.get(this.instrumentId)!;
     const materialCount = this.runMaterials[definition.materialId] ?? 0;
     const bossLock = this.enemies.some((enemy) => enemy.boss) ? '　<span style="color:#fb7185">BOSS LOCK</span>' : '';
-    this.statLine.innerHTML = `<div style="font-size:23px;color:#fde047">敵水準 ${this.threat} / 解放上限 ${this.maxUnlockedThreat}${bossLock}</div><div style="margin-top:5px;font-size:16px">${definition.name}Lv.${this.instrumentPowerLevel}【${this.getEvolutionStage()}】　連続クリア ${this.highestClearedThreat}</div><div style="margin-top:3px;font-size:14px">撃破 ${this.kills}　コイン ${this.runCoins}　素材 ${materialCount}</div>`;
+    this.statLine.innerHTML = `<div style="font-size:23px;color:#8b4a16">敵水準 ${this.threat} / 解放上限 ${this.maxUnlockedThreat}${bossLock}</div><div style="margin-top:5px;font-size:16px">${definition.name}Lv.${this.instrumentPowerLevel}【${this.getEvolutionStage()}】　連続クリア ${this.highestClearedThreat}</div><div style="margin-top:3px;font-size:14px">撃破 ${this.kills}　コイン ${this.runCoins}　素材 ${materialCount}</div>`;
     const ratio = Math.max(0, this.condition / this.maxCondition);
     const barColor = ratio > 0.5 ? '#22c55e' : ratio > 0.25 ? '#f59e0b' : '#ef4444';
-    this.conditionLine.innerHTML = `<div style="height:16px;background:#450a0a;border:2px solid #e2e8f0;border-radius:8px;overflow:hidden"><div style="width:${ratio * 100}%;height:100%;background:${barColor}"></div></div><div style="font-size:13px;text-align:center;margin-top:-17px">CONDITION ${Math.ceil(this.condition)} / ${this.maxCondition}</div>`;
+    this.conditionLine.innerHTML = `<div style="height:16px;background:#f1d9c4;border:2px solid #fff4dc;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px #49602d35"><div style="width:${ratio * 100}%;height:100%;background:${barColor}"></div></div><div style="font-size:13px;text-align:center;margin-top:-17px;color:#3f382c;text-shadow:0 1px 2px #fff">CONDITION ${Math.ceil(this.condition)} / ${this.maxCondition}</div>`;
     const activeBuffs = [
       this.runTime < this.powerUntil ? `POWER ${Math.ceil(this.powerUntil - this.runTime)}s` : '',
       this.runTime < this.tempoUntil ? `TEMPO ${Math.ceil(this.tempoUntil - this.runTime)}s` : '',
@@ -1278,7 +1327,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
       this.autoSkillLevel > 0 ? `AUTO ${Math.max(0, Math.ceil(this.nextAutoSkillAt - this.runTime))}s` : '',
     ].filter(Boolean);
     const encoreRatio = this.runTime < this.encoreUntil ? 1 : this.encoreCharge / 12;
-    this.comboLine.innerHTML = `${this.combo > 1 && this.runTime <= this.comboUntil ? `${this.combo} K.O. CHAIN<br>` : ''}<span style="font-size:15px;color:#bae6fd">${activeBuffs.join(' / ')}</span><div style="width:190px;height:8px;margin-top:7px;margin-left:auto;background:#172033;border:1px solid #94a3b8"><div style="width:${encoreRatio * 100}%;height:100%;background:#fde047"></div></div><span style="font-size:12px;color:#fde68a">ENCORE ${this.runTime < this.encoreUntil ? 'ACTIVE' : `${this.encoreCharge}/12`}</span>`;
+    this.comboLine.innerHTML = `${this.combo > 1 && this.runTime <= this.comboUntil ? `${this.combo} K.O. CHAIN<br>` : ''}<span style="font-size:15px;color:#55703d">${activeBuffs.join(' / ')}</span><div style="width:190px;height:8px;margin-top:7px;margin-left:auto;background:#efe0bd;border:1px solid #78935a"><div style="width:${encoreRatio * 100}%;height:100%;background:#e5a832"></div></div><span style="font-size:12px;color:#8b4a16">ENCORE ${this.runTime < this.encoreUntil ? 'ACTIVE' : `${this.encoreCharge}/12`}</span>`;
   }
 
   private showNotice(text: string, color: string) {
