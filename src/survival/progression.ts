@@ -236,6 +236,22 @@ export function getTotalLevel(progress: SurvivalProgress) {
   return commonTotal + specialtyTotal;
 }
 
+export function getThreatUnlockForTotalLevel(totalLevel: number) {
+  let unlocked = Math.min(50, 4 + Math.floor(Math.max(0, totalLevel) / 2) * 2);
+  // An unlock band should normally include the space immediately after a boss,
+  // so a player is not left repeating that boss forever at the current cap.
+  if (unlocked < 50 && unlocked % 5 === 0) unlocked += 1;
+  return unlocked;
+}
+
+export function getRecommendedStartingThreat(totalLevel: number, maxThreat = getThreatUnlockForTotalLevel(totalLevel)) {
+  if (totalLevel < 8) return 1;
+  let start = Math.max(1, Math.floor(maxThreat * 0.38));
+  // Never drop a newly strengthened player directly into a boss level.
+  if (start % 5 === 0) start = Math.max(1, start - 1);
+  return start;
+}
+
 export function isSpecialBattleUnlocked(progress: SurvivalProgress) {
   return getTotalLevel(progress) >= 3;
 }

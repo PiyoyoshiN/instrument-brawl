@@ -2,13 +2,19 @@
 
 楽器を武器に敵集団を吹き飛ばし、持ち帰った資源で永続強化するアクションゲームです。
 
-Electric Guitar、Bass、Drum Sticks、Keyboardで遊べる通常戦がメインです。既存のローカル1v1 / CPU戦も、総レベルで解放される特別戦として残しています。
+3Dのデフォルメ主人公がElectric Guitar、Bass、Drum Sticks、Keyboardを手に持って戦う通常戦がメインです。既存のローカル1v1 / CPU戦も、総レベルで解放される特別戦として残しています。
 
 ## Main survival mode
 
-- 2400 x 1600のフィールドを移動し、有限数の敵集団と戦う。
+- Three.js製の3Dフィールドを移動し、有限数の敵集団と戦う。
+- 主人公の身体・腕・脚・楽器は別々の3Dオブジェクトで、攻撃時に腕と楽器を振る。
 - 敵の全滅または時間経過で敵水準が上昇する。
+- 総レベルによって敵水準の解放上限が上がり、総レベル8以降は開始水準も段階的に上がる。
+- 高総レベルでもボス水準から直接開始せず、直前の通常水準へ補正する。
+- Walker、Charger、Ranged、Brute、Supportが水準に応じて順次出現する。
 - 敵水準5ごとに中ボス、10ごとに大ボスが出現し、ボス撃破まで次の水準はロックされる。
+- ボスは画像差し替えではなく、専用3Dモデル・固有名・範囲攻撃を持つオリジナルキャラクター。
+- 吹き飛ばし、敵の打ち上げ、ヒットストップ、カメラ揺れ、連続撃破表示を実装。
 - 戦闘中に得たコインと専用素材は、敗北・撤退時もすべて持ち帰る。
 - コインで6種の共通能力、専用素材とコインで楽器固有能力を永続強化する。
 - POWER、TEMPO、REPAIRの一時アイテムは、その戦闘中だけ有効。
@@ -20,6 +26,14 @@ Electric Guitar、Bass、Drum Sticks、Keyboardで遊べる通常戦がメイン
 - Space / J / Click: attack (nearest enemy is assisted)
 - Escape: retire and bank the current run rewards
 - Hub: Left / Right changes instrument, Up / Down changes menu item
+
+### Guitar sound pressure
+
+- 専用Lv.0は手に持ったギターによる物理打撃のみ。
+- 専用Lv.1から前方へ音圧波が発生する。
+- 音圧波は飛距離と貫通した敵数の両方で減衰する。
+- 専用レベルは通常の攻撃範囲とは別に、距離減衰率・敵貫通減衰率・貫通数を改善する。
+- 専用Lv.5で音圧波が3方向へ進化する。
 
 ## Legacy 1v1 status
 
