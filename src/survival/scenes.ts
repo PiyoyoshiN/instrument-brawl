@@ -30,16 +30,16 @@ const minWidth = 800;
 const minHeight = 600;
 
 const warmUi = {
-  background: 0xe98258,
-  panel: 0x431f2b,
-  card: 0x692d38,
-  inset: 0x2f1b25,
-  selected: 0xa84432,
-  outline: 0xf2b84b,
-  accent: 0xff7028,
-  text: '#fff1cf',
-  muted: '#e7c7a5',
-  olive: '#ffc857',
+  background: 0xd9e8ef,
+  panel: 0x20333f,
+  card: 0x304b59,
+  inset: 0x172a34,
+  selected: 0x426575,
+  outline: 0xe2bd68,
+  accent: 0x59b4d1,
+  text: '#fff3d8',
+  muted: '#c7d8de',
+  olive: '#f0cc72',
 };
 
 function viewport(scene: Phaser.Scene, color = warmUi.background) {
