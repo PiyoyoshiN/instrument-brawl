@@ -1422,3 +1422,32 @@ Check these at 800x600, laptop-sized viewport, and large desktop viewport:
 ## Phase 12 checkpoint reference
 
 Phase 12 checkpoint status and deferred Phase 13 direction are summarized in `docs/phase-12-checkpoint-report.md`. Complete the consolidated Phase 12 checklist above before treating the checkpoint as manually verified.
+# 楽器無双・通常戦チェック
+
+## 拠点と永続保存
+
+- [ ] Homeの「楽器無双」から拠点へ移動できる
+- [ ] 左右で4楽器を切り替え、再起動後も最後の楽器が選ばれる
+- [ ] 通常戦で得たコイン・専用素材が敗北とEsc撤退の両方で全量持ち帰られる
+- [ ] 共通強化を買うとコインが減り、総レベルと対象レベルが1上がる
+- [ ] 専用強化はコインと選択楽器の専用素材を両方消費する
+- [ ] 総レベル3未満では特別戦がロックされ、3以上では既存ModeSelectへ進める
+
+## 通常戦
+
+- [ ] WASDと矢印の両方で8方向移動できる
+- [ ] Space、J、クリックで攻撃できる
+- [ ] 敵は水準ごとに有限数だけ出現する
+- [ ] 敵全滅と時間経過のどちらでも敵水準が上がる
+- [ ] 敵水準5の中ボス生存中は時間で次水準へ進まない
+- [ ] 敵水準10で大ボスが出現する
+- [ ] POWERとTEMPOは15秒だけ有効で、REPAIRはコンディションを回復する
+- [ ] コンディション0で結果画面へ移動する
+- [ ] 結果画面のコイン・素材・最高水準・撃破数が実際のランと一致する
+
+## 楽器差
+
+- [ ] ギター専用Lv.0は近接中心、Lv.1以上で貫通音波が出る
+- [ ] ベースは遅めの広範囲・高威力・ノックバック攻撃になる
+- [ ] スティックは連打し、専用Lv.2以上で全周攻撃になる
+- [ ] キーボードは複数の音符弾を扇状に飛ばす

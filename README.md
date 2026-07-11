@@ -1,11 +1,27 @@
 # instrument-brawl
 
-楽器同士が殴り合う1vs1物理格闘ゲームです。
+楽器を武器に敵集団を吹き飛ばし、持ち帰った資源で永続強化するアクションゲームです。
 
-ソーセージレジェンズに近い、ネタ寄りの物理バトルを目指します。
-現在は Electric Guitar、Bass、Drum Sticks、Keyboard から選べる、シンプルなローカル1v1プロトタイプです。
+Electric Guitar、Bass、Drum Sticks、Keyboardで遊べる通常戦がメインです。既存のローカル1v1 / CPU戦も、総レベルで解放される特別戦として残しています。
 
-## Current status
+## Main survival mode
+
+- 2400 x 1600のフィールドを移動し、有限数の敵集団と戦う。
+- 敵の全滅または時間経過で敵水準が上昇する。
+- 敵水準5ごとに中ボス、10ごとに大ボスが出現し、ボス撃破まで次の水準はロックされる。
+- 戦闘中に得たコインと専用素材は、敗北・撤退時もすべて持ち帰る。
+- コインで6種の共通能力、専用素材とコインで楽器固有能力を永続強化する。
+- POWER、TEMPO、REPAIRの一時アイテムは、その戦闘中だけ有効。
+- 永続進行は `instrument-brawl:survival-progress` に保存する。
+
+### Survival controls
+
+- WASD / Arrow keys: move
+- Space / J / Click: attack (nearest enemy is assisted)
+- Escape: retire and bank the current run rewards
+- Hub: Left / Right changes instrument, Up / Down changes menu item
+
+## Legacy 1v1 status
 
 - Browser-playable Phaser + Vite + TypeScript game.
 - Local 1v1 battle with Home -> Mode Select -> Character Select -> Equipment Select -> Battle -> Result scene flow.
