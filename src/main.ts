@@ -1,4 +1,10 @@
 import Phaser from 'phaser';
+import {
+  SurvivalBattleScene,
+  SurvivalHubScene,
+  SurvivalResultScene,
+  SurvivalUpgradeScene,
+} from './survival/scenes';
 
 const gameWidth = 800;
 const gameHeight = 600;
@@ -1218,7 +1224,7 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(centerX, safeTop + 126, 'ふたり対戦 / CPU戦の楽器バトル', {
+      .text(centerX, safeTop + 126, '楽器で群れを吹き飛ばす 永続強化アクション', {
         color: '#cbd5e1',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
@@ -1226,7 +1232,7 @@ class HomeScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(centerX, safeTop + 166, '4キャラ • ローカル対戦 • CPU戦', {
+      .text(centerX, safeTop + 166, '通常戦がメイン • 既存1対1は特別戦として収録', {
         color: '#94a3b8',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
@@ -1238,7 +1244,7 @@ class HomeScene extends Phaser.Scene {
       .text(
         centerX,
         safeTop + 244,
-        [`P1 ${getFighterDisplayNameJa(defaultPlayer1FighterId)}: A/D移動・W/Space攻撃・Sガード`, `P2 ${getFighterDisplayNameJa(defaultPlayer2FighterId)}: ←/→移動・↑/Enter攻撃・↓ガード`],
+        ['通常戦: WASD/矢印で移動・Space/J/クリックで攻撃', '敵を倒してコインを持ち帰り、楽器を永続強化'],
         {
           align: 'center',
           color: '#e2e8f0',
@@ -1261,7 +1267,7 @@ class HomeScene extends Phaser.Scene {
     this.recordsCard = this.add.rectangle(centerX, cardY, cardWidth, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
     this.optionsCard = this.add.rectangle(centerX + cardWidth + cardGap, cardY, cardWidth, 76, 0x0f172a).setStrokeStyle(3, 0x475569);
     this.add
-      .text(firstCardX, cardY, 'はじめる', {
+      .text(firstCardX, cardY, '楽器無双', {
         color: '#f8fafc',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
@@ -1333,7 +1339,7 @@ class HomeScene extends Phaser.Scene {
     ) {
       playUiConfirmSound(this);
       this.transitionStarted = true;
-      this.scene.start(this.selectedIndex === 0 ? 'ModeSelectScene' : this.selectedIndex === 1 ? 'RecordsScene' : 'OptionsScene');
+      this.scene.start(this.selectedIndex === 0 ? 'SurvivalHubScene' : this.selectedIndex === 1 ? 'RecordsScene' : 'OptionsScene');
     }
   }
 
@@ -4622,5 +4628,18 @@ new Phaser.Game({
       height: gameHeight,
     },
   },
-  scene: [HomeScene, OptionsScene, RecordsScene, ModeSelectScene, CharacterSelectScene, EquipmentSelectScene, BattleScene, ResultScene],
+  scene: [
+    HomeScene,
+    SurvivalHubScene,
+    SurvivalUpgradeScene,
+    SurvivalBattleScene,
+    SurvivalResultScene,
+    OptionsScene,
+    RecordsScene,
+    ModeSelectScene,
+    CharacterSelectScene,
+    EquipmentSelectScene,
+    BattleScene,
+    ResultScene,
+  ],
 });
