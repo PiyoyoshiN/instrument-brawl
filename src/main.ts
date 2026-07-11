@@ -1206,7 +1206,7 @@ class HomeScene extends Phaser.Scene {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
 
-    addViewportBackground(this, 0xdcefc7);
+    addViewportBackground(this, 0xe98258);
 
     const layoutWidth = getLayoutWidth(this);
     const layoutHeight = getLayoutHeight(this);
@@ -1221,11 +1221,11 @@ class HomeScene extends Phaser.Scene {
     const cardY = safeTop + 392;
     const firstCardX = centerX - cardWidth - cardGap;
 
-    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - uiPanelOuterMargin), 0xfff4dc).setStrokeStyle(4, 0x78935a);
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - uiPanelOuterMargin), 0x431f2b).setStrokeStyle(4, 0xf2b84b);
 
     this.add
       .text(centerX, safeTop + 68, '楽器無双', {
-        color: '#3f382c',
+        color: '#fff1cf',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '48px',
       })
@@ -1233,7 +1233,7 @@ class HomeScene extends Phaser.Scene {
 
     this.add
       .text(centerX, safeTop + 126, '楽器で群れを吹き飛ばす 永続強化アクション', {
-        color: '#55703d',
+        color: '#ffc857',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
       })
@@ -1241,13 +1241,13 @@ class HomeScene extends Phaser.Scene {
 
     this.add
       .text(centerX, safeTop + 166, '3D SURVIVAL ACTION • 既存1対1は特別戦として収録', {
-        color: '#6d6a54',
+        color: '#e7c7a5',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '20px',
       })
       .setOrigin(0.5);
 
-    this.add.rectangle(centerX, safeTop + 244, panelWidth - uiPanelContentInset, 82, 0xefe0bd, 0.82).setStrokeStyle(2, 0x78935a);
+    this.add.rectangle(centerX, safeTop + 244, panelWidth - uiPanelContentInset, 82, 0x2f1b25, 0.9).setStrokeStyle(2, 0xb7633c);
     this.add
       .text(
         centerX,
@@ -1255,7 +1255,7 @@ class HomeScene extends Phaser.Scene {
         ['通常戦: WASD/矢印で移動・Space/J/クリックで攻撃', '敵を倒してコインを持ち帰り、楽器を永続強化'],
         {
           align: 'center',
-          color: '#3f382c',
+          color: '#fff1cf',
           fontFamily: 'system-ui, sans-serif',
           fontSize: '19px',
           lineSpacing: 8,
@@ -1265,32 +1265,32 @@ class HomeScene extends Phaser.Scene {
 
     this.add
       .text(centerX, safeTop + 330, '←/→/↑/↓: 選択', {
-        color: '#6d6a54',
+        color: '#e7c7a5',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '18px',
       })
       .setOrigin(0.5);
 
-    this.startCard = this.add.rectangle(firstCardX, cardY, cardWidth, 76, 0xf6d68e).setStrokeStyle(4, 0xd8892b);
-    this.recordsCard = this.add.rectangle(centerX, cardY, cardWidth, 76, 0xf6e7c7).setStrokeStyle(3, 0x78935a);
-    this.optionsCard = this.add.rectangle(centerX + cardWidth + cardGap, cardY, cardWidth, 76, 0xf6e7c7).setStrokeStyle(3, 0x78935a);
+    this.startCard = this.add.rectangle(firstCardX, cardY, cardWidth, 76, 0xa84432).setStrokeStyle(4, 0xff7028);
+    this.recordsCard = this.add.rectangle(centerX, cardY, cardWidth, 76, 0x692d38).setStrokeStyle(3, 0xf2b84b);
+    this.optionsCard = this.add.rectangle(centerX + cardWidth + cardGap, cardY, cardWidth, 76, 0x692d38).setStrokeStyle(3, 0xf2b84b);
     this.add
       .text(firstCardX, cardY, '楽器無双', {
-        color: '#3f382c',
+        color: '#fff1cf',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
       })
       .setOrigin(0.5);
     this.add
       .text(centerX, cardY, '記録', {
-        color: '#3f382c',
+        color: '#fff1cf',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
       })
       .setOrigin(0.5);
     this.add
       .text(centerX + cardWidth + cardGap, cardY, '設定', {
-        color: '#3f382c',
+        color: '#fff1cf',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '30px',
       })
@@ -1298,7 +1298,7 @@ class HomeScene extends Phaser.Scene {
 
     this.add
       .text(centerX, safeBottom - uiFooterPrimaryOffset, 'Enter/Space: 決定', {
-        color: '#a85f21',
+        color: '#ffbd59',
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
       })
@@ -1355,9 +1355,9 @@ class HomeScene extends Phaser.Scene {
     const startSelected = this.selectedIndex === 0;
     const recordsSelected = this.selectedIndex === 1;
     const optionsSelected = this.selectedIndex === 2;
-    this.startCard?.setFillStyle(startSelected ? 0xf6d68e : 0xf6e7c7).setStrokeStyle(startSelected ? 4 : 3, startSelected ? 0xd8892b : 0x78935a);
-    this.recordsCard?.setFillStyle(recordsSelected ? 0xf6d68e : 0xf6e7c7).setStrokeStyle(recordsSelected ? 4 : 3, recordsSelected ? 0xd8892b : 0x78935a);
-    this.optionsCard?.setFillStyle(optionsSelected ? 0xf6d68e : 0xf6e7c7).setStrokeStyle(optionsSelected ? 4 : 3, optionsSelected ? 0xd8892b : 0x78935a);
+    this.startCard?.setFillStyle(startSelected ? 0xa84432 : 0x692d38).setStrokeStyle(startSelected ? 4 : 3, startSelected ? 0xff7028 : 0xf2b84b);
+    this.recordsCard?.setFillStyle(recordsSelected ? 0xa84432 : 0x692d38).setStrokeStyle(recordsSelected ? 4 : 3, recordsSelected ? 0xff7028 : 0xf2b84b);
+    this.optionsCard?.setFillStyle(optionsSelected ? 0xa84432 : 0x692d38).setStrokeStyle(optionsSelected ? 4 : 3, optionsSelected ? 0xff7028 : 0xf2b84b);
   }
 }
 

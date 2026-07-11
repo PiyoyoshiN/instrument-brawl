@@ -30,16 +30,16 @@ const minWidth = 800;
 const minHeight = 600;
 
 const warmUi = {
-  background: 0xdcefc7,
-  panel: 0xfff4dc,
-  card: 0xf6e7c7,
-  inset: 0xefe0bd,
-  selected: 0xf6d68e,
-  outline: 0x78935a,
-  accent: 0xd8892b,
-  text: '#3f382c',
-  muted: '#6d6a54',
-  olive: '#55703d',
+  background: 0xe98258,
+  panel: 0x431f2b,
+  card: 0x692d38,
+  inset: 0x2f1b25,
+  selected: 0xa84432,
+  outline: 0xf2b84b,
+  accent: 0xff7028,
+  text: '#fff1cf',
+  muted: '#e7c7a5',
+  olive: '#ffc857',
 };
 
 function viewport(scene: Phaser.Scene, color = warmUi.background) {
@@ -126,7 +126,7 @@ export class SurvivalHubScene extends Phaser.Scene {
 
     this.add.rectangle(centerX, centerY, 760, 540, warmUi.panel, 0.99).setStrokeStyle(3, warmUi.outline);
     addText(this, centerX, centerY - 244, '楽器無双', 40, warmUi.text, 'center').setOrigin(0.5);
-    addText(this, centerX, centerY - 205, 'MEADOW INSTRUMENT LOADOUT', 15, warmUi.olive, 'center').setOrigin(0.5);
+    addText(this, centerX, centerY - 205, 'OPEN-AIR FESTIVAL LOADOUT', 15, warmUi.olive, 'center').setOrigin(0.5);
 
     instrumentDefinitions.forEach((definition, index) => {
       const x = centerX + (index - 1.5) * 174;
@@ -156,7 +156,7 @@ export class SurvivalHubScene extends Phaser.Scene {
     this.statusText = addText(this, centerX, centerY + 164, '', 14, warmUi.muted, 'center')
       .setOrigin(0.5)
       .setWordWrapWidth(680, true);
-    addText(this, centerX, centerY + 230, '←/→ 楽器　↑/↓ メニュー　Enter/Space 決定　Esc ホーム', 16, '#a85f21', 'center').setOrigin(0.5);
+    addText(this, centerX, centerY + 230, '←/→ 楽器　↑/↓ メニュー　Enter/Space 決定　Esc ホーム', 16, '#ffbd59', 'center').setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
     if (keyboard) {
@@ -221,7 +221,7 @@ export class SurvivalHubScene extends Phaser.Scene {
     );
     this.menuTexts.forEach((text, index) => {
       const selected = index === this.menuIndex;
-      text.setColor(selected ? '#8b4a16' : warmUi.text).setText(`${selected ? '▶ ' : ''}${['通常戦へ出撃', '永続強化', `1対1 特別戦 ${isSpecialBattleUnlocked(this.progress) ? '' : '(総Lv.3)'}`][index]}`);
+      text.setColor(selected ? '#fff4d6' : warmUi.text).setText(`${selected ? '▶ ' : ''}${['通常戦へ出撃', '永続強化', `1対1 特別戦 ${isSpecialBattleUnlocked(this.progress) ? '' : '(総Lv.3)'}`][index]}`);
       this.menuCards[index]?.setFillStyle(selected ? warmUi.selected : warmUi.card, 0.98)
         .setStrokeStyle(selected ? 4 : 2, selected ? warmUi.accent : warmUi.outline);
     });
@@ -297,7 +297,7 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
     this.descriptionText = addText(this, centerX, centerY + 138, '', 17, warmUi.muted, 'center')
       .setOrigin(0.5, 0)
       .setWordWrapWidth(650, true);
-    addText(this, centerX, centerY + 243, '↑/↓ 選択  Enter/Space 購入  Esc 拠点へ', 17, '#a85f21', 'center').setOrigin(0.5);
+    addText(this, centerX, centerY + 243, '↑/↓ 選択  Enter/Space 購入  Esc 拠点へ', 17, '#ffbd59', 'center').setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
     if (keyboard) {
@@ -350,17 +350,17 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
     commonUpgradeDefinitions.forEach((definition, index) => {
       const level = this.progress.commonLevels[definition.id];
       const cost = getCommonUpgradeCost(definition.id, level);
-      this.rowTexts[index]?.setColor(index === this.selectedIndex ? '#8b4a16' : warmUi.text)
+      this.rowTexts[index]?.setColor(index === this.selectedIndex ? '#fff4d6' : warmUi.text)
         .setText(`${index === this.selectedIndex ? '▶ ' : ''}${definition.name} Lv.${level}\n   ${cost} coin`);
     });
     const uniqueIndex = commonUpgradeDefinitions.length;
     const cost = getSpecialtyCost(specialty.specialtyLevel);
-    this.rowTexts[uniqueIndex]?.setColor(uniqueIndex === this.selectedIndex ? '#8b4a16' : warmUi.text)
+    this.rowTexts[uniqueIndex]?.setColor(uniqueIndex === this.selectedIndex ? '#fff4d6' : warmUi.text)
       .setText(`${uniqueIndex === this.selectedIndex ? '▶ ' : ''}${instrument.specialtyName} Lv.${specialty.specialtyLevel}\n   ${cost.coins} coin / 素材${cost.materials}`);
     const autoIndex = uniqueIndex + 1;
     const autoDefinition = autoSkillDefinitions[this.instrumentId];
     const autoCost = getAutoSkillCost(specialty.autoSkillLevel);
-    this.rowTexts[autoIndex]?.setColor(autoIndex === this.selectedIndex ? '#8b4a16' : warmUi.text)
+    this.rowTexts[autoIndex]?.setColor(autoIndex === this.selectedIndex ? '#fff4d6' : warmUi.text)
       .setText(`${autoIndex === this.selectedIndex ? '▶ ' : ''}${autoDefinition.name} Lv.${specialty.autoSkillLevel}\n   ${autoCost.coins} coin / 素材${autoCost.materials}`);
     const selected = this.selectedIndex < uniqueIndex
       ? commonUpgradeDefinitions[this.selectedIndex].description
@@ -438,12 +438,12 @@ export class SurvivalResultScene extends Phaser.Scene {
       const y = centerY - 95 + row * 92;
       this.add.rectangle(x, y, 204, 74, warmUi.card, 0.9).setStrokeStyle(2, row === 0 ? definition.color : warmUi.outline);
       addText(this, x, y - 15, label, 14, warmUi.muted, 'center').setOrigin(0.5);
-      addText(this, x, y + 12, value, 25, row === 0 ? warmUi.text : '#9b571e', 'center').setOrigin(0.5);
+      addText(this, x, y + 12, value, 25, row === 0 ? warmUi.text : '#ffc857', 'center').setOrigin(0.5);
     });
 
     this.add.rectangle(centerX, centerY + 117, 650, 58, warmUi.inset, 0.9).setStrokeStyle(2, warmUi.outline);
     addText(this, centerX, centerY + 117, `所持コイン ${progress.coins}　総Lv.${getTotalLevel(progress)}　全体最高水準 ${progress.bestThreat}`, 17, warmUi.olive, 'center').setOrigin(0.5);
-    addText(this, centerX, centerY + 210, 'Enter/Space 拠点へ　　R もう一度', 18, '#a85f21', 'center').setOrigin(0.5);
+    addText(this, centerX, centerY + 210, 'Enter/Space 拠点へ　　R もう一度', 18, '#ffbd59', 'center').setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
     if (keyboard) {
