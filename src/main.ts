@@ -1206,7 +1206,7 @@ class HomeScene extends Phaser.Scene {
     this.inputEnabledAt = this.time.now + 150;
     this.transitionStarted = false;
 
-    addViewportBackground(this, 0xe98258);
+    addViewportBackground(this, 0xd9e8ef);
 
     const layoutWidth = getLayoutWidth(this);
     const layoutHeight = getLayoutHeight(this);
@@ -1221,7 +1221,7 @@ class HomeScene extends Phaser.Scene {
     const cardY = safeTop + 392;
     const firstCardX = centerX - cardWidth - cardGap;
 
-    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - uiPanelOuterMargin), 0x431f2b).setStrokeStyle(4, 0xf2b84b);
+    this.add.rectangle(centerX, centerY, panelWidth, Math.min(460, layoutHeight - uiPanelOuterMargin), 0x20333f).setStrokeStyle(4, 0xe2bd68);
 
     this.add
       .text(centerX, safeTop + 68, '楽器無双', {
@@ -1247,7 +1247,7 @@ class HomeScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add.rectangle(centerX, safeTop + 244, panelWidth - uiPanelContentInset, 82, 0x2f1b25, 0.9).setStrokeStyle(2, 0xb7633c);
+    this.add.rectangle(centerX, safeTop + 244, panelWidth - uiPanelContentInset, 82, 0x172a34, 0.9).setStrokeStyle(2, 0x54707d);
     this.add
       .text(
         centerX,
@@ -1271,9 +1271,9 @@ class HomeScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.startCard = this.add.rectangle(firstCardX, cardY, cardWidth, 76, 0xa84432).setStrokeStyle(4, 0xff7028);
-    this.recordsCard = this.add.rectangle(centerX, cardY, cardWidth, 76, 0x692d38).setStrokeStyle(3, 0xf2b84b);
-    this.optionsCard = this.add.rectangle(centerX + cardWidth + cardGap, cardY, cardWidth, 76, 0x692d38).setStrokeStyle(3, 0xf2b84b);
+    this.startCard = this.add.rectangle(firstCardX, cardY, cardWidth, 76, 0x426575).setStrokeStyle(4, 0x59b4d1);
+    this.recordsCard = this.add.rectangle(centerX, cardY, cardWidth, 76, 0x304b59).setStrokeStyle(3, 0xe2bd68);
+    this.optionsCard = this.add.rectangle(centerX + cardWidth + cardGap, cardY, cardWidth, 76, 0x304b59).setStrokeStyle(3, 0xe2bd68);
     this.add
       .text(firstCardX, cardY, '楽器無双', {
         color: '#fff1cf',
@@ -1355,9 +1355,9 @@ class HomeScene extends Phaser.Scene {
     const startSelected = this.selectedIndex === 0;
     const recordsSelected = this.selectedIndex === 1;
     const optionsSelected = this.selectedIndex === 2;
-    this.startCard?.setFillStyle(startSelected ? 0xa84432 : 0x692d38).setStrokeStyle(startSelected ? 4 : 3, startSelected ? 0xff7028 : 0xf2b84b);
-    this.recordsCard?.setFillStyle(recordsSelected ? 0xa84432 : 0x692d38).setStrokeStyle(recordsSelected ? 4 : 3, recordsSelected ? 0xff7028 : 0xf2b84b);
-    this.optionsCard?.setFillStyle(optionsSelected ? 0xa84432 : 0x692d38).setStrokeStyle(optionsSelected ? 4 : 3, optionsSelected ? 0xff7028 : 0xf2b84b);
+    this.startCard?.setFillStyle(startSelected ? 0x426575 : 0x304b59).setStrokeStyle(startSelected ? 4 : 3, startSelected ? 0x59b4d1 : 0xe2bd68);
+    this.recordsCard?.setFillStyle(recordsSelected ? 0x426575 : 0x304b59).setStrokeStyle(recordsSelected ? 4 : 3, recordsSelected ? 0x59b4d1 : 0xe2bd68);
+    this.optionsCard?.setFillStyle(optionsSelected ? 0x426575 : 0x304b59).setStrokeStyle(optionsSelected ? 4 : 3, optionsSelected ? 0x59b4d1 : 0xe2bd68);
   }
 }
 

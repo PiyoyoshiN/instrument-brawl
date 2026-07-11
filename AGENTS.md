@@ -27,8 +27,10 @@ The earlier 2D 1v1 fighting game remains as a separate special-battle mode.
 - Prioritize crowd knockback, hit stop, readable sound pressure, and satisfying attacks over competitive balance.
 - Keep survival selection screens balanced across the full safe area; do not return to a left-preview/right-menu legacy layout.
 - Do not use the legacy fighter images in the 3D survival hub or survival result screen.
-- Keep the main survival presentation energetic and musical: sunset festival colors, burgundy panels, amber/red/magenta accents, and readable warm contrast instead of blue-black palettes.
+- Keep the field readable under a blue sky with natural grass colors. Limit hot festival colors to lights, attacks, banners, and Stage Heat accents instead of tinting the whole screen red.
+- Keep selection and progression screens neutral and readable with slate/navy panels, cream text, gold trim, and instrument-specific accents; do not make them red by default.
 - Reward aggressive crowd clearing through the lightweight Stage Heat system; its visual intensity and bonuses should remain easy to read.
+- Give regular enemies distinct instrument-themed silhouettes, faces, props, and motion rather than treating them as recolored primitive shapes.
 - Guitar automatic-skill audio should read as a musical chord or sound-pressure hit, not high-pitched horror-style feedback.
 - Phase 16 is the active direction: 3D survival action and persistent progression.
 - The Phaser 1v1 BattleScene is legacy special-battle content; avoid coupling it to the Three.js survival loop.

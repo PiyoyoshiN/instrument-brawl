@@ -77,8 +77,8 @@ const worldHalfZ = 23;
 const playerRadius = 0.7;
 const bossLevels = 5;
 const maxLivingEnemies = 62;
-const festivalGrassColor = new THREE.Color(0x65763b);
-const festivalHotFloorColor = new THREE.Color(0x98502f);
+const festivalGrassColor = new THREE.Color(0x5f7548);
+const festivalHotFloorColor = new THREE.Color(0x7a6d3f);
 
 function clampDelta(delta: number) {
   return Math.min(0.033, delta / 1000);
@@ -267,42 +267,150 @@ function createFestivalFieldDecor() {
   return decor;
 }
 
-function createEnemyModel(kind: EnemyKind, color: number) {
+function addEnemyFace(group: THREE.Group, y: number, z: number, eyeColor = 0x231820) {
+  for (const x of [-0.16, 0.16]) {
+    const eye = mesh(new THREE.SphereGeometry(0.055, 7, 5), eyeColor, 0.34, 0.08);
+    eye.position.set(x, y, z);
+    group.add(eye);
+  }
+  const mouth = mesh(new THREE.BoxGeometry(0.22, 0.045, 0.035), 0x5a2d32, 0.7);
+  mouth.position.set(0, y - 0.19, z + 0.01);
+  group.add(mouth);
+}
+
+function createEnemyModel(kind: EnemyKind, instrumentId: InstrumentId, color: number) {
   const group = new THREE.Group();
+  const legs: THREE.Mesh[] = [];
+  const addLegs = (y: number, spread: number, legColor: number) => {
+    for (const x of [-spread, spread]) {
+      const leg = mesh(new THREE.CapsuleGeometry(0.11, 0.34, 3, 6), legColor, 0.86);
+      leg.position.set(x, y, 0);
+      legs.push(leg);
+      group.add(leg);
+    }
+  };
+  const instrument = createInstrumentModel(instrumentId);
   if (kind === 'walker') {
     const body = mesh(new THREE.CapsuleGeometry(0.43, 0.62, 4, 8), color);
-    body.position.y = 0.82;
-    const head = mesh(new THREE.SphereGeometry(0.42, 10, 8), 0xe2e8f0);
-    head.position.y = 1.7;
-    group.add(body, head);
+    body.position.y = 0.92;
+    const jacket = mesh(new THREE.BoxGeometry(0.78, 0.48, 0.55), 0x303846, 0.72);
+    jacket.position.set(0, 1.08, 0.05);
+    const head = mesh(new THREE.SphereGeometry(0.42, 10, 8), 0xf0d4b2);
+    head.position.y = 1.82;
+    const hair = mesh(new THREE.ConeGeometry(0.48, 0.56, 7), 0x3c2630, 0.92);
+    hair.position.y = 2.17;
+    const armGeometry = new THREE.CapsuleGeometry(0.095, 0.42, 3, 6);
+    for (const x of [-0.52, 0.52]) {
+      const arm = mesh(armGeometry, 0xf0d4b2, 0.9);
+      arm.position.set(x, 1.12, 0.08);
+      arm.rotation.z = x > 0 ? -0.38 : 0.38;
+      group.add(arm);
+    }
+    instrument.scale.setScalar(0.28);
+    instrument.position.set(0.2, 1.12, 0.52);
+    instrument.rotation.z -= 0.25;
+    addLegs(0.28, 0.22, 0x242b38);
+    group.add(body, jacket, head, hair, instrument);
+    addEnemyFace(group, 1.84, 0.4);
   } else if (kind === 'charger') {
     const body = mesh(new THREE.CapsuleGeometry(0.5, 0.65, 4, 8), color, 0.6, 0.15);
-    body.position.y = 0.9;
-    const horn = mesh(new THREE.ConeGeometry(0.26, 0.85, 8), 0xf8fafc, 0.48);
+    body.position.y = 1.02;
+    const helmet = mesh(new THREE.SphereGeometry(0.48, 9, 7), 0x273040, 0.54, 0.18);
+    helmet.position.y = 1.86;
+    const horn = mesh(new THREE.ConeGeometry(0.25, 0.95, 8), 0xffd37a, 0.48, 0.16);
     horn.rotation.x = Math.PI / 2;
-    horn.position.set(0, 1.2, 0.68);
-    group.add(body, horn);
+    horn.position.set(0, 1.84, 0.75);
+    for (const x of [-0.58, 0.58]) {
+      const shoulder = mesh(new THREE.ConeGeometry(0.24, 0.5, 6), 0x667085, 0.6, 0.12);
+      shoulder.position.set(x, 1.28, 0);
+      shoulder.rotation.z = x > 0 ? -Math.PI / 2 : Math.PI / 2;
+      group.add(shoulder);
+    }
+    instrument.scale.setScalar(0.24);
+    instrument.position.set(0.46, 1.2, -0.28);
+    instrument.rotation.y = Math.PI;
+    addLegs(0.3, 0.28, 0x202735);
+    group.add(body, helmet, horn, instrument);
+    addEnemyFace(group, 1.86, 0.45, 0xffb000);
   } else if (kind === 'ranged') {
     const speaker = mesh(new THREE.BoxGeometry(1.05, 1.35, 0.75), 0x252b3b, 0.54, 0.2);
-    speaker.position.y = 0.85;
-    const cone = mesh(new THREE.CylinderGeometry(0.3, 0.44, 0.12, 14), color, 0.42, 0.15);
-    cone.rotation.x = Math.PI / 2;
-    cone.position.set(0, 0.92, 0.43);
-    group.add(speaker, cone);
+    speaker.position.y = 0.98;
+    for (const [y, radius] of [[0.72, 0.28], [1.2, 0.36]] as Array<[number, number]>) {
+      const cone = mesh(new THREE.CylinderGeometry(radius * 0.72, radius, 0.12, 14), color, 0.42, 0.15);
+      cone.rotation.x = Math.PI / 2;
+      cone.position.set(0, y, 0.43);
+      group.add(cone);
+    }
+    const display = mesh(new THREE.BoxGeometry(0.62, 0.22, 0.08), 0x79d9f2, 0.25, 0.3);
+    display.position.set(0, 1.57, 0.42);
+    const antenna = mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.72, 6), 0xb9c3d1, 0.5, 0.25);
+    antenna.position.set(0.33, 2.0, 0);
+    antenna.rotation.z = -0.25;
+    const antennaTip = mesh(new THREE.SphereGeometry(0.09, 7, 5), color, 0.35, 0.25);
+    antennaTip.position.set(0.42, 2.34, 0);
+    instrument.scale.setScalar(0.18);
+    instrument.position.set(-0.38, 1.88, 0);
+    addLegs(0.24, 0.27, 0x1d2431);
+    group.add(speaker, display, antenna, antennaTip, instrument);
+    addEnemyFace(group, 1.58, 0.48, 0x172033);
   } else if (kind === 'brute') {
     const body = mesh(new THREE.DodecahedronGeometry(0.9, 0), color, 0.68, 0.1);
-    body.position.y = 1.05;
-    const jaw = mesh(new THREE.BoxGeometry(0.9, 0.3, 0.45), 0x111827);
-    jaw.position.set(0, 0.77, 0.7);
-    group.add(body, jaw);
+    body.position.y = 1.15;
+    const head = mesh(new THREE.BoxGeometry(0.78, 0.58, 0.62), 0x394354, 0.68, 0.1);
+    head.position.set(0, 2.02, 0.04);
+    const jaw = mesh(new THREE.BoxGeometry(0.82, 0.24, 0.42), 0x171d28);
+    jaw.position.set(0, 1.83, 0.48);
+    const speakerCore = mesh(new THREE.CylinderGeometry(0.3, 0.43, 0.13, 12), 0xffb000, 0.38, 0.2);
+    speakerCore.rotation.x = Math.PI / 2;
+    speakerCore.position.set(0, 1.12, 0.82);
+    for (const x of [-0.92, 0.92]) {
+      const arm = mesh(new THREE.CapsuleGeometry(0.22, 0.68, 4, 7), 0x303846, 0.72, 0.08);
+      arm.position.set(x, 1.1, 0);
+      arm.rotation.z = x > 0 ? -0.15 : 0.15;
+      group.add(arm);
+    }
+    for (const x of [-0.32, 0, 0.32]) {
+      const spike = mesh(new THREE.ConeGeometry(0.12, 0.52, 6), 0xe7c68a, 0.55, 0.1);
+      spike.position.set(x, 2.55 - Math.abs(x) * 0.45, 0);
+      group.add(spike);
+    }
+    instrument.scale.setScalar(0.3);
+    instrument.position.set(0, 1.3, -0.78);
+    instrument.rotation.y = Math.PI;
+    addLegs(0.25, 0.42, 0x222a38);
+    group.add(body, head, jaw, speakerCore, instrument);
+    addEnemyFace(group, 2.07, 0.36, 0xffd166);
   } else {
-    const body = mesh(new THREE.CylinderGeometry(0.42, 0.62, 1.25, 9), 0x34d399, 0.74);
-    body.position.y = 0.78;
-    const halo = mesh(new THREE.TorusGeometry(0.52, 0.08, 6, 18), 0xa7f3d0, 0.35, 0.12);
+    const body = mesh(new THREE.ConeGeometry(0.68, 1.45, 9), 0x488d77, 0.74);
+    body.position.y = 0.8;
+    const head = mesh(new THREE.SphereGeometry(0.4, 10, 8), 0xe7d1b5, 0.88);
+    head.position.y = 1.72;
+    const hood = mesh(new THREE.TorusGeometry(0.43, 0.1, 6, 14), color, 0.62, 0.08);
+    hood.rotation.x = Math.PI / 2;
+    hood.position.y = 1.76;
+    const halo = mesh(new THREE.TorusGeometry(0.57, 0.075, 6, 18), 0x9ce8ce, 0.35, 0.12);
     halo.rotation.x = Math.PI / 2;
-    halo.position.y = 1.7;
-    group.add(body, halo);
+    halo.position.y = 2.35;
+    for (const x of [-0.56, 0.56]) {
+      const tuningFork = new THREE.Group();
+      const stem = mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.55, 6), 0xd7f5e8, 0.4, 0.25);
+      const tineA = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.32, 6), 0xd7f5e8, 0.4, 0.25);
+      const tineB = tineA.clone();
+      stem.position.y = -0.14;
+      tineA.position.set(-0.08, 0.27, 0);
+      tineB.position.set(0.08, 0.27, 0);
+      tuningFork.add(stem, tineA, tineB);
+      tuningFork.position.set(x, 1.16, 0.15);
+      group.add(tuningFork);
+    }
+    instrument.scale.setScalar(0.24);
+    instrument.position.set(0, 1.02, 0.48);
+    group.add(body, head, hood, halo, instrument);
+    group.userData.rotor = halo;
+    addEnemyFace(group, 1.74, 0.39, 0x235342);
   }
+  group.userData.legs = legs;
+  group.userData.bobStrength = kind === 'support' ? 0.13 : kind === 'brute' ? 0.035 : 0.07;
   return group;
 }
 
@@ -537,8 +645,8 @@ export class SurvivalBattleScene extends Phaser.Scene {
     const host = document.getElementById('game') ?? document.body;
     host.style.position = 'relative';
     this.scene3d = new THREE.Scene();
-    this.scene3d.background = new THREE.Color(0xe98268);
-    this.scene3d.fog = new THREE.Fog(0xd97962, 42, 78);
+    this.scene3d.background = new THREE.Color(0x86c9f4);
+    this.scene3d.fog = new THREE.Fog(0xb7def2, 42, 78);
     this.camera3d = new THREE.PerspectiveCamera(48, 1, 0.1, 130);
     this.threeRenderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     this.threeRenderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -549,22 +657,22 @@ export class SurvivalBattleScene extends Phaser.Scene {
     host.appendChild(this.threeRenderer.domElement);
     this.resizeRenderer();
 
-    this.scene3d.add(new THREE.HemisphereLight(0xffd09a, 0x4d352c, 2.25));
-    const sun = new THREE.DirectionalLight(0xffb347, 3.05);
+    this.scene3d.add(new THREE.HemisphereLight(0xe8f7ff, 0x516343, 2.35));
+    const sun = new THREE.DirectionalLight(0xffdf9d, 2.85);
     sun.position.set(-10, 18, 12);
     this.scene3d.add(sun);
     const rim = new THREE.DirectionalLight(instrumentById.get(this.instrumentId)!.color, 1.35);
     rim.position.set(12, 8, -8);
     this.scene3d.add(rim);
 
-    this.floor = mesh(new THREE.PlaneGeometry(worldHalfX * 2 + 5, worldHalfZ * 2 + 5), 0x65763b, 0.98);
+    this.floor = mesh(new THREE.PlaneGeometry(worldHalfX * 2 + 5, worldHalfZ * 2 + 5), 0x5f7548, 0.98);
     this.floor.rotation.x = -Math.PI / 2;
     this.floor.position.y = -0.03;
     this.scene3d.add(this.floor);
-    const grid = new THREE.GridHelper(70, 35, 0xffc857, 0x83723d);
+    const grid = new THREE.GridHelper(70, 35, 0xd8c177, 0x71845c);
     grid.position.y = 0;
     this.scene3d.add(grid);
-    const borderMaterial = new THREE.LineBasicMaterial({ color: 0xff5a36, transparent: true, opacity: 0.82 });
+    const borderMaterial = new THREE.LineBasicMaterial({ color: 0xf0c65b, transparent: true, opacity: 0.72 });
     const borderPoints = [
       new THREE.Vector3(-worldHalfX, 0.05, -worldHalfZ), new THREE.Vector3(worldHalfX, 0.05, -worldHalfZ),
       new THREE.Vector3(worldHalfX, 0.05, worldHalfZ), new THREE.Vector3(-worldHalfX, 0.05, worldHalfZ),
@@ -572,10 +680,10 @@ export class SurvivalBattleScene extends Phaser.Scene {
     ];
     this.scene3d.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(borderPoints), borderMaterial));
     this.scene3d.add(createFestivalFieldDecor());
-    const lightColors = [0xff4d2e, 0xffb000, 0xd946a8, 0xff6b35];
+    const lightColors = [0xffb000, 0xd946a8, 0x38bdf8, 0xff8a34];
     const lightPositions: Array<[number, number]> = [[-27, -19], [27, -19], [-27, 19], [27, 19]];
     this.festivalLights = lightPositions.map(([x, z], index) => {
-      const light = new THREE.PointLight(lightColors[index], 0.45, 25, 1.45);
+      const light = new THREE.PointLight(lightColors[index], 0.12, 25, 1.45);
       light.position.set(x, 5.2, z);
       this.scene3d?.add(light);
       return light;
@@ -601,21 +709,21 @@ export class SurvivalBattleScene extends Phaser.Scene {
   private createDomHud() {
     const host = document.getElementById('game') ?? document.body;
     const root = document.createElement('div');
-    root.style.cssText = 'position:absolute;inset:0;z-index:30;pointer-events:none;color:#fff1cf;font-family:system-ui,sans-serif;text-shadow:0 2px 3px #2a1018;';
+    root.style.cssText = 'position:absolute;inset:0;z-index:30;pointer-events:none;color:#fff1cf;font-family:system-ui,sans-serif;text-shadow:0 2px 3px #10202a;';
     root.innerHTML = `
-      <div data-role="stats" style="position:absolute;left:20px;top:18px;min-width:330px;padding:12px 16px;background:#431f2be8;border:2px solid #f2b84b;border-radius:12px;font-weight:700;box-shadow:0 5px 22px #2a101877"></div>
+      <div data-role="stats" style="position:absolute;left:20px;top:18px;min-width:330px;padding:12px 16px;background:#20333fe8;border:2px solid #e2bd68;border-radius:12px;font-weight:700;box-shadow:0 5px 22px #10202a77"></div>
       <div data-role="condition" style="position:absolute;left:20px;top:104px;width:330px"></div>
       <div data-role="notice" style="position:absolute;left:50%;top:42px;transform:translateX(-50%);font-size:26px;font-weight:900;text-align:center;transition:opacity .35s;text-shadow:0 2px 3px #fff"></div>
       <div data-role="combo" style="position:absolute;right:28px;top:24px;font-size:28px;font-weight:900;text-align:right;color:#ffb000"></div>
-      <div data-role="evolution" style="position:absolute;left:50%;bottom:90px;transform:translateX(-50%);padding:9px 18px;background:#431f2bee;border:1px solid #f2b84b;border-radius:10px;font-size:18px;font-weight:800;opacity:0;transition:opacity .3s;box-shadow:0 5px 22px #2a101877"></div>
-      <div style="position:absolute;right:22px;bottom:18px;padding:8px 12px;background:#431f2bd9;border:1px solid #f2b84b;border-radius:8px;font-size:14px">WASD/矢印 移動　Space/J/クリック 攻撃　P/Esc ポーズ</div>
-      <div data-role="pause" style="display:none;position:absolute;inset:0;background:radial-gradient(circle at center,#b93b36ed,#2a1018f7);align-items:center;justify-content:center;pointer-events:auto;text-shadow:none;color:#fff1cf">
-        <div style="width:min(620px,82vw);padding:34px 42px;background:linear-gradient(145deg,#692d38fa,#301821fa);border:3px solid #ff9f1c;border-radius:20px;box-shadow:0 24px 80px #14070bb8">
+      <div data-role="evolution" style="position:absolute;left:50%;bottom:90px;transform:translateX(-50%);padding:9px 18px;background:#20333fee;border:1px solid #e2bd68;border-radius:10px;font-size:18px;font-weight:800;opacity:0;transition:opacity .3s;box-shadow:0 5px 22px #10202a77"></div>
+      <div style="position:absolute;right:22px;bottom:18px;padding:8px 12px;background:#20333fd9;border:1px solid #e2bd68;border-radius:8px;font-size:14px">WASD/矢印 移動　Space/J/クリック 攻撃　P/Esc ポーズ</div>
+      <div data-role="pause" style="display:none;position:absolute;inset:0;background:radial-gradient(circle at center,#35596ced,#10202af7);align-items:center;justify-content:center;pointer-events:auto;text-shadow:none;color:#fff1cf">
+        <div style="width:min(620px,82vw);padding:34px 42px;background:linear-gradient(145deg,#304b59fa,#172a34fa);border:3px solid #e2bd68;border-radius:20px;box-shadow:0 24px 80px #081118b8">
           <div style="font-size:42px;font-weight:950;letter-spacing:.12em;text-align:center;color:#fff1cf">PAUSE</div>
           <div style="margin:10px 0 24px;text-align:center;color:#ffc857;font-size:16px">演奏と敵の進行は完全に停止中</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px">
-            <div style="padding:16px;background:#2f1b25;border:1px solid #b7633c;border-radius:12px"><b style="color:#ffb000">移動</b><br>WASD / 矢印キー</div>
-            <div style="padding:16px;background:#2f1b25;border:1px solid #b7633c;border-radius:12px"><b style="color:#ffb000">攻撃</b><br>Space / J / クリック</div>
+            <div style="padding:16px;background:#172a34;border:1px solid #54707d;border-radius:12px"><b style="color:#f0cc72">移動</b><br>WASD / 矢印キー</div>
+            <div style="padding:16px;background:#172a34;border:1px solid #54707d;border-radius:12px"><b style="color:#f0cc72">攻撃</b><br>Space / J / クリック</div>
           </div>
           <div data-role="pause-menu" style="font-size:24px;line-height:2;text-align:center;font-weight:850"></div>
           <div style="margin-top:18px;text-align:center;color:#e7c7a5;font-size:14px">↑/↓ 選択　Enter/Space 決定　P/Esc 再開</div>
@@ -1044,11 +1152,11 @@ export class SurvivalBattleScene extends Phaser.Scene {
     }
     const heatRatio = this.stageHeat / 100;
     this.festivalLights.forEach((light, index) => {
-      light.intensity = 0.42 + heatRatio * 2.3 + Math.sin(this.runTime * (5.5 + index * 0.35)) * heatRatio * 0.4;
+      light.intensity = 0.12 + heatRatio * 1.85 + Math.sin(this.runTime * (5.5 + index * 0.35)) * heatRatio * 0.32;
     });
     if (this.floor) {
       const floorMaterial = this.floor.material as THREE.MeshStandardMaterial;
-      floorMaterial.color.lerpColors(festivalGrassColor, festivalHotFloorColor, heatRatio * 0.52);
+      floorMaterial.color.lerpColors(festivalGrassColor, festivalHotFloorColor, heatRatio * 0.32);
     }
   }
 
@@ -1099,7 +1207,17 @@ export class SurvivalBattleScene extends Phaser.Scene {
       }
       enemy.group.position.x = THREE.MathUtils.clamp(enemy.group.position.x, -worldHalfX - 1, worldHalfX + 1);
       enemy.group.position.z = THREE.MathUtils.clamp(enemy.group.position.z, -worldHalfZ - 1, worldHalfZ + 1);
-      if (!enemy.boss) enemy.group.rotation.y = Math.atan2(direction.x, direction.z);
+      if (!enemy.boss) {
+        enemy.group.rotation.y = Math.atan2(direction.x, direction.z);
+        const motion = this.runTime * Math.max(4.5, enemy.speed * 2.8) + enemy.id * 0.71;
+        enemy.group.position.y = Math.abs(Math.sin(motion)) * Number(enemy.group.userData.bobStrength ?? 0.05);
+        const legs = enemy.group.userData.legs as THREE.Mesh[] | undefined;
+        legs?.forEach((leg, index) => {
+          leg.rotation.x = Math.sin(motion + index * Math.PI) * 0.34;
+        });
+        const rotor = enemy.group.userData.rotor as THREE.Object3D | undefined;
+        if (rotor) rotor.rotation.z += dt * 2.8;
+      }
       const currentDistance = enemy.group.position.distanceTo(this.playerPosition);
       if (currentDistance <= enemy.radius + playerRadius && this.runTime >= enemy.nextContactAt) {
         enemy.nextContactAt = this.runTime + (enemy.boss ? 0.68 : 0.9);
@@ -1156,6 +1274,12 @@ export class SurvivalBattleScene extends Phaser.Scene {
 
   private spawnEnemyProjectile(position: THREE.Vector3, direction: THREE.Vector3, damage: number, speed: number, color: number) {
     const shot = mesh(new THREE.SphereGeometry(0.22, 8, 6), color, 0.3, 0.2);
+    const waveRing = new THREE.Mesh(
+      new THREE.TorusGeometry(0.34, 0.055, 6, 14),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.72 }),
+    );
+    waveRing.rotation.x = Math.PI / 2;
+    shot.add(waveRing);
     shot.position.copy(position).setY(0.75);
     this.scene3d?.add(shot);
     this.enemyProjectiles.push({ mesh: shot, velocity: direction.clone().normalize().multiplyScalar(speed), radius: 0.24, damage, life: 4 });
@@ -1165,6 +1289,8 @@ export class SurvivalBattleScene extends Phaser.Scene {
     for (let index = this.enemyProjectiles.length - 1; index >= 0; index -= 1) {
       const shot = this.enemyProjectiles[index];
       shot.mesh.position.addScaledVector(shot.velocity, dt);
+      shot.mesh.rotation.y += dt * 6;
+      shot.mesh.rotation.z += dt * 3.5;
       shot.life -= dt;
       if (shot.mesh.position.distanceTo(this.playerPosition) <= shot.radius + playerRadius) {
         this.damagePlayer(shot.damage);
@@ -1212,7 +1338,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     position.x = THREE.MathUtils.clamp(position.x, -worldHalfX, worldHalfX);
     position.z = THREE.MathUtils.clamp(position.z, -worldHalfZ, worldHalfZ);
     const instrument = instrumentById.get(instrumentDefinitionsAt(Math.floor(Math.random() * 4)))!;
-    const group = createEnemyModel(kind, instrument.color);
+    const group = createEnemyModel(kind, instrument.id, instrument.color);
     group.position.copy(position);
     this.scene3d?.add(group);
     const kindHp = kind === 'brute' ? 2.8 : kind === 'support' ? 1.6 : kind === 'charger' ? 1.25 : 1;
@@ -1428,7 +1554,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.statLine.innerHTML = `<div style="font-size:23px;color:#ffc857">敵水準 ${this.threat} / 解放上限 ${this.maxUnlockedThreat}${bossLock}</div><div style="margin-top:5px;font-size:16px">${definition.name}Lv.${this.instrumentPowerLevel}【${this.getEvolutionStage()}】　連続クリア ${this.highestClearedThreat}</div><div style="margin-top:3px;font-size:14px">撃破 ${this.kills}　コイン ${this.runCoins}　素材 ${materialCount}</div>`;
     const ratio = Math.max(0, this.condition / this.maxCondition);
     const barColor = ratio > 0.5 ? '#22c55e' : ratio > 0.25 ? '#f59e0b' : '#ef4444';
-    this.conditionLine.innerHTML = `<div style="height:16px;background:#2f1b25;border:2px solid #f2b84b;border-radius:8px;overflow:hidden;box-shadow:0 2px 10px #2a101877"><div style="width:${ratio * 100}%;height:100%;background:${barColor}"></div></div><div style="font-size:13px;text-align:center;margin-top:-17px;color:#fff1cf;text-shadow:0 1px 2px #2a1018">CONDITION ${Math.ceil(this.condition)} / ${this.maxCondition}</div>`;
+    this.conditionLine.innerHTML = `<div style="height:16px;background:#172a34;border:2px solid #e2bd68;border-radius:8px;overflow:hidden;box-shadow:0 2px 10px #10202a77"><div style="width:${ratio * 100}%;height:100%;background:${barColor}"></div></div><div style="font-size:13px;text-align:center;margin-top:-17px;color:#fff1cf;text-shadow:0 1px 2px #10202a">CONDITION ${Math.ceil(this.condition)} / ${this.maxCondition}</div>`;
     const activeBuffs = [
       this.runTime < this.powerUntil ? `POWER ${Math.ceil(this.powerUntil - this.runTime)}s` : '',
       this.runTime < this.tempoUntil ? `TEMPO ${Math.ceil(this.tempoUntil - this.runTime)}s` : '',
@@ -1436,7 +1562,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
       this.autoSkillLevel > 0 ? `AUTO ${Math.max(0, Math.ceil(this.nextAutoSkillAt - this.runTime))}s` : '',
     ].filter(Boolean);
     const encoreRatio = this.runTime < this.encoreUntil ? 1 : this.encoreCharge / 12;
-    this.comboLine.innerHTML = `${this.combo > 1 && this.runTime <= this.comboUntil ? `${this.combo} K.O. CHAIN<br>` : ''}<span style="font-size:15px;color:#fff1cf">${activeBuffs.join(' / ')}</span><div style="width:210px;height:10px;margin-top:8px;margin-left:auto;background:#2f1b25;border:1px solid #ff7849"><div style="width:${this.stageHeat}%;height:100%;background:linear-gradient(90deg,#ffb000,#ff3d2e,#d946a8)"></div></div><span style="font-size:12px;color:#ffb000">STAGE HEAT ${this.getStageHeatName()} ${Math.round(this.stageHeat)}%</span><br><span style="font-size:10px;color:#ffd7b0">ATK +${this.stageHeatTier * 10}% / COIN +${this.stageHeatTier * 15}%</span><div style="width:210px;height:8px;margin-top:5px;margin-left:auto;background:#2f1b25;border:1px solid #f2b84b"><div style="width:${encoreRatio * 100}%;height:100%;background:#ffc857"></div></div><span style="font-size:12px;color:#ffe09a">ENCORE ${this.runTime < this.encoreUntil ? 'ACTIVE' : `${this.encoreCharge}/12`}</span>`;
+    this.comboLine.innerHTML = `${this.combo > 1 && this.runTime <= this.comboUntil ? `${this.combo} K.O. CHAIN<br>` : ''}<span style="font-size:15px;color:#fff1cf">${activeBuffs.join(' / ')}</span><div style="width:210px;height:10px;margin-top:8px;margin-left:auto;background:#172a34;border:1px solid #ffb45b"><div style="width:${this.stageHeat}%;height:100%;background:linear-gradient(90deg,#f0cc72,#ff9638,#d946a8)"></div></div><span style="font-size:12px;color:#ffb000">STAGE HEAT ${this.getStageHeatName()} ${Math.round(this.stageHeat)}%</span><br><span style="font-size:10px;color:#fff1cf">ATK +${this.stageHeatTier * 10}% / COIN +${this.stageHeatTier * 15}%</span><div style="width:210px;height:8px;margin-top:5px;margin-left:auto;background:#172a34;border:1px solid #e2bd68"><div style="width:${encoreRatio * 100}%;height:100%;background:#f0cc72"></div></div><span style="font-size:12px;color:#ffe09a">ENCORE ${this.runTime < this.encoreUntil ? 'ACTIVE' : `${this.encoreCharge}/12`}</span>`;
   }
 
   private showNotice(text: string, color: string) {
