@@ -71,6 +71,33 @@ export const instrumentDefinitions: InstrumentDefinition[] = [
 
 export const instrumentById = new Map(instrumentDefinitions.map((definition) => [definition.id, definition]));
 
+export const autoSkillDefinitions: Record<InstrumentId, {
+  name: string;
+  description: string;
+  intervalSeconds: number;
+}> = {
+  'electric-guitar': {
+    name: 'フィードバックアンプ',
+    description: '一定間隔で最寄りの敵へ自動的に貫通フィードバック波を放つ。',
+    intervalSeconds: 4.4,
+  },
+  bass: {
+    name: 'サブウーファー',
+    description: '一定間隔で足元から重低音を鳴らし、周囲の敵を大きく押し返す。',
+    intervalSeconds: 5.2,
+  },
+  'drum-sticks': {
+    name: 'バスドラム',
+    description: '一定間隔でバスドラムを自動演奏し、前方へ太い低音衝撃を放つ。',
+    intervalSeconds: 3.8,
+  },
+  keyboard: {
+    name: 'アルペジエーター',
+    description: '一定間隔で最寄りの敵を狙う自動音符を連続発射する。',
+    intervalSeconds: 4.1,
+  },
+};
+
 export const commonUpgradeDefinitions: Array<{
   id: CommonUpgradeId;
   name: string;
@@ -95,6 +122,7 @@ export type SurvivalProgress = {
   instruments: Record<InstrumentId, {
     material: number;
     specialtyLevel: number;
+    autoSkillLevel: number;
     bestThreat: number;
     highestClearedThreat: number;
   }>;
@@ -126,10 +154,10 @@ function defaultProgress(): SurvivalProgress {
       recovery: 0,
     },
     instruments: {
-      'electric-guitar': { material: 0, specialtyLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
-      bass: { material: 0, specialtyLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
-      'drum-sticks': { material: 0, specialtyLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
-      keyboard: { material: 0, specialtyLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
+      'electric-guitar': { material: 0, specialtyLevel: 0, autoSkillLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
+      bass: { material: 0, specialtyLevel: 0, autoSkillLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
+      'drum-sticks': { material: 0, specialtyLevel: 0, autoSkillLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
+      keyboard: { material: 0, specialtyLevel: 0, autoSkillLevel: 0, bestThreat: 0, highestClearedThreat: 0 },
     },
   };
 }
@@ -163,6 +191,7 @@ function sanitizeProgress(value: unknown): SurvivalProgress {
       result.instruments[definition.id] = {
         material: safeLevel(entry.material),
         specialtyLevel: safeLevel(entry.specialtyLevel),
+        autoSkillLevel: safeLevel(entry.autoSkillLevel),
         bestThreat: safeLevel(entry.bestThreat),
         highestClearedThreat: safeLevel(entry.highestClearedThreat),
       };
@@ -205,6 +234,10 @@ export function getSpecialtyCost(level: number) {
   return { coins: Math.round(90 * Math.pow(1.55, level)), materials: 2 + level * 2 };
 }
 
+export function getAutoSkillCost(level: number) {
+  return { coins: Math.round(120 * Math.pow(1.58, level)), materials: 3 + level * 3 };
+}
+
 export function buyCommonUpgrade(id: CommonUpgradeId): { progress: SurvivalProgress; purchased: boolean } {
   const progress = loadSurvivalProgress();
   const cost = getCommonUpgradeCost(id, progress.commonLevels[id]);
@@ -222,6 +255,19 @@ export function buySpecialtyUpgrade(instrumentId: InstrumentId): { progress: Sur
   progress.coins -= cost.coins;
   instrument.material -= cost.materials;
   instrument.specialtyLevel += 1;
+  return { progress: saveSurvivalProgress(progress), purchased: true };
+}
+
+export function buyAutoSkillUpgrade(instrumentId: InstrumentId): { progress: SurvivalProgress; purchased: boolean } {
+  const progress = loadSurvivalProgress();
+  const instrument = progress.instruments[instrumentId];
+  const cost = getAutoSkillCost(instrument.autoSkillLevel);
+  if (progress.coins < cost.coins || instrument.material < cost.materials) {
+    return { progress, purchased: false };
+  }
+  progress.coins -= cost.coins;
+  instrument.material -= cost.materials;
+  instrument.autoSkillLevel += 1;
   return { progress: saveSurvivalProgress(progress), purchased: true };
 }
 
@@ -243,7 +289,12 @@ export function bankRunRewards(rewards: SurvivalRunRewards) {
 
 export function getTotalLevel(progress: SurvivalProgress) {
   const commonTotal = commonUpgradeDefinitions.reduce((sum, definition) => sum + progress.commonLevels[definition.id], 0);
-  const specialtyTotal = instrumentDefinitions.reduce((sum, definition) => sum + progress.instruments[definition.id].specialtyLevel, 0);
+  const specialtyTotal = instrumentDefinitions.reduce(
+    (sum, definition) => sum
+      + progress.instruments[definition.id].specialtyLevel
+      + progress.instruments[definition.id].autoSkillLevel,
+    0,
+  );
   return commonTotal + specialtyTotal;
 }
 
@@ -260,7 +311,9 @@ export function getInstrumentPowerLevel(progress: SurvivalProgress, instrumentId
     (sum, definition) => sum + progress.commonLevels[definition.id],
     0,
   );
-  return commonTotal + progress.instruments[instrumentId].specialtyLevel;
+  return commonTotal
+    + progress.instruments[instrumentId].specialtyLevel
+    + progress.instruments[instrumentId].autoSkillLevel;
 }
 
 export function getInstrumentThreatCap(progress: SurvivalProgress, instrumentId: InstrumentId) {

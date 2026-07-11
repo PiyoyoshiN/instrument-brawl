@@ -122,6 +122,10 @@ type SoundEffectKey =
   | 'attack-electric-guitar-critical-02'
   | 'attack-keyboard-normal-01'
   | 'attack-keyboard-critical-01'
+  | 'auto-guitar-feedback'
+  | 'auto-bass-subwoofer'
+  | 'auto-drum-bass-drum'
+  | 'auto-keyboard-arpeggiator'
   | 'result-win-01'
   | 'result-win-02'
   | 'result-ko-normal'
@@ -153,6 +157,10 @@ const soundEffectDefinitions: SoundEffectDefinition[] = [
   { key: 'attack-electric-guitar-critical-02', path: 'assets/audio/se/se_attack_electric_guitar_critical_02.wav' },
   { key: 'attack-keyboard-normal-01', path: 'assets/audio/se/se_attack_keyboard_normal_01.wav' },
   { key: 'attack-keyboard-critical-01', path: 'assets/audio/se/se_attack_keyboard_critical_01.wav' },
+  { key: 'auto-guitar-feedback', path: 'assets/audio/se/se_auto_guitar_feedback.wav' },
+  { key: 'auto-bass-subwoofer', path: 'assets/audio/se/se_auto_bass_subwoofer.wav' },
+  { key: 'auto-drum-bass-drum', path: 'assets/audio/se/se_auto_drum_bass_drum.wav' },
+  { key: 'auto-keyboard-arpeggiator', path: 'assets/audio/se/se_auto_keyboard_arpeggiator.wav' },
   { key: 'result-win-01', path: 'assets/audio/se/se_result_win_01.wav' },
   { key: 'result-win-02', path: 'assets/audio/se/se_result_win_02.wav' },
   { key: 'result-ko-normal', path: 'assets/audio/se/se_result_ko_normal.wav' },
