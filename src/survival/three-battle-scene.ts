@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import * as THREE from 'three';
 import {
+  autoSkillDefinitions,
   getInstrumentPowerLevel,
   getInstrumentStartingThreat,
   getInstrumentThreatCap,
@@ -258,6 +259,8 @@ export class SurvivalBattleScene extends Phaser.Scene {
   private instrumentId: InstrumentId = 'electric-guitar';
   private progress: SurvivalProgress = loadSurvivalProgress();
   private instrumentPowerLevel = 0;
+  private autoSkillLevel = 0;
+  private nextAutoSkillAt = Number.POSITIVE_INFINITY;
   private maxUnlockedThreat = 4;
   private scene3d?: THREE.Scene;
   private camera3d?: THREE.PerspectiveCamera;
@@ -330,6 +333,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.resetRun();
     this.progress = loadSurvivalProgress();
     this.instrumentPowerLevel = getInstrumentPowerLevel(this.progress, this.instrumentId);
+    this.autoSkillLevel = this.progress.instruments[this.instrumentId].autoSkillLevel;
     this.maxUnlockedThreat = getInstrumentThreatCap(this.progress, this.instrumentId);
     this.threat = getInstrumentStartingThreat(this.progress, this.instrumentId);
     this.highestThreat = this.threat;
@@ -349,6 +353,10 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.showNotice(`敵水準 ${this.threat}　演奏開始！`, '#fde047');
     this.showEvolution(`攻撃段階：${this.getEvolutionStage()}`, '#bae6fd');
     if (this.threat > 1) this.showEvolution(`${instrumentById.get(this.instrumentId)!.shortName}Lv.${this.instrumentPowerLevel}・クリア記録により水準${this.threat}開始`, '#7dd3fc');
+    if (this.autoSkillLevel > 0) {
+      this.nextAutoSkillAt = 1.8;
+      this.showEvolution(`自動演奏：${autoSkillDefinitions[this.instrumentId].name} Lv.${this.autoSkillLevel}`, '#67e8f9');
+    }
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanup, this);
   }
 
@@ -358,6 +366,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.runTime += dt;
     this.updatePlayer(dt);
     this.updateAttack(dt);
+    this.updateAutoSkill();
     if (this.hitStopRemaining > 0) this.hitStopRemaining -= dt;
     else {
       this.updatePendingStrikes();
@@ -406,6 +415,8 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.encoreAura = undefined;
     this.highestClearedThreat = 0;
     this.clearedWaveLevels.clear();
+    this.autoSkillLevel = 0;
+    this.nextAutoSkillAt = Number.POSITIVE_INFINITY;
     this.runEnded = false;
   }
 
@@ -615,6 +626,60 @@ export class SurvivalBattleScene extends Phaser.Scene {
         const direction = this.aimDirection.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
         this.spawnSoundWave(damage * 0.58, Math.max(1, specialty), color, direction, 10.5);
       }
+    }
+  }
+
+  private updateAutoSkill() {
+    if (this.autoSkillLevel <= 0 || this.runTime < this.nextAutoSkillAt || this.enemies.length === 0) return;
+    const definition = autoSkillDefinitions[this.instrumentId];
+    const levelSpeedBonus = 1 + Math.max(0, this.autoSkillLevel - 1) * 0.12;
+    const encoreSpeedBonus = this.runTime < this.encoreUntil ? 1.2 : 1;
+    this.nextAutoSkillAt = this.runTime + definition.intervalSeconds / (levelSpeedBonus * encoreSpeedBonus);
+    this.performAutoSkill();
+  }
+
+  private performAutoSkill() {
+    this.aimAtNearest();
+    const level = this.autoSkillLevel;
+    const power = (this.runTime < this.powerUntil ? 1.35 : 1) * (this.runTime < this.encoreUntil ? 1.25 : 1);
+    const damage = this.attackDamage * power * (0.62 + level * 0.18);
+    const color = instrumentById.get(this.instrumentId)!.color;
+    const soundKey = this.instrumentId === 'electric-guitar' ? 'auto-guitar-feedback'
+      : this.instrumentId === 'bass' ? 'auto-bass-subwoofer'
+        : this.instrumentId === 'drum-sticks' ? 'auto-drum-bass-drum'
+          : 'auto-keyboard-arpeggiator';
+    if (this.cache.audio.exists(soundKey)) this.sound.play(soundKey, { volume: 0.5 });
+
+    if (this.instrumentId === 'electric-guitar') {
+      const waves = 1 + Math.floor(level / 3);
+      for (let index = 0; index < waves; index += 1) {
+        const angle = (index - (waves - 1) / 2) * 0.18;
+        const direction = this.aimDirection.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+        this.spawnSoundWave(damage, Math.max(1, level + 1), 0xfde047, direction, 15);
+      }
+      this.showEvolution(`AUTO：${autoSkillDefinitions[this.instrumentId].name}`, '#fde047');
+    } else if (this.instrumentId === 'bass') {
+      const radius = 4.4 + level * 0.45;
+      this.meleeStrike(radius, damage * 1.18, true, 0x38bdf8, 2.8 + level * 0.28);
+      this.showEvolution('AUTO：重低音が地面を揺らす', '#7dd3fc');
+    } else if (this.instrumentId === 'drum-sticks') {
+      const radius = 4.1 + level * 0.38;
+      const impactCenter = this.playerPosition.clone().addScaledVector(this.aimDirection, radius * 0.42);
+      this.spawnImpact(impactCenter, radius, 0xfb923c);
+      this.meleeStrike(radius, damage * 1.08, false, 0xfb923c, 2.35 + level * 0.25);
+      this.spawnSoundWave(damage * 0.72, Math.max(1, level), 0xfb923c, this.aimDirection.clone(), 11.5);
+      this.cameraShake = Math.max(this.cameraShake, 0.42);
+      this.showEvolution('AUTO：バスドラム！', '#fdba74');
+    } else {
+      const notes = 2 + Math.min(5, level);
+      for (let note = 0; note < notes; note += 1) {
+        const direction = this.aimDirection.clone().applyAxisAngle(
+          new THREE.Vector3(0, 1, 0),
+          (note - (notes - 1) / 2) * 0.12,
+        );
+        this.spawnSoundWave(damage * 0.68, Math.max(1, level), 0xc084fc, direction, 14.5);
+      }
+      this.showEvolution('AUTO：アルペジオ展開', '#d8b4fe');
     }
   }
 
@@ -1128,6 +1193,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
       this.runTime < this.powerUntil ? `POWER ${Math.ceil(this.powerUntil - this.runTime)}s` : '',
       this.runTime < this.tempoUntil ? `TEMPO ${Math.ceil(this.tempoUntil - this.runTime)}s` : '',
       this.runTime < this.encoreUntil ? `ENCORE ${Math.ceil(this.encoreUntil - this.runTime)}s` : '',
+      this.autoSkillLevel > 0 ? `AUTO ${Math.max(0, Math.ceil(this.nextAutoSkillAt - this.runTime))}s` : '',
     ].filter(Boolean);
     const encoreRatio = this.runTime < this.encoreUntil ? 1 : this.encoreCharge / 12;
     this.comboLine.innerHTML = `${this.combo > 1 && this.runTime <= this.comboUntil ? `${this.combo} K.O. CHAIN<br>` : ''}<span style="font-size:15px;color:#bae6fd">${activeBuffs.join(' / ')}</span><div style="width:190px;height:8px;margin-top:7px;margin-left:auto;background:#172033;border:1px solid #94a3b8"><div style="width:${encoreRatio * 100}%;height:100%;background:#fde047"></div></div><span style="font-size:12px;color:#fde68a">ENCORE ${this.runTime < this.encoreUntil ? 'ACTIVE' : `${this.encoreCharge}/12`}</span>`;

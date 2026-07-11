@@ -1,10 +1,13 @@
 import Phaser from 'phaser';
 import {
   bankRunRewards,
+  autoSkillDefinitions,
+  buyAutoSkillUpgrade,
   buyCommonUpgrade,
   buySpecialtyUpgrade,
   commonUpgradeDefinitions,
   getCommonUpgradeCost,
+  getAutoSkillCost,
   getSpecialtyCost,
   getTotalLevel,
   getInstrumentPowerLevel,
@@ -224,6 +227,9 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
   create() {
     this.progress = loadSurvivalProgress();
     this.selectedIndex = 0;
+    // Phaser reuses Scene instances. Clear references to display objects that
+    // were destroyed during the previous visit before rebuilding this screen.
+    this.rowTexts = [];
     const { centerX, centerY } = viewport(this);
     this.add.rectangle(centerX, centerY, 760, 550, 0x102033, 0.98).setStrokeStyle(3, 0x31536f);
     addText(this, centerX, centerY - 245, '永続強化', 38, '#ffffff', 'center').setOrigin(0.5);
@@ -238,8 +244,10 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
       this.rowTexts.push(addText(this, x + 16, y + 9, '', 19));
     }
     const specialtyY = centerY + 62;
-    this.add.rectangle(centerX, specialtyY + 23, 660, 58, 0x07111f, 0.82).setStrokeStyle(2, 0x8b5cf6);
-    this.rowTexts.push(addText(this, centerX - 314, specialtyY + 9, '', 19));
+    this.add.rectangle(centerX - 168, specialtyY + 23, 322, 58, 0x07111f, 0.82).setStrokeStyle(2, 0x8b5cf6);
+    this.add.rectangle(centerX + 168, specialtyY + 23, 322, 58, 0x07111f, 0.82).setStrokeStyle(2, 0x22d3ee);
+    this.rowTexts.push(addText(this, centerX - 314, specialtyY + 9, '', 18));
+    this.rowTexts.push(addText(this, centerX + 22, specialtyY + 9, '', 18));
 
     this.add.rectangle(centerX, centerY + 161, 690, 70, 0x07111f, 0.82).setStrokeStyle(2, 0x31536f);
     this.descriptionText = addText(this, centerX, centerY + 138, '', 17, '#cbd5e1', 'center')
@@ -259,12 +267,13 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
   }
 
   update() {
+    const selectableCount = commonUpgradeDefinitions.length + 2;
     if (justDown(this.upKey)) {
-      this.selectedIndex = (this.selectedIndex + commonUpgradeDefinitions.length) % (commonUpgradeDefinitions.length + 1);
+      this.selectedIndex = (this.selectedIndex + selectableCount - 1) % selectableCount;
       this.refresh();
     }
     if (justDown(this.downKey)) {
-      this.selectedIndex = (this.selectedIndex + 1) % (commonUpgradeDefinitions.length + 1);
+      this.selectedIndex = (this.selectedIndex + 1) % selectableCount;
       this.refresh();
     }
     if (justDown(this.enterKey) || justDown(this.spaceKey)) this.purchase();
@@ -272,9 +281,12 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
   }
 
   private purchase() {
-    const result = this.selectedIndex < commonUpgradeDefinitions.length
+    const specialtyIndex = commonUpgradeDefinitions.length;
+    const result = this.selectedIndex < specialtyIndex
       ? buyCommonUpgrade(commonUpgradeDefinitions[this.selectedIndex].id)
-      : buySpecialtyUpgrade(this.instrumentId);
+      : this.selectedIndex === specialtyIndex
+        ? buySpecialtyUpgrade(this.instrumentId)
+        : buyAutoSkillUpgrade(this.instrumentId);
     this.progress = result.progress;
     if (!result.purchased) {
       this.cameras.main.shake(90, 0.002);
@@ -301,9 +313,16 @@ export class SurvivalUpgradeScene extends Phaser.Scene {
     const cost = getSpecialtyCost(specialty.specialtyLevel);
     this.rowTexts[uniqueIndex]?.setColor(uniqueIndex === this.selectedIndex ? '#facc15' : '#e2e8f0')
       .setText(`${uniqueIndex === this.selectedIndex ? '▶ ' : ''}${instrument.specialtyName} Lv.${specialty.specialtyLevel}\n   ${cost.coins} coin / 素材${cost.materials}`);
-    const selected = this.selectedIndex < commonUpgradeDefinitions.length
+    const autoIndex = uniqueIndex + 1;
+    const autoDefinition = autoSkillDefinitions[this.instrumentId];
+    const autoCost = getAutoSkillCost(specialty.autoSkillLevel);
+    this.rowTexts[autoIndex]?.setColor(autoIndex === this.selectedIndex ? '#facc15' : '#e2e8f0')
+      .setText(`${autoIndex === this.selectedIndex ? '▶ ' : ''}${autoDefinition.name} Lv.${specialty.autoSkillLevel}\n   ${autoCost.coins} coin / 素材${autoCost.materials}`);
+    const selected = this.selectedIndex < uniqueIndex
       ? commonUpgradeDefinitions[this.selectedIndex].description
-      : instrument.specialtyDescription;
+      : this.selectedIndex === uniqueIndex
+        ? instrument.specialtyDescription
+        : `${autoDefinition.description} Lv.1で解放し、強化すると威力と発動間隔が向上する。`;
     this.descriptionText?.setText(selected);
   }
 }
