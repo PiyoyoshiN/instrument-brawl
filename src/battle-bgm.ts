@@ -45,7 +45,6 @@ class GuitarBattleBgmController {
   private activeGain?: GainNode;
   private shouldBePlaying = false;
   private interactionUnlocked = false;
-  private detectionTimer?: number;
 
   start() {
     const unlock = () => {
@@ -59,10 +58,7 @@ class GuitarBattleBgmController {
     window.addEventListener('keydown', unlock);
     document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
 
-    this.detectionTimer = window.setInterval(
-      () => this.syncPlaybackState(),
-      battleDetectionIntervalMs,
-    );
+    window.setInterval(() => this.syncPlaybackState(), battleDetectionIntervalMs);
     this.syncPlaybackState();
   }
 
@@ -97,7 +93,7 @@ class GuitarBattleBgmController {
     this.loadingPromise = (async () => {
       try {
         const context = await this.ensureContextReady();
-        const url = `${import.meta.env.BASE_URL}${guitarBattleBgmPath}`;
+        const url = new URL(guitarBattleBgmPath, document.baseURI).toString();
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`BGM load failed: ${response.status} ${response.statusText}`);
