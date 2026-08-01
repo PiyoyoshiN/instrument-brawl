@@ -20,4 +20,13 @@ Place the battle tracks at the following paths.
 - Direct loop end: `77.52458333333334` seconds
 - BGM volume: `0.34`
 
+## Drum Sticks
+
+`public/assets/audio/bgm/bgm_drum_battle_adopted.wav`
+
+- First play starts at `0.00` seconds
+- Direct loop start: `24.298666666666666` seconds
+- Direct loop end: `168.82133333333334` seconds
+- BGM volume: `0.34`
+
 Playback settings are defined in `src/battle-bgm.ts`. Each track plays only during the current survival battle when its matching instrument is selected. Looping uses Web Audio loop points with no crossfade. Missing audio must not stop the game from running.
