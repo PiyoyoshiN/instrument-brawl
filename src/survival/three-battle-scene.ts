@@ -66,6 +66,7 @@ type Impact = { mesh: THREE.Mesh; life: number; maxLife: number; maxScale: numbe
 type Particle = { mesh: THREE.Mesh; velocity: THREE.Vector3; life: number; maxLife: number };
 type DefeatedBody = { group: THREE.Group; velocity: THREE.Vector3; life: number; spin: number };
 type PendingStrike = { at: number; radius: number; damage: number; fullCircle: boolean; color: number };
+type GuitarAttackKind = 'normal' | 'charged' | 'dodge' | 'solo';
 
 type DropKind = 'power' | 'tempo' | 'repair';
 type Drop3D = { kind: DropKind; group: THREE.Group; bobOffset: number; expiresAt: number };
@@ -471,6 +472,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
   private centerNotice?: HTMLDivElement;
   private comboLine?: HTMLDivElement;
   private evolutionLine?: HTMLDivElement;
+  private guitarActionLine?: HTMLDivElement;
   private pauseLayer?: HTMLDivElement;
   private pauseMenuText?: HTMLDivElement;
   private enemies: Enemy3D[] = [];
@@ -488,6 +490,19 @@ export class SurvivalBattleScene extends Phaser.Scene {
   private attacking = false;
   private attackApplied = false;
   private nextAttackAt = 0;
+  private guitarAttackKind: GuitarAttackKind = 'normal';
+  private guitarComboStep = 0;
+  private guitarComboUntil = 0;
+  private guitarAttackQueued = false;
+  private guitarCharging = false;
+  private guitarChargeStartedAt = 0;
+  private guitarChargeRatio = 0;
+  private guitarChargeAura?: THREE.Mesh;
+  private guitarDodgeDirection = new THREE.Vector3();
+  private guitarDodgeUntil = 0;
+  private guitarNextDodgeAt = 0;
+  private playerInvulnerableUntil = 0;
+  private guitarSoloGauge = 0;
   private runTime = 0;
   private threat = 1;
   private highestThreat = 1;
@@ -524,7 +539,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
   private retireArmed = false;
   private resizeHandler = () => this.resizeRenderer();
   private keyDownHandler = (event: KeyboardEvent) => this.onKeyDown(event);
-  private keyUpHandler = (event: KeyboardEvent) => this.keys.delete(event.code);
+  private keyUpHandler = (event: KeyboardEvent) => this.onKeyUp(event);
   private pointerHandler = () => this.requestAttack();
   private visibilityHandler = () => {
     if (document.hidden && !this.runEnded && !this.paused) this.setPaused(true);
@@ -579,6 +594,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.runTime += dt;
     this.updateStageHeat(dt);
     this.updatePlayer(dt);
+    this.updateGuitarCharge();
     this.updateAttack(dt);
     this.updateAutoSkill();
     if (this.hitStopRemaining > 0) this.hitStopRemaining -= dt;
@@ -612,6 +628,19 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.attacking = false;
     this.attackApplied = false;
     this.nextAttackAt = 0;
+    this.guitarAttackKind = 'normal';
+    this.guitarComboStep = 0;
+    this.guitarComboUntil = 0;
+    this.guitarAttackQueued = false;
+    this.guitarCharging = false;
+    this.guitarChargeStartedAt = 0;
+    this.guitarChargeRatio = 0;
+    this.guitarChargeAura = undefined;
+    this.guitarDodgeDirection.set(0, 0, 0);
+    this.guitarDodgeUntil = 0;
+    this.guitarNextDodgeAt = 0;
+    this.playerInvulnerableUntil = 0;
+    this.guitarSoloGauge = 0;
     this.runTime = 0;
     this.pendingAdvanceAt = 0;
     this.enemyId = 0;
@@ -704,6 +733,19 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.encoreAura.rotation.x = Math.PI / 2;
     this.encoreAura.position.y = 0.08;
     this.scene3d.add(this.encoreAura);
+    if (this.instrumentId === 'electric-guitar') {
+      this.guitarChargeAura = new THREE.Mesh(
+        new THREE.TorusGeometry(1.25, 0.12, 8, 32),
+        new THREE.MeshBasicMaterial({
+          color: 0xffd447,
+          transparent: true,
+          opacity: 0,
+        }),
+      );
+      this.guitarChargeAura.rotation.x = Math.PI / 2;
+      this.guitarChargeAura.position.y = 0.11;
+      this.scene3d.add(this.guitarChargeAura);
+    }
   }
 
   private createDomHud() {
@@ -716,6 +758,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
       <div data-role="notice" style="position:absolute;left:50%;top:42px;transform:translateX(-50%);font-size:26px;font-weight:900;text-align:center;transition:opacity .35s;text-shadow:0 2px 3px #fff"></div>
       <div data-role="combo" style="position:absolute;right:28px;top:24px;font-size:28px;font-weight:900;text-align:right;color:#ffb000"></div>
       <div data-role="evolution" style="position:absolute;left:50%;bottom:90px;transform:translateX(-50%);padding:9px 18px;background:#20333fee;border:1px solid #e2bd68;border-radius:10px;font-size:18px;font-weight:800;opacity:0;transition:opacity .3s;box-shadow:0 5px 22px #10202a77"></div>
+      <div data-role="guitar-actions" style="display:${this.instrumentId === 'electric-guitar' ? 'block' : 'none'};position:absolute;left:20px;bottom:18px;width:360px;padding:10px 14px;background:#20333fe8;border:2px solid #e2bd68;border-radius:10px;box-shadow:0 5px 22px #10202a77"></div>
       <div style="position:absolute;right:22px;bottom:18px;padding:8px 12px;background:#20333fd9;border:1px solid #e2bd68;border-radius:8px;font-size:14px">WASD/矢印 移動　Space/J/クリック 攻撃　P/Esc ポーズ</div>
       <div data-role="pause" style="display:none;position:absolute;inset:0;background:radial-gradient(circle at center,#35596ced,#10202af7);align-items:center;justify-content:center;pointer-events:auto;text-shadow:none;color:#fff1cf">
         <div style="width:min(620px,82vw);padding:34px 42px;background:linear-gradient(145deg,#304b59fa,#172a34fa);border:3px solid #e2bd68;border-radius:20px;box-shadow:0 24px 80px #081118b8">
@@ -725,6 +768,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
             <div style="padding:16px;background:#172a34;border:1px solid #54707d;border-radius:12px"><b style="color:#f0cc72">移動</b><br>WASD / 矢印キー</div>
             <div style="padding:16px;background:#172a34;border:1px solid #54707d;border-radius:12px"><b style="color:#f0cc72">攻撃</b><br>Space / J / クリック</div>
           </div>
+          ${this.instrumentId === 'electric-guitar' ? '<div style="margin:-8px 0 22px;padding:14px 16px;background:#172a34;border:1px solid #e2bd68;border-radius:12px;text-align:center"><b style="color:#f0cc72">ギター固有操作</b><br>K長押し：溜めコード　Shift：回避攻撃　Q：ギターソロ</div>' : ''}
           <div data-role="pause-menu" style="font-size:24px;line-height:2;text-align:center;font-weight:850"></div>
           <div style="margin-top:18px;text-align:center;color:#e7c7a5;font-size:14px">↑/↓ 選択　Enter/Space 決定　P/Esc 再開</div>
         </div>
@@ -737,6 +781,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.centerNotice = root.querySelector('[data-role="notice"]') as HTMLDivElement;
     this.comboLine = root.querySelector('[data-role="combo"]') as HTMLDivElement;
     this.evolutionLine = root.querySelector('[data-role="evolution"]') as HTMLDivElement;
+    this.guitarActionLine = root.querySelector('[data-role="guitar-actions"]') as HTMLDivElement;
     this.pauseLayer = root.querySelector('[data-role="pause"]') as HTMLDivElement;
     this.pauseMenuText = root.querySelector('[data-role="pause-menu"]') as HTMLDivElement;
   }
@@ -773,9 +818,34 @@ export class SurvivalBattleScene extends Phaser.Scene {
     }
 
     this.keys.add(event.code);
+    if (this.instrumentId === 'electric-guitar' && !event.repeat) {
+      if (event.code === 'KeyK') {
+        event.preventDefault();
+        this.beginGuitarCharge();
+        return;
+      }
+      if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+        event.preventDefault();
+        this.performGuitarDodgeAttack();
+        return;
+      }
+      if (event.code === 'KeyQ') {
+        event.preventDefault();
+        this.performGuitarSolo();
+        return;
+      }
+    }
     if (['Space', 'KeyJ'].includes(event.code)) {
       event.preventDefault();
       this.requestAttack();
+    }
+  }
+
+  private onKeyUp(event: KeyboardEvent) {
+    this.keys.delete(event.code);
+    if (this.instrumentId === 'electric-guitar' && event.code === 'KeyK') {
+      event.preventDefault();
+      this.releaseGuitarCharge();
     }
   }
 
@@ -783,6 +853,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     if (this.runEnded) return;
     this.paused = paused;
     this.keys.clear();
+    if (paused) this.cancelGuitarCharge();
     this.retireArmed = false;
     this.pauseSelectedIndex = 0;
     if (this.pauseLayer) this.pauseLayer.style.display = paused ? 'flex' : 'none';
@@ -833,11 +904,15 @@ export class SurvivalBattleScene extends Phaser.Scene {
       move.normalize();
       const encoreMoveMultiplier = this.runTime < this.encoreUntil ? 1.15 : 1;
       const heatMoveMultiplier = 1 + this.stageHeatTier * 0.035;
-      this.playerPosition.addScaledVector(move, this.moveSpeed * encoreMoveMultiplier * heatMoveMultiplier * dt);
-      this.playerPosition.x = THREE.MathUtils.clamp(this.playerPosition.x, -worldHalfX, worldHalfX);
-      this.playerPosition.z = THREE.MathUtils.clamp(this.playerPosition.z, -worldHalfZ, worldHalfZ);
+      const chargeMoveMultiplier = this.guitarCharging ? 0.42 : 1;
+      this.playerPosition.addScaledVector(move, this.moveSpeed * encoreMoveMultiplier * heatMoveMultiplier * chargeMoveMultiplier * dt);
       if (!this.attacking) this.aimDirection.lerp(move, 0.24).normalize();
     }
+    if (this.runTime < this.guitarDodgeUntil) {
+      this.playerPosition.addScaledVector(this.guitarDodgeDirection, 13.5 * dt);
+    }
+    this.playerPosition.x = THREE.MathUtils.clamp(this.playerPosition.x, -worldHalfX, worldHalfX);
+    this.playerPosition.z = THREE.MathUtils.clamp(this.playerPosition.z, -worldHalfZ, worldHalfZ);
     this.player.position.copy(this.playerPosition);
     this.player.position.y = Math.abs(Math.sin(this.runTime * 9)) * (move.lengthSq() > 0 ? 0.09 : 0.025);
     this.player.rotation.y = Math.atan2(this.aimDirection.x, this.aimDirection.z);
@@ -850,23 +925,142 @@ export class SurvivalBattleScene extends Phaser.Scene {
       const pulse = this.runTime < this.encoreUntil ? 1 + Math.sin(this.runTime * 10) * 0.12 : 0.8 + this.encoreCharge / 30;
       this.encoreAura.scale.setScalar(pulse);
     }
+    if (this.guitarChargeAura) {
+      this.guitarChargeAura.position.x = this.playerPosition.x;
+      this.guitarChargeAura.position.z = this.playerPosition.z;
+      this.guitarChargeAura.rotation.z -= dt * (2.4 + this.guitarChargeRatio * 5);
+      const chargeMaterial = this.guitarChargeAura.material as THREE.MeshBasicMaterial;
+      chargeMaterial.opacity = this.guitarCharging ? 0.24 + this.guitarChargeRatio * 0.64 : 0;
+      this.guitarChargeAura.scale.setScalar(0.75 + this.guitarChargeRatio * 0.8);
+    }
   }
 
   private requestAttack() {
-    if (this.runEnded || this.paused || this.attacking || this.runTime < this.nextAttackAt) return;
+    if (this.runEnded || this.paused) return;
+    if (this.instrumentId === 'electric-guitar') {
+      if (this.guitarCharging) return;
+      if (this.attacking) {
+        if (this.guitarAttackKind === 'normal' && this.guitarComboStep < 2) this.guitarAttackQueued = true;
+        return;
+      }
+      if (this.runTime < this.nextAttackAt) return;
+      this.startGuitarNormalAttack();
+      return;
+    }
+    if (this.attacking || this.runTime < this.nextAttackAt) return;
     this.aimAtNearest();
     this.attacking = true;
     this.attackApplied = false;
     this.attackElapsed = 0;
-    const tempo = (this.runTime < this.tempoUntil ? 1.35 : 1)
+    this.nextAttackAt = this.runTime + this.attackCooldown / this.getAttackTempo();
+    const soundKey = this.instrumentId === 'bass' ? 'attack-bass-normal-01'
+      : this.instrumentId === 'drum-sticks' ? 'attack-drum-sticks-vs-wood-normal-01'
+        : 'attack-keyboard-normal-01';
+    if (this.cache.audio.exists(soundKey)) this.sound.play(soundKey, { volume: 0.32 });
+  }
+
+  private getAttackTempo() {
+    return (this.runTime < this.tempoUntil ? 1.35 : 1)
       * (this.runTime < this.encoreUntil ? 1.2 : 1)
       * (1 + this.stageHeatTier * 0.045);
-    this.nextAttackAt = this.runTime + this.attackCooldown / tempo;
-    const soundKey = this.instrumentId === 'electric-guitar' ? 'attack-electric-guitar-normal-01'
-      : this.instrumentId === 'bass' ? 'attack-bass-normal-01'
-        : this.instrumentId === 'drum-sticks' ? 'attack-drum-sticks-vs-wood-normal-01'
-          : 'attack-keyboard-normal-01';
-    if (this.cache.audio.exists(soundKey)) this.sound.play(soundKey, { volume: 0.32 });
+  }
+
+  private startGuitarNormalAttack() {
+    this.aimAtNearest();
+    this.guitarComboStep = this.guitarComboUntil > 0 && this.runTime <= this.guitarComboUntil
+      ? (this.guitarComboStep + 1) % 3
+      : 0;
+    this.guitarComboUntil = this.runTime + 0.82;
+    const soundKey = this.guitarComboStep === 2
+      ? 'attack-electric-guitar-normal-02'
+      : 'attack-electric-guitar-normal-01';
+    this.startGuitarAttack('normal', this.attackCooldown / this.getAttackTempo(), soundKey);
+  }
+
+  private startGuitarAttack(kind: GuitarAttackKind, cooldown: number, soundKey: string) {
+    if (kind !== 'normal') {
+      this.guitarComboStep = 0;
+      this.guitarComboUntil = 0;
+    }
+    this.guitarAttackKind = kind;
+    this.attacking = true;
+    this.attackApplied = false;
+    this.attackElapsed = 0;
+    this.guitarAttackQueued = false;
+    this.nextAttackAt = this.runTime + cooldown;
+    if (this.cache.audio.exists(soundKey)) this.sound.play(soundKey, { volume: kind === 'solo' ? 0.52 : 0.36 });
+  }
+
+  private beginGuitarCharge() {
+    if (this.runEnded || this.paused || this.attacking || this.guitarCharging || this.runTime < this.nextAttackAt) return;
+    this.aimAtNearest();
+    this.guitarCharging = true;
+    this.guitarChargeStartedAt = this.runTime;
+    this.guitarChargeRatio = 0;
+  }
+
+  private updateGuitarCharge() {
+    if (!this.guitarCharging || !this.weaponPivot) return;
+    this.guitarChargeRatio = THREE.MathUtils.clamp((this.runTime - this.guitarChargeStartedAt) / 1.15, 0, 1);
+    const pulse = Math.sin(this.runTime * (7 + this.guitarChargeRatio * 9)) * 0.05;
+    this.weaponPivot.rotation.z = -1.32 - this.guitarChargeRatio * 0.42 + pulse;
+    this.weaponPivot.rotation.x = 0.22 + this.guitarChargeRatio * 0.48;
+    if (this.guitarChargeRatio >= 1 && this.runTime - this.guitarChargeStartedAt < 1.18) {
+      this.showEvolution('MAX CHORD　離して爆音！', '#fde047');
+    }
+  }
+
+  private releaseGuitarCharge() {
+    if (!this.guitarCharging || this.paused || this.runEnded) return;
+    const heldSeconds = this.runTime - this.guitarChargeStartedAt;
+    this.guitarChargeRatio = THREE.MathUtils.clamp(heldSeconds / 1.15, 0.18, 1);
+    this.guitarCharging = false;
+    this.startGuitarAttack(
+      'charged',
+      this.attackCooldown * (1.45 + this.guitarChargeRatio * 0.35) / this.getAttackTempo(),
+      this.guitarChargeRatio >= 0.8 ? 'attack-electric-guitar-critical-01' : 'attack-electric-guitar-normal-02',
+    );
+  }
+
+  private cancelGuitarCharge() {
+    this.guitarCharging = false;
+    this.guitarChargeRatio = 0;
+    if (this.guitarChargeAura) (this.guitarChargeAura.material as THREE.MeshBasicMaterial).opacity = 0;
+    if (!this.attacking) this.weaponPivot?.rotation.set(0, 0, 0);
+  }
+
+  private performGuitarDodgeAttack() {
+    if (this.runEnded || this.paused || this.attacking || this.runTime < this.guitarNextDodgeAt) return;
+    this.cancelGuitarCharge();
+    let x = 0;
+    let z = 0;
+    if (this.keys.has('KeyA') || this.keys.has('ArrowLeft')) x -= 1;
+    if (this.keys.has('KeyD') || this.keys.has('ArrowRight')) x += 1;
+    if (this.keys.has('KeyW') || this.keys.has('ArrowUp')) z -= 1;
+    if (this.keys.has('KeyS') || this.keys.has('ArrowDown')) z += 1;
+    if (x === 0 && z === 0) this.aimAtNearest();
+    this.guitarDodgeDirection.set(x, 0, z);
+    if (this.guitarDodgeDirection.lengthSq() === 0) this.guitarDodgeDirection.copy(this.aimDirection);
+    this.guitarDodgeDirection.normalize();
+    this.aimDirection.copy(this.guitarDodgeDirection);
+    this.guitarDodgeUntil = this.runTime + 0.3;
+    this.guitarNextDodgeAt = this.runTime + 1.15;
+    this.playerInvulnerableUntil = this.runTime + 0.38;
+    this.startGuitarAttack('dodge', 0.34 / this.getAttackTempo(), 'attack-electric-guitar-normal-01');
+  }
+
+  private performGuitarSolo() {
+    if (this.runEnded || this.paused || this.attacking) return;
+    if (this.guitarSoloGauge < 100) {
+      this.showEvolution(`GUITAR SOLO ${Math.floor(this.guitarSoloGauge)}%　撃破で蓄積`, '#ffd98a');
+      return;
+    }
+    this.cancelGuitarCharge();
+    this.aimAtNearest();
+    this.guitarSoloGauge = 0;
+    this.guitarComboUntil = 0;
+    this.showNotice('GUITAR SOLO！　STAGE BREAK', '#fde047');
+    this.startGuitarAttack('solo', 1.1 / this.getAttackTempo(), 'attack-electric-guitar-critical-02');
   }
 
   private aimAtNearest() {
@@ -886,18 +1080,54 @@ export class SurvivalBattleScene extends Phaser.Scene {
   private updateAttack(dt: number) {
     if (!this.attacking || !this.weaponPivot) return;
     this.attackElapsed += dt;
-    const duration = this.instrumentId === 'bass' ? 0.42 : this.instrumentId === 'drum-sticks' ? 0.2 : 0.31;
+    const duration = this.instrumentId === 'electric-guitar'
+      ? this.guitarAttackKind === 'solo' ? 0.78
+        : this.guitarAttackKind === 'charged' ? 0.5
+          : this.guitarAttackKind === 'dodge' ? 0.24
+            : this.guitarComboStep === 2 ? 0.36 : 0.27
+      : this.instrumentId === 'bass' ? 0.42
+        : this.instrumentId === 'drum-sticks' ? 0.2
+          : 0.31;
     const phase = Math.min(1, this.attackElapsed / duration);
     const swing = Math.sin(phase * Math.PI);
-    this.weaponPivot.rotation.z = -1.1 + swing * 2.45;
-    this.weaponPivot.rotation.x = 0.15 + swing * 0.52;
-    if (!this.attackApplied && phase >= 0.32) {
+    if (this.instrumentId === 'electric-guitar') {
+      if (this.guitarAttackKind === 'solo') {
+        this.weaponPivot.rotation.y = phase * Math.PI * 4;
+        this.weaponPivot.rotation.z = -0.85 + swing * 1.8;
+        this.weaponPivot.rotation.x = 0.38 + swing * 0.65;
+      } else if (this.guitarAttackKind === 'charged') {
+        this.weaponPivot.rotation.z = -1.65 + swing * 3.25;
+        this.weaponPivot.rotation.x = 0.62 - swing * 0.45;
+      } else if (this.guitarAttackKind === 'dodge') {
+        this.weaponPivot.rotation.y = phase * Math.PI * 2;
+        this.weaponPivot.rotation.z = -0.55 + swing * 1.9;
+        this.weaponPivot.rotation.x = 0.25 + swing * 0.4;
+      } else if (this.guitarComboStep === 2) {
+        this.weaponPivot.rotation.z = -0.35 + swing * 1.25;
+        this.weaponPivot.rotation.x = -1.05 + swing * 2.3;
+      } else {
+        const direction = this.guitarComboStep === 1 ? -1 : 1;
+        this.weaponPivot.rotation.z = direction * (-1.15 + swing * 2.5);
+        this.weaponPivot.rotation.x = 0.12 + swing * 0.56;
+      }
+    } else {
+      this.weaponPivot.rotation.z = -1.1 + swing * 2.45;
+      this.weaponPivot.rotation.x = 0.15 + swing * 0.52;
+    }
+    const applyPhase = this.guitarAttackKind === 'dodge' ? 0.18 : this.guitarAttackKind === 'solo' ? 0.24 : 0.32;
+    if (!this.attackApplied && phase >= applyPhase) {
       this.attackApplied = true;
       this.applyInstrumentAttack();
     }
     if (phase >= 1) {
+      const continueCombo = this.instrumentId === 'electric-guitar'
+        && this.guitarAttackKind === 'normal'
+        && this.guitarAttackQueued
+        && this.guitarComboStep < 2;
       this.attacking = false;
       this.weaponPivot.rotation.set(0, 0, 0);
+      if (continueCombo) this.startGuitarNormalAttack();
+      else if (this.guitarAttackKind === 'charged') this.guitarChargeRatio = 0;
     }
   }
 
@@ -909,14 +1139,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
     const damage = this.attackDamage * power;
     const color = instrumentById.get(this.instrumentId)!.color;
     if (this.instrumentId === 'electric-guitar') {
-      this.meleeStrike(this.attackRange, damage, false, color, 1.2);
-      if (specialty >= 1) this.spawnSoundWave(damage * 0.7, specialty, color);
-      if (specialty >= 5) {
-        const sideA = this.aimDirection.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.24);
-        const sideB = this.aimDirection.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), -0.24);
-        this.spawnSoundWave(damage * 0.52, specialty, color, sideA);
-        this.spawnSoundWave(damage * 0.52, specialty, color, sideB);
-      }
+      this.applyGuitarAttack(specialty, damage, color);
     } else if (this.instrumentId === 'bass') {
       this.meleeStrike(this.attackRange * (1.12 + specialty * 0.06), damage * (1.25 + specialty * 0.06), false, color, 2.1 + specialty * 0.2);
     } else if (this.instrumentId === 'drum-sticks') {
@@ -932,6 +1155,88 @@ export class SurvivalBattleScene extends Phaser.Scene {
         this.spawnSoundWave(damage * 0.58, Math.max(1, specialty), color, direction, 10.5);
       }
     }
+  }
+
+  private applyGuitarAttack(specialty: number, damage: number, color: number) {
+    if (this.guitarAttackKind === 'charged') {
+      const ratio = this.guitarChargeRatio;
+      const radius = this.attackRange * (1.28 + ratio * 0.48);
+      this.meleeStrike(radius, damage * (1.45 + ratio * 1.2), false, color, 2.4 + ratio * 2.1);
+      if (specialty >= 1) {
+        const waves = 1 + Math.floor(ratio * 2);
+        for (let index = 0; index < waves; index += 1) {
+          const angle = (index - (waves - 1) / 2) * 0.18;
+          const direction = this.aimDirection.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+          this.spawnSoundWave(damage * (0.9 + ratio * 0.55), specialty + Math.round(ratio * 2), color, direction, 12.5 + ratio * 4);
+        }
+      }
+      this.hitStopRemaining = Math.max(this.hitStopRemaining, 0.07 + ratio * 0.05);
+      this.cameraShake = Math.max(this.cameraShake, 0.42 + ratio * 0.5);
+      this.showEvolution(ratio >= 0.8 ? 'MAX CHORD！' : `CHARGED CHORD ${Math.round(ratio * 100)}%`, '#fde047');
+      return;
+    }
+
+    if (this.guitarAttackKind === 'dodge') {
+      this.meleeStrike(this.attackRange * 0.95, damage * 0.78, false, color, 3.4);
+      this.deflectNearbyProjectiles();
+      if (specialty >= 1) this.spawnSoundWave(damage * 0.42, specialty, color, this.aimDirection.clone(), 16.5);
+      return;
+    }
+
+    if (this.guitarAttackKind === 'solo') {
+      this.meleeStrike(7.4, damage * 2.55, true, 0xffd447, 4.2);
+      for (let index = 0; index < 12; index += 1) {
+        const angle = index / 12 * Math.PI * 2;
+        const direction = new THREE.Vector3(Math.cos(angle), 0, Math.sin(angle));
+        this.spawnSoundWave(damage * 0.72, Math.max(3, specialty + 2), index % 2 === 0 ? 0xffd447 : color, direction, 17);
+      }
+      this.pendingStrikes.push(
+        { at: this.runTime + 0.16, radius: 5.7, damage: damage * 0.72, fullCircle: true, color },
+        { at: this.runTime + 0.34, radius: 8.6, damage: damage * 0.58, fullCircle: true, color: 0xffd447 },
+      );
+      this.addStageHeat(25);
+      this.hitStopRemaining = Math.max(this.hitStopRemaining, 0.12);
+      this.cameraShake = Math.max(this.cameraShake, 1.05);
+      return;
+    }
+
+    const stepDamage = [0.92, 1.05, 1.42][this.guitarComboStep];
+    const stepRange = [1, 1.08, 1.32][this.guitarComboStep];
+    const stepForce = [1.25, 1.65, 2.65][this.guitarComboStep];
+    this.meleeStrike(
+      this.attackRange * stepRange,
+      damage * stepDamage,
+      this.guitarComboStep === 2,
+      color,
+      stepForce,
+    );
+    if (specialty >= 1) {
+      const waveDamage = damage * (this.guitarComboStep === 2 ? 0.9 : 0.52);
+      this.spawnSoundWave(waveDamage, specialty, color);
+      if (specialty >= 5 && this.guitarComboStep === 2) {
+        const sideA = this.aimDirection.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.24);
+        const sideB = this.aimDirection.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), -0.24);
+        this.spawnSoundWave(damage * 0.58, specialty, color, sideA);
+        this.spawnSoundWave(damage * 0.58, specialty, color, sideB);
+      }
+    }
+    if (this.guitarComboStep === 2) {
+      this.showEvolution('3 HIT CHORD FINISH！', '#fde047');
+      this.hitStopRemaining = Math.max(this.hitStopRemaining, 0.065);
+    }
+  }
+
+  private deflectNearbyProjectiles() {
+    let deflected = 0;
+    for (let index = this.enemyProjectiles.length - 1; index >= 0; index -= 1) {
+      const projectile = this.enemyProjectiles[index];
+      if (projectile.mesh.position.distanceTo(this.playerPosition) > 2.8) continue;
+      this.spawnHitParticles(projectile.mesh.position, 0xffd447, 4);
+      disposeObject(projectile.mesh);
+      this.enemyProjectiles.splice(index, 1);
+      deflected += 1;
+    }
+    if (deflected > 0) this.showEvolution(`DODGE RIFF　音弾${deflected}個を破砕`, '#ffe59a');
   }
 
   private updateAutoSkill() {
@@ -1104,6 +1409,14 @@ export class SurvivalBattleScene extends Phaser.Scene {
     this.hitStopRemaining = Math.max(this.hitStopRemaining, enemy.boss ? 0.12 : 0.025);
     this.cameraShake = Math.max(this.cameraShake, enemy.boss ? 1.1 : 0.22);
     if (enemy.boss) this.showNotice(`${this.getBossName(enemy.bossKind)} 撃破！`, '#fde047');
+    if (this.instrumentId === 'electric-guitar') {
+      const wasReady = this.guitarSoloGauge >= 100;
+      const soloGain = enemy.boss ? 35 : enemy.kind === 'brute' || enemy.kind === 'support' ? 14 : 8;
+      this.guitarSoloGauge = Math.min(100, this.guitarSoloGauge + soloGain);
+      if (!wasReady && this.guitarSoloGauge >= 100) {
+        this.showNotice('GUITAR SOLO READY！　Qで発動', '#fde047');
+      }
+    }
     this.markThreatWaveDefeated(enemy.threatLevel);
   }
 
@@ -1304,6 +1617,7 @@ export class SurvivalBattleScene extends Phaser.Scene {
   }
 
   private damagePlayer(damage: number) {
+    if (this.runTime < this.playerInvulnerableUntil) return;
     this.condition = Math.max(0, this.condition - damage);
     this.cameraShake = Math.max(this.cameraShake, 0.45);
     this.spawnHitParticles(this.playerPosition, 0xef4444, 8);
@@ -1563,6 +1877,19 @@ export class SurvivalBattleScene extends Phaser.Scene {
     ].filter(Boolean);
     const encoreRatio = this.runTime < this.encoreUntil ? 1 : this.encoreCharge / 12;
     this.comboLine.innerHTML = `${this.combo > 1 && this.runTime <= this.comboUntil ? `${this.combo} K.O. CHAIN<br>` : ''}<span style="font-size:15px;color:#fff1cf">${activeBuffs.join(' / ')}</span><div style="width:210px;height:10px;margin-top:8px;margin-left:auto;background:#172a34;border:1px solid #ffb45b"><div style="width:${this.stageHeat}%;height:100%;background:linear-gradient(90deg,#f0cc72,#ff9638,#d946a8)"></div></div><span style="font-size:12px;color:#ffb000">STAGE HEAT ${this.getStageHeatName()} ${Math.round(this.stageHeat)}%</span><br><span style="font-size:10px;color:#fff1cf">ATK +${this.stageHeatTier * 10}% / COIN +${this.stageHeatTier * 15}%</span><div style="width:210px;height:8px;margin-top:5px;margin-left:auto;background:#172a34;border:1px solid #e2bd68"><div style="width:${encoreRatio * 100}%;height:100%;background:#f0cc72"></div></div><span style="font-size:12px;color:#ffe09a">ENCORE ${this.runTime < this.encoreUntil ? 'ACTIVE' : `${this.encoreCharge}/12`}</span>`;
+    if (this.guitarActionLine && this.instrumentId === 'electric-guitar') {
+      const chargePercent = this.guitarCharging ? Math.round(this.guitarChargeRatio * 100) : 0;
+      const dodgeRemaining = Math.max(0, this.guitarNextDodgeAt - this.runTime);
+      const soloReady = this.guitarSoloGauge >= 100;
+      this.guitarActionLine.innerHTML = `
+        <div style="font-size:15px;font-weight:900;color:#ffe09a">GUITAR ACTION SET</div>
+        <div style="margin-top:3px;font-size:12px;color:#fff1cf">J/Space 3段コンボ　K長押し 溜めコード　Shift 回避リフ　Q ソロ</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:7px">
+          <div><span style="font-size:11px;color:#e7c7a5">CHORD ${this.guitarCharging ? `${chargePercent}%` : 'HOLD K'}</span><div style="height:7px;background:#172a34;border:1px solid #e2bd68"><div style="width:${chargePercent}%;height:100%;background:#ffd447"></div></div></div>
+          <div><span style="font-size:11px;color:${soloReady ? '#fde047' : '#e7c7a5'}">SOLO ${soloReady ? 'READY' : `${Math.floor(this.guitarSoloGauge)}%`} / DODGE ${dodgeRemaining > 0 ? `${dodgeRemaining.toFixed(1)}s` : 'READY'}</span><div style="height:7px;background:#172a34;border:1px solid #e2bd68"><div style="width:${this.guitarSoloGauge}%;height:100%;background:linear-gradient(90deg,#f0cc72,#ff9f1c)"></div></div></div>
+        </div>
+      `;
+    }
   }
 
   private showNotice(text: string, color: string) {
