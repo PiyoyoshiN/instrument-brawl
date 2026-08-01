@@ -29,6 +29,12 @@ const battleBgmByInstrument: Partial<Record<InstrumentId, BattleBgmDefinition>> 
     loopEndSeconds: 77.52458333333334,
     volume: 0.34,
   },
+  'drum-sticks': {
+    path: 'assets/audio/bgm/bgm_drum_battle_adopted.wav',
+    loopStartSeconds: 24.298666666666666,
+    loopEndSeconds: 168.82133333333334,
+    volume: 0.34,
+  },
 };
 
 function readSelectedInstrument(): InstrumentId | undefined {
