@@ -4,16 +4,32 @@ type SurvivalProgressSnapshot = {
   selectedInstrument?: InstrumentId;
 };
 
-const survivalProgressStorageKey = 'instrument-brawl:survival-progress';
-const guitarBattleBgmPath = 'assets/audio/bgm/bgm_guitar_battle_combo_breaker_blitz.wav';
+type BattleBgmDefinition = {
+  path: string;
+  loopStartSeconds: number;
+  loopEndSeconds: number;
+  volume: number;
+};
 
-// Intro: 0:00 -> loopEnd. After the first pass, repeat loopStart -> loopEnd.
-// These values are intentionally kept together so they can be tuned later
-// without changing the playback controller.
-const guitarBattleLoopStartSeconds = 19.96;
-const guitarBattleLoopEndSeconds = 59.54;
-const guitarBattleBgmVolume = 0.34;
+const survivalProgressStorageKey = 'instrument-brawl:survival-progress';
 const battleDetectionIntervalMs = 200;
+
+// Each track starts at 0:00 on the first play. When loopEnd is reached,
+// Web Audio jumps directly to loopStart with no crossfade.
+const battleBgmByInstrument: Partial<Record<InstrumentId, BattleBgmDefinition>> = {
+  'electric-guitar': {
+    path: 'assets/audio/bgm/bgm_guitar_battle_combo_breaker_blitz.wav',
+    loopStartSeconds: 19.96,
+    loopEndSeconds: 59.54,
+    volume: 0.34,
+  },
+  bass: {
+    path: 'assets/audio/bgm/bgm_bass_battle_adopted.wav',
+    loopStartSeconds: 26.997770833333334,
+    loopEndSeconds: 77.52458333333334,
+    volume: 0.34,
+  },
+};
 
 function readSelectedInstrument(): InstrumentId | undefined {
   try {
@@ -37,20 +53,20 @@ function isSurvivalBattleVisible() {
   );
 }
 
-class GuitarBattleBgmController {
+class BattleBgmController {
   private audioContext?: AudioContext;
-  private audioBuffer?: AudioBuffer;
-  private loadingPromise?: Promise<AudioBuffer | undefined>;
+  private readonly audioBuffers = new Map<InstrumentId, AudioBuffer>();
+  private readonly loadingPromises = new Map<InstrumentId, Promise<AudioBuffer | undefined>>();
   private activeSource?: AudioBufferSourceNode;
   private activeGain?: GainNode;
-  private shouldBePlaying = false;
+  private activeInstrument?: InstrumentId;
+  private desiredInstrument?: InstrumentId;
   private interactionUnlocked = false;
 
   start() {
     const unlock = () => {
       this.interactionUnlocked = true;
       void this.ensureContextReady();
-      void this.ensureBufferLoaded();
       this.syncPlaybackState();
     };
 
@@ -62,16 +78,24 @@ class GuitarBattleBgmController {
     this.syncPlaybackState();
   }
 
+  private getTargetInstrument(): InstrumentId | undefined {
+    if (!isSurvivalBattleVisible()) return undefined;
+    const selectedInstrument = readSelectedInstrument();
+    if (!selectedInstrument || !battleBgmByInstrument[selectedInstrument]) return undefined;
+    return selectedInstrument;
+  }
+
   private syncPlaybackState() {
-    const guitarBattleActive =
-      isSurvivalBattleVisible() && readSelectedInstrument() === 'electric-guitar';
+    const nextInstrument = this.getTargetInstrument();
 
-    if (guitarBattleActive === this.shouldBePlaying) return;
-    this.shouldBePlaying = guitarBattleActive;
+    if (nextInstrument !== this.desiredInstrument) {
+      this.desiredInstrument = nextInstrument;
+      if (this.activeSource) this.stopWithFade();
+    }
 
-    if (guitarBattleActive) {
-      void this.playWhenReady();
-    } else {
+    if (nextInstrument && !this.activeSource) {
+      void this.playWhenReady(nextInstrument);
+    } else if (!nextInstrument && this.activeSource) {
       this.stopWithFade();
     }
   }
@@ -86,47 +110,66 @@ class GuitarBattleBgmController {
     return this.audioContext;
   }
 
-  private ensureBufferLoaded() {
-    if (this.audioBuffer) return Promise.resolve(this.audioBuffer);
-    if (this.loadingPromise) return this.loadingPromise;
+  private ensureBufferLoaded(instrumentId: InstrumentId) {
+    const cached = this.audioBuffers.get(instrumentId);
+    if (cached) return Promise.resolve(cached);
 
-    this.loadingPromise = (async () => {
+    const loading = this.loadingPromises.get(instrumentId);
+    if (loading) return loading;
+
+    const definition = battleBgmByInstrument[instrumentId];
+    if (!definition) return Promise.resolve(undefined);
+
+    const loadingPromise = (async () => {
       try {
         const context = await this.ensureContextReady();
-        const url = new URL(guitarBattleBgmPath, document.baseURI).toString();
+        const url = new URL(definition.path, document.baseURI).toString();
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`BGM load failed: ${response.status} ${response.statusText}`);
         }
         const arrayBuffer = await response.arrayBuffer();
-        this.audioBuffer = await context.decodeAudioData(arrayBuffer);
-        return this.audioBuffer;
+        const decoded = await context.decodeAudioData(arrayBuffer);
+        this.audioBuffers.set(instrumentId, decoded);
+        return decoded;
       } catch (error) {
         console.warn(
-          `[Sound Braver] Guitar battle BGM could not be loaded from ${guitarBattleBgmPath}.`,
+          `[Sound Braver] Battle BGM could not be loaded from ${definition.path}.`,
           error,
         );
         return undefined;
       } finally {
-        this.loadingPromise = undefined;
+        this.loadingPromises.delete(instrumentId);
       }
     })();
 
-    return this.loadingPromise;
+    this.loadingPromises.set(instrumentId, loadingPromise);
+    return loadingPromise;
   }
 
-  private async playWhenReady() {
+  private async playWhenReady(instrumentId: InstrumentId) {
     if (!this.interactionUnlocked || document.hidden) return;
 
+    const definition = battleBgmByInstrument[instrumentId];
+    if (!definition) return;
+
     const context = await this.ensureContextReady();
-    const buffer = await this.ensureBufferLoaded();
-    if (!buffer || !this.shouldBePlaying || document.hidden || this.activeSource) return;
+    const buffer = await this.ensureBufferLoaded(instrumentId);
+    if (
+      !buffer
+      || this.desiredInstrument !== instrumentId
+      || document.hidden
+      || this.activeSource
+    ) return;
 
     const source = context.createBufferSource();
     const gain = context.createGain();
     const now = context.currentTime;
-    const safeLoopStart = Math.max(0, Math.min(guitarBattleLoopStartSeconds, buffer.duration));
-    const safeLoopEnd = Math.max(safeLoopStart + 0.05, Math.min(guitarBattleLoopEndSeconds, buffer.duration));
+    const safeLoopStart = Math.max(0, Math.min(definition.loopStartSeconds, buffer.duration));
+    const safeLoopEnd = Math.max(
+      safeLoopStart + 0.05,
+      Math.min(definition.loopEndSeconds, buffer.duration),
+    );
 
     source.buffer = buffer;
     source.loop = true;
@@ -135,17 +178,19 @@ class GuitarBattleBgmController {
     source.connect(gain);
     gain.connect(context.destination);
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(guitarBattleBgmVolume, now + 0.35);
+    gain.gain.linearRampToValueAtTime(definition.volume, now + 0.35);
 
     source.addEventListener('ended', () => {
       if (this.activeSource === source) {
         this.activeSource = undefined;
         this.activeGain = undefined;
+        this.activeInstrument = undefined;
       }
     });
 
     this.activeSource = source;
     this.activeGain = gain;
+    this.activeInstrument = instrumentId;
     source.start(0, 0);
   }
 
@@ -155,6 +200,7 @@ class GuitarBattleBgmController {
     const gain = this.activeGain;
     this.activeSource = undefined;
     this.activeGain = undefined;
+    this.activeInstrument = undefined;
 
     if (!context || !source || !gain) return;
 
@@ -183,13 +229,11 @@ class GuitarBattleBgmController {
     }
 
     if (this.interactionUnlocked) {
-      void this.audioContext.resume().then(() => {
-        if (this.shouldBePlaying && !this.activeSource) void this.playWhenReady();
-      });
+      void this.audioContext.resume().then(() => this.syncPlaybackState());
     }
   }
 }
 
-new GuitarBattleBgmController().start();
+new BattleBgmController().start();
 
 export {};
