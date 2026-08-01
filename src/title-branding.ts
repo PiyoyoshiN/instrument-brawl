@@ -17,39 +17,27 @@ function replaceBrandText(value: string | string[]): string | string[] {
   return Array.isArray(value) ? value.map(replace) : replace(value);
 }
 
-// Phaser scenes still contain the former working title in a few display strings.
-// Patch only rendered Text objects so persistent storage keys and internal IDs remain stable.
-const factoryPrototype = Phaser.GameObjects.GameObjectFactory.prototype;
-const originalTextFactory = factoryPrototype.text;
-
-factoryPrototype.text = function brandedTextFactory(
-  this: Phaser.GameObjects.GameObjectFactory,
-  x: number,
-  y: number,
-  text: string | string[],
-  style?: Phaser.Types.GameObjects.Text.TextStyle,
-) {
-  const brandedText = replaceBrandText(text);
-  const gameObject = originalTextFactory.call(this, x, y, brandedText, style);
-
-  // The old short title fitted a 210px home card at 30px. The new title needs
-  // a smaller size only in that compact card; full title headings stay large.
-  if (
-    brandedText === japaneseTitle
-    && (style?.fontSize === '30px' || style?.fontSize === 30)
-  ) {
-    gameObject.setFontSize(20);
-  }
-
-  return gameObject;
-};
-
+// Keep internal IDs and localStorage keys unchanged. Only text rendered by
+// Phaser is rebranded from the former working title.
 const originalSetText = Phaser.GameObjects.Text.prototype.setText;
 Phaser.GameObjects.Text.prototype.setText = function brandedSetText(
   this: Phaser.GameObjects.Text,
   text: string | string[],
 ) {
-  return originalSetText.call(this, replaceBrandText(text));
+  const brandedText = replaceBrandText(text);
+  const result = originalSetText.call(this, brandedText);
+  const currentFontSize = String(this.style.fontSize);
+
+  // The compact home card used a much shorter working title at 30px.
+  // Full-size headings remain unchanged.
+  if (
+    brandedText === japaneseTitle
+    && (currentFontSize === '30' || currentFontSize === '30px')
+  ) {
+    this.setFontSize(20);
+  }
+
+  return result;
 };
 
 document.title = japaneseTitle;
