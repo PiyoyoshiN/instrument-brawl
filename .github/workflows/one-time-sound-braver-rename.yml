@@ -1,0 +1,76 @@
+name: One-time Sound Braver rename
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  rename-title:
+    if: github.event.head_commit.message == 'Run one-time Sound Braver rename'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace old display titles
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          excluded_dirs = {'.git', 'node_modules', 'dist'}
+          old_to_new = {
+              '楽器無双': 'サウンドブレイバー',
+              'Instrument Brawl': 'Sound Braver',
+          }
+
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or any(part in excluded_dirs for part in path.parts):
+                  continue
+              try:
+                  original = path.read_text(encoding='utf-8')
+              except (UnicodeDecodeError, OSError):
+                  continue
+
+              updated = original
+              for old, new in old_to_new.items():
+                  updated = updated.replace(old, new)
+
+              if updated != original:
+                  path.write_text(updated, encoding='utf-8')
+
+          index_path = Path('index.html')
+          index_text = index_path.read_text(encoding='utf-8')
+          index_text = index_text.replace('<title>Sound Braver</title>', '<title>サウンドブレイバー</title>')
+          index_path.write_text(index_text, encoding='utf-8')
+
+          main_path = Path('src/main.ts')
+          main_text = main_path.read_text(encoding='utf-8')
+          start_card_block = """.text(firstCardX, cardY, 'サウンドブレイバー', {
+                color: '#fff1cf',
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '30px',
+              })"""
+          resized_start_card_block = """.text(firstCardX, cardY, 'サウンドブレイバー', {
+                color: '#fff1cf',
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '20px',
+              })"""
+          main_text = main_text.replace(start_card_block, resized_start_card_block)
+          main_path.write_text(main_text, encoding='utf-8')
+          PY
+
+      - name: Remove one-time workflow and commit
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/one-time-sound-braver-rename.yml
+          git add -A
+          git commit -m "Rename game to Sound Braver"
+          git push
