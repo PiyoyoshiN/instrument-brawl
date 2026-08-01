@@ -3,11 +3,16 @@ import Phaser from 'phaser';
 const japaneseTitle = 'サウンドブレイバー';
 const englishTitle = 'SOUND BRAVER';
 
+function replaceAllText(source: string, search: string, replacement: string) {
+  return source.split(search).join(replacement);
+}
+
 function replaceBrandText(value: string | string[]): string | string[] {
-  const replace = (text: string) => text
-    .replaceAll('楽器無双', japaneseTitle)
-    .replaceAll('Instrument Brawl', englishTitle)
-    .replaceAll('INSTRUMENT BRAWL', englishTitle);
+  const replace = (text: string) => {
+    let result = replaceAllText(text, '楽器無双', japaneseTitle);
+    result = replaceAllText(result, 'Instrument Brawl', englishTitle);
+    return replaceAllText(result, 'INSTRUMENT BRAWL', englishTitle);
+  };
 
   return Array.isArray(value) ? value.map(replace) : replace(value);
 }
