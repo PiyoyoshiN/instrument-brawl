@@ -1,14 +1,23 @@
 # Battle BGM assets
 
-Place the guitar battle track at:
+Place the battle tracks at the following paths.
+
+## Electric Guitar
 
 `public/assets/audio/bgm/bgm_guitar_battle_combo_breaker_blitz.wav`
 
-Current playback settings are defined in `src/battle-bgm.ts`:
-
 - First play starts at `0.00` seconds
-- Loop start: `19.96` seconds
-- Loop end: `59.54` seconds
+- Direct loop start: `19.96` seconds
+- Direct loop end: `59.54` seconds
 - BGM volume: `0.34`
 
-The track is played only during the current survival battle when the selected instrument is Electric Guitar. Missing audio must not stop the game from running.
+## Bass
+
+`public/assets/audio/bgm/bgm_bass_battle_adopted.wav`
+
+- First play starts at `0.00` seconds
+- Direct loop start: `26.997770833333334` seconds
+- Direct loop end: `77.52458333333334` seconds
+- BGM volume: `0.34`
+
+Playback settings are defined in `src/battle-bgm.ts`. Each track plays only during the current survival battle when its matching instrument is selected. Looping uses Web Audio loop points with no crossfade. Missing audio must not stop the game from running.
